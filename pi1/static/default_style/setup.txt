@@ -1,0 +1,299 @@
+
+plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
+
+	.tx_sevenpack-navi_year {
+		background-color: #7ca6a6; 
+		background-color: #fff;
+		border-bottom: 1px solid black; 
+		color: black;
+		padding: 0.5em;
+		margin: 1em 0em;
+		text-align: left;
+		min-width: 40em;
+	}
+
+	.tx_sevenpack-navi_page {
+		background-color: #c9dbd8;
+		background-color: #fff;
+		border-top: 0px solid black; 
+		border-bottom: 0px solid black; 
+		color: black;
+		margin: 0.5em 0em;
+		padding: 0px;
+		text-align: left;
+	}
+
+	span.tx_sevenpack-navi_current {
+		font-size:larger;
+		font-weight:bold;
+	}
+
+	.tx_sevenpack-navi_label {
+		font-weight: bold;
+		padding-left: 1em;
+		padding-right: 2em;
+	}
+
+	span.tx_sevenpack-navi_separator {
+		padding: 0px 0.75em;
+	}
+
+	.tx_sevenpack-navi_new {
+		text-align: right;
+		margin: 0.5em 0em;
+		padding: 0px;
+	}
+
+	.tx_sevenpack-navi_export {
+		text-align: left;
+		margin: 1em 0em;
+		padding: 0px;
+		font-size: smaller;
+	}
+
+	.tx_sevenpack-export_label {
+		font-weight: bold;
+		margin-right: 1em;
+	}
+
+	.tx_sevenpack-navi_import {
+		text-align: left;
+		margin: 1em 0em;
+		padding: 0px;
+		font-size: smaller;
+	}
+
+	.tx_sevenpack-import_label {
+		font-weight: bold;
+		margin-right: 1em;
+	}
+
+	.tx_sevenpack-navi_statistic {
+		text-align: left;
+		padding: 0px;
+		margin: 1em 0em;
+	}
+
+	.tx_sevenpack-statistic_label {
+		font-weight: bold;
+		margin-right: 1em;
+	}
+
+	.tx_sevenpack-inline_form {
+		display: inline;
+		padding: 0px;
+		margin: 0px 6em;
+	}
+
+	table.tx_sevenpack-list {
+		margin: 0.5em 0px;
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.tx_sevenpack-year_row {
+		padding: 0.25em 0.5em;
+		text-align: left;
+	}
+
+	.tx_sevenpack-year_row h3 {
+		padding: 0px;
+		margin: 0px;
+	}
+
+	.tx_sevenpack-bibtype_row {
+		padding: 0.25em 0.5em;
+		text-align: left;
+	}
+
+	.tx_sevenpack-bibtype_row h4  {
+		padding: 0px;
+		margin: 0px;
+	}
+
+	td.tx_sevenpack-item_even,
+	td.tx_sevenpack-item_odd {
+		padding: 0.5ex 0.3em;
+		vertical-align: top;
+	}
+	td.tx_sevenpack-item_even {
+		background-color: #dddddd;
+	}
+	td.tx_sevenpack-item_odd {
+		background-color: #ffffff;
+	}
+	td.tx_sevenpack-enum {
+		text-align: right;
+		padding-right: 0.5ex;
+		max-width: 4em;
+	}
+
+
+	.tx_sevenpack-button {
+		margin: 0em 0.5em;
+	}
+	.tx_sevenpack-italic {
+		font-style: italic;
+	}
+	.tx_sevenpack-bold {
+		font-weight: bold;
+	}
+	.tx_sevenpack-block {
+		display: block;
+		padding: 0px;
+		margin: 0px;
+		border-width: 0px;
+	}
+
+	.tx_sevenpack-author {
+		padding: 0px;
+		margin: 0px;
+	}
+	.tx_sevenpack-authors {
+		padding: 0px;
+		margin: 0px;
+	}
+	.tx_sevenpack-author_high {
+		font-weight: bold;
+	}
+	.tx_sevenpack-title {
+		font-style: italic;
+	}
+	.tx_sevenpack-series {
+		font-style: italic;
+	}
+	.tx_sevenpack-state {
+		font-style: italic;
+	}
+	.tx_sevenpack-type {
+		font-style: italic;
+	}
+	.tx_sevenpack-abstract_block {
+	}
+	.tx_sevenpack-note_block {
+	}
+	.tx_sevenpack-annotation_block {
+	}
+	.tx_sevenpack-misc_block {
+	}
+	.tx_sevenpack-keywords_block {
+	}
+
+
+	div.tx_sevenpack-missing_data  { 
+		font-weight: bold;
+		background-color: rgb(235,0,0);
+		margin: 0px;
+		padding: 1ex 1em;
+	}
+
+	.tx_sevenpack-warning_box {
+		padding: 1em;
+		margin: 1em;
+		border: 3px solid red;
+	}
+
+	.tx_sevenpack-manipulator_block {
+		border-width: 0px;
+		padding: 0px;
+		margin: 0px 0px 2px 0.75em;
+		float: right;
+	}
+	.tx_sevenpack-manip {
+		border-width: 0px;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	.tx_sevenpack-edit_icon, 
+	.tx_sevenpack-hide_icon, 
+	.tx_sevenpack-delete_icon,
+	.tx_sevenpack-new_icon {
+		border-width: 0px;
+		padding: 0.25em 0.25em;
+	}
+
+	table.tx_sevenpack-layout {
+		border-collapse: collapse;
+		border-width: 0px;
+		padding: 0px;
+		margin: 0px;
+	}
+	table.tx_sevenpack-layout td,
+	table.tx_sevenpack-layout th,
+	table.tx_sevenpack-layout tr
+	{
+		border-width: 0px;
+		padding: 0px;
+		margin: 0px;
+	}
+
+
+	div.tx_sevenpack-editor {
+		padding: 1em;
+		margin: 1em 0em;
+		border: 1px solid black;
+	}
+	table.tx_sevenpack-editor_fields {
+		border-collapse: collapse;
+		padding: 0px;
+		margin: 0.75ex 0em;
+		border-width: 0px;
+	}
+	table.tx_sevenpack-editor_fields th,
+	table.tx_sevenpack-editor_fields td {
+		padding: 0.5ex 0.5em;
+		vertical-align: top;
+		text-align: left;
+	}
+	table.tx_sevenpack-editor_fields th {
+		min-width: 8em;
+	}
+	.tx_sevenpack-editor h3 {
+		font-size: large;
+		border-bottom: 1px solid black;
+		padding: 0.25em 0em;
+	}
+	.tx_sevenpack-editor_button {
+		margin: 0em 0.5em;
+	}
+	.tx_sevenpack-editor_button_box {
+		padding: 1em 1em;
+		background-color: #eee;
+	}
+	.tx_sevenpack-box_left {
+	}
+	.tx_sevenpack-box_right {
+		float: right;
+	}
+
+	.tx_sevenpack-editor_input {
+		border: 1px solid black;
+		padding: 2px;
+	}
+
+	table.tx_sevenpack-editor_author {
+		border-collapse: collapse;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	table.tx_sevenpack-editor_author th,
+	table.tx_sevenpack-editor_author td {
+		min-width: 0px;
+		font-size: small;
+	}
+
+	table.tx_sevenpack-editor_author
+	th.tx_sevenpack-editor_author_num {
+		padding: 0ex 0.75ex 0ex 0ex;
+		text-align: right;
+		vertical-align: middle;
+	}
+	.tx_sevenpack-editor_hidden {
+		text-decoration: line-through;
+	}
+
+)
+
+

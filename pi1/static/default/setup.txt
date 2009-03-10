@@ -1,0 +1,372 @@
+plugin.tx_sevenpack_pi1 {
+
+	pid_list = {$plugin.tx_sevenpack_pi1.pid_list}
+	debug = {$plugin.tx_sevenpack_pi1.debug}
+
+	# HTML template
+	template = {$plugin.tx_sevenpack_pi1.template}
+
+	# Links link to the content element (e.g. http://bla.html#c1234)
+	ce_links = 1
+
+	max_url_string_length = 60
+
+	# The list display mode (simple)
+	display_mode = 0
+
+	# Date sorting (descending)
+	date_sorting = 0
+
+	# Enumeration style (Count all)
+	enum_style = 0
+
+	# Maximal number references per page (0=all)
+	items_per_page = 12
+
+	# Number of authors to display (0=all)
+	max_authors = 0
+	authors {
+		template = ###FORENAME######SURNAME###
+		forename.noTrimWrap = || |
+		surname.wrap = |
+		separator = ,
+		separator.noTrimWrap = || |
+		highlight.wrap = <span class="tx_sevenpack-author_high">|</span>
+	}
+
+	# List view
+	enum {
+		page.wrap = |.
+		all.wrap = |.
+		bullet.wrap = |
+		empty.wrap = |
+	}
+
+	# Label wraps
+	label {
+		bibtype.wrap = <h4>|:</h4>
+		year.wrap = <h3>|</h3>
+
+		abstract.wrap = <strong>|:</strong>
+		annotation.wrap = <strong>|:</strong>
+		chapter.wrap = |:
+		editor.wrap = |
+		ISBN.wrap = |:
+		keywords.wrap = <strong>|</strong>:
+		note.wrap = <strong>|:</strong>
+		publisher.wrap = |:
+	}
+
+	# Field wraps
+	field {
+		abstract.noTrimWrap = |<p class="tx_sevenpack-abstract_block">###LABEL_ABSTRACT### |</p>|
+
+		# Address
+		address.wrap = |<br/>
+
+		annotation.noTrimWrap = |<p class="tx_sevenpack-annotation_block">###LABEL_ANNOTATION### |</p>|
+		author.wrap = <span class="tx_sevenpack-author">|</span>
+		authors.wrap = <div class="tx_sevenpack-authors">|.</div>
+
+		# Booktitle
+		booktitle.noTrimWrap = |||
+
+		# Chapter
+		chapter.wrap = <span class="tx_sevenpack-chapter">|</span>,
+
+		# Day
+		day.wrap = |.
+
+		# Edition
+		edition.noTrimWrap = || ###LABEL_EDITION###,|
+
+		# Editor
+		editor.noTrimWrap = |In |, ###LABEL_EDITOR###,|
+
+		# File URL
+		file_url.typolink.parameter.field = file_url
+
+		howpublished.wrap = |,
+		institution.wrap = |,
+		ISBN.noTrimWrap = |###LABEL_ISBN### ||
+		journal.wrap = |,
+		keywords.noTrimWrap = |<p class="tx_sevenpack-keywords_block">###LABEL_KEYWORDS### |</p>|
+		misc.wrap = |.
+
+		month.strftime = %B
+
+		# Note
+		note.noTrimWrap = |<p class="tx_sevenpack-note_block">###LABEL_NOTE### |</p>|
+
+		# Number
+		number.wrap = (|)
+		techreport.number.wrap = |,
+
+		# Organization
+		organization.wrap = |
+		manual.organization.wrap = |,
+
+		# Pages
+		pages.noTrimWrap = |###LABEL_PAGE### |.|
+		article.pages.wrap = :|,
+		conference.pages.noTrimWrap = |, ###LABEL_PAGE### |.|
+		inproceedings.pages.noTrimWrap = |, ###LABEL_PAGE### |.|
+
+		# Publisher
+		publisher.noTrimWrap = |###LABEL_PUBLISHER### |, |
+
+		# Series
+		series.wrap = ###LABEL_OF### <span class="tx_sevenpack-series">|</span>
+
+		# State
+		state.wrap = <span class="tx_sevenpack-state">|</span>
+
+		# School
+		school.wrap = |,
+
+		# Title
+		title.typolink.parameter.field = file_url
+		title.wrap = <div class="tx_sevenpack-title">|</div>
+
+		# Type
+		type.wrap = <span class="tx_sevenpack-type">|</span>
+		incollection.type.wrap = <span class="tx_sevenpack-type">|</span>,
+
+		# Volume
+		volume.noTrimWrap = |, ###LABEL_VOLUME### ||
+		article.volume.wrap = <span class="tx_sevenpack-bold">|</span>
+		book.volume.noTrimWrap = | ###LABEL_VOLUME### ||
+		inbook.volume.noTrimWrap = | ###LABEL_VOLUME### ||
+		proceedings.volume.noTrimWrap = | ###LABEL_VOLUME### ||
+
+		# Year
+		year.wrap = |.
+	}
+
+	# CSS classes
+	classes {
+		even = tx_sevenpack-item_even
+		odd = tx_sevenpack-item_odd
+	}
+
+
+	# Year naviagation
+	yearNav {
+		# Year label and wrap
+		label = yearNav.label
+		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+
+		# Classes or the year selection form
+		form_class = tx_sevenpack-inline_form
+		select_class =
+		input_class = tx_sevenpack-button
+
+		# Year selection
+		selection {
+			# The maximum number of years to show
+			years = 3
+
+			# Year separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Wraps for the current year and the years below and above
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+
+			# Strings and wraps for indicators for more years
+			more_below = ...
+			more_below.noTrimWrap = || |
+			more_above = ...
+			more_above.noTrimWrap = | ||
+		}
+	}
+
+
+	# Page naviagation
+	pageNav {
+		# Page label and wrap
+		label = pageNav.label
+		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+
+		# Page selection
+		selection {
+			# The maximum number of pages to show
+			pages = 7
+
+			# Page separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Wraps for the current page and the pages below and above
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+
+			# Strings and wraps for indicators for more pages
+			more_below = ...
+			more_below.wrap = |
+			more_above = ...
+			more_above.wrap = |
+		}
+
+		# First, previous, next, last page selection
+		navigation {
+			separator = |
+			separator.wrap = <span class="tx_sevenpack-navi_separator">|</span>
+			separator.noTrimWrap = | | |
+
+			begin.wrap = |###SEPARATOR###
+			previous.wrap = |###SEPARATOR###
+			next.wrap = ###SEPARATOR###|
+			last.wrap = ###SEPARATOR###|
+		}
+	}
+
+
+	# Statistic
+	stat_mode = 0
+	stat {
+		label.wrap = <span class="tx_sevenpack-statistic_label">|:</span>
+		values.wrap = |
+
+		value_year.wrap = |
+		value_total.wrap = |
+	}
+
+
+	# Export
+	export {
+		# Available export
+		enable_export = bibtex,xml
+
+		# The export label wrap
+		label = export_label
+		label.wrap = <span class="tx_sevenpack-export_label">|:</span>
+
+		# The export path
+		path = uploads/tx_sevenpack
+
+		# Wraps for export mode links
+		bibtex.wrap = |
+		xml.wrap = |
+
+		# Export mode links separators
+		separator = ,
+		separator.noTrimWrap = || |
+	}
+
+
+	# Import
+	import {
+		# The export label wrap
+		label = import_label
+		label.wrap = <span class="tx_sevenpack-import_label">|:</span>
+
+		# Wraps for export mode links
+		bibtex.wrap = |
+		xml.wrap = |
+
+		# Export mode links separators
+		separator = ,
+		separator.noTrimWrap = || |
+	}
+
+
+	# Frontend editor
+	editor {
+		numAuthors = 5
+		manipulators {
+			all.wrap  = <div class="tx_sevenpack-manipulator_block">|</div>
+			hide.wrap = <div class="tx_sevenpack-manip">|</div>
+			edit.wrap = <div class="tx_sevenpack-manip">|</div>
+			new.wrap  = <div class="tx_sevenpack-manip">|</div>
+		}
+		hidden.wrap = <div class="tx_sevenpack-editor_hidden">|</div>
+
+		field_labels.wrap = |:
+		field_widgets.wrap = |
+
+		warnings {
+			# Missing citeid
+			m_citeid = 1;
+		}
+
+		groups {
+			all {
+				required = state
+				optional = affiliation,keywords,file_url
+				library = extern,reviewed,in_library,borrowed_by
+			}
+
+			article {
+				required = citeid,authors,title,journal,year
+				optional = volume,number,pages,month,note,abstract
+			}
+			book {
+				required = citeid,authors,title,publisher,year
+				optional = volume,series,address,edition,editor,month,note
+			}
+			inbook {
+				required = citeid,authors,title,chapter,pages,publisher,year
+				optional = volume,series,type,address,edition,editor,month,note
+			}
+			booklet {
+				required = citeid,title
+				optional = authors,howpublished,address,month,year,note
+			}
+			conference {
+				required = citeid,authors,title,booktitle,year
+				optional = editor,volume,series,pages,address,month,organization,publisher,note
+			}
+			incollection {
+				required = citeid,authors,title,booktitle,year
+				optional = editor,volume,series,type,chapter,pages,address,edition,month,note,organization,publisher
+			}
+			proceedings {
+				required = citeid,title,year
+				optional = editor,volume,series,address,month,organization,publisher,note
+			}
+			inproceedings {
+				required = citeid,authors,title,booktitle,year
+				optional = editor,volume,series,pages,address,month,organization,publisher,note
+			}
+			manual {
+				required = citeid,title
+				optional = authors,organization,address,edition,editor,month,year,note
+			}
+			mastersthesis {
+				required = citeid,authors,title,school,year
+				optional = type,address,month,note
+			}
+			phdthesis {
+				required = citeid,authors,title,school,year
+				optional = type,address,month,note
+			}
+			techreport {
+				required = citeid,authors,title,institution,year
+				optional = type,number,address,month,note
+			}
+			unpublished {
+				required = citeid,authors,title,note
+				optional = month,year
+			}
+			miscellaneous {
+				required = citeid
+				optional = authors,title,howpublished,month,year,note
+			}
+			string {
+				required = citeid,misc
+				optional =
+			}
+			poster {
+				required = citeid,authors
+				optional = title,editor,organization,publisher,address,year,month,day,note
+			}
+		}
+
+	}
+}
+
+

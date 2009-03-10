@@ -1,0 +1,97 @@
+2008-03-09      Sebastian Holtermann  <sebholt@web.de>
+
+	* FlexForm: Simplified export link activation (default TRUE)
+	* FlexForm: FE-Editor clear cache flag now is TRUE by default
+	* Backend: The authorship table is no longer hidden. Though manual editing is not recommended.
+	* Backend: Edit fields for "type" and "ISBN" did not show up in the BE - fixed
+	* Release version 0.5.2
+
+2008-03-08      Sebastian Holtermann  <sebholt@web.de>
+
+	* Database: Fixed missing pid field in tx_sevenpack_authorships
+	            Updaters must use the UPDATE! function in the extension manager!
+	* Database: New publication state "in preparation"
+	* Editor: Support for field default values via TypoScript
+	* Editor: year, month and day have been merged into one date field
+	* Editor: HTML changes visible as slight style/appearance changes
+	* Editor: Logging of changes (new/save/hide/delete) in the Typo3 log
+	* List: Manipulator Icons are now lined up horizontally and positioned on the right side
+	* List: Slight style changes
+	* General: Code cleanups
+	* Release version 0.5.1
+
+2008-01-24      Sebastian Holtermann  <sebholt@web.de>
+
+	* New: Library fields: reviewed, in_library, borrowed_by
+	* New: Library field filters
+	* Editor: New field group: Library fields
+	* Editor: Fixed field list for mastersthesis
+	* List: More consistent highlightning rules
+	* Release version 0.5
+
+2008-01-24      Sebastian Holtermann  <sebholt@web.de>
+
+	* New: BibTeX import
+	* New: Storage selection for imports
+	* Export: Improved BibTeX export
+	* Export: State is imported/eported as a word not a number
+	* Editor: Made publication state a required datum
+	* Editor: Put the delete button on top as well
+	* Editor: Autosubmit on a bibtype change
+	* List: Autosubmit on the year selection
+	* List: Decreased reference item distance (padding)
+	* Release version 0.4
+
+2008-11-13      Sebastian Holtermann  <sebholt@web.de>
+
+	* New: XML import
+	* New: Optional (simple) statistics
+	* New: Author filter as AND or as OR (was OR)
+	* Updated display styles for all bibtypes
+	* Better support for non-utf-8 pages
+	* Partial Italian translation by Gian Paolo Renello
+	* More configuration options in the FlexForm
+	* Extended configuration via TypoScript
+	* Changed uploadfolter from typo3temp to to uploads/tx_sevenpack
+	* Automatic removal of empty <div*></div>
+	* Month display via strftime (locale)
+	* Removed simple.tmpl and table_compact.tmpl
+	* Improved SQL generation
+	* Bug fixes
+	* Manual update
+	* Release of version 0.3.0
+
+2008-10-22      Sebastian Holtermann  <sebholt@web.de>
+
+	* Added stdWraps for each author not only for all authors
+	* Added the TypoScript options max_authors and items_per_page
+	* Flexform max_authors/items_per_page use the TS values by default
+	* Minor localization updates
+	* Manual update
+	* Release of version 0.2.0
+
+2008-10-21      Sebastian Holtermann  <sebholt@web.de>
+
+	* Fixed a SQL JOIN generation bug during export
+	* Release of version 0.1.4
+
+2008-10-09      Sebastian Holtermann  <sebholt@web.de>
+
+	* Manual update and fixes
+	* Release of version 0.1.3
+
+2008-10-09      Sebastian Holtermann  <sebholt@web.de>
+
+	* Manual converted from docbook to sxw
+	* Fixed bug on missing config.language
+	* Release of version 0.1.2
+
+2008-09-29      Sebastian Holtermann  <sebholt@web.de>
+
+	* Manual update
+	* Fixed stdWrap for TypoScript field.XXX
+	* Release of version 0.1.1
+
+2008-09-19      Sebastian Holtermann  <sebholt@web.de>
+
+	* Initial release of version 0.1
