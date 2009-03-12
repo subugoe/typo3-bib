@@ -11,6 +11,7 @@
 			<label index="tx_sevenpack_authors_authors">Author(s)</label>
 			<label index="tx_sevenpack_authors_forename">Forename</label>
 			<label index="tx_sevenpack_authors_surname">Surname</label>
+			<label index="tx_sevenpack_authors_url">File / URL</label>
 			<label index="tx_sevenpack_authorships">Sevenpack authorships</label>
 			<label index="tx_sevenpack_authorships_author_id">Author UID</label>
 			<label index="tx_sevenpack_authorships_pub_id">Publication UID</label>
@@ -81,6 +82,7 @@
 			<label index="tx_sevenpack_authors_authors">Autor(en)</label>
 			<label index="tx_sevenpack_authors_forename">Vorname</label>
 			<label index="tx_sevenpack_authors_surname">Nachname</label>
+			<label index="tx_sevenpack_authors_url">Datei / URL</label>
 			<label index="tx_sevenpack_authorships">Sevenpack Autorenschaften</label>
 			<label index="tx_sevenpack_authorships_author_id">Autoren UID</label>
 			<label index="tx_sevenpack_authorships_pub_id">Publikation UID</label>

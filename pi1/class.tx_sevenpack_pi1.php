@@ -1604,6 +1604,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$conf =& $this->conf;
 
 		// Load publication data into cObj
+		$cObj_restore = $cObj->data;
 		$cObj->data = $pub;
 
 		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
@@ -1648,7 +1649,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
 
 
-		// Preformat state
+		// State
 		switch ( $pdata['state'] ) {
 			case 0 :  
 				$pdata['state'] = ''; 
@@ -1760,6 +1761,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$templ = preg_replace ( "/\n+/", "\n", $templ );
 		//t3lib_div::debug ( $templ );
 
+		$cObj->data = $cObj_restore;
+
 		return $templ;
 	}
 
@@ -1771,6 +1774,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function get_item_authors_html ( $authors ) {
 		$res = '';
+
+		// Load publication data into cObj
+		$cObj =& $this->cObj;
+		$cObj_restore = $cObj->data;
 
 		// Format the author string$this->
 		$and   = ' '.$this->get_ll ( 'label_and', 'and', TRUE ).' ';
@@ -1797,8 +1804,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$a_tmpl = $this->extConf['author_tmpl'];
 
 		for ( $i_a=0; $i_a<=$last_author; $i_a++ ) {
-			//t3lib_div::debug ( $i_a );
 			$a =& $authors[$i_a];
+			//t3lib_div::debug ( $a );
+
+			$cObj->data = $a;
+			$cObj->data['url'] = htmlspecialchars_decode ( $a['url'], ENT_QUOTES );
 
 			// The forename
 			$a_fn = trim ( $a['fn'] );
@@ -1814,11 +1824,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$a_sn = $this->cObj->stdWrap ( $a_sn, $this->conf['authors.']['surname.'] );
 			}
 
+			// Compose names and apply stdWrap
 			$a_str = str_replace ( array ( '###FORENAME###', '###SURNAME###' ), array ( $a_fn, $a_sn ), $a_tmpl );
 			$stdWrap = $this->conf['field.']['author.'];
 			if ( is_array ( $this->conf['field.'][$bib_str.'.']['author.'] ) )
 				$stdWrap = $this->conf['field.'][$bib_str.'.']['author.'];
 			$a_str = $this->cObj->stdWrap ( $a_str, $stdWrap );
+
 			// Wrap the filtered authors with a highlightning class on demand
 			if ( $hl_authors ) {
 				foreach ( $this->extConf['filter']['author']['authors'] as $fa ) {
@@ -1861,8 +1873,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$app = $and;
 				}
 			}
+
 			$res .= $app;
 		}
+
+		// Restore cObj data
+		$cObj->data = $cObj_restore;
+
 		return $res;
 	}
 
@@ -1882,9 +1899,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$filter =& $this->extConf['subPageFilter'];
 		$cObj =& $this->cObj;
 		$conf =& $this->conf;
-
-		// Save cObj data
-		$cobj_data = $cObj->data;
 
 		// The author name template
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
@@ -2030,9 +2044,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// clean up
 		$ra->mFetch_finish();
-
-		// Restore cObj data array
-		$cObj->data = $cobj_data;
 
 		if ( strlen ( $items ) )
 			$hasStr = array ( '', '' );

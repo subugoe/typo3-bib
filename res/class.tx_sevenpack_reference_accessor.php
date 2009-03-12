@@ -37,7 +37,7 @@ class tx_sevenpack_reference_accessor {
 	 */
 	public $pubFields = array (
 		'bibtype', 'citeid', 'authors', 'title', 'journal', 'year',
-		'volume', 'number', 'pages', 'day', 'month', 'abstract',
+		'month', 'day', 'volume', 'number', 'pages', 'abstract',
 		'affiliation', 'note', 'annotation', 'keywords',
 		'file_url', 'misc', 'editor', 'publisher', 'series',
 		'address', 'edition', 'chapter', 'howpublished',
@@ -54,7 +54,7 @@ class tx_sevenpack_reference_accessor {
 	 */
 	public $refFields = array (
 		'bibtype', 'citeid', 'title', 'journal', 'year',
-		'volume', 'number', 'pages', 'day', 'month', 'abstract',
+		'month', 'day', 'volume', 'number', 'pages', 'abstract',
 		'affiliation', 'note', 'annotation', 'keywords',
 		'file_url', 'misc', 'editor', 'publisher', 'series',
 		'address', 'edition', 'chapter', 'howpublished',
@@ -851,8 +851,9 @@ class tx_sevenpack_reference_accessor {
 			$a = array();
 			$a['uid'] = $row['uid'];
 			$a['pid'] = $row['pid'];
-			$a['sn'] = $row['surname'];
-			$a['fn'] = $row['forename'];
+			$a['fn']  = $row['forename'];
+			$a['sn']  = $row['surname'];
+			$a['url'] = $row['url'];
 			$a['sorting'] = $row['sorting'];
 			$authors[] = $a;
 		}

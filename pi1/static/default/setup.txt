@@ -65,7 +65,12 @@ plugin.tx_sevenpack_pi1 {
 		address.wrap = |<br/>
 
 		annotation.noTrimWrap = |<p class="tx_sevenpack-annotation_block">###LABEL_ANNOTATION### |</p>|
+
+		# Author
+		author.typolink.parameter.field = url
 		author.wrap = <span class="tx_sevenpack-author">|</span>
+
+		# Authors
 		authors.wrap = <div class="tx_sevenpack-authors">|.</div>
 
 		# Booktitle
@@ -93,6 +98,7 @@ plugin.tx_sevenpack_pi1 {
 		keywords.noTrimWrap = |<p class="tx_sevenpack-keywords_block">###LABEL_KEYWORDS### |</p>|
 		misc.wrap = |.
 
+		# Month
 		month.strftime = %B
 
 		# Note

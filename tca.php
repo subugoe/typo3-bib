@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 $TCA['tx_sevenpack_references'] = array (
 	'ctrl' => $TCA['tx_sevenpack_references']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => $TCA['tx_sevenpack_references']['feInterface']['fe_admin_fieldList'] 
+		'showRecordFieldList' => $TCA['tx_sevenpack_references']['feInterface']['fe_admin_fieldList']
 	),
 	'feInterface' => $TCA['tx_sevenpack_references']['feInterface'],
 	'columns' => array (
@@ -453,7 +453,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, volume, number, pages, day, month, abstract, affiliation, note, annotation, keywords, file_url, misc, editor, publisher, series, address, edition, chapter, howpublished, booktitle, organization, school, institution, state, type, ISBN, extern, reviewed, in_library, borrowed_by' )
+		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, file_url, misc, editor, publisher, series, address, edition, chapter, howpublished, booktitle, organization, school, institution, state, type, ISBN, extern, reviewed, in_library, borrowed_by' )
 	),
 );
 
@@ -461,7 +461,7 @@ $TCA['tx_sevenpack_references'] = array (
 $TCA['tx_sevenpack_authors'] = array (
 	'ctrl' => $TCA['tx_sevenpack_authors']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => 'surname,forename'
+		'showRecordFieldList' => $TCA['tx_sevenpack_authors']['feInterface']['fe_admin_fieldList']
 	),
 	'feInterface' => $TCA['tx_sevenpack_authors']['feInterface'],
 	'columns' => array (
@@ -485,15 +485,38 @@ $TCA['tx_sevenpack_authors'] = array (
 				'eval' => 'trim',
 			)
 		),
+		'url' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors_url',
+			'config' => Array (
+				'type' => 'input',	
+				'size' => '48',	
+				'max' => '255',
+				'checkbox' => '0',
+				'wizards' => Array(
+					'_PADDING' => 2,
+					'link' => Array(
+						'type' => 'popup',
+						'title' => 'Link',
+						'icon' => 'link_popup.gif',
+						'script' => 'browse_links.php?mode=wizard',
+						'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+					)
+				)
+			)
+		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'surname,forename' )
+		'0' => array ( 'showitem' => 'surname,forename,url' )
 	),
 );
 
 
 $TCA['tx_sevenpack_authorships'] = array (
 	'ctrl' => $TCA['tx_sevenpack_authorships']['ctrl'],
+	'interface' => array (
+		'showRecordFieldList' => $TCA['tx_sevenpack_authorships']['feInterface']['fe_admin_fieldList']
+	),
 	'columns' => array (
 		'pub_id' => array (
 #			'exclude' => 1,		

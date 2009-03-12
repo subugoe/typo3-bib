@@ -18,7 +18,7 @@ $TCA['tx_sevenpack_references'] = array (
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_sevenpack_references.png',
 	),
 	'feInterface' => array (
-		'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,volume,number,pages,day,month,abstract,affiliation,note,annotation,keywords,file_url,misc, editor,publisher,series,address,edition,chapter,howpublished,booktitle,organization,school,institution,state,type,ISBN,DOI,extern,reviewed,in_library,borrowed_by',
+		'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,pages,abstract,affiliation,note,annotation,keywords,file_url,misc, editor,publisher,series,address,edition,chapter,howpublished,booktitle,organization,school,institution,state,type,ISBN,DOI,extern,reviewed,in_library,borrowed_by',
 	)
 );
 
@@ -37,7 +37,7 @@ $TCA['tx_sevenpack_authors'] = array (
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_sevenpack_references.png',
 	),
 	'feInterface' => array (
-		'fe_admin_fieldList' => 'surname, forename',
+		'fe_admin_fieldList' => 'surname,forename,url',
 	)
 );
 
@@ -53,7 +53,7 @@ $TCA['tx_sevenpack_authorships'] = array (
 		#'hideTable' => true
 	),
 	'feInterface' => array (
-		'fe_admin_fieldList' => 'pub_id, author_id, sorting',
+		'fe_admin_fieldList' => 'pub_id,author_id,sorting',
 	)
 );
 
