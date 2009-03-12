@@ -71,7 +71,7 @@ plugin.tx_sevenpack_pi1 {
 		author.wrap = <span class="tx_sevenpack-author">|</span>
 
 		# Authors
-		authors.wrap = <div class="tx_sevenpack-authors">|.</div>
+		authors.wrap = <div class="tx_sevenpack-authors">|</div>
 
 		# Booktitle
 		booktitle.noTrimWrap = |||

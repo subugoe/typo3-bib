@@ -1,3 +1,10 @@
+2008-03-12      Sebastian Holtermann  <sebholt@web.de>
+
+	* Database: Added a DOI field (Thanks to Bjoern Pedersen)
+	* List: Automatic url generation from the DOI field if the file_url field is empty
+	* Database: New url field for authors - must be edited in the backend
+	* List: URL wrap for authors if an author url is set
+
 2008-03-09      Sebastian Holtermann  <sebholt@web.de>
 
 	* FlexForm: Simplified export link activation (default TRUE)
