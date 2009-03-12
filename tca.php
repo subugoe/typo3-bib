@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 $TCA['tx_sevenpack_references'] = array (
 	'ctrl' => $TCA['tx_sevenpack_references']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => 'hidden,bibtype,citeid,title,journal,year,volume,number,pages,day,month,abstract,affiliation,note,annotation,keywords,file_url,misc,editor,publisher,series,address,edition,chapter,howpublished,booktitle,organization,school,institution,state,extern,ISBN'
+		'showRecordFieldList' => $TCA['tx_sevenpack_references']['feInterface']['fe_admin_fieldList'] 
 	),
 	'feInterface' => $TCA['tx_sevenpack_references']['feInterface'],
 	'columns' => array (
@@ -402,6 +402,16 @@ $TCA['tx_sevenpack_references'] = array (
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_ISBN',
 			'config' => Array (
 				'type' => 'input',	
+				'size' => '48',
+				'max' => '255',
+				'eval' => 'trim',
+			)
+		),
+		'DOI' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_DOI',
+			'config' => Array (
+				'type' => 'input',
 				'size' => '48',
 				'max' => '255',
 				'eval' => 'trim',

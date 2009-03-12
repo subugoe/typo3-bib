@@ -1003,25 +1003,26 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function filter_pub_html_display ( $str, $hsc = FALSE ) {
 		$rand = rand();
-		$str = str_replace( array('<prt>', '</prt>'), '', $str );
+		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
 
 		// Keep the following tags
 		$tags = array ( 'em', 'strong', 'sup', 'sub' );
 
+		$LE = '#LE'.$rand.'LE#';
+		$GE = '#GE'.$rand.'GE#';
+
 		foreach ( $tags as $tag ) {
-			$str = str_replace( '<'.$tag.'>',  '#LE'.$rand.'LE#'.$tag.'#GE'.$rand.'GE#', $str );
-			$str = str_replace( '</'.$tag.'>', '#LE'.$rand.'LE#/'.$tag.'#GE'.$rand.'GE#', $str );
+			$str = str_replace( '<'.$tag.'>',  $LE.    $tag.$GE, $str );
+			$str = str_replace( '</'.$tag.'>', $LE.'/'.$tag.$GE, $str );
 		}
 
 		$str = str_replace( '& ', '&amp; ', $str );
 		$str = str_replace( '<', '&lt;', $str );
 		$str = str_replace( '>', '&gt;', $str );
 
-		$str = str_replace( '#LE'.$rand.'LE#', '<', $str );
-		$str = str_replace( '#GE'.$rand.'GE#', '>', $str );
+		$str = str_replace( $LE, '<', $str );
+		$str = str_replace( $GE, '>', $str );
 
-		//$str = str_replace( '<em>', '<strong>', $str );
-		//$str = str_replace( '</em>', '</strong>', $str );
 		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
 
 		$str = $this->filter_pub_html ( $str, $hsc );
@@ -1604,7 +1605,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Load publication data into cObj
 		$cObj->data = $pub;
-		$cObj->data['file_url'] = htmlspecialchars_decode ( $pub['file_url'], ENT_QUOTES );
 
 		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
 		$data_wrap = array ( '', '' );
@@ -1617,9 +1617,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Preformat some data
+		// Bibtype
 		$pdata['bibtype'] = $this->get_ll (
 			$this->ra->refTable.'_bibtype_I_'.$pdata['bibtype'],
 			'Unknown bibtype: '.$pdata['bibtype'], TRUE ) ;
+		// Extern
 		$pdata['extern'] = ( $pub['extern'] == 0 ? '' : 'extern' );
 
 		// Day
@@ -1636,6 +1638,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		} else {
 			$pdata['month'] = '';
 		}
+
+		// File/URL
+		if ( strlen ( $pdata['file_url'] ) == 0 ) {
+			if ( strlen ( $pub['DOI'] ) > 0 ) {
+				$pdata['file_url'] = 'http://dx.doi.org/' . $this->filter_pub_html_display ( $pub['DOI'] );
+			}
+		}
+		$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
+
 
 		// Preformat state
 		switch ( $pdata['state'] ) {
@@ -1672,9 +1683,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$charset = strtoupper ( $this->extConf['be_charset'] );
 				switch ( $f ) {
 					case 'file_url':
-						//$val = str_replace ( '&amp;', '&', $val );
-						//$val = str_replace ( '&', '&amp;', $val );
 						$val = preg_replace ( '/&([^;]{8})/', '&amp;\\1', $val );
+						// Cut the displayed string in the middle
 						if ( isset ( $conf['max_url_string_length'] ) ) {
 							$ml = abs ( intval ( $conf['max_url_string_length'] ) );
 							if ( strlen ( $val ) > $ml ) {

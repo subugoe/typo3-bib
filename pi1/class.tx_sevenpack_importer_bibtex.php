@@ -53,6 +53,9 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 	public $raw_ref;
 	public $raw_refs;
 
+	public $pubKeys;
+	public $pubKeyMap;
+
 	function initialize ( $pi1 ) {
 		parent::initialize( $pi1 );
 
@@ -196,6 +199,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 			'rfloor' => '&rfloor;',
 			'prime'  => '&prime;',
 			'sim'    => '&sim;',
+			'times'  => '&times;',
 		);
 
 		foreach( $replace as $key => $val ) {
@@ -226,6 +230,23 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 		$bt->push ( '/^\s+/', '' );
 		$bt->push ( '/\s+$/', '' );
 
+		// Setup publication fields
+		$this->pubKeys = array();
+		foreach ( $this->ra->pubFields as $field ) {
+			$lfield = strtolower ( $field );
+			switch ( $lfield ) {
+				case 'bibtype':
+				case 'citeid':
+					break;
+				default:
+					$this->pubKeys[] = $lfield;
+					if ( $field != $lfield ) {
+						$this->pubKeyMap[$lfield] = $field;
+					}
+			}
+		}
+		//t3lib_div::debug ( array( 'pubKeys' => $this->pubKeys) );
+		//t3lib_div::debug ( array( 'pubKeys' => $this->pubKeyMap) );
 	}
 
 
@@ -628,10 +649,6 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 		// Citeid
 		$pub['citeid'] = $raw['citeid'];
 
-		$pubFields = $this->ra->pubFields;
-		unset( $pubFields[array_search('bibtype', $pubFields)] );
-		unset( $pubFields[array_search('citeid', $pubFields)] );
-
 		// Iterate through all raw values
 		foreach ( $raw['values'] as $r_key => $r_val ) {
 			//t3lib_div::debug ( array( 'pre_trans' => $r_val) );
@@ -656,7 +673,9 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 					$pub['file_url'] = $r_val;
 					break;
 				default:
-					if ( in_array ( $r_key, $pubFields )  ) {
+					if ( in_array ( $r_key, $this->pubKeys )  ) {
+						if ( array_key_exists ( $r_key, $this->pubKeyMap ) )
+							$r_key = $this->pubKeyMap[$r_key];
 						$pub[$r_key] = $r_val;
 					} else {
 						$this->stat['warnings'][] = 'Ignored field: ' . $r_key;

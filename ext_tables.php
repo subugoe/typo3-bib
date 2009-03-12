@@ -18,7 +18,7 @@ $TCA['tx_sevenpack_references'] = array (
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_sevenpack_references.png',
 	),
 	'feInterface' => array (
-		'fe_admin_fieldList' => 'hidden, bibtype, citeid, title, journal, year, volume, number, pages, day, month, abstract, affiliation, note, annotation, keywords, file_url, misc, editor, publisher, series, address, edition, chapter, howpublished, booktitle, organization, school, institution, state, type, ISBN, extern, reviewed, in_library, borrowed_by',
+		'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,volume,number,pages,day,month,abstract,affiliation,note,annotation,keywords,file_url,misc, editor,publisher,series,address,edition,chapter,howpublished,booktitle,organization,school,institution,state,type,ISBN,DOI,extern,reviewed,in_library,borrowed_by',
 	)
 );
 

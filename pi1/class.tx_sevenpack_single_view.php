@@ -147,13 +147,13 @@ class tx_sevenpack_single_view {
 		$pub = array_merge ( $pub, $this->get_http_ref () );
 
 		$this->is_new = TRUE;
+		$this->is_new_first = TRUE;
 		if ( $uid >= 0 ) {
 			$pub['uid'] = $uid;
 			$this->is_new = FALSE;
+			$this->is_new_first = FALSE;
 		}
-
-		$this->is_new_first = TRUE;
-		if ( isset ( $pi1->piVars['DATA']['pub'] ) ) {
+		if ( is_array ( $pi1->piVars['DATA']['pub'] ) ) {
 			$this->is_new_first = FALSE;
 		}
 

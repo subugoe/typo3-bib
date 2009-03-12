@@ -138,6 +138,7 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 		$bt->push ( '/&rfloor;/', '\(\rfloor\)' );
 		$bt->push ( '/&prime;/',  '\(\prime\)' );
 		$bt->push ( '/&sim;/',    '\(\sim\)' );
+		$bt->push ( '/&times;/',  '\(\times\)' );
 
 
 		// This should not appear if people use &amp; but still.

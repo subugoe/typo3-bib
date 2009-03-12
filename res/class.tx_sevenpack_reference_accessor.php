@@ -42,7 +42,7 @@ class tx_sevenpack_reference_accessor {
 		'file_url', 'misc', 'editor', 'publisher', 'series',
 		'address', 'edition', 'chapter', 'howpublished',
 		'booktitle', 'organization', 'school', 'institution',
-		'state', 'type', 'ISBN', 
+		'state', 'type', 'ISBN', 'DOI',
 		'extern', 'reviewed', 'in_library', 'borrowed_by'
 	);
 
@@ -59,7 +59,7 @@ class tx_sevenpack_reference_accessor {
 		'file_url', 'misc', 'editor', 'publisher', 'series',
 		'address', 'edition', 'chapter', 'howpublished',
 		'booktitle', 'organization', 'school', 'institution',
-		'state', 'type', 'ISBN', 
+		'state', 'type', 'ISBN', 'DOI',
 		'extern', 'reviewed', 'in_library', 'borrowed_by'
 	);
 

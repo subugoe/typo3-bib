@@ -42,6 +42,7 @@ CREATE TABLE tx_sevenpack_references (
 	state int(11) DEFAULT '0' NOT NULL,
 	type tinytext NOT NULL,
 	ISBN tinytext NOT NULL,
+	DOI tinytext NOT NULL,
 	extern tinyint(3) DEFAULT '0' NOT NULL,
 	reviewed tinyint(3) DEFAULT '0' NOT NULL,
 	in_library tinyint(3) DEFAULT '0' NOT NULL,

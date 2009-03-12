@@ -44,6 +44,7 @@
 			<label index="tx_sevenpack_references_chapter">Chapter</label>
 			<label index="tx_sevenpack_references_citeid">Citation ID (BibTeX)</label>
 			<label index="tx_sevenpack_references_day">Day</label>
+			<label index="tx_sevenpack_references_DOI">DOI</label>
 			<label index="tx_sevenpack_references_edition">Edition</label>
 			<label index="tx_sevenpack_references_editor">Editor</label>
 			<label index="tx_sevenpack_references_extern">External</label>
@@ -113,6 +114,7 @@
 			<label index="tx_sevenpack_references_chapter">Kapitel</label>
 			<label index="tx_sevenpack_references_citeid">Zitations-ID (BibTeX)</label>
 			<label index="tx_sevenpack_references_day">Tag</label>
+			<label index="tx_sevenpack_references_DOI">DOI</label>
 			<label index="tx_sevenpack_references_edition">Edition</label>
 			<label index="tx_sevenpack_references_editor">Editor</label>
 			<label index="tx_sevenpack_references_extern">Extern</label>

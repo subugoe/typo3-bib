@@ -296,7 +296,7 @@ plugin.tx_sevenpack_pi1 {
 		groups {
 			all {
 				required = state
-				optional = affiliation,keywords,file_url
+				optional = affiliation,keywords,file_url,DOI
 				library = extern,reviewed,in_library,borrowed_by
 			}
 
