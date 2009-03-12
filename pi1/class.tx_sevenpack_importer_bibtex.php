@@ -152,12 +152,6 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 		$bt->push ( '/\\\\emph\{([^\{]+)\}/', '<em>\\1</em>' );
 
 		// Mathematics
-		// Environment markers
-		$bt->push ( '/\\\\\(/', '' );
-		$bt->push ( '/\\\\\)/', '' );
-
-		$bt->push ( '/(^|[^\\\\])\$\$/', '\\1' );
-		$bt->push ( '/(^|[^\\\\])\$/', '\\1' );
 
 		// Math expressions
 		$bt->push ( '/([^\\\\])\\^\{\\\\circ\}/', '\\1&deg;' );
@@ -205,6 +199,13 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 		foreach( $replace as $key => $val ) {
 			$bt->push ( '/\\\\' . $key . '([^\w]|$)/',  $val . '\\1' );
 		}
+
+		// Environment markers
+		$bt->push ( '/\\\\\(/', '' );
+		$bt->push ( '/\\\\\)/', '' );
+
+		$bt->push ( '/(^|[^\\\\])\$\$/', '\\1' );
+		$bt->push ( '/(^|[^\\\\])\$/', '\\1' );
 
 		// Miscellaneous
 		$bt->push ( '/\\\\verb(.)([^\1]?+)\1/', '\2' );
