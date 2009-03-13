@@ -1068,9 +1068,7 @@ class tx_sevenpack_reference_accessor {
 					$author['uid'] = $uids[0]['uid'];
 				} else {
 					// Insert missing author
-					$ia = array();
-					$ia['fn']  = $author['fn'];
-					$ia['sn']  = $author['sn'];
+					$ia = $author;
 					$ia['pid'] = intval ( $pid );
 					
 					$author['uid'] = $this->insert_author ( $ia );
@@ -1143,6 +1141,7 @@ class tx_sevenpack_reference_accessor {
 		$ia = array();
 		$ia['forename'] = $author['fn'];
 		$ia['surname']  = $author['sn'];
+		$ia['url']      = $author['url'];
 		$ia['pid']      = intval ( $author['pid'] );
 
 		$ia['tstamp'] = time();

@@ -10,7 +10,6 @@ class tx_sevenpack_single_view {
 
 	public $pi1; // Plugin 1
 	public $ra;  // Reference accessor
-	public $TCA; // The TCA
 	public $LLPrefix = 'editor_';
 	public $idGenerator = FALSE;
 
@@ -107,9 +106,7 @@ class tx_sevenpack_single_view {
 		}
 
 		// include $TCA
-		$tcaFile = $GLOBALS['TCA'][$this->ra->refTable]['ctrl']['dynamicConfigFile'];
-		include_once ( $tcaFile );
-		$this->TCA = $TCA;
+		t3lib_div::loadTCA ( $this->ra->refTable );
 
 		// determine entry uid
 		if ( array_key_exists( 'uid', $pi1->piVars ) ) {
@@ -577,7 +574,7 @@ class tx_sevenpack_single_view {
 
 	function get_default_edit_widget ( $field, $value, $mode )
 	{
-		$cfg =& $this->TCA[$this->ra->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->ra->refTable]['columns'][$field]['config'];
 		$con = ''; // Content
 		$Iclass = ' class="'.$this->pi1->prefixShort.'-editor_input'.'"';
 		$pi1 =& $this->pi1;
@@ -636,7 +633,7 @@ class tx_sevenpack_single_view {
 
 	function get_default_static_widget ( $field, $value, $mode )
 	{
-		$cfg =& $this->TCA[$this->ra->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->ra->refTable]['columns'][$field]['config'];
 		$con = ''; // Content
 		$Iclass = ' class="'.$this->pi1->prefixShort.'-editor_input'.'"';
 		$pi1 =& $this->pi1;
