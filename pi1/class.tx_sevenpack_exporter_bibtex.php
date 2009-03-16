@@ -269,33 +269,8 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 
 	function file_intro ( $infoArr = array() )
 	{
-		$str = '';
-
-		$num = intval ( $infoArr['pubNum'] );
-
-		$str .= '% This file was created by the Typo3 extension ';
-		$str .= $this->pi1->extKey . "\n";
-		$str .= '% --- Timezone: ' . date('T') . "\n";
-		$str .= '% Creation date: ' . date('Y-m-d') . "\n";
-		$str .= '% Creation time: ' . date('H-i-s') . "\n";
-
-		$arr = $this->filter_info ( );
-		$str .= '% --- Applied database filters'."\n";
-		if ( is_array ( $arr ) && sizeof ( $arr ) ) {
-			foreach ( $arr as $f ) {
-				$str .= preg_replace ( '/^(.?)/m', '% \1', $f );
-			}
-		} else {
-			$str .= '% none'."\n";
-		}
-
-		if ( $num >= 0 ) {
-			$str .= '% --- Number of references'."\n";
-			$str .= '% '.$num."\n";
-			$str .= '%'."\n";
-		}
-		$str .= "\n";
-
+		$str = "\n" . $this->info_text ( $infoArr );
+		$str = preg_replace ( '/^/m', '% ', $str ) . "\n";
 		return $str;
 	}
 

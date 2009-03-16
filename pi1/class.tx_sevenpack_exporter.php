@@ -21,6 +21,7 @@ class tx_sevenpack_exporter {
 	public $info;
 	public $error;
 
+	public $EM_CONF;
 
 	/**
 	 * Initializes the export. The argument must be the plugin class
@@ -43,6 +44,12 @@ class tx_sevenpack_exporter {
 
 		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.dat';
 		$this->file_new = FALSE;
+
+		$_EXTKEY = $this->pi1->extKey;
+		include ( $GLOBALS['TSFE']->tmpl->getFileName ( 'EXT:sevenpack/ext_emconf.php' ) );
+		if ( is_array ( $EM_CONF ) ) {
+			$this->EM_CONF = $EM_CONF[$this->pi1->extKey];
+		}
 	}
 
 
@@ -171,6 +178,46 @@ class tx_sevenpack_exporter {
 	function file_outtro ( $infoArr = array() )
 	{
 		return '';
+	}
+
+
+	/**
+	 * Returns a general information text for the exported dataset
+	 *
+	 * @return A filter information string
+	 */
+	function info_text ( $infoArr = array() ) {
+		$str = '';
+
+		$num = intval ( $infoArr['pubNum'] );
+
+		$str .= 'This file was created by the Typo3 extension' . "\n";
+		$str .= $this->pi1->extKey;
+		if ( is_array ( $this->EM_CONF ) ) {
+			$str .= ' version ' . $this->EM_CONF['version'] . "\n";
+		}
+		$str .= "\n";
+		$str .= '--- Timezone: ' . date('T') . "\n";
+		$str .= 'Creation date: ' . date('Y-m-d') . "\n";
+		$str .= 'Creation time: ' . date('H-i-s') . "\n";
+
+		//$arr = $this->filter_info ( );
+		//$str .= '--- Applied database filters'."\n";
+		//if ( is_array ( $arr ) && sizeof ( $arr ) ) {
+		//	foreach ( $arr as $f ) {
+		//		$str .= preg_replace ( '/^(.?)/m', '% \1', $f );
+		//	}
+		//} else {
+		//	$str .= 'none'."\n";
+		//}
+
+		if ( $num >= 0 ) {
+			$str .= '--- Number of references'."\n";
+			$str .= ''.$num."\n";
+			$str .= ''."\n";
+		}
+
+		return $str;
 	}
 
 

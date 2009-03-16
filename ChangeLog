@@ -1,9 +1,17 @@
+2008-03-15      Sebastian Holtermann  <sebholt@web.de>
+
+	* Editor: Better TCA loading. This fixes the "Unknown widget" error - Patch by Bjoern Pedersen
+	* Export: XML got a 'comment' field which holds the same info text as the BibTeX file head
+	* Documentation: Some new images and some small text fixes
+	* Release version 0.5.4
+
 2008-03-12      Sebastian Holtermann  <sebholt@web.de>
 
 	* Database: Added a DOI field (Thanks to Bjoern Pedersen)
 	* List: Automatic url generation from the DOI field if the file_url field is empty
 	* Database: New url field for authors - must be edited in the backend
 	* List: URL wrap for authors if an author url is set
+	* Release version 0.5.3
 
 2008-03-09      Sebastian Holtermann  <sebholt@web.de>
 

@@ -127,6 +127,9 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 		$str  = '';
 		$str .= '<?xml version="1.0" encoding="utf-8"?>'."\n";
 		$str .= '<sevenpack>'."\n";
+		$str .= '<comment>'."\n";
+		$str .= $this->xml_format_string ( $this->info_text ( $infoArr ) );
+		$str .= '</comment>'."\n";
 		return $str;
 	}
 
