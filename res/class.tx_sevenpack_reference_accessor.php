@@ -15,6 +15,8 @@ class tx_sevenpack_reference_accessor {
 
 	public $dbRes;
 	public $clear_cache;
+	public $pid_list;
+	public $show_hidden; // Show hidden references
 	protected $error;
 
 	public $refTable    = 'tx_sevenpack_references';
@@ -22,12 +24,15 @@ class tx_sevenpack_reference_accessor {
 	public $aShipTable  = 'tx_sevenpack_authorships';
 
 	public $refTableAlias    = 't_ref';
-	public $authorTableAlias = 'tx_sevenpack_authors';
-	public $aShipTableAlias  = 'tx_sevenpack_authorships';
+	public $authorTableAlias = 't_authors';
+	public $aShipTableAlias  = 't_aships';
 
 	public $t_ref_default = array ( );
 	public $t_as_default = array ( );
 	public $t_au_default = array ( );
+
+	// The following tags are allowed in a reference string
+	public $valid_tags = array ( 'em', 'strong', 'sup', 'sub' );
 
 
 	/**
@@ -101,9 +106,10 @@ class tx_sevenpack_reference_accessor {
 	 */
 	function tx_sevenpack_reference_accessor ( ) {
 		$this->dbRes = NULL;
-		$this->filter = array();
-		$this->filter['pid'] = array();
+		$this->filters = array();
 		$this->clear_cache = FALSE;
+		$this->pid_list = array();
+		$this->show_hidden = FALSE;
 		$this->error = FALSE;
 
 		$this->t_ref_default['table'] = $this->refTable;
@@ -159,12 +165,13 @@ class tx_sevenpack_reference_accessor {
 	 */
 	function clear_page_cache ( ) {
 		if ( $this->clear_cache ) {
+			//t3lib_div::debug ( 'Clearing cache' );
 			$tce = t3lib_div::makeInstance ( 't3lib_TCEmain' );
 			$tce->start ( array(), array() );
 
 			// Find storage cache clear requests
-			foreach ( $this->filter['pid'] as $p) {
-				$tsc = $tce->getTCEMAIN_TSconfig ( $p );
+			foreach ( $this->pid_list as $pid ) {
+				$tsc = $tce->getTCEMAIN_TSconfig ( $pid );
 				if ( isset ( $tsc['clearCacheCmd'] ) ) {
 					//t3lib_div::debug ( array ( 'clearCacheCmd' => $tsc ) );
 					$tce->clear_cacheCmd ( $tsc['clearCacheCmd'] );
@@ -172,7 +179,9 @@ class tx_sevenpack_reference_accessor {
 			}
 
 			// Clear this page cache
-			$tce->clear_cacheCmd( strval ( $GLOBALS['TSFE']->id ) );
+			$tce->clear_cacheCmd ( strval ( $GLOBALS['TSFE']->id ) );
+		} else {
+			//t3lib_div::debug ( 'Not clearing cache' );
 		}
 	}
 
@@ -208,21 +217,52 @@ class tx_sevenpack_reference_accessor {
 
 
 	/**
+	 * This appends a filter to the filter list
+	 *
+	 * @return Not defined
+	 */
+	function append_filter ( $filter ) {
+		if ( is_array ( $filter ) ) {
+			if ( !is_array ( $filter['pid'] ) )
+				if ( is_string ( $filter['pid'] ) )
+					$filter['pid'] = explode ( ',', strval($filter['pid']) );
+			$this->fetch_author_filter_uids ( $filter );
+			$this->filters[] = $filter;
+		}
+	}
+
+
+	/**
 	 * This sets the filter which will be asked for most
 	 * query compositions
 	 *
 	 * @return Not defined
 	 */
 	function set_filter ( $filter ) {
-		if ( is_array ( $filter ) ) {
-			if ( !is_array ( $filter['pid'] ) )
-				$filter['pid'] = explode ( ',', strval($filter['pid']) );
-			$this->filter = $filter;
-			$this->fetch_author_filter_uids ();
+		$this->filters = array();
+		$this->append_filter ( $filter );
+	}
+
+
+	/**
+	 * This sets the filters which will be asked for most
+	 * query compositions
+	 *
+	 * @return Not defined
+	 */
+	function set_filters ( $filters ) {
+		$this->filters = array();
+		foreach ( $filters as $filter ) {
+			$this->append_filter ( $filter );
 		}
 	}
 
 
+	/**
+	 * Returns the where clause part for a table
+	 *
+	 * @return The where clause part
+	 */
 	function enable_fields ( $table, $alias = '', $show_hidden = FALSE ) {
 		$ret = '';
 		if ( strlen ( $alias ) == 0 )
@@ -339,39 +379,90 @@ class tx_sevenpack_reference_accessor {
 
 	/**
 	 * This function returns the SQL WHERE clause configured
-	 * by the filter
+	 * by the filters
 	 *
 	 * @return The WHERE clause string
 	 */
-	function get_reference_where_clause ( ) {
-		$filter =& $this->filter;
+	function get_reference_where_clause ( &$columns ) {
 
 		$rT = $this->refTable;
 		$sT = $this->aShipTable;
-
 		$rta = $this->refTableAlias;
-		$ata = $this->authorTableAlias;
 		$sta = $this->aShipTableAlias;
 
-		$WC = '';
+		$WCA = array();
+		$columns = array();
+		$runvar = array ( 
+			'columns' => array(),
+			'aShip_count' => 0,
+		);
+
+		// Get where parts for each filter
+		foreach ( $this->filters as $filter ) {
+			$parts = $this->get_filter_wc_parts ( $filter, $runvar );
+			$WCA = array_merge ( $WCA, $parts );
+		}
+
+		$WC = implode ( ' AND ', $WCA );
+
+		if ( strlen ( $WC ) > 0 ) {
+			$columns = array_merge ( array ( $rta ), $runvar['columns'] );
+			$columns = array_unique ( $columns );
+
+			foreach ( $columns as &$column ) {
+				$column = preg_replace ( '/\.[^\.]*$/', '', $column);
+				if ( ! ( strpos ( $column, $rta ) === FALSE ) ) {
+					$WC .= $this->enable_fields ( $rT, $column, $this->show_hidden );
+				}
+				if ( ! ( strpos ( $column, $sta ) === FALSE ) ) {
+					$WC .= $this->enable_fields ( $sT, $column );
+				}
+			}
+		}
+
+		//t3lib_div::debug ( array ( 'WHERE clause: ' => $WC ) );
+		return $WC;
+	}
+
+
+	/**
+	 * This function returns the SQL WHERE clause parts for one filter
+	 *
+	 * @return The WHERE clause parts in an array
+	 */
+	function get_filter_wc_parts ( $filter, &$runvar ) {
+
+		//t3lib_div::debug ( array ( 'filter' => $filter ) );
+
+		$rT = $this->refTable;
+		$sT = $this->aShipTable;
+		$rta = $this->refTableAlias;
+		$sta = $this->aShipTableAlias;
+
+		$columns =& $runvar['columns'];
+		$aShip_count =& $runvar['aShip_count'];
+
+		$WC = array();
 
 		// Filter by UID
 		if ( is_array ( $filter['uid'] ) && sizeof ( $filter['uid'] ) ) {
-			$WC .= ' AND '.$rta.'.uid IN ('.implode ( ',', $filter['uid'] ).')'."\n";
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['uid'] );
+			$WC[] = $rta.'.uid IN ('.$csv.')';
 		}
 
 		// Filter by storage PID
-		if ( is_array ( $filter['pid'] ) && sizeof ( $filter['pid'] ) ) {
-			$WC .= ' AND '.$rta.'.pid IN ('.implode ( ',', $filter['pid'] ).')'."\n";
+		if ( is_array ( $filter['pid'] ) && ( sizeof ( $filter['pid'] ) > 0) ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['pid'] );
+			$WC[] = $rta.'.pid IN ('.$csv.')';
 		}
 
 		// Filter by year
 		$f =& $filter['year'];
 		if ( $f && $f['enabled'] ) {
-			$YWC = '';
+			$wca = '';
 			// years
 			if ( is_array ( $f['years'] ) && sizeof ( $f['years'] ) ) {
-				$YWC .= '  '.$rta.'.year IN ('.implode ( ',', $f['years'] ).')'."\n";
+				$wca .= '  '.$rta.'.year IN ('.implode ( ',', $f['years'] ).')'."\n";
 			}
 			// ranges
 			if ( is_array ( $f['ranges'] ) && sizeof ( $f['ranges'] ) ) {
@@ -380,68 +471,78 @@ class tx_sevenpack_reference_accessor {
 					for ( $i=0; $i < sizeof($ra); $i++ ) {
 						$r =& $ra[$i];
 						$both = (isset ( $r['from'] ) && isset ( $r['to'] )) ? TRUE : FALSE;
-						if ( strlen ( $YWC ) )
-							$YWC .= ' OR ';
+						if ( strlen ( $wca ) )
+							$wca .= ' OR ';
 						if ( $both )
-							$YWC .= '(';
+							$wca .= '(';
 						if ( isset ( $r['from'] ) )
-							$YWC .= ' '.$rta.'.year >= '.intval ( $r['from'] );
+							$wca .= $rta.'.year >= '.intval ( $r['from'] );
 						if ( $both )
-							$YWC .= ' AND';
+							$wca .= ' AND ';
 						if ( isset ( $r['to'] ) )
-							$YWC .= ' '.$rta.'.year <= '.intval ( $r['to'] );
+							$wca .= $rta.'.year <= '.intval ( $r['to'] );
 						if ( $both )
-							$YWC .= ')';
-						$YWC .= "\n";
+							$wca .= ')';
 					}
 				}
 			}
-			$WC .= ' AND ( '."\n";
-			$WC .= $YWC.' )';
+			$WC[] = '(' . $wca . ')';
 		}
 
 		// Filter by authors
 		$f =& $filter['author'];
 		//t3lib_div::debug ( $f );
 		if ( $f && $f['enabled'] && sizeof ( $f['authors'] ) ) {
-			$authors =& $f['authors'];
 			if ( $f['rule'] == 1 ) {
 				// AND
 				if ( is_array ( $f['sets'] ) && ( sizeof ( $f['sets'] ) > 0 ) ) {
-					$set_arr = array();
-					for ( $i=0; $i<sizeof($f['sets']); $i++ ) {
+					$wc_set = array();
+					for ( $i=0; $i < sizeof ( $f['sets'] ); $i++ ) {
 						$set = $f['sets'][$i];
-						$uid_arr = array();
-						foreach ( $set as $a ) {
-							$uid_arr[] = $a['uid'];
+						$uid_lst = array();
+						foreach ( $set as $au ) {
+							if ( is_numeric ( $au['uid'] ) )
+								$uid_lst[] = intval ( $au['uid'] );
 						}
-						$num = ($i>0) ? strval($i+1) : '';
-						$set_arr[] = $sta.$num.'.author_id IN (' . implode ( ',', $uid_arr ) . ')' .
-							$this->enable_fields ( $sT, $sta.$num );
+						if ( sizeof ( $uid_lst ) > 0 ) {
+							$uid_lst = implode ( ',', $uid_lst );
+							$col_num = $aShip_count;
+							$aShip_count += 1;
+							$column = $sta . ( ( $col_num > 0 ) ? strval ( $col_num ) : '' );
+							$wc_set[] = $column.'.author_id IN ('.$uid_lst.')';
+							$columns[] = $column;
+						}
 					}
-					if ( sizeof ( $set_arr ) > 0 ) {
-						foreach ( $set_arr as $add ) {
-							$WC .= ' AND '.$add;
-						}
+
+					// Append set clause
+					if ( sizeof ( $wc_set ) > 0 ) {
+						$WC = array_merge ( $WC, $wc_set );
 					} else {
-						$WC .= ' AND FALSE'."\n";
+						$WC[] = 'FALSE';
 					}
+
 				} else {
-					$WC .= ' AND FALSE'."\n";
+					$WC[] = 'FALSE';
 				}
+
 			} else {
 				// OR
+				$authors =& $f['authors'];
 				if ( sizeof ( $authors ) ) {
-					$aUid = array();
-					foreach ( $authors as $a ) {
-						if ( is_numeric ( $a['uid'] ) )
-							$aUid[] = intval ( $a['uid'] );
+					$uid_lst = array();
+					foreach ( $authors as $au ) {
+						if ( is_numeric ( $au['uid'] ) )
+							$uid_lst[] = intval ( $au['uid'] );
 					}
-					if ( sizeof ( $aUid ) ) {
-						$WC .= ' AND '.$sta.'.author_id IN ('.implode ( ',', $aUid ).')';
-						$WC .= $this->enable_fields ( $sT, $sta )."\n";
+					if ( sizeof ( $uid_lst ) > 0 ) {
+						$uid_lst = implode ( ',', $uid_lst );
+						$col_num = $aShip_count;
+						$aShip_count += 1;
+						$column = $sta . ( ( $col_num > 0 ) ? strval ( $col_num ) : '' );
+						$WC[] = $column.'.author_id IN ('.$uid_lst.')';
+						$columns[] = $column;
 					} else {
-						$WC .= ' AND FALSE'."\n";
+						$WC[] = 'FALSE';
 					}
 				}
 			}
@@ -451,7 +552,8 @@ class tx_sevenpack_reference_accessor {
 		$f =& $filter['bibtype'];
 		if ( $f && $f['enabled'] && is_array ( $f['types'] ) ) {
 			if ( sizeof ( $f['types'] ) ) {
-				$WC .= ' AND '.$rta.'.bibtype IN (' . implode ( ',', $f['types'] ) .')'."\n";
+				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['types'] );
+				$WC[] = $rta.'.bibtype IN (' . $csv . ')';
 			}
 		}
 
@@ -459,74 +561,144 @@ class tx_sevenpack_reference_accessor {
 		$f =& $filter['state'];
 		if ( $f && $f['enabled'] && is_array ( $f['states'] ) ) {
 			if ( sizeof ( $f['states'] ) ) {
-				$WC .= ' AND '.$rta.'.state IN (' . implode ( ',', $f['states'] ) .')'."\n";
+				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['states'] );
+				$WC[] = $rta.'.state IN (' . $csv . ')';
 			}
 		}
 
 		// Filter by origin
 		$f =& $filter['origin'];
 		if ( $f && $f['enabled'] ) {
-			$WC .= ' AND (';
+			$wca = '(';
 			if ( intval ( $f['origin'] ) <= 1 )
-				$WC .= $rta.'.extern='."'0'";
+				$wca .= $rta.'.extern='."'0'";
 			else
-				$WC .= $rta.'.extern='."'1'";
-			$WC .= ')'."\n";
+				$wca .= $rta.'.extern='."'1'";
+			$wca .= ')';
+			$WC[] = $wca;
 		}
 
 		// Filter by reviewed
 		$f =& $filter['reviewed'];
 		if ( $f && $f['enabled'] ) {
-			$WC .= ' AND (';
+			$wca = '(';
 			if ( intval ( $f['value'] ) == 0 )
-				$WC .= $rta.'.reviewed='."'0'";
+				$wca .= $rta.'.reviewed='."'0'";
 			else
-				$WC .= $rta.'.reviewed='."'1'";
-			$WC .= ')'."\n";
+				$wca .= $rta.'.reviewed='."'1'";
+			$wca .= ')';
+			$WC[] = $wca;
 		}
 
 		// Filter by borrowed
 		$f =& $filter['borrowed'];
 		if ( $f && $f['enabled'] ) {
-			$WC .= ' AND (';
+			$wca = '(';
 			if ( intval ( $f['value'] ) == 0 )
-				$WC .= 'LENGTH('.$rta.'.borrowed_by)='."'0'";
+				$wca .= 'LENGTH('.$rta.'.borrowed_by)='."'0'";
 			else
-				$WC .= 'LENGTH('.$rta.'.borrowed_by)!='."'0'";
-			$WC .= ')'."\n";
+				$wca .= 'LENGTH('.$rta.'.borrowed_by)!='."'0'";
+			$wca .= ')';
+			$WC[] = $wca;
 		}
 
 		// Filter by in library
 		$f =& $filter['in_library'];
 		if ( $f && $f['enabled'] ) {
-			$WC .= ' AND (';
+			$wca = '(';
 			if ( intval ( $f['value'] ) == 0 )
-				$WC .= $rta.'.in_library='."'0'";
+				$wca .= $rta.'.in_library='."'0'";
 			else
-				$WC .= $rta.'.in_library='."'1'";
-			$WC .= ')'."\n";
+				$wca .= $rta.'.in_library='."'1'";
+			$wca .= ')';
+			$WC[] = $wca;
 		}
 
 		// Filter by citeid
 		$f =& $filter['citeid'];
-		if ( $f && $f['enabled'] && sizeof($f['ids']) ) {
-			$WC .= ' AND '.$rta.'.citeid IN (';
+		if ( $f && $f['enabled'] && sizeof ( $f['ids'] ) ) {
+			$wca = $rta.'.citeid IN (';
 			for ( $i=0; $i < sizeof ( $f['ids'] ); $i++ )  {
-				if ( $i > 0 )
-					$WC .= ',';
-				$WC .= $GLOBALS['TYPO3_DB']->fullQuoteStr ( $f['ids'][$i], $rT );
+				if ( $i > 0 ) $wca .= ',';
+				$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr ( $f['ids'][$i], $rT );
 			}
-			$WC .= ')';
+			$wca .= ')';
+			$WC[] = $wca;
 		}
 
-		// Typo3 fields
-		$WC .= $this->enable_fields ( $rT, $rta, $filter['show_hidden'] );
+		if ( is_array ( $filter['search'] ) ) {
+			$wca = $this->get_filter_search_wc_parts ( $filter['search'], $runvar );
+			$WC = array_merge ( $WC, $wca );
+		}
 
-		// Remove AND at the beginning
-		$WC = preg_replace ( '/^\s*AND\s*/i', '', $WC );
+		return $WC;
+	}
 
-		//t3lib_div::debug ( array ('WHERE clause filter: ' => $filter ) );
-		//t3lib_div::debug ( array ('WHERE clause: ' => $WC ) );
+
+	/**
+	 * This function returns the SQL WHERE clause parts for the
+	 * search part of a filter
+	 *
+	 * @return The WHERE clause parts in an array
+	 */
+	function get_filter_search_wc_parts ( $search, &$runvar ) {
+		$rT = $this->refTable;
+		$sT = $this->aShipTable;
+		$rta = $this->refTableAlias;
+		$sta = $this->aShipTableAlias;
+
+		$WC = array();
+		if ( !is_array ( $search ) )
+			return $WC;
+
+		// Determine values to search for
+		$values = array();
+		if ( is_array ( $search['values'] ) ) {
+			foreach ( $search['values'] as $value ) {
+				$value = strval ( $value );
+				if ( strlen ( $value ) > 0 ) {
+					$values[] = $value;
+				}
+			}
+		} else {
+			return $WC;
+		}
+
+		// Determine fields to search in
+		$fields_all = TRUE;
+		$fields = array();
+		if ( is_array ( $search['fields'] ) ) {
+			foreach ( $search['fields'] as $field ) {
+				if ( strtolower ( $field ) == 'all' ) {
+					$fields_all = TRUE;
+					$fields = array();
+					break;
+				} else if ( in_array ( $field, $this->refFields ) ) {
+					$fields[] = $rta.'.'.$field;
+				}
+			}
+		}
+
+		// Determine mode
+		$mode = ' OR ';
+		if ( strtoupper ( $search['mode'] ) == 'AND' )
+			$mode = ' AND ';
+
+		// Preparations complete
+
+		$WC_ACC = array();
+		foreach ( $values as $value ) {
+			$wca  = 'CONCAT_WS(\' \',';
+			$wca .= implode ( ',', $fields );
+			$wca .= ') LIKE \'%';
+			$wca .= $GLOBALS['TYPO3_DB']->quoteStr ( $value, $rT );
+			$wca .= '\'%';
+			$WC_ACC[] = $wca;
+		}
+
+		$wca = '(' . implode ( $mode, $WC_ACC ) . ')';
+		$WC[] = $wca;
+
 		return $WC;
 	}
 
@@ -538,18 +710,20 @@ class tx_sevenpack_reference_accessor {
 	 * @return The ORDER clause string
 	 */
 	function get_order_clause (  ) {
-		$filter =& $this->filter;
+		$db =& $GLOBALS['TYPO3_DB'];
+		$rT = $this->refTable;
 		$OC = '';
-		if ( is_array ( $filter['sorting'] ) ) {
-			$sortings =& $filter['sorting'];
-			$OC = '';
-			for ( $i=0; $i<sizeof($sortings); $i++ ) {
-				$s =& $sortings[$i];
-				if ( isset( $s['field'] ) && isset ( $s['dir'] ) ) {
-					if ( $i > 0 )
-						$OC .= ',';
-					$OC .= $s['field'].' '.$s['dir'] . "\n";
+		foreach ( $this->filters as $filter ) {
+			if ( is_array ( $filter['sorting'] ) ) {
+				$sortings =& $filter['sorting'];
+				$OC = array();
+				for ( $i=0; $i < sizeof ( $sortings ); $i++ ) {
+					$s =& $sortings[$i];
+					if ( isset( $s['field'] ) && isset ( $s['dir'] ) ) {
+						$OC[] = $s['field'] . ' ' . $s['dir'];
+					}
 				}
+				$OC = implode ( ',', $OC );
 			}
 		}
 		return $OC;
@@ -563,12 +737,13 @@ class tx_sevenpack_reference_accessor {
 	 * @return The LIMIT clause string
 	 */
 	function get_limit_clause ( ) {
-		$filter =& $this->filter;
 		$LC = '';
-		if ( is_array ( $filter['limit'] ) ) {
-			$l =& $filter['limit'];
-			if ( isset( $l['start'] ) && isset ( $l['num'] ) ) {
-				$LC .= intval($l['start']).','.intval($l['num']);
+		foreach ( $this->filters as $filter ) {
+			if ( is_array ( $filter['limit'] ) ) {
+				$l =& $filter['limit'];
+				if ( isset ( $l['start'] ) && isset ( $l['num'] ) ) {
+					$LC = intval ( $l['start'] ) . ',' . intval ( $l['num'] );
+				}
 			}
 		}
 		return $LC;
@@ -588,30 +763,33 @@ class tx_sevenpack_reference_accessor {
 		$sta =& $this->aShipTableAlias;
 		$ata =& $this->authorTableAlias;
 
-		$WC = $this->get_reference_where_clause ( );
+		$columns = array ( );
+		$WC = $this->get_reference_where_clause ( $columns );
+
 		$GC = '';
 		if ( is_string ( $group ) )
 			$GC = strlen ( $group ) ? $group : $rta.'.uid';
+
 		$OC = '';
 		if ( is_string ( $order ) )
 			$OC = strlen ( $order ) ? $order : $this->get_order_clause ( );
+
 		$LC = $this->get_limit_clause ( );
 
 		// Find the tables that should be included
 		$tables = array ( $this->t_ref_default );
-		foreach ( $fields as $f ) {
-			if ( ! ( strpos ( $f , $sta ) === FALSE ) )
+		foreach ( $fields as $field ) {
+			if ( ! ( strpos ( $field , $sta ) === FALSE ) )
 				$tables[] = $this->t_as_default;
-			if ( ! ( strpos ( $f , $ata ) === FALSE ) )
+			if ( ! ( strpos ( $field , $ata ) === FALSE ) )
 				$tables[] = $this->t_au_default;
 		}
-		if ( $this->filter['author']['enabled'] && !in_array ( $this->t_as_default, $tables ) )
-			$tables[] = $this->t_as_default;
 
-		if ( $this->filter['author']['rule'] == 1 ) {
-			for ( $i=1; $i < sizeof($this->filter['author']['sets']); $i++ ) {
+		foreach  ( $columns as $column ) {
+			if ( ! ( strpos ( $column, $sta ) === False ) ) {
 				$table = $this->t_as_default;
-				$table['alias'] .= strval ( $i+1 );
+				$table['alias'] = $column;
+
 				$tables[] = $this->t_ref_default;
 				$tables[] = $table;
 			}
@@ -621,14 +799,15 @@ class tx_sevenpack_reference_accessor {
 
 		$q  = $this->select_clause_start ( $fields, $tables );
 		if ( strlen ( $WC ) )
-			$q .= ' WHERE '. $WC."\n";
+			$q .= ' WHERE '. $WC . "\n";
 		if ( strlen ( $GC ) )
-			$q .= ' GROUP BY '.$GC."\n";
+			$q .= ' GROUP BY ' . $GC . "\n";
 		if ( strlen ( $OC ) )
-			$q .= ' ORDER BY '.$OC."\n";
+			$q .= ' ORDER BY ' . $OC . "\n";
 		if ( strlen ( $LC ) )
-			$q .= ' LIMIT '.$LC."\n";
+			$q .= ' LIMIT ' . $LC . "\n";
 		$q .= ';';
+
 		//t3lib_div::debug ( array ( 'ref select clause: ' => $q ) );
 		return $q;
 	}
@@ -644,11 +823,14 @@ class tx_sevenpack_reference_accessor {
 	function citeid_exists ( $citeid, $uid = -1 ) {
 		$num = 0;
 		$WC  = 'citeid='.$GLOBALS['TYPO3_DB']->fullQuoteStr ( $citeid, $this->refTable );
-		$WC .= $this->enable_fields ( $this->refTable, '', $filter['show_hidden'] );
-		if ( is_numeric ( $uid ) && ( $uid >= 0 ) )
+		$WC .= $this->enable_fields ( $this->refTable, '', $this->show_hidden );
+		if ( is_numeric ( $uid ) && ( $uid >= 0 ) ) {
 			$WC .= ' AND uid!='."'".intval($uid)."'";
-		if ( sizeof ( $this->filter['pid'] ) )
-			$WC .= ' AND pid IN ('.implode(',',$this->filter['pid']).")";
+		}
+		if ( sizeof ( $this->pid_list ) > 0 ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
+			$WC .= ' AND pid IN ('.$csv.')';
+		}
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'count(uid)', $this->refTable, $WC );
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res );
@@ -787,16 +969,16 @@ class tx_sevenpack_reference_accessor {
 	 *
 	 * @return Not defined
 	 */
-	function fetch_author_filter_uids ( ) {
+	function fetch_author_filter_uids ( &$filter ) {
 		//t3lib_div::debug ('Fetching author uids');
-		if ( is_array ( $this->filter['author']['authors'] ) ) {
-			$filter =& $this->filter['author'];
-			$authors =& $filter['authors'];
-			$filter['sets'] = array();
+		if ( is_array ( $filter['author']['authors'] ) ) {
+			$a_filter =& $filter['author'];
+			$authors =& $filter['author']['authors'];
+			$a_filter['sets'] = array();
 			foreach ( $authors as &$a ) {
-				if ( !isset ( $a['uid'] ) ) {
-					$uids = $this->fetch_author_uids ( $a, $this->filter['pid'], FALSE );
-					for ( $i=0; $i<sizeof($uids); $i++ ) {
+				if ( !is_numeric ( $a['uid'] ) ) {
+					$uids = $this->fetch_author_uids ( $a, $filter['pid'], FALSE );
+					for ( $i=0; $i < sizeof ( $uids ); $i++ ) {
 						$uid = $uids[$i];
 						if ( $i == 0 ) {
 							$a['uid'] = $uid['uid'];
@@ -809,8 +991,8 @@ class tx_sevenpack_reference_accessor {
 							$authors[] = $aa;
 						}
 					}
-					if ( sizeof ( $uids ) ) {
-						$filter['sets'][] = $uids;
+					if ( sizeof ( $uids ) > 0 ) {
+						$a_filter['sets'][] = $uids;
 					}
 				}
 			}
@@ -828,8 +1010,6 @@ class tx_sevenpack_reference_accessor {
 		$authors = array ( );
 		$sta =& $this->aShipTableAlias;
 		$ata =& $this->authorTableAlias;
-
-		//$pid_lst = implode ( ',', $this->filter['pid'] );
 
 		$WC = '';
 
@@ -868,7 +1048,7 @@ class tx_sevenpack_reference_accessor {
 	 */
 	function fetch_db_pub ( $uid ) {
 		$WC  = "uid='".intval($uid)."'";
-		$WC .= $this->enable_fields ( $this->refTable, '', $this->filter['show_hidden'] );
+		$WC .= $this->enable_fields ( $this->refTable, '', $this->show_hidden );
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( '*', $this->refTable, $WC );
 		$pub = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res );
 		if ( is_array ( $pub ) ) {
@@ -983,7 +1163,7 @@ class tx_sevenpack_reference_accessor {
 			if ( is_array ( $pub_db ) )
 				$pub['pid'] = intval ( $pub_db['pid'] );
 			else
-				$pub['pid'] = $this->filter['pid'][0];
+				$pub['pid'] = $this->pid_list[0];
 		}
 
 		$refRow = array ( );
@@ -1040,6 +1220,8 @@ class tx_sevenpack_reference_accessor {
 			$this->ref_log ( 'A new publication reference was inserted (pid=' . $pub['pid'] . ')', $uid );
 		else
 			$this->ref_log ( 'A publication reference was modified', $uid );
+
+		$this->clear_page_cache ( );
 		return FALSE;
 	}
 

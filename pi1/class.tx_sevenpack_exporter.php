@@ -10,7 +10,7 @@ class tx_sevenpack_exporter {
 
 	public $pi1;
 	public $ra;
-	public $filter;
+	public $filters;
 	public $filter_key;
 	public $page_mode;
 
@@ -32,9 +32,10 @@ class tx_sevenpack_exporter {
 		$this->pi1 =& $pi1;
 		$this->ra  =& $pi1->ra;
 
-		// Setup filter
-		$this->filter = $this->pi1->extConf['filter'];
-		//$this->filter_key = t3lib_div::shortMD5 ( serialize ( $this->filter ) );
+		// Setup filters
+		$this->filters = $this->pi1->extConf['filters'];
+		unset ( $this->filters['browse'] );
+		//$this->filter_key = t3lib_div::shortMD5 ( serialize ( $this->filters ) );
 		$this->filter_key = 'page'.strval ( $GLOBALS['TSFE']->id );
 
 		// Setup export file path and name
@@ -118,7 +119,7 @@ class tx_sevenpack_exporter {
 		if ( $file_res )	{
 
 			// Initialize fetching
-			$this->ra->set_filter ( $this->filter );
+			$this->ra->set_filters ( $this->filters );
 			$this->ra->mFetch_initialize ();
 
 			// Setup info array
@@ -201,16 +202,6 @@ class tx_sevenpack_exporter {
 		$str .= 'Creation date: ' . date('Y-m-d') . "\n";
 		$str .= 'Creation time: ' . date('H-i-s') . "\n";
 
-		//$arr = $this->filter_info ( );
-		//$str .= '--- Applied database filters'."\n";
-		//if ( is_array ( $arr ) && sizeof ( $arr ) ) {
-		//	foreach ( $arr as $f ) {
-		//		$str .= preg_replace ( '/^(.?)/m', '% \1', $f );
-		//	}
-		//} else {
-		//	$str .= 'none'."\n";
-		//}
-
 		if ( $num >= 0 ) {
 			$str .= '--- Number of references'."\n";
 			$str .= ''.$num."\n";
@@ -218,87 +209,6 @@ class tx_sevenpack_exporter {
 		}
 
 		return $str;
-	}
-
-
-	/**
-	 * Returns some database filter information
-	 *
-	 * @return A filter information string
-	 */
-	function filter_info ( )
-	{
-		$arr = array();
-
-		$f =& $this->filter['year'];
-		if ( $f && $f['enabled'] ) {
-			$str = 'Year is (inclusive OR):'."\n";
-			foreach ( $f['years'] as $y )
-				$str .= '  '.$y."\n";
-			foreach ( $f['ranges'] as $y )
-				$str .= '  '.$y['from'].'-'.$y['to']."\n";
-			$arr['year'] = $str;
-		}
-
-		$f =& $this->filter['author'];
-		if ( $f && $f['enabled'] && sizeof ( $f['authors'] ) ) {
-			if ( $f['rule'] == 1 ) {
-				$str = 'Author is (AND):'."\n";
-			} else {
-				$str = 'Author is (inclusive OR):'."\n";
-			}
-			foreach ( $f['authors'] as $a ) {
-				if ( strlen(trim($a)) )
-					$fn = $a['fn'];
-					$sn = $a['sn'];
-					$str .= '  '.$sn;
-					$str .= ', '.$fn."\n";
-			}
-			$arr['author'] = $str;
-		}
-
-		$f =& $this->filter['state'];
-		if ( $f && $f['enabled'] ) {
-			$str = 'State is (inclusive OR):'."\n";
-			foreach ( $f['states'] as $s ) {
-				$str .= '  ';
-				$str .= $this->pi1->get_ll (
-					$this->ra->refTable.'_state_I_'.$s,
-					'Unknown state: '.$s, TRUE ) ;
-				$str .= "\n";
-			}
-			$arr['state'] = $str;
-		}
-
-		$f =& $this->filter['bibtype'];
-		if ( $f && $f['enabled'] ) {
-			$str = 'Bibtype is (inclusive OR):'."\n";
-			foreach ( $f['types'] as $t ) {
-				$str .= '  '.$this->ra->allBibTypes[$t] . "\n";
-			}
-			$arr['bibtype'] = $str;
-		}
-
-		$f =& $this->filter['origin'];
-		if ( $f && $f['enabled'] ) {
-			$str = 'Origin is:'."\n";
-			if ( $f['origin'] & 1 )
-				$str .= '  local'."\n";
-			if ( $f['origin'] & 2 )
-				$str .= '  external'."\n";
-			$arr['origin'] = $str;
-		}
-
-		$f =& $this->filter['citeid'];
-		if ( $f && $f['enabled'] ) {
-			$str = 'Citeid is (inclusive OR):'."\n";
-			foreach ( $f['citeid']['ids'] as $c ) {
-				$str .= '  '.$c . "\n";
-			}
-			$arr['citeid'] = $str;
-		}
-
-		return $arr;
 	}
 
 }

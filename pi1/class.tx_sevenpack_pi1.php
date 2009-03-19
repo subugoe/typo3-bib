@@ -131,23 +131,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'STATISTIC_BLOCK', 
 		'ITEM_BLOCK', 'SPACER_BLOCK' );
 
-	public $allActions = array ( 
-		'new'=>'', 'edit'=>'',
-		'hide'=>'', 'reveal'=>'',
-		'select_year'=>'',
-		'update_form'=>'', 'generate_id'=>'',
-		'save'=>'', 'confirm_save'=>'',
-		'delete'=>'', 'confirm_delete'=>'',
-		'erase'=>'', 'confirm_erase'=>'',
-		'more_authors'=>'', 'less_authors'=>'',
-		'raise_author'=>'', 'lower_author'=>''
-	);
-
-	public $editorOpts = array ( 'numAuthors'=>'', 'showTypo3Special'=>''  );
-	public $editClear; // Removes all editor variables from an url
-	public $browseClear; // Removes all variables from an url not neccesseary for FE browsing
-
-
 	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
@@ -176,17 +159,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		foreach ( $this->ra->allBibTypes as $k=>$v ) {
 			$this->templateBibTypes[$k] = strtoupper($v).'_DATA';
 		}
-
-		//t3lib_div::debug ( $this->templateBibTypes );
-		//t3lib_div::debug ( $this->ra->pubFields );
-		//t3lib_div::debug ( $this->cObj->data );
-
-		$this->browseClear = array ( 
-			'editor'=>$this->editorOpts, 'single_mode'=>'',
-			'uid'=>'','import'=>'', 'import_pid'=>'' );
-
-		$this->editClear = $this->browseClear; 
-		$this->editClear['export'] = '';
 
 		// Initialize current configuration
 		$extConf['additional_link_vars'] = array();
@@ -286,6 +258,45 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$extConf['editor']['citeid_gen_old'] = $eo['citeid_gen_old'] ? TRUE : FALSE;
 		}
 
+		//
+		// Get storage page(s)
+		//
+		$pid_list = array();
+		if ( isset ( $this->conf['pid_list'] ) ) {
+			$pid_list = tx_sevenpack_utility::explode_intval ( ',', $this->conf['pid_list'] );
+		}
+		if ( isset ( $this->cObj->data['pages'] ) ) {
+			$tmp = tx_sevenpack_utility::explode_intval ( ',', $this->cObj->data['pages'] );
+			$pid_list = array_merge ( $pid_list, $tmp );
+		}
+
+		// Remove doubles and zero
+		$pid_list = array_unique ( $pid_list );
+		if ( in_array ( 0, $pid_list ) ) {
+			unset ( $pid_list[array_search(0,$pid_list)] );
+		}
+
+		//t3lib_div::debug ( array ( 'pid list conf' => $pid_list) );
+
+		if ( sizeof ( $pid_list ) > 0 ) {
+			// Determine the recursive depth
+			$extConf['recursive'] = $this->cObj->data['recursive'];
+			if ( isset ( $this->conf['recursive'] ) ) {
+				$extConf['recursive'] = $this->conf['recursive'];
+			}
+			$extConf['recursive'] = intval ( $extConf['recursive'] );
+
+			$pid_list = $this->pi_getPidList ( implode ( ',', $pid_list ), $extConf['recursive'] );
+			$pid_list = tx_sevenpack_utility::explode_intval ( ',', $pid_list );
+
+			$extConf['pid_list'] = $pid_list;
+			$this->ra->pid_list = $pid_list;
+		} else {
+			return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
+		}
+
+		$this->ra->clear_cache = $extConf['editor']['clear_page_cache'];
+
 		// Adjustments
 		switch ( $extConf['d_mode'] ) {
 			case $this->D_SIMPLE:
@@ -334,7 +345,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( $GLOBALS['BE_USER']->isAdmin ( ) ) {
 				$g_ok = TRUE;
 			} else {
-				$g_ok = $GLOBALS['BE_USER']->check( 'tables_modify', $this->ra->refTable );
+				$g_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ra->refTable );
 			}
 		}
 		$extConf['edit_mode'] = ( $g_ok && $extConf['editor']['enabled'] );
@@ -346,17 +357,33 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Initialize the default filter
-		$err = $this->initialize_filter ( );
-		if ( $err )
-			return $this->finalize ( $err );
-		
+		$this->extConf['filters'] = array ( );
+		$this->initialize_flexform_filter ( );
+		$this->initialize_selection_filter ( );
 
-		// Do an action type evaluation
+
+		// Don't show hidden entries
+		$extConf['show_hidden'] = FALSE;
+		if ( $extConf['edit_mode'] ) {
+			// Hidden entries can only be seen in edit mode
+			$extConf['show_hidden'] = TRUE;
+			if ( array_key_exists('show_hidden', $this->piVars ) ) {
+				if ( !$this->piVars['show_hidden'] ) {
+					$extConf['show_hidden'] = FALSE;
+				}
+			}
+		}
+		$this->ra->show_hidden = $extConf['show_hidden'];
+
+		//
+		// Edit mode specific !!!
+		//
 		if ( $extConf['edit_mode'] ) {
 
 			// Disable caching in edit mode
 			$GLOBALS['TSFE']->set_no_cache();
 
+			// Do an action type evaluation
 			if ( is_array ( $this->piVars['action'] ) ) {
 				$act_str = implode('', array_keys($this->piVars['action']) );
 				//t3lib_div::debug ( $act_str );
@@ -446,7 +473,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 		// Overall publication statistics
-		$this->ra->set_filter ( $extConf['filter'] );
+		$this->ra->set_filters ( $extConf['filters'] );
 		$this->pubYearHist = $this->ra->fetch_histogram ( 'year' );
 		$this->pubYears  = array_keys ( $this->pubYearHist );
 		$this->pubAllNum = array_sum ( $this->pubYearHist );
@@ -469,21 +496,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// with at least one publication
 		// Set default link variables
 		if ( $extConf['d_mode'] == $this->D_Y_NAV ) {
-			if ( $this->pubAllNum && !in_array ( $ecYear, $this->pubYears ) ) {
-				if ( $ecYear > end ( $this->pubYears ) ) {
-					$ecYear = end ( $this->pubYears );
-				} else if ( $ecYear < $this->pubYears[0] ) {
-					$ecYear = $this->pubYears[0];
-				} else {
-					for ( $i=1; $i<sizeof($this->pubYears); $i++ ) {
-						$d0 = abs ( $ecYear - $this->pubYears[$i-1] );
-						$d1 = abs ( $ecYear - $this->pubYears[$i] );
-						if ( $d0 <= $d1 ) {
-							$ecYear = $this->pubYears[$i-1];
-							break;
-						}
-					}
-				}
+			if ( $this->pubAllNum > 0) {
+				$ecYear = tx_sevenpack_utility::find_nearest_int ( $ecYear, $this->pubYears );
 			}
 			$extConf['additional_link_vars']['year'] = $ecYear;
 		}
@@ -499,7 +513,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$iPP =& $subPage['ipp'];
 		if ( $iPP > 0 ) {
 			$subPage['max']     = floor(($this->pubPageNum-1)/$iPP);
-			$subPage['current'] = $this->fit_in_range (
+			$subPage['current'] = tx_sevenpack_utility::crop_to_range (
 				$this->piVars['page'], 0, $subPage['max']);
 		} else {
 			$subPage['max']     = 0;
@@ -509,40 +523,42 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		// Setup the sub page filter
 		//
-		$extConf['subPageFilter'] = $extConf['filter'];
-		$sPFilter =& $extConf['subPageFilter'];
+		$extConf['filters']['browse'] = array();
+		$sp_filter =& $extConf['filters']['browse'];
 
 		// Adjust sorting
 		if ( $extConf['split_bibtypes'] ) {
-			unset ( $sPFilter['sorting'] ); // To remove the reference
-			$sPFilter['sorting'] = array();
-			$sort =& $sPFilter['sorting'];
+			unset ( $sp_filter['sorting'] ); // To remove the reference
+			$sp_filter['sorting'] = array();
+			$sort =& $sp_filter['sorting'];
 			$dSort = 'DESC';
 			if ( $extConf['date_sorting'] == $this->SORT_ASC )
 				$dSort = 'ASC';
-			$sort[] = array ( 'field'=>$rta.'.bibtype', 'dir'=>'ASC'  );
-			$sort[] = array ( 'field'=>$rta.'.year',    'dir'=>$dSort );
-			$sort[] = array ( 'field'=>$rta.'.month',   'dir'=>$dSort );
-			$sort[] = array ( 'field'=>$rta.'.day',     'dir'=>$dSort );
-			$sort[] = array ( 'field'=>$rta.'.sorting', 'dir'=>'ASC'  );
-			$sort[] = array ( 'field'=>$rta.'.title',   'dir'=>'ASC'  );
+			$sort[] = array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  );
+			$sort[] = array ( 'field' => $rta.'.year',    'dir' => $dSort );
+			$sort[] = array ( 'field' => $rta.'.month',   'dir' => $dSort );
+			$sort[] = array ( 'field' => $rta.'.day',     'dir' => $dSort );
+			$sort[] = array ( 'field' => $rta.'.state',   'dir' => 'ASC'  );
+			$sort[] = array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  );
+			$sort[] = array ( 'field' => $rta.'.title',   'dir' => 'ASC'  );
 		}
 
 		// Adjust year filter
-		if ( ( $this->extConf['d_mode'] == $this->D_Y_NAV ) && is_numeric ( $ecYear ) ) {
-			unset ( $sPFilter['year'] ); // To remove the reference
-			$sPFilter['year'] = array();
-			$sPFilter['year']['enabled'] = TRUE;
-			$sPFilter['year']['years'] = array ( $ecYear );
+		if ( ( $extConf['d_mode'] == $this->D_Y_NAV ) && is_numeric ( $ecYear ) ) {
+			$sp_filter['year'] = array();
+			$sp_filter['year']['enabled'] = TRUE;
+			$sp_filter['year']['years'] = array ( $ecYear );
 		}
 
 		// Adjust the sub page filter limit
-		if ( $subPage['max'] ) {
-			unset ( $sPFilter['limit'] ); // To remove the reference
-			$sPFilter['limit'] = array();
-			$sPFilter['limit']['start'] = $subPage['current']*$iPP;
-			$sPFilter['limit']['num'] = $iPP;
+		if ( $subPage['max'] > 0 ) {
+			$sp_filter['limit'] = array();
+			$sp_filter['limit']['start'] = $subPage['current']*$iPP;
+			$sp_filter['limit']['num'] = $iPP;
 		}
+
+		// Setup reference accessor
+		$this->ra->set_filters ( $extConf['filters'] );
 
 		//
 		// Initialize the html template
@@ -612,26 +628,35 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return FALSE or an error message
 	 */
-	function initialize_filter ( )
+	function initialize_flexform_filter ( )
 	{
-		$this->extConf['filter'] = array ( );
-		$filter =& $this->extConf['filter'];
 		$rT =& $this->ra->refTable;
 		$rta =& $this->ra->refTableAlias;
 
-		$filter['year']    = array();
-		$filter['author']  = array();
-		$filter['state']   = array();
-		$filter['bibtype'] = array();
-		$filter['origin']  = array();
-		$filter['reviewed']   = array();
-		$filter['in_library'] = array();
-		$filter['borrowed']   = array();
-		$filter['citeid']  = array();
+		$this->extConf['filters']['flexform'] = array (
+			'pid' => array(),
+			'year' => array(),
+			'author' => array(),
+			'state' => array(),
+			'bibtype' => array(),
+			'origin' => array(),
+			'reviewed' => array(),
+			'in_library' => array(),
+			'borrowed' => array(),
+			'citeid' => array(),
+		);
+
+		// Select the flexform filter
+		$filter =& $this->extConf['filters']['flexform'];
 
 		// Flexform helpers
 		$ff =& $this->cObj->data['pi_flexform'];
 		$fSheet = 's_filter';
+
+		//
+		// Pid filter
+		//
+		$filter['pid'] = $this->extConf['pid_list'];
 
 		//
 		// Year filter
@@ -767,45 +792,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( !sizeof ( $ids ) )
 			$f['enabled'] = FALSE;
 
-		//
-		// Get storage page(s)
-		//
-		$pid_list = array();
-		$has_pid = TRUE;
-		if ( isset ( $this->conf['pid_list'] ) ) {
-			$pid_list = explode ( ',', $this->conf['pid_list'] );
-		} 
-		if ( isset ( $this->cObj->data['pages'] ) ) {
-			$pid_list = array_merge ( explode ( ',', $this->cObj->data['pages'] ), $pid_list );
-		}
-
-		// Integrify values and remove doubles
-		foreach ( $pid_list as $k => $v ) {
-			$v = intval ( $v );
-			if ( $v == 0 )
-				unset ( $pid_list[$k] );
-			else
-				$pid_list[$k] = $v;
-		}
-		$pid_list = array_unique ( $pid_list );
-
-		if ( sizeof ( $pid_list ) ) {
-			// Determine the recursive depth
-			$extConf['recursive'] = $this->cObj->data['recursive'];
-			if ( isset ( $this->conf['recursive'] ) ) {
-				$extConf['recursive'] = $this->conf['recursive'];
-			}
-			$extConf['recursive'] = intval ( $extConf['recursive'] );
-
-			$pid_list = $this->pi_getPidList ( implode ( ',', $pid_list ), $extConf['recursive'] );
-			$pid_list = explode ( ',', $pid_list );
-			$filter['pid'] = array();
-			foreach ( $pid_list as $pid ) {
-				$filter['pid'][] = intval ( $pid );
-			}
-		} else {
-			return $this->error_msg ( 'No storage pid given. Select a Starting point.' );
-		}
+		//t3lib_div::debug ( array ( 'pid list final' => $pid_list) );
 
 		//
 		// Sorting
@@ -815,30 +802,31 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$dSort = 'ASC';
 		$filter['sorting'] = array();
 		$sort =& $filter['sorting'];
-		$sort[] = array ( 'field'=>$rta.'.year',    'dir'=>$dSort );
-		$sort[] = array ( 'field'=>$rta.'.month',   'dir'=>$dSort );
-		$sort[] = array ( 'field'=>$rta.'.day',     'dir'=>$dSort );
-		$sort[] = array ( 'field'=>$rta.'.bibtype', 'dir'=>'ASC'  );
-		$sort[] = array ( 'field'=>$rta.'.sorting', 'dir'=>'ASC'  );
-		$sort[] = array ( 'field'=>$rta.'.title',   'dir'=>'ASC'  );
+		$sort[] = array ( 'field' => $rta.'.year',    'dir' => $dSort );
+		$sort[] = array ( 'field' => $rta.'.month',   'dir' => $dSort );
+		$sort[] = array ( 'field' => $rta.'.day',     'dir' => $dSort );
+		$sort[] = array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  );
+		$sort[] = array ( 'field' => $rta.'.state',   'dir' => 'ASC'  );
+		$sort[] = array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  );
+		$sort[] = array ( 'field' => $rta.'.title',   'dir' => 'ASC'  );
 
-		//
-		// Adjust the filter if in edit mode
-		//
-		if ( $this->extConf['edit_mode'] ) {
-			// Hidden entries can only be seen in edit mode
-			$filter['show_hidden'] = TRUE;
-			if ( array_key_exists('show_hidden', $this->piVars ) ) {
-				if ( !$this->piVars['show_hidden'] ) {
-					$f['show_hidden'] = FALSE;
-				}
-			}
-		} else {
-			$filter['show_hidden']   = FALSE;
+		//t3lib_div::debug ( $filter );
+
+	}
+
+
+	/**
+	 * This initializes the selction filter array from the piVars
+	 *
+	 * @return FALSE or an error message
+	 */
+	function initialize_selection_filter ( )
+	{
+		if ( is_string ( $this->piVars['ref_ids'] ) ) {
+			$this->extConf['filters']['selection'] = array (
+				'uid' => explode ( ',', $this->piVars['ref_ids'] )
+			);
 		}
-
-		//t3lib_div::debug ( "Storage pid list is: ".implode(',',$filter['pid']) );
-
 	}
 
 
@@ -927,23 +915,33 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
+	 * Composes a link of an url an some attributes
+	 *
+	 * @return The link (HTML <a> element)
+	 */
+	function compose_link ( $url, $content, $attribs = NULL )
+	{
+		$lstr = '<a href="'.$url.'"';
+		if ( is_array ( $attribs ) ) {
+			foreach ( $attribs as $k => $v ) {
+				$lstr .= ' ' . $k . '="' . $v . '"';
+			}
+		}
+		$lstr .= '>'.$content.'</a>';
+		return $lstr;
+	}
+
+
+	/**
 	 * Wraps the content into a link to the current page with
 	 * extra link arguments given in the array $vars
 	 *
 	 * @return The link to the current page
 	 */
-	function get_link ( $content, $vars = array(), $auto_cache = TRUE, $attribs = array() )
+	function get_link ( $content, $vars = array(), $auto_cache = TRUE, $attribs = NULL )
 	{
-		if ( !$this->extConf['edit_mode'] )
-			$vars = array_merge ( $vars, $this->browseClear );
 		$url = $this->get_link_url ( $vars , $auto_cache );
-		$lstr = '<a href="'.$url.'"';
-		foreach ( $attribs as $k => $v ) {
-			$lstr .= ' '.$k.'="'.$v.'"';
-		}
-		$lstr .= '>';
-		$lstr .= $content.'</a>';
-		return $lstr;
+		return $this->compose_link ( $url, $content, $attribs );
 	}
 
 
@@ -956,22 +954,49 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	{
 		if ( $this->extConf['edit_mode'] ) $auto_cache = FALSE;
 
-		// By default remove all actions from url
-		$oVars = $this->extConf['additional_link_vars'];
-		$oVars = array_merge ( $oVars, $vars );
-		if ( is_array( $oVars['action'] ) )
-			$oVars['action'] = array_merge ( $this->allActions, $oVars['action'] );
-		else
-			$oVars['action'] = $this->allActions;
+		$vars = array_merge ( $this->extConf['additional_link_vars'], $vars );
+		$vars = array ( $this->prefixId => $vars );
 
 		$record = '';
 		if ( $this->extConf['ce_links'] && $current_record )
-			$record = "#c".strval($this->cObj->data['uid']);
+			$record = "#c".strval ( $this->cObj->data['uid'] );
 
-		$url = $this->pi_linkTP_keepPIvars_url ( $oVars, $auto_cache ).$record;
-		$url = str_replace ( '&amp;', '&', $url );
-		$url = str_replace ( '&', '&amp;', $url );
+		$this->pi_linkTP ( 'x', $vars, $auto_cache );
+		$url = $this->cObj->lastTypoLinkUrl . $record;
+
+		$url = preg_replace ( '/&([^;]{8})/', '&amp;\\1', $url );
 		return $url;
+	}
+
+
+	/**
+	 * Same as get_link() but for edit mode links
+	 *
+	 * @return The link to the current page
+	 */
+	function get_edit_link ( $content, $vars = array(), $auto_cache = TRUE, $attribs = array() )
+	{
+		$url = $this->get_edit_link_url ( $vars , $auto_cache );
+		return $this->compose_link ( $url, $content, $attribs );
+	}
+
+
+	/**
+	 * Same as get_link_url() but for edit mode urls
+	 *
+	 * @return The url
+	 */
+	function get_edit_link_url ( $vars = array(), $auto_cache = TRUE, $current_record = TRUE )
+	{
+		$pv =& $this->piVars;
+		$keep = array ( 'uid', 'single_mode', 'editor' );
+		foreach ( $keep as $k ) {
+			$pvar =& $pv[$k];
+			if ( is_string ( $pvar ) || is_array ( $pvar ) || is_numeric ( $pvar ) ) {
+				$vars[$k] = $pvar;
+			}
+		}
+		return $this->get_link_url ( $vars, $auto_cache, $current_record );
 	}
 
 
@@ -1006,7 +1031,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
 
 		// Keep the following tags
-		$tags = array ( 'em', 'strong', 'sup', 'sub' );
+		$tags =& $this->ra->valid_tags;
 
 		$LE = '#LE'.$rand.'LE#';
 		$GE = '#GE'.$rand.'GE#';
@@ -1027,19 +1052,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$str = $this->filter_pub_html ( $str, $hsc );
 		return $str;
-	}
-
-
-	/** 
-	 * Puts the first argument into a given range
-	 * 
-	 * @return The value fitted into the given range
-	 */
-	function fit_in_range ($value, $min, $max)
-	{
-		$value = min(intval($value), intval($max));
-		$value = max($value, intval($min));
-		return $value;
 	}
 
 
@@ -1896,9 +1908,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Aliases
 		$ra =& $this->ra;
-		$filter =& $this->extConf['subPageFilter'];
 		$cObj =& $this->cObj;
 		$conf =& $this->conf;
+		$filters =& $this->extConf['filters'];
 
 		// The author name template
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
@@ -1907,23 +1919,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$conf['authors.']['template'], $conf['authors.']['template.'] 
 			);
 		}
+		$this->extConf['author_sep'] = ', ';
 		if ( isset ( $conf['authors.']['separator'] ) ) {
 			$this->extConf['author_sep'] = $cObj->stdWrap ( 
 				$conf['authors.']['separator'], $conf['authors.']['separator.'] 
 			);
 		}
 
-		$this->extConf['author_separator'] = ', ';
-
 		// Database accessor initialization
-		$ra->set_filter ( $filter );
 		$ra->mFetch_initialize();
 		$dSort =& $this->extConf['date_sorting'];
 
-		$i_page = $this->pubPageNum - intval ( $filter['limit']['start'] );
+		$limit_start = intval ( $filters['browse']['limit']['start'] );
+		$i_page = $this->pubPageNum - $limit_start;
 		$i_page_delta = -1;
 		if ( $dSort == $this->SORT_ASC ) {
-			$i_page = intval ( $filter['limit']['start'] ) + 1;
+			$i_page = $limit_start + 1;
 			$i_page_delta = 1;
 		}
 
@@ -2209,7 +2220,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$con .= $sv->dialog_view();
 		}
 		$con .= '<p>';
-		$con .= $this->get_link ( $this->get_ll ( 'link_back_to_list' ), $this->editClear );
+		$con .= $this->get_link ( $this->get_ll ( 'link_back_to_list' ) );
 		$con .= '</p>'."\n";
 		return $con;
 	}

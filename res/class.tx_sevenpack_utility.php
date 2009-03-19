@@ -102,11 +102,90 @@ class tx_sevenpack_utility {
 	}
 
 
+	/** 
+	 * Crops the first argument to a given range
+	 * 
+	 * @return The value fitted into the given range
+	 */
+	function crop_to_range ( $value, $min, $max )
+	{
+		$value = min ( intval ( $value ), intval ( $max ) );
+		$value = max ( $value, intval ( $min ) );
+		return $value;
+	}
+
+
+	/** 
+	 * Finds the nearest integer in a stack.
+	 * The stack must be sorted
+	 * 
+	 * @return The value fitted into the given range
+	 */
+	function find_nearest_int ( $value, $stack )
+	{
+		$res = $value;
+		if ( !in_array ( $value, $stack ) ) {
+			if ( $value > end ( $stack ) ) {
+				$res = end ( $stack );
+			} else if ( $value < $stack[0] ) {
+				$res = $stack[0];
+			} else {
+				// Find nearest
+				for ( $i=1; $i < sizeof ( $stack ); $i++ ) {
+					$d0 = abs ( $value - $stack[$i-1] );
+					$d1 = abs ( $value - $stack[$i] );
+					if ( $d0 <= $d1 ) {
+						$res = $stack[$i-1];
+						break;
+					}
+				}
+			}
+		}
+		return $res;
+	}
+
+
+	/**
+	 * Applies intval() to each element of an array
+	 *
+	 * @return The intvaled array
+	 */
+	function intval_array ( $arr ) {
+		$res = array();
+		foreach ( $arr as $val )
+			if ( is_numeric ( $val ) )
+				$res[] = intval ( $val );
+		return $res;
+	}
+
+
+	/**
+	 * Implodes an array and applies intval to each element
+	 *
+	 * @return The imploded array
+	 */
+	function implode_intval ( $sep, $list ) {
+		$res = tx_sevenpack_utility::intval_array ( $list );
+		return implode ( $sep, $res );
+	}
+
+
+	/**
+	 * Explodes a string and applies intval to each element
+	 *
+	 * @return The imploded array
+	 */
+	function explode_intval ( $sep, $str ) {
+		$res = explode ( $sep, $str );
+		return tx_sevenpack_utility::intval_array ( $res );
+	}
+
+
 	/**
 	 * Returns and array with the exploded string and 
 	 * the values trimed
 	 *
-	 * @return The title string or FALSE
+	 * @return The exploded string
 	 */
 	function explode_trim_lower ( $sep, $str ) {
 		$res = explode ( $sep, $str );

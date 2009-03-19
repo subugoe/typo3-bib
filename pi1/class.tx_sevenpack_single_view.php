@@ -286,8 +286,7 @@ class tx_sevenpack_single_view {
 
 		// Cancel button
 		$btn_cancel = '<span class="'.$btn_class.'">' . $pi1->get_link ( 
-			$this->get_ll ( $this->LLPrefix.'btn_cancel'), 
-			$pi1->editClear ) . '</span>';
+			$this->get_ll ( $this->LLPrefix.'btn_cancel') ) . '</span>';
 
 		// Generate Citeid button
 		$btn_gen_id = '';
@@ -344,7 +343,7 @@ class tx_sevenpack_single_view {
 		// Write initial form tag
 		$form_name = $preId . '_ref_data_form';
 		$con .= '<form name="' . $form_name . '"';
-		$con .= ' action="'.$pi1->get_link_url().'" method="post"';
+		$con .= ' action="'.$pi1->get_edit_link_url().'" method="post"';
 		$con .= '>' . "\n";
 		$con .= $preCon;
 
@@ -797,7 +796,7 @@ class tx_sevenpack_single_view {
 	function get_pid_widget ( $value, $mode )
 	{
 		// Pid
-		$pids = $this->pi1->extConf['filter']['pid'];
+		$pids = $this->pi1->extConf['filters']['flexform']['pid'];
 		$value = intval ( $value );
 
 		// Fetch page titles

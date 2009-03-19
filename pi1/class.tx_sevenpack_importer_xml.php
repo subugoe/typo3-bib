@@ -10,6 +10,10 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 
 class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 
+	function initialize ( $pi1 ) {
+		parent::initialize( $pi1 );
+		$this->import_type = $pi1->IMP_XML;
+	}
 
 	function import_pre_info ( ) {
 		$res  = '<p>';

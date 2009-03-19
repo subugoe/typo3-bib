@@ -17,6 +17,8 @@ class tx_sevenpack_importer {
 	public $storage_pid;
 	public $state;
 
+	public $import_type;
+
 	// Statistics
 	public $stat;
 
@@ -59,7 +61,7 @@ class tx_sevenpack_importer {
 		$pages = array();
 		$con = '';
 
-		$pids = $this->pi1->extConf['filter']['pid'];
+		$pids = $this->pi1->extConf['pid_list'];
 		$default_pid = intval ( $this->pi1->conf['editor.']['default_pid'] );
 
 		if ( sizeof ( $pids ) > 1 ) {
@@ -91,13 +93,13 @@ class tx_sevenpack_importer {
 	 */
 	function acquire_storage_pid ( ) {
 		$pid  =& $this->storage_pid;
-		$pids =& $this->pi1->extConf['filter']['pid'];
+		$pids =& $this->pi1->extConf['pid_list'];
 
 		$pid = intval ( $this->pi1->piVars['import_pid'] );
 		if ( ! in_array ( $pid, $pids ) ) {
-			$pid = intval ( $this->pi1->extConf['filter']['pid'][0] );
+			$pid = intval ( $pids[0] );
 		}
-		//t3lib_div::debug ( "pid: " + $pid );
+		//t3lib_div::debug ( 'Acquire pid: ' + $pid );
 	}
 
 
@@ -121,9 +123,9 @@ class tx_sevenpack_importer {
 
 
 	function import_state_1 ( ) {
-		$action = $this->pi1->get_link_url ( );
+		$action = $this->pi1->get_link_url ( array ( 'import' => $this->import_type ) );
 		$con = '';
-		$con .= $this->import_pre_info ( );
+		$con .= $this->import_pre_info();
 		$con .= '<form action="' . $action . '" method="post" enctype="multipart/form-data">';
 		$con .= $this->storage_selector();
 		$con .= '<p>';

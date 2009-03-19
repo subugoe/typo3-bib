@@ -59,6 +59,8 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 	function initialize ( $pi1 ) {
 		parent::initialize( $pi1 );
 
+		$this->import_type = $pi1->IMP_BIBTEX;
+
 		$this->bt = t3lib_div::makeInstance ( 'tx_sevenpack_PRegExp_Translator' );
 		$bt =& $this->bt;
 
