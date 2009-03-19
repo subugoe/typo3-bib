@@ -1,3 +1,9 @@
+2008-03-17      Marco Ziesing  <mz@puremedia-online.de>
+
+  * Backend: Added ajaxgroupsearch functionality to authorships
+             Set significant values to labels
+	* General: Added missing XCLASS inclusions
+
 2008-03-15      Sebastian Holtermann  <sebholt@web.de>
 
 	* Editor: Better TCA loading. This fixes the "Unknown widget" error - Patch by Bjoern Pedersen

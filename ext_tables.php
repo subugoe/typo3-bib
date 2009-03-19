@@ -1,10 +1,14 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
+
+require_once(t3lib_extMgm::extPath($_EXTKEY).'res/class.tx_sevenpack_labels.php');
+
 $TCA['tx_sevenpack_references'] = array (
 	'ctrl' => array (
 		'title'     => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references',
 		'label'     => 'citeid',
 		'label_alt' => 'title,bibtype',
+    'label_alt_force'   => 1,
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
@@ -28,6 +32,7 @@ $TCA['tx_sevenpack_authors'] = array (
 		'title'     => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors',		
 		'label'     => 'surname',
 		'label_alt' => 'forename',
+    'label_alt_force'   => 1,
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
@@ -46,6 +51,8 @@ $TCA['tx_sevenpack_authorships'] = array (
 	'ctrl' => array (
 		'title'     => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authorships',
 		'label'     => 'pub_id',
+    'label_userFunc'    => "tx_sevenpack_labels->get_authorship_label",
+    'label_alt_force'   => 1,
 		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',	
 		'delete' => 'deleted',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
