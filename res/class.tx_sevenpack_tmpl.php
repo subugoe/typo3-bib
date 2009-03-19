@@ -57,7 +57,7 @@ class tx_sevenpack_tmpl extends tslib_pibase
     $content = '';
 
     // get the template
-    $template_file = (!empty($tmpl_file)) ? $tmpl_file : $this->conf['templateFile'];
+    $template_file = (!empty($tmpl_file)) ? $tmpl_file : $this->conf['template'];
     $template_code_all = $this->cObj->fileResource($template_file);
 
     // get the parts out of the template
