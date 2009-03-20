@@ -1,0 +1,14 @@
+
+plugin.tx_sevenpack_pi3._CSS_DEFAULT_STYLE (
+
+
+  .tx-sevenpack-pi3 input#tx_sevenpack-searchstring {
+    border: 1px solid #000;
+    float: left;
+  }
+
+  .tx-sevenpack-pi3 input.tx_sevenpack-submit {
+    float: left;
+  }
+
+)

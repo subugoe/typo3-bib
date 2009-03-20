@@ -1,0 +1,9 @@
+plugin.tx_sevenpack_pi3 {
+
+	pid_list = {$plugin.tx_sevenpack_pi3.pid_list}
+	debug = {$plugin.tx_sevenpack_pi3.debug}
+
+	# HTML template
+	template = {$plugin.tx_sevenpack_pi3.template}
+
+}
