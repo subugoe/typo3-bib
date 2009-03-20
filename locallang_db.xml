@@ -7,6 +7,8 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="tt_content.list_type_pi1">Publication list</label>
+			<label index="tt_content.list_type_pi2">Publication filter</label>
+			<label index="tt_content.list_type_pi3">Publication search</label>
 			<label index="tx_sevenpack_authors">Sevenpack authors</label>
 			<label index="tx_sevenpack_authors_authors">Author(s)</label>
 			<label index="tx_sevenpack_authors_forename">Forename</label>
@@ -78,6 +80,8 @@
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="tt_content.list_type_pi1">Veröffentlichungsliste</label>
+			<label index="tt_content.list_type_pi2">Filter der Veröffentlichungsliste</label>
+			<label index="tt_content.list_type_pi3">Suche der Veröffentlichungsliste</label>
 			<label index="tx_sevenpack_authors">Sevenpack authors</label>
 			<label index="tx_sevenpack_authors_authors">Autor(en)</label>
 			<label index="tx_sevenpack_authors_forename">Vorname</label>

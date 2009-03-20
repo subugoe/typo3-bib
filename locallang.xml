@@ -12,6 +12,10 @@
 		<languageKey index="de" type="array">
 			<label index="pi1_plus_wiz_description">Gibt eine Veröffentlichungsliste aus</label>
 			<label index="pi1_title">Veröffentlichungsliste</label>
+			<label index="pi2_plus_wiz_description">Gibt Filter für die Veröffentlichungsliste aus</label>
+			<label index="pi2_title">Filter der Veröffentlichungsliste</label>
+			<label index="pi3_plus_wiz_description">Gibt eine Suche für die Veröffentlichungsliste aus</label>
+			<label index="pi3_title">Suche der Veröffentlichungsliste</label>
 		</languageKey>
 		<languageKey index="it" type="array">
 			<label index="pi1_plus_wiz_description">Visualizza un elenco di pubblicazioni</label>

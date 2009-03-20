@@ -78,6 +78,28 @@ t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:sevenpack/pi1/flexfo
 t3lib_extMgm::addStaticFile($_EXTKEY, 'pi1/static/default', 'Publication list defaults');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'pi1/static/default_style', 'Publication list CSS');
 
+// Plugin 2: Publication Filter
+$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi2']='layout,select_key';
+$TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi2']='pi_flexform';
+
+t3lib_extMgm::addPlugin(array('LLL:EXT:sevenpack/locallang_db.xml:tt_content.list_type_pi2', $_EXTKEY.'_pi2'),'list_type');
+t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi2', 'FILE:EXT:sevenpack/pi2/flexform_ds.xml');
+
+t3lib_extMgm::addStaticFile($_EXTKEY, 'pi2/static/default', 'Publication filter defaults');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'pi2/static/default_style', 'Publication filter CSS');
+
+// Plugin 3: Publication Search
+$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi3']='layout,select_key';
+$TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi3']='pi_flexform';
+
+t3lib_extMgm::addPlugin(array('LLL:EXT:sevenpack/locallang_db.xml:tt_content.list_type_pi3', $_EXTKEY.'_pi3'),'list_type');
+t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi3', 'FILE:EXT:sevenpack/pi3/flexform_ds.xml');
+
+t3lib_extMgm::addStaticFile($_EXTKEY, 'pi3/static/default', 'Publication search defaults');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'pi3/static/default_style', 'Publication search CSS');
+
+
+
 if (TYPO3_MODE=='BE')	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_sevenpack_pi1_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi1/class.tx_sevenpack_pi1_wizicon.php';
 
 
