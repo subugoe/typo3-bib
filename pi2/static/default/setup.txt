@@ -1,0 +1,12 @@
+plugin.tx_sevenpack_pi2 {
+
+	pid_list = {$plugin.tx_sevenpack_pi2.pid_list}
+	debug = {$plugin.tx_sevenpack_pi2.debug}
+
+	# HTML template
+	template = {$plugin.tx_sevenpack_pi2.template}
+
+	# References per page
+	referenes_per_page = 5,10,20,50
+
+}
