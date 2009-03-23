@@ -70,6 +70,7 @@
 			<label index="tt_content.pi_flexform.pubstate.1">accepted</label>
 			<label index="tt_content.pi_flexform.pubstate.2">submitted</label>
 			<label index="tt_content.pi_flexform.pubstate.3">to be published</label>
+			<label index="tt_content.pi_flexform.pubstate.4">in preparation</label>
 			<label index="tt_content.pi_flexform.reviewes">Reviewed</label>
 			<label index="tt_content.pi_flexform.reviewes.0">Not reviewed</label>
 			<label index="tt_content.pi_flexform.reviewes.1">Reviewed</label>
@@ -153,7 +154,8 @@
 			<label index="tt_content.pi_flexform.pubstate.0">Veröffentlicht</label>
 			<label index="tt_content.pi_flexform.pubstate.1">Akzeptiert</label>
 			<label index="tt_content.pi_flexform.pubstate.2">Eingereicht</label>
-			<label index="tt_content.pi_flexform.pubstate.3">Noch zu veröffentlichen</label>
+			<label index="tt_content.pi_flexform.pubstate.3">Noch nicht publiziert</label>
+			<label index="tt_content.pi_flexform.pubstate.4">In Vorbereitung</label>
 			<label index="tt_content.pi_flexform.reviewes">Begutachtet</label>
 			<label index="tt_content.pi_flexform.reviewes.0">Nur begutachtet</label>
 			<label index="tt_content.pi_flexform.reviewes.1">Nur unbegutachtet</label>

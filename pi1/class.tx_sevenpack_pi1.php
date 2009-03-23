@@ -721,7 +721,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$f['states'] = array();
 
 		$j = 1;
-		for ( $i=0; $i<4; $i++ ) {
+		for ( $i=0; $i < sizeof ( $this->ra->allStates ); $i++ ) {
 			if ( $states & $j )
 				$f['states'][] = $i;
 			$j = $j*2;

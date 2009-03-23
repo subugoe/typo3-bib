@@ -560,7 +560,7 @@ class tx_sevenpack_reference_accessor {
 		// Filter by publication state
 		$f =& $filter['state'];
 		if ( $f && $f['enabled'] && is_array ( $f['states'] ) ) {
-			if ( sizeof ( $f['states'] ) ) {
+			if ( sizeof ( $f['states'] ) > 0 ) {
 				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['states'] );
 				$WC[] = $rta.'.state IN (' . $csv . ')';
 			}
