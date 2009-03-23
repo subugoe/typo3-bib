@@ -1015,61 +1015,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
-	 * This does character conversions on database content
-	 *
-	 * @return The string filtered for html output
-	 */
-	function filter_pub_html ( $str, $hsc = FALSE ) {
-		$be_charset = strtolower ( $this->extConf['be_charset'] );
-		$fe_charset = strtolower ( $this->extConf['page_charset'] );
-		if ( $hsc ) 
-			$str = htmlspecialchars ( $str, ENT_QUOTES, strtoupper ( $be_charset ) );
-
-		// Character conversion
-		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
-		//	$cs =& $GLOBALS['TSFE']->csConvObj;
-		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
-		//}
-		return $str;
-	}
-
-
-	/**
-	 * This replaces unneccessary tags and prepares the argument string
-	 * for html output
-	 *
-	 * @return The string filtered for html output
-	 */
-	function filter_pub_html_display ( $str, $hsc = FALSE ) {
-		$rand = rand();
-		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
-
-		// Keep the following tags
-		$tags =& $this->ra->allowed_tags;
-
-		$LE = '#LE'.$rand.'LE#';
-		$GE = '#GE'.$rand.'GE#';
-
-		foreach ( $tags as $tag ) {
-			$str = str_replace( '<'.$tag.'>',  $LE.    $tag.$GE, $str );
-			$str = str_replace( '</'.$tag.'>', $LE.'/'.$tag.$GE, $str );
-		}
-
-		$str = str_replace( '& ', '&amp; ', $str );
-		$str = str_replace( '<', '&lt;', $str );
-		$str = str_replace( '>', '&gt;', $str );
-
-		$str = str_replace( $LE, '<', $str );
-		$str = str_replace( $GE, '>', $str );
-
-		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
-
-		$str = $this->filter_pub_html ( $str, $hsc );
-		return $str;
-	}
-
-
-	/**
 	 * This function composes the html-view of a set of publications
 	 *
 	 * @return The list view
@@ -1640,7 +1585,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$pdata = array();
 		foreach ( $this->ra->refFields as $f ) {
 			if ( !$this->extConf['hide_fields'][$f] )
-				$pdata[$f] = $this->filter_pub_html_display ( $pub[$f] );
+				$pdata[$f] = tx_sevenpack_utility::filter_pub_html_display ( $pub[$f] );
 		}
 
 		// Preformat some data
@@ -1667,11 +1612,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// File/URL
-		if ( strlen ( $pdata['file_url'] ) == 0 ) {
-			if ( strlen ( $pub['DOI'] ) > 0 ) {
-				$pdata['file_url'] = 'http://dx.doi.org/' . $this->filter_pub_html_display ( $pub['DOI'] );
-			}
-		}
+		$url_config = array ( 
+			'DOI' => $pdata['DOI'],
+			'hide_file_ext' => $conf['restrictions.']['file_url.']['hide_file_ext'],
+			'fe_user_groups' => $conf['restrictions.']['file_url.']['fe_user_groups']
+		);
+		$pdata['file_url'] = tx_sevenpack_utility::setup_file_url( $pdata['file_url'], $url_config );
 		$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
 
 
@@ -1839,14 +1785,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// The forename
 			$a_fn = trim ( $a['fn'] );
 			if ( strlen ( $a_fn ) > 0 ) {
-				$a_fn = $this->filter_pub_html_display ( $a_fn );
+				$a_fn = tx_sevenpack_utility::filter_pub_html_display ( $a_fn );
 				$a_fn = $this->cObj->stdWrap ( $a_fn, $this->conf['authors.']['forename.'] );
 			}
 
 			// The surname
 			$a_sn = trim ( $a['sn'] );
 			if ( strlen ( $a_sn ) > 0 ) {
-				$a_sn = $this->filter_pub_html_display ( $a_sn );
+				$a_sn = tx_sevenpack_utility::filter_pub_html_display ( $a_sn );
 				$a_sn = $this->cObj->stdWrap ( $a_sn, $this->conf['authors.']['surname.'] );
 			}
 

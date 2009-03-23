@@ -78,6 +78,155 @@ class tx_sevenpack_utility {
 
 
 	/**
+	 * This does character conversions on database content
+	 *
+	 * @return The string filtered for html output
+	 */
+	function filter_pub_html ( $str, $hsc = FALSE ) {
+		if ( $hsc ) 
+			$str = htmlspecialchars ( $str, ENT_QUOTES, strtoupper ( $be_charset ) );
+
+		// Character conversion
+		//$be_charset = strtolower ( $this->extConf['be_charset'] );
+		//$fe_charset = strtolower ( $this->extConf['page_charset'] );
+		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
+		//	$cs =& $GLOBALS['TSFE']->csConvObj;
+		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
+		//}
+		return $str;
+	}
+
+
+	/**
+	 * Fixes illegal occurences of ampersands (&) in html strings
+	 *
+	 * @return The string filtered for html output
+	 */
+	function fix_html_ampersand ( $str ) {
+		//t3lib_div::debug ( $str );
+		$str = str_replace( '& ', '&amp; ', $str );
+		$pattern = '/&(([^;]|&|$){8})/';
+		while ( preg_match ( $pattern, $str ) ) {
+			$str = preg_replace ( $pattern, '&amp;\1', $str );
+		};
+		//t3lib_div::debug ( $str );
+		return $str;
+	}
+
+
+	/**
+	 * This replaces unneccessary tags and prepares the argument string
+	 * for html output
+	 *
+	 * @return The string filtered for html output
+	 */
+	function filter_pub_html_display ( $str, $hsc = FALSE ) {
+		$rand = rand();
+		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
+
+		// Keep the following tags
+		$tags =& $this->ra->allowed_tags;
+
+		$LE = '#LE'.$rand.'LE#';
+		$GE = '#GE'.$rand.'GE#';
+
+		foreach ( $tags as $tag ) {
+			$str = str_replace( '<'.$tag.'>',  $LE.    $tag.$GE, $str );
+			$str = str_replace( '</'.$tag.'>', $LE.'/'.$tag.$GE, $str );
+		}
+
+		if ( !( strpos ( $str, '&' ) === FALSE ) ) {
+			$str = tx_sevenpack_utility::fix_html_ampersand ( $str );
+		}
+
+		$str = str_replace( '<', '&lt;', $str );
+		$str = str_replace( '>', '&gt;', $str );
+
+		$str = str_replace( $LE, '<', $str );
+		$str = str_replace( $GE, '>', $str );
+
+		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
+
+		$str = tx_sevenpack_utility::filter_pub_html ( $str, $hsc );
+		return $str;
+	}
+
+
+	/**
+	 * Prepares the file_url from the database string
+	 * and a configuration array
+	 *
+	 * @return The title string or FALSE
+	 */
+	function setup_file_url ( $url, $config = array() ) {
+
+		//t3lib_div::debug ( $GLOBALS['TSFE']->fe_user );
+		if ( ( strlen ( $url ) > 0 ) && ( strlen ( $config['hide_file_ext'] ) > 0) ) {
+
+			$show = TRUE;
+
+			// Disable url if file extensions matches
+			if ( strlen ( $config['hide_file_ext'] ) > 0 ) {
+				$check_ext = tx_sevenpack_utility::explode_trim_lower( ',', $config['hide_file_ext'] );
+				foreach ( $check_ext as $ext ) {
+					// Sanitize input
+					$ext = strtolower ( trim ( $ext ) );
+					$len = strlen ( $ext );
+					if ( ( $len > 0 ) && ( strlen ( $url ) >= $len ) ) {
+						$uext = strtolower ( substr ( $url, -$len ) );
+						//t3lib_div::debug ( $ext );
+						//t3lib_div::debug ( $uext );
+						if ( $uext == $ext ) {
+							$show = FALSE;
+							break;
+						}
+					}
+				}
+			}
+
+			// Enable url if usergroup matches
+			if ( !$show && is_object ( $GLOBALS['TSFE']->fe_user ) ) {
+				$check_grp = strtolower ( trim ( $config['fe_user_groups'] ) );
+				if ( strpos ( $check_grp, 'all' ) === FALSE ) {
+
+					// Iterate through usergroups
+					$check_grp = tx_sevenpack_utility::explode_intval ( ',', $check_grp );
+					if ( is_array ( $GLOBALS['TSFE']->fe_user->groupData )  ) {
+						foreach ( $check_grp as $grp ) {
+							//t3lib_div::debug ( $grp );
+							//t3lib_div::debug ( $GLOBALS['TSFE']->fe_user->groupData['uid'] );
+							if ( in_array ( $grp, $GLOBALS['TSFE']->fe_user->groupData['uid'] ) ) {
+								$show = TRUE;
+								break;
+							}
+						}
+					}
+
+				} else {
+
+					// All logged in usergroups
+					if ( is_array ( $GLOBALS['TSFE']->fe_user->user ) )
+						$show = TRUE;
+				}
+			}
+
+			if ( !$show )
+				$url = '';
+		}
+
+		// Generate DOI url
+		if ( strlen ( $url ) == 0 ) {
+			if ( strlen ( $config['DOI'] ) > 0 ) {
+				$url = 'http://dx.doi.org/' . 
+					tx_sevenpack_utility::filter_pub_html_display ( $config['DOI'] );
+			}
+		}
+
+		return $url;
+	}
+
+
+	/**
 	 * Returns a select input
 	 *
 	 * @return The title string or FALSE

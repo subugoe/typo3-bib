@@ -581,7 +581,7 @@ class tx_sevenpack_single_view {
 		// Default widget
 		$widgetType = $cfg['type'];
 		$nameAttr   = ' name="'.$pi1->prefixId.'[DATA][pub][' . $field . ']"';
-		$htmlValue  = $pi1->filter_pub_html ( $value, TRUE );
+		$htmlValue  = tx_sevenpack_utility::filter_pub_html ( $value, TRUE );
 
 		switch ( $widgetType )  {
 			case 'input' : 
@@ -643,7 +643,7 @@ class tx_sevenpack_single_view {
 		// Default widget
 		$widgetType = $cfg['type'];
 		$nameAttr   = ' name="'.$pi1->prefixId.'[DATA][pub][' . $field . ']"';
-		$htmlValue  = $pi1->filter_pub_html ( $value, TRUE );
+		$htmlValue  = tx_sevenpack_utility::filter_pub_html ( $value, TRUE );
 
 		if ( $silentMode || $hiddenMode ) {
 			$con .= '<input type="hidden"'.$nameAttr;
@@ -709,8 +709,8 @@ class tx_sevenpack_single_view {
 				if ( $i > ( $aNum - 1 ) && ( $mode != $pi1->W_EDIT ) )
 					break;
 				
-				$fn = $pi1->filter_pub_html ( $authors[$i]['fn'], TRUE );
-				$sn = $pi1->filter_pub_Html ( $authors[$i]['sn'], TRUE );
+				$fn = tx_sevenpack_utility::filter_pub_html ( $authors[$i]['fn'], TRUE );
+				$sn = tx_sevenpack_utility::filter_pub_Html ( $authors[$i]['sn'], TRUE );
 				//t3lib_div::debug ( array('fn' => $fn, 'sn' => $sn) );
 				$con .= '<tr>';
 				$con .= '<th class="'.$pi1->prefixShort.'-editor_author_num">';
