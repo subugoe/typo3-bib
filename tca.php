@@ -242,11 +242,11 @@ $TCA['tx_sevenpack_references'] = array (
 				'wizards' => Array(
 					'_PADDING' => 2,
 					'link' => Array(
-					  'type' => 'popup',
-					  'title' => 'Link',
-					  'icon' => 'link_popup.gif',
-					  'script' => 'browse_links.php?mode=wizard',
-					  'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+						'type' => 'popup',
+						'title' => 'Link',
+						'icon' => 'link_popup.gif',
+						'script' => 'browse_links.php?mode=wizard',
+						'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
 					),
 				),
 			)
@@ -496,11 +496,11 @@ $TCA['tx_sevenpack_authors'] = array (
 				'wizards' => Array(
 					'_PADDING' => 2,
 					'link' => Array(
-					  'type' => 'popup',
-					  'title' => 'Link',
-					  'icon' => 'link_popup.gif',
-					  'script' => 'browse_links.php?mode=wizard',
-					  'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+						'type' => 'popup',
+						'title' => 'Link',
+						'icon' => 'link_popup.gif',
+						'script' => 'browse_links.php?mode=wizard',
+						'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
 					)
 				)
 			)
@@ -533,26 +533,26 @@ $TCA['tx_sevenpack_authorships'] = array (
 				'wizards' => array (
 					'_VALIGN' => 'top',
 					'ajax_search' => array (
-					  'type' => 'userFunc',
-					  'userFunc' => 'tx_ajaxgroupsearch_client->renderAjaxSearch',
-					  'params' => array (
-					    'client' => array ( 'startLength' => 2 ),
-					    'wrapStyle' => 'z-index:80;',
-					    'inputStyle' => 'width:200px;',
-					    'itemListStyle' => 'width:320px;',
-					    'tables' => array (
-					      'tx_sevenpack_references' => array (
-					        'searchBySQL' => array (
-					        'fields' => 'r.title, r.uid',
-					        'tables' => 'tx_sevenpack_references AS r',
-					        'where' => 'r.title LIKE "%###SEARCHWORD###%" AND r.deleted=0 AND r.hidden=0',
-					        'group_by' => '',
-					        'order_by' => 'r.title DESC',
-					        'limit' => '10'
-					        )
-					      )
-					    )
-					  )
+						'type' => 'userFunc',
+						'userFunc' => 'tx_ajaxgroupsearch_client->renderAjaxSearch',
+						'params' => array (
+							'client' => array ( 'startLength' => 2 ),
+							'wrapStyle' => 'z-index:80;',
+							'inputStyle' => 'width:200px;',
+							'itemListStyle' => 'width:320px;',
+							'tables' => array (
+								'tx_sevenpack_references' => array (
+									'searchBySQL' => array (
+									'fields' => 'r.title, r.uid',
+									'tables' => 'tx_sevenpack_references AS r',
+									'where' => 'r.title LIKE "%###SEARCHWORD###%" AND r.deleted=0 AND r.hidden=0',
+									'group_by' => '',
+									'order_by' => 'r.title DESC',
+									'limit' => '10'
+									)
+								)
+							)
+						)
 					)
 				)
 			)
@@ -571,26 +571,26 @@ $TCA['tx_sevenpack_authorships'] = array (
 				'wizards' => array(
 					'_VALIGN' => 'top',
 					'ajax_search' => array(
-					  'type' => 'userFunc',
-					  'userFunc' => 'tx_ajaxgroupsearch_client->renderAjaxSearch',
-					  'params' => array(
-					    'client' => array('startLength'=>2),
-					    'wrapStyle' => 'z-index:80;',
-					    'inputStyle' => 'width:200px;',
-					    'itemListStyle' => 'width:320px;',
-					    'tables' => array(
-					      'tx_sevenpack_authors' => array(
-					        'searchBySQL' => array(
-					        'fields' => 'a.surname, a.uid',
-					        'tables' => 'tx_sevenpack_authors AS a',
-					        'where' => 'a.surname LIKE "%###SEARCHWORD###%" AND a.deleted=0 AND a.hidden=0',
-					        'group_by' => '',
-					        'order_by' => 'a.surname DESC, a.forename DESC',
-					        'limit' => '10'
-					        )
-					      )
-					    )
-					  )
+						'type' => 'userFunc',
+						'userFunc' => 'tx_ajaxgroupsearch_client->renderAjaxSearch',
+						'params' => array(
+							'client' => array('startLength'=>2),
+							'wrapStyle' => 'z-index:80;',
+							'inputStyle' => 'width:200px;',
+							'itemListStyle' => 'width:320px;',
+							'tables' => array(
+								'tx_sevenpack_authors' => array(
+									'searchBySQL' => array(
+									'fields' => 'a.surname, a.uid',
+									'tables' => 'tx_sevenpack_authors AS a',
+									'where' => 'a.surname LIKE "%###SEARCHWORD###%" AND a.deleted=0 AND a.hidden=0',
+									'group_by' => '',
+									'order_by' => 'a.surname DESC, a.forename DESC',
+									'limit' => '10'
+									)
+								)
+							)
+						)
 					)
 				)
 			)
