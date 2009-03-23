@@ -35,6 +35,7 @@
 			<label index="tt_content.pi_flexform.enable_editor">Enable editor?</label>
 			<label index="tt_content.pi_flexform.enable_export_links">Enable export links?</label>
 			<label index="tt_content.pi_flexform.enable_in_library">Enable in library filter</label>
+			<label index="tt_content.pi_flexform.enable_keywords">Enable keyword filter</label>
 			<label index="tt_content.pi_flexform.enable_origin">Enable intern/extern filter</label>
 			<label index="tt_content.pi_flexform.enable_reviewes">Enable reviewed filter</label>
 			<label index="tt_content.pi_flexform.enable_state">Enable stater filter</label>
@@ -55,6 +56,10 @@
 			<label index="tt_content.pi_flexform.in_library.0">Not in library</label>
 			<label index="tt_content.pi_flexform.in_library.1">In library</label>
 			<label index="tt_content.pi_flexform.items_per_page">Nr. of references per page (0=all, -1=Typoscript)</label>
+			<label index="tt_content.pi_flexform.keywords">Keywords, comma-separated</label>
+			<label index="tt_content.pi_flexform.keywords_rule">Keywords filter rule</label>
+			<label index="tt_content.pi_flexform.keywords_rule.AND">AND</label>
+			<label index="tt_content.pi_flexform.keywords_rule.OR">OR</label>
 			<label index="tt_content.pi_flexform.max_authors">Nr. of authors to display (0=all, -1=TypoScript)</label>
 			<label index="tt_content.pi_flexform.off">Off</label>
 			<label index="tt_content.pi_flexform.origins">Intern/Extern</label>
@@ -114,6 +119,7 @@
 			<label index="tt_content.pi_flexform.enable_editor">Aktiviere Editor?</label>
 			<label index="tt_content.pi_flexform.enable_export_links">Aktiviere Export Links?</label>
 			<label index="tt_content.pi_flexform.enable_in_library">Aktiviere In Bibliothek Filter</label>
+			<label index="tt_content.pi_flexform.enable_keywords">Aktiviere Schlüsselwort Filter</label>
 			<label index="tt_content.pi_flexform.enable_origin">Aktiviere Intern/Extern Filter</label>
 			<label index="tt_content.pi_flexform.enable_reviewes">Aktiviere Begutachtet Filter</label>
 			<label index="tt_content.pi_flexform.enable_state">Aktiviere Zustands Filter</label>
@@ -130,10 +136,14 @@
 			<label index="tt_content.pi_flexform.full_automatic">Vollautomatisch</label>
 			<label index="tt_content.pi_flexform.half_automatic">Halbautomatisch (Knopf)</label>
 			<label index="tt_content.pi_flexform.highlight_authors">Ausgewählte Autoren hervorheben?</label>
-			<label index="tt_content.pi_flexform.items_per_page">Anz. von Referenzen pro Seite (0=Alle, -1=TypoScript)</label>
 			<label index="tt_content.pi_flexform.in_library">In Bibliothek</label>
 			<label index="tt_content.pi_flexform.in_library.0">Nicht in Bibliothek</label>
 			<label index="tt_content.pi_flexform.in_library.1">In Bibliothek</label>
+			<label index="tt_content.pi_flexform.items_per_page">Anz. von Referenzen pro Seite (0=Alle, -1=TypoScript)</label>
+			<label index="tt_content.pi_flexform.keywords">Schlüsselwörter</label>
+			<label index="tt_content.pi_flexform.keywords_rule">Schlüsselwort Filter Regel</label>
+			<label index="tt_content.pi_flexform.keywords_rule.AND">UND</label>
+			<label index="tt_content.pi_flexform.keywords_rule.OR">ODER</label>
 			<label index="tt_content.pi_flexform.max_authors">Anz. der zu zeigenden Autoren (0=Alle, -1=TypoScript)</label>
 			<label index="tt_content.pi_flexform.off">Aus</label>
 			<label index="tt_content.pi_flexform.origins">Intern/Extern</label>

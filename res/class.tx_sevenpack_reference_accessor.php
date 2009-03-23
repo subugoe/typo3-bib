@@ -32,7 +32,7 @@ class tx_sevenpack_reference_accessor {
 	public $t_au_default = array ( );
 
 	// The following tags are allowed in a reference string
-	public $valid_tags = array ( 'em', 'strong', 'sup', 'sub' );
+	public $allowed_tags = array ( 'em', 'strong', 'sup', 'sub' );
 
 
 	/**
@@ -626,78 +626,23 @@ class tx_sevenpack_reference_accessor {
 			$WC[] = $wca;
 		}
 
-		if ( is_array ( $filter['search'] ) ) {
-			$wca = $this->get_filter_search_wc_parts ( $filter['search'], $runvar );
-			$WC = array_merge ( $WC, $wca );
-		}
-
-		return $WC;
-	}
-
-
-	/**
-	 * This function returns the SQL WHERE clause parts for the
-	 * search part of a filter
-	 *
-	 * @return The WHERE clause parts in an array
-	 */
-	function get_filter_search_wc_parts ( $search, &$runvar ) {
-		$rT = $this->refTable;
-		$sT = $this->aShipTable;
-		$rta = $this->refTableAlias;
-		$sta = $this->aShipTableAlias;
-
-		$WC = array();
-		if ( !is_array ( $search ) )
-			return $WC;
-
-		// Determine values to search for
-		$values = array();
-		if ( is_array ( $search['values'] ) ) {
-			foreach ( $search['values'] as $value ) {
-				$value = strval ( $value );
-				if ( strlen ( $value ) > 0 ) {
-					$values[] = $value;
+		// Filter by keywords
+		$f =& $filter['keywords'];
+		if ( $f && $f['enabled'] && sizeof( $f['words'] ) ) {
+			$wca = array();
+			$rule = ($f['rule'] == 0) ? ' OR ' : ' AND ';
+			foreach ( $f['words'] as $word ) {
+				$word = strtolower ( trim ( $word ) );
+				if ( strlen ( $word ) > 0 ) {
+					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $rT );
+					#$WC[] = 'FIND_IN_SET('.$xword.','.$rta.'.keywords)';
+					#$WC[] = 'FIND_IN_SET('.$xword.',REPLACE('.$rta.'.keywords,\' \',\'\'))';
+					$wca[] = 'LOWER('.$rta.'.keywords) LIKE ' . $word;
 				}
 			}
-		} else {
-			return $WC;
+			if ( sizeof ( $wca ) > 0 )
+				$WC[] = '( ' . implode ( $rule, $wca ) . ' )';
 		}
-
-		// Determine fields to search in
-		$fields_all = TRUE;
-		$fields = array();
-		if ( is_array ( $search['fields'] ) ) {
-			foreach ( $search['fields'] as $field ) {
-				if ( strtolower ( $field ) == 'all' ) {
-					$fields_all = TRUE;
-					$fields = array();
-					break;
-				} else if ( in_array ( $field, $this->refFields ) ) {
-					$fields[] = $rta.'.'.$field;
-				}
-			}
-		}
-
-		// Determine mode
-		$mode = ' OR ';
-		if ( strtoupper ( $search['mode'] ) == 'AND' )
-			$mode = ' AND ';
-
-		// Preparations complete
-
-		$WC_ACC = array();
-		foreach ( $values as $value ) {
-			$wca  = 'CONCAT_WS(\' \',';
-			$wca .= implode ( ',', $fields );
-			$wca .= ') LIKE \'%';
-			$wca .= $GLOBALS['TYPO3_DB']->quoteStr ( $value, $rT );
-			$wca .= '\'%';
-			$WC_ACC[] = $wca;
-		}
-
-		$wca = '(' . implode ( $mode, $WC_ACC ) . ')';
-		$WC[] = $wca;
 
 		return $WC;
 	}

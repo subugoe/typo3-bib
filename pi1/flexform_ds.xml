@@ -283,7 +283,7 @@
 				</TCEforms>
 			</authors>
 
-			<!-- Automatic cite id generation -->
+			<!-- Author rule -->
 			<author_rule>
 				<TCEforms>
 					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule</label>
@@ -315,6 +315,53 @@
 					</config>
 				</TCEforms>
 			</highlight_authors>
+
+			<!-- Keyword filter -->
+			<!-- Enable filter -->
+			<enable_keywords>
+				<TCEforms>
+					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_keywords</label>
+					<config>
+						<type>check</type>
+						<default>0</default>
+					</config>
+				</TCEforms>
+			</enable_keywords>
+
+			<!-- keyword list -->
+			<keywords>
+				<TCEforms>
+					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords</label>
+					<config>
+						<type>text</type>
+						<cols>30</cols>
+						<rows>4</rows>
+					</config>
+				</TCEforms>
+			</keywords>
+
+			<!-- Keyword rule -->
+			<keywords_rule>
+				<TCEforms>
+					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords_rule</label>
+					<config>
+						<type>radio</type>
+						<items>
+							<numIndex index="0">
+								<numIndex 
+											 index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords_rule.OR</numIndex>
+								<numIndex index="1">0</numIndex>
+							</numIndex>
+							<numIndex index="1">
+								<numIndex 
+											 index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords_rule.AND</numIndex>
+								<numIndex index="1">1</numIndex>
+							</numIndex>
+						</items>
+						<default>0</default>
+					</config>
+				</TCEforms>
+			</keywords_rule>
 
 			<!-- State filter -->
 			<!-- Enable filter -->

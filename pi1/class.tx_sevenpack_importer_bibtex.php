@@ -78,7 +78,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 		foreach( $replace as $key => $val ) {
 			$bt->push ( '/\\\\' . $key . '\{(\w)\}' . '/',  $val );
 			$bt->push ( '/\{\\\\' . $key . '(\w)\}' . '/',  $val );
-			$bt->push ( '/\\\\' . $key . '(\w)([^\w]|$)' . '/',  $val.'\\2' );
+			$bt->push ( '/\\\\' . $key . '(\w)' . '/',  $val );
 		}
 
 		$bt->push ( '/\\\\c\\{([cC])\\}/', '&\\1cedil;' );

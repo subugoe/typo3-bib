@@ -644,6 +644,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'in_library' => array(),
 			'borrowed' => array(),
 			'citeid' => array(),
+			'keywords' => array()
 		);
 
 		// Select the flexform filter
@@ -791,6 +792,19 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$f['ids'] = $ids;
 		if ( !sizeof ( $ids ) )
 			$f['enabled'] = FALSE;
+
+		//
+		// Keywords filter
+		//
+		$f =& $filter['keywords'];
+		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_keywords', $fSheet);
+		$f['rule'] = $this->pi_getFFvalue ( $ff, 'keywords_rule', $fSheet);
+		$f['rule'] = intval ( $f['rule'] );
+		$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
+		$f['words'] = explode ( ',', $kw );
+		if ( sizeof ( $f['words']) == 0 )
+			$f['enabled'] = FALSE;
+
 
 		//t3lib_div::debug ( array ( 'pid list final' => $pid_list) );
 
@@ -1012,10 +1026,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$str = htmlspecialchars ( $str, ENT_QUOTES, strtoupper ( $be_charset ) );
 
 		// Character conversion
-		if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
-			$cs =& $GLOBALS['TSFE']->csConvObj;
-			$str = $cs->conv ( $str, $be_charset, $fe_charset );
-		}
+		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
+		//	$cs =& $GLOBALS['TSFE']->csConvObj;
+		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
+		//}
 		return $str;
 	}
 
@@ -1031,7 +1045,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
 
 		// Keep the following tags
-		$tags =& $this->ra->valid_tags;
+		$tags =& $this->ra->allowed_tags;
 
 		$LE = '#LE'.$rand.'LE#';
 		$GE = '#GE'.$rand.'GE#';
@@ -1845,10 +1859,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Wrap the filtered authors with a highlightning class on demand
 			if ( $hl_authors ) {
-				foreach ( $this->extConf['filter']['author']['authors'] as $fa ) {
-					if ( ($a['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a['fn'] == $fa['fn']) ) ) {
-						$a_str = $this->cObj->stdWrap ( $a_str, $this->conf['authors.']['highlight.'] );
-						break;
+				if( is_array( $this->extConf['filter']['author']['authors'] ) ) {
+					foreach ( $this->extConf['filter']['author']['authors'] as $fa ) {
+						if ( ($a['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a['fn'] == $fa['fn']) ) ) {
+							$a_str = $this->cObj->stdWrap ( $a_str, $this->conf['authors.']['highlight.'] );
+							break;
+						}
 					}
 				}
 			}
