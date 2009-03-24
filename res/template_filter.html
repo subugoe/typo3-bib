@@ -3,39 +3,39 @@
 -->
 
 <div class="browse_years">
-  Browse by year: ###LIST_YEARS###
+  ###BROWSE_BY_YEAR###: ###LIST_YEARS###
   <form class="form years" action="###ACTION###" method="post">
     <select name="tx_sevenpack_pi1[year]">
       ###OPTIONS_YEARS###
     </select>
-    <input type="submit" name="tx_sevenpack_pi1[submit]" value="Go" />
+    <input type="submit" name="tx_sevenpack_pi1[submit]" value="###BUTTON_GO###" />
   </form>
 </div>
 
 <div class="browse_authors">
-  Browse by author:
+  ###BROWSE_BY_AUTHOR###:
   ###LIST_INITIALS###
   ###LIST_AUTHORS###
   <form class="form_authors" action="###ACTION###" method="post">
     <select name="tx_sevenpack_pi1[author]">
       ###OPTIONS_AUTHOR###
     </select>
-    <input type="submit" name="tx_sevenpack_pi1[submit]" value="Go" />
+    <input type="submit" name="tx_sevenpack_pi1[submit]" value="###BUTTON_GO###" />
   </form>
 </div>
 
 <div class="preferences">
-  References per page:
   <form class="preferences" action="###ACTION###" method="post">
-    <select name="tx_sevenpack_pi1[limit]">
+		<label for="references_per_page">###REFERENCES_PER_PAGE###:</label>
+    <select name="tx_sevenpack_pi1[limit]" id="references_per_page">
       ###OPTIONS_LIMITS###
     </select>
 
-    <label for="keywords">Show keywords</label>
-    <input type="checkbox" name="tx_sevenpack_pi1[show_keywords]" ###CHECKED_SHOW_KEYWORDS### />
-    <label for="keywords">Show abstracts</label>
-    <input type="checkbox" name="tx_sevenpack_pi1[show_abstracts]" ###CHECKED_SHOW_ABSTRACTS### />
-    <input type="submit" name="tx_sevenpack_pi1[submit]" value="Go" />
+    <label for="show_keywords">###LABEL_SHOW_KEYWORDS###</label>
+    <input type="checkbox" name="tx_sevenpack_pi1[show_keywords]" id="show_keywords" ###CHECKED_SHOW_KEYWORDS### />
+    <label for="show_abstracts">###LABEL_SHOW_ABSTRACTS###</label>
+    <input type="checkbox" name="tx_sevenpack_pi1[show_abstracts]" id="show_abstracts" ###CHECKED_SHOW_ABSTRACTS### />
+    <input type="submit" name="tx_sevenpack_pi1[submit]" value="###BUTTON_GO###" />
   </form>
 </div>
 

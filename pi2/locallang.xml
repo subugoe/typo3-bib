@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_sevenpack_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="browse_by_author">Browse by author</label>
+			<label index="browse_by_year">Browse by year</label>
+			<label index="button_go">Go</label>
+			<label index="references_per_page">References per page</label>
+			<label index="show_keywords">Show keywords</label>
+			<label index="show_abstracts">Show abstracts</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="browse_by_author">Stöbern nach Author</label>
+			<label index="browse_by_year">Stöbern nach Jahr</label>
+			<label index="button_go">Los</label>
+			<label index="references_per_page">Referenzen pro Seite</label>
+			<label index="show_keywords">Zeige Schlüsselwörter</label>
+			<label index="show_abstracts">Zeige Zusammenfassung</label>
+		</languageKey>
+		<languageKey index="it" type="array">
+			<label index="button_go">Vai</label>
+		</languageKey>
+	</data>
+</T3locallang>

@@ -88,7 +88,7 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 		$this->tmpl_obj = $this->getClass('tmpl');
 
 		// get additional language file
-		$this->tmpl_obj->extendLL($this, 'locallang.xml');
+		$this->tmpl_obj->extendLL($this, 'pi2/locallang.xml');
 
 		// get flexform-Values
 		$this->ffData = array(
@@ -196,13 +196,19 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 		$checked_show_abstracts = $pi1Vars_in['show_abstracts'] ? 'checked="checked"' : '';
 
 		$content = $this->tmpl_obj->fillTemplate(array(
-									 'action'                 => $this->pi_getPageLink($GLOBALS['TSFE']->id),
-									 'list_years'             => $list_years,
-									 'options_years'          => $options_years,
-									 'list_initials'          => $list_initials,
-									 'options_limits'         => $options_limits,
-									 'checked_show_keywords'  => $checked_show_keywords,
-									 'checked_show_abstracts' => $checked_show_abstracts,
+									'browse_by_year'					=> $this->pi_getLL('browse_by_year'),
+									'browse_by_author'				=> $this->pi_getLL('browse_by_author'),
+									'label_show_keywords'			=> $this->pi_getLL('show_keywords'),
+									'label_show_abstracts'		=> $this->pi_getLL('show_abstracts'),
+									'references_per_page'			=> $this->pi_getLL('references_per_page'),
+									'button_go'								=> $this->pi_getLL('button_go'),
+									'action'									=> $this->pi_getPageLink($GLOBALS['TSFE']->id),
+									'list_years'							=> $list_years,
+									'options_years'						=> $options_years,
+									'list_initials'						=> $list_initials,
+									'options_limits'					=> $options_limits,
+									'checked_show_keywords'		=> $checked_show_keywords,
+									'checked_show_abstracts'	=> $checked_show_abstracts,
 			), 'template_filter');
 
 		return $this->pi_wrapInBaseClass($content);
