@@ -43,10 +43,10 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 
 class tx_sevenpack_pi3 extends tslib_pibase {
 
-  public $prefixId      = 'tx_sevenpack_pi3';  // Same as class name
-  public $scriptRelPath = 'pi1/class.tx_sevenpack_pi3.php';  // Path to this script relative to the extension dir.
-  public $extKey        = 'sevenpack';  // The extension key.
-  public $pi_checkCHash = true;
+	public $prefixId      = 'tx_sevenpack_pi3';  // Same as class name
+	public $scriptRelPath = 'pi1/class.tx_sevenpack_pi3.php';  // Path to this script relative to the extension dir.
+	public $extKey        = 'sevenpack';  // The extension key.
+	public $pi_checkCHash = true;
 
 
 	public $ra;  // The reference database accessor class
@@ -67,46 +67,46 @@ class tx_sevenpack_pi3 extends tslib_pibase {
 	 * @return	The content that is displayed on the website
 	 */
 	function main($content, $conf)	{
-    $this->conf = $conf;
-    $this->pi_setPiVarDefaults();
-    $this->pi_loadLL();
+		$this->conf = $conf;
+		$this->pi_setPiVarDefaults();
+		$this->pi_loadLL();
 		#$this->extend_ll ( 'EXT:'.$this->extKey.'/locallang_db.xml' );
-    $this->pi_initPIflexForm();
+		$this->pi_initPIflexForm();
 
-    // create template helper object
-    $this->tmpl_obj = $this->getClass('tmpl');
+		// create template helper object
+		$this->tmpl_obj = $this->getClass('tmpl');
 
-    // get flexform-Values
-    $this->ffData = array( 
-                      'template' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'template' ),
-                    );
+		// get flexform-Values
+		$this->ffData = array(
+											'template' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'template' ),
+		);
 
 
-    $content = $this->tmpl_obj->fillTemplate(array(
-                   'action'         => $this->pi_getPageLink($GLOBALS['TSFE']->id),
-                   'list_years'     => $list_years,
-                   'options_years'  => $options_years,
-                   'list_initials'  => $list_initials,
-                   'options_limits' => $options_limits,
-                   ), 'template_search');
+		$content = $this->tmpl_obj->fillTemplate(array(
+									 'action'         => $this->pi_getPageLink($GLOBALS['TSFE']->id),
+									 'list_years'     => $list_years,
+									 'options_years'  => $options_years,
+									 'list_initials'  => $list_initials,
+									 'options_limits' => $options_limits,
+			), 'template_search');
 
 		return $this->pi_wrapInBaseClass($content);
 	}
 
 
-  function getClass($class, $extKey = '')
-  {
-    $extKey = (!empty($extKey)) ? $extKey : $this->extKey;
-    require_once(t3lib_extMgm::extPath($extKey).'res/class.tx_'.$extKey.'_'.$class.'.php');
-    $classHandle = 'tx_'.$extKey.'_'.$class;
-    $class = new $classHandle;
-    $class->extKey = $extKey;
-    $class->cObj = $this->cObj;
-    $class->prefixId = $this->prefixId;
-    $class->conf = $this->conf;
+	function getClass($class, $extKey = '')
+	{
+		$extKey = (!empty($extKey)) ? $extKey : $this->extKey;
+		require_once(t3lib_extMgm::extPath($extKey).'res/class.tx_'.$extKey.'_'.$class.'.php');
+		$classHandle = 'tx_'.$extKey.'_'.$class;
+		$class = new $classHandle;
+		$class->extKey = $extKey;
+		$class->cObj = $this->cObj;
+		$class->prefixId = $this->prefixId;
+		$class->conf = $this->conf;
 
-    return $class;
-  }
+		return $class;
+	}
 
 }
 
