@@ -18,4 +18,7 @@ plugin.tx_sevenpack_pi2._CSS_DEFAULT_STYLE (
     float: left;
   }
 
+	.tx-sevenpack-pi2 a.selected {
+		font-weight: bold;
+	}
 )

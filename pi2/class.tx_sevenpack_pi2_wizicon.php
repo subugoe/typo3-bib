@@ -33,39 +33,39 @@
 
 class tx_sevenpack_pi2_wizicon {
 
-					/**
-					 * Processing the wizard items array
-					 *
-					 * @param	array		$wizardItems: The wizard items
-					 * @return	Modified array with wizard items
-					 */
-					function proc($wizardItems)	{
-						global $LANG;
+	/**
+	 * Processing the wizard items array
+	 *
+	 * @param	array		$wizardItems: The wizard items
+	 * @return	Modified array with wizard items
+	 */
+	function proc($wizardItems)	{
+		global $LANG;
 
-						$LL = $this->includeLocalLang();
+		$LL = $this->includeLocalLang();
 
-						$wizardItems['plugins_tx_sevenpack_pi2'] = array(
+		$wizardItems['plugins_tx_sevenpack_pi2'] = array(
 							'icon'=>t3lib_extMgm::extRelPath('sevenpack').'pi2/ce_wiz.png',
 							'title'=>$LANG->getLLL('pi2_title',$LL),
 							'description'=>$LANG->getLLL('pi2_plus_wiz_description',$LL),
 							'params'=>'&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=sevenpack_pi2'
-						);
+		);
 
-						return $wizardItems;
-					}
+		return $wizardItems;
+	}
 
-					/**
-					 * Reads the [extDir]/locallang.xml and returns the $LOCAL_LANG array found in that file.
-					 *
-					 * @return	The array with language labels
-					 */
-					function includeLocalLang()	{
-						$llFile = t3lib_extMgm::extPath('sevenpack').'locallang.xml';
-						$LOCAL_LANG = t3lib_div::readLLXMLfile($llFile, $GLOBALS['LANG']->lang);
-						
-						return $LOCAL_LANG;
-					}
-				}
+	/**
+	 * Reads the [extDir]/locallang.xml and returns the $LOCAL_LANG array found in that file.
+	 *
+	 * @return	The array with language labels
+	 */
+	function includeLocalLang()	{
+		$llFile = t3lib_extMgm::extPath('sevenpack').'locallang.xml';
+		$LOCAL_LANG = t3lib_div::readLLXMLfile($llFile, $GLOBALS['LANG']->lang);
+
+		return $LOCAL_LANG;
+	}
+}
 
 
 

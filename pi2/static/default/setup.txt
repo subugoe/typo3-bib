@@ -7,6 +7,6 @@ plugin.tx_sevenpack_pi2 {
 	template = {$plugin.tx_sevenpack_pi2.template}
 
 	# References per page
-	referenes_per_page = 5,10,20,50
+	references_per_page = 5,10,20,50
 
 }

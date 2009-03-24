@@ -43,10 +43,10 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 
 class tx_sevenpack_pi2 extends tslib_pibase {
 
-  public $prefixId      = 'tx_sevenpack_pi2';  // Same as class name
-  public $scriptRelPath = 'pi1/class.tx_sevenpack_pi2.php';  // Path to this script relative to the extension dir.
-  public $extKey        = 'sevenpack';  // The extension key.
-  public $pi_checkCHash = true;
+	public $prefixId      = 'tx_sevenpack_pi2';  // Same as class name
+	public $scriptRelPath = 'pi1/class.tx_sevenpack_pi2.php';  // Path to this script relative to the extension dir.
+	public $extKey        = 'sevenpack';  // The extension key.
+	public $pi_checkCHash = true;
 
 
 	public $ra;  // The reference database accessor class
@@ -67,11 +67,11 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 	 * @return	The content that is displayed on the website
 	 */
 	function main($content, $conf)	{
-    $this->conf = $conf;
-    $this->pi_setPiVarDefaults();
-    $this->pi_loadLL();
+		$this->conf = $conf;
+		$this->pi_setPiVarDefaults();
+		$this->pi_loadLL();
 		#$this->extend_ll ( 'EXT:'.$this->extKey.'/locallang_db.xml' );
-    $this->pi_initPIflexForm();
+		$this->pi_initPIflexForm();
 
 		// Create some configuration shortcuts
 		$this->extConf = array ( );
@@ -80,24 +80,30 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 		$this->ra->set_cObj ( $this->cObj );
 		$rT            = $this->ra->refTable;
 		$rta           = $this->ra->refTableAlias;
-    $pi1Vars_in    = t3lib_div::GPvar( 'tx_sevenpack_pi1' ) ? t3lib_div::GPvar( 'tx_sevenpack_pi1' ) : array();
-    $pi1Vars_out   = array( 'tx_sevenpack_pi1' => $pi1Vars_in );
+		$pi1Vars_in    = t3lib_div::GPvar( 'tx_sevenpack_pi1' ) ? t3lib_div::GPvar( 'tx_sevenpack_pi1' ) : array();
+		unset($pi1Vars_in['submit']);
+		$pi1Vars_out   = array( 'tx_sevenpack_pi1' => $pi1Vars_in );
 
-    // create template helper object
-    $this->tmpl_obj = $this->getClass('tmpl');
+		// create template helper object
+		$this->tmpl_obj = $this->getClass('tmpl');
 
-    // get flexform-Values
-    $this->ffData = array( 
-                      'template' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'template' ),
-                      'references_per_page' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'references_per_page' )
-                    );
+		// get additional language file
+		$this->tmpl_obj->extendLL($this, 'locallang.xml');
 
+		// get flexform-Values
+		$this->ffData = array(
+											'template' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'template' ),
+											'references_per_page' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'references_per_page' )
+		);
 
-    //
-    // create list of years
-    //
+		$references_per_page =
+		$this->ffData['references_per_page'] ? explode(',', $this->ffData['references_per_page']) : explode(',', $this->conf['references_per_page']);
 
-    // Overall publication statistics
+		//
+		// create list of years
+		//
+
+		// Overall publication statistics
 		$this->ra->set_filter ( $extConf['filter'] );
 		$this->pubYearHist = $this->ra->fetch_histogram ( 'year' );
 		$this->pubYears    = array_keys ( $this->pubYearHist );
@@ -113,9 +119,9 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 		$extConf['year'] = FALSE;
 		$ecYear =& $extConf['year'];
 		if ( is_numeric ( $pi1Vars_in['year'] ) )
-			$ecYear = intval ( $pi1Vars_in['year'] );
+		$ecYear = intval ( $pi1Vars_in['year'] );
 		else
-			$ecYear = intval ( date ( 'Y' ) ); // System year
+		$ecYear = intval ( date ( 'Y' ) ); // System year
 
 		// The selected year has no publications so select the closest year
 		// with at least one publication
@@ -140,65 +146,82 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 			$extConf['additional_link_vars']['year'] = $ecYear;
 		}
 
-    // create list items
-    for ( $i=0; $i<count($this->pubYears); $i++ ) {
-      $url_params = array('tx_' . $this->extKey . '_pi1' . '[year]' => $this->pubYears[$i]);
-      $array_years[$i]['item'] = $this->pi_linkToPage($this->pubYears[$i], $GLOBALS['TSFE']->id, '', array_merge($pi1Vars_out, $url_params));
-      $array_years[$i]['selected'] = ( $this->pubYears[$i] == $ecYear) ? 'selected="selected"' : '';
-    }
+		// create list items
+		for ( $i=0; $i<count($this->pubYears); $i++ ) {
+			$url_params = array('tx_' . $this->extKey . '_pi1' . '[year]' => $this->pubYears[$i]);
+			$array_years[$i]['item'] = $this->pi_linkToPage($this->pubYears[$i], $GLOBALS['TSFE']->id, '', array_merge($pi1Vars_out, $url_params));
+			if($this->pubYears[$i] == $ecYear)
+				$array_years[$i]['item'] = $this->cObj->addParams($array_years[$i]['item'], array('class' => 'selected'));
+		}
 
-    $list_years = $this->tmpl_obj->fillTemplate(array(
-                      'list_items' => $this->tmpl_obj->fillTemplate($array_years, 'template_list_item')
-                      ), 'template_olist');
+		$list_years = $this->tmpl_obj->fillTemplate(array(
+											'list_items' => $this->tmpl_obj->fillTemplate($array_years, 'template_list_item')
+			), 'template_olist');
 
-    // create select options
-    for ( $i=0; $i<count($this->pubYears); $i++ ) {
-      $array_years[$i]['item'] = $this->pubYears[$i];
-      $array_years[$i]['selected'] = ( $this->pubYears[$i] == $ecYear) ? 'selected="selected"' : '';
-    }
+		// create select options
+		for ( $i=0; $i<count($this->pubYears); $i++ ) {
+			$array_years[$i]['item'] = $this->pubYears[$i];
+			$array_years[$i]['selected'] = ( $this->pubYears[$i] == $ecYear) ? 'selected="selected"' : '';
+		}
 
-    $options_years = $this->tmpl_obj->fillTemplate($array_years, 'template_option');
+		$options_years = $this->tmpl_obj->fillTemplate($array_years, 'template_option');
 
 
-    //
-    // create list of initials
-    //
-    $array_initials = array();
+		//
+		// create list of initials
+		//
+		$array_initials = array();
 
-    for ($i = ord("A"); $i <= ord("Z"); $i++) {
-      $url_params = array('tx_' . $this->extKey . '_pi1' . '[initial]' => chr($i));
-      $array_initials[]['item'] = $this->pi_linkToPage(chr($i), $GLOBALS['TSFE']->id, '', array_merge($pi1Vars_out, $url_params));
-    }
+		for ($i = ord("A"); $i <= ord("Z"); $i++) {
+			$url_params = array('tx_' . $this->extKey . '_pi1' . '[initial]' => chr($i));
+			$array_initials[$i]['item'] = $this->pi_linkToPage(chr($i), $GLOBALS['TSFE']->id, '', array_merge($pi1Vars_out, $url_params));
+			if($pi1Vars_in['initial'] == chr($i))
+				$array_initials[$i]['item'] = $this->cObj->addParams($array_initials[$i]['item'], array('class' => 'selected'));
+		}
 
-    $list_initials = $this->tmpl_obj->fillTemplate(array(
-                        'list_items' => $this->tmpl_obj->fillTemplate(&$array_initials, 'template_list_item')
-                        ), 'template_olist');
+		$list_initials = $this->tmpl_obj->fillTemplate(array(
+												'list_items' => $this->tmpl_obj->fillTemplate(&$array_initials, 'template_list_item')
+			), 'template_olist');
 
-    $content = $this->tmpl_obj->fillTemplate(array(
-                   'action'         => $this->pi_getPageLink($GLOBALS['TSFE']->id),
-                   'list_years'     => $list_years,
-                   'options_years'  => $options_years,
-                   'list_initials'  => $list_initials,
-                   'options_limits' => $options_limits,
-                   ), 'template_filter');
+		// create limiter
+		for( $i=0; $i<count($references_per_page); $i++) {
+			$limit_items[$i]['item']     = $references_per_page[$i];
+			$limit_items[$i]['selected'] = ( $limit_items[$i]['item'] == $pi1Vars_in['limit'] ) ? 'selected="selected"' : '';
+		}
+
+		$options_limits = $this->tmpl_obj->fillTemplate(&$limit_items, 'template_option');
+
+		// set status of checkboxes
+		$checked_show_keywords  = $pi1Vars_in['show_keywords']  ? 'checked="checked"' : '';
+		$checked_show_abstracts = $pi1Vars_in['show_abstracts'] ? 'checked="checked"' : '';
+
+		$content = $this->tmpl_obj->fillTemplate(array(
+									 'action'                 => $this->pi_getPageLink($GLOBALS['TSFE']->id),
+									 'list_years'             => $list_years,
+									 'options_years'          => $options_years,
+									 'list_initials'          => $list_initials,
+									 'options_limits'         => $options_limits,
+									 'checked_show_keywords'  => $checked_show_keywords,
+									 'checked_show_abstracts' => $checked_show_abstracts,
+			), 'template_filter');
 
 		return $this->pi_wrapInBaseClass($content);
 	}
 
 
-  function getClass($class, $extKey = '')
-  {
-    $extKey = (!empty($extKey)) ? $extKey : $this->extKey;
-    require_once(t3lib_extMgm::extPath($extKey).'res/class.tx_'.$extKey.'_'.$class.'.php');
-    $classHandle = 'tx_'.$extKey.'_'.$class;
-    $class = new $classHandle;
-    $class->extKey = $extKey;
-    $class->cObj = $this->cObj;
-    $class->prefixId = $this->prefixId;
-    $class->conf = $this->conf;
+	function getClass($class, $extKey = '')
+	{
+		$extKey = (!empty($extKey)) ? $extKey : $this->extKey;
+		require_once(t3lib_extMgm::extPath($extKey).'res/class.tx_'.$extKey.'_'.$class.'.php');
+		$classHandle = 'tx_'.$extKey.'_'.$class;
+		$class = new $classHandle;
+		$class->extKey = $extKey;
+		$class->cObj = $this->cObj;
+		$class->prefixId = $this->prefixId;
+		$class->conf = $this->conf;
 
-    return $class;
-  }
+		return $class;
+	}
 
 }
 
