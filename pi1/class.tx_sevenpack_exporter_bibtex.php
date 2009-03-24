@@ -140,9 +140,6 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 		$bt->push ( '/&sim;/',    '\(\sim\)' );
 		$bt->push ( '/&times;/',  '\(\times\)' );
 
-
-		// This should not appear if people use &amp; but still.
-		$bt->push ( '/(^|[^\\\\])&/', '\\1\\&' );
 	}
 
 	function export_format_publication ( $pub, $infoArr = array() )
@@ -205,7 +202,11 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 
 		// Convert characters to html sequences
 		$charset = strtoupper ( $this->pi1->extConf['be_charset'] );
+		// Replace illegal html ampersands with &amp;
+		$value = tx_sevenpack_utility::fix_html_ampersand ( $value );
+		// Replaces &amp; with &amp;amp;
 		$value = htmlentities ( $value, ENT_QUOTES, $charset );
+		// Replaces &amp;amp; with &amp;
 		$value = str_replace ( '&amp;', '&', $value );
 		$value = $this->bt->translate ( $value );
 

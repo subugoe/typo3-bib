@@ -99,17 +99,24 @@ class tx_sevenpack_utility {
 
 	/**
 	 * Fixes illegal occurences of ampersands (&) in html strings
+	 * Well Typo3 seems to handle this as well
 	 *
 	 * @return The string filtered for html output
 	 */
 	function fix_html_ampersand ( $str ) {
-		//t3lib_div::debug ( $str );
-		$str = str_replace( '& ', '&amp; ', $str );
-		$pattern = '/&(([^;]|&|$){8})/';
+		//t3lib_div::debug ( array( 'pre: ' => $str ) );
+		
+		$pattern = '/&(([^;]|$){8})/';
 		while ( preg_match ( $pattern, $str ) ) {
 			$str = preg_replace ( $pattern, '&amp;\1', $str );
 		};
-		//t3lib_div::debug ( $str );
+		$pattern = '/&([^;]*?[^a-zA-z;][^;$]*(;|$))/';
+		while ( preg_match ( $pattern, $str ) ) {
+			$str = preg_replace ( $pattern, '&amp;\1', $str );
+		};
+		$str = str_replace( '&;', '&amp;;', $str );
+		
+		//t3lib_div::debug ( array( 'post: ' => $str ) );
 		return $str;
 	}
 
@@ -124,6 +131,7 @@ class tx_sevenpack_utility {
 		$rand = rand();
 		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
 
+		// Remove not allowed tags
 		// Keep the following tags
 		$tags =& $this->ra->allowed_tags;
 
@@ -135,10 +143,6 @@ class tx_sevenpack_utility {
 			$str = str_replace( '</'.$tag.'>', $LE.'/'.$tag.$GE, $str );
 		}
 
-		if ( !( strpos ( $str, '&' ) === FALSE ) ) {
-			$str = tx_sevenpack_utility::fix_html_ampersand ( $str );
-		}
-
 		$str = str_replace( '<', '&lt;', $str );
 		$str = str_replace( '>', '&gt;', $str );
 
@@ -146,6 +150,13 @@ class tx_sevenpack_utility {
 		$str = str_replace( $GE, '>', $str );
 
 		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
+
+		// End of remove not allowed tags
+
+		// Typo3 seems to handle illegal ampersands
+		//if ( !( strpos ( $str, '&' ) === FALSE ) ) {
+		//	$str = tx_sevenpack_utility::fix_html_ampersand ( $str );
+		//}
 
 		$str = tx_sevenpack_utility::filter_pub_html ( $str, $hsc );
 		return $str;
