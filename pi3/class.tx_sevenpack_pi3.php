@@ -70,20 +70,22 @@ class tx_sevenpack_pi3 extends tslib_pibase {
 		$this->conf = $conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
-		#$this->extend_ll ( 'EXT:'.$this->extKey.'/locallang_db.xml' );
 		$this->pi_initPIflexForm();
 
 		// create template helper object
 		$this->tmpl_obj = $this->getClass('tmpl');
+
+		// get additional language file
+		$this->tmpl_obj->extendLL($this, 'pi3/locallang.xml');
 
 		// get flexform-Values
 		$this->ffData = array(
 											'template' => $this->pi_getFFvalue( $this->cObj->data['pi_flexform'], 'template' ),
 		);
 
-
 		$content = $this->tmpl_obj->fillTemplate(array(
 									 'action'         => $this->pi_getPageLink($GLOBALS['TSFE']->id),
+									 'label'					=> $this->pi_getLL('search_term'),
 									 'list_years'     => $list_years,
 									 'options_years'  => $options_years,
 									 'list_initials'  => $list_initials,
