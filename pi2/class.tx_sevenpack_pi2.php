@@ -202,7 +202,7 @@ class tx_sevenpack_pi2 extends tslib_pibase {
 									'label_show_abstracts'		=> $this->pi_getLL('show_abstracts'),
 									'references_per_page'			=> $this->pi_getLL('references_per_page'),
 									'button_go'								=> $this->pi_getLL('button_go'),
-									'action'									=> $this->pi_getPageLink($GLOBALS['TSFE']->id),
+									'action'									=> $this->pi_getPageLink($GLOBALS['TSFE']->id, '', $pi1Vars_out),
 									'list_years'							=> $list_years,
 									'options_years'						=> $options_years,
 									'list_initials'						=> $list_initials,
