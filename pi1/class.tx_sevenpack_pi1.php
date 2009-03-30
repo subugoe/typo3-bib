@@ -25,7 +25,6 @@
  * Plugin 'Publication List' for the 'sevenpack' extension.
  *
  * @author	Sebastian Holtermann <sebholt@web.de>
- * @author	Sixten Boeck <boeck@mpie.de>
  * @package TYPO3
  * @subpackage tx_sevenpack
  *
@@ -332,7 +331,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 		$extConf['sub_page']['ipp'] = max ( intval ( $extConf['sub_page']['ipp'] ), 0 );
 		$extConf['sub_page']['ipp'] = max ( intval ( $extConf['sub_page']['ipp'] ), 0 );
-		$extConf['max_authors']     = max ( intval ( $extConf['max_authors'] ),     0 );
+		$extConf['max_authors']     = max ( intval ( $extConf['max_authors']     ), 0 );
 
 		// Fetch some configuration from the HTTP request
 		if ( array_key_exists ( 'items_per_page', $this->piVars ) ) {
@@ -348,6 +347,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$g_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ra->refTable );
 			}
 		}
+
+		// allow FE-user editing from special groups (set via TS)
+		//t3lib_div::debug( $g_ok ? 'OK' : 'NO OK' );
+		if ( !$g_ok && is_array ( $GLOBALS['TSFE']->fe_user->user ) 
+		     && isset ( $this->conf['FE_edit_groups'] )
+		     && is_array ( $GLOBALS['TSFE']->fe_user->groupData )
+		) {
+			$allowed =& $this->conf['FE_edit_groups'];
+			$current =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
+			if ( tx_sevenpack_utility::intval_list_check ( $allowed, $current ) ) {
+				$g_ok = TRUE;
+			}
+		}
+
 		$extConf['edit_mode'] = ( $g_ok && $extConf['editor']['enabled'] );
 
 		// Set the bullet mode
@@ -385,7 +398,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Do an action type evaluation
 			if ( is_array ( $this->piVars['action'] ) ) {
-				$act_str = implode('', array_keys($this->piVars['action']) );
+				$act_str = implode('', array_keys ( $this->piVars['action'] ) );
 				//t3lib_div::debug ( $act_str );
 				switch ( $act_str ) {
 					case 'new':
@@ -470,7 +483,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$extConf['view_mode']   = $this->VIEW_DIALOG;
 					$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
 				};
-
 
 		// Overall publication statistics
 		$this->ra->set_filters ( $extConf['filters'] );
@@ -1615,7 +1627,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$url_config = array ( 
 			'DOI' => $pdata['DOI'],
 			'hide_file_ext' => $conf['restrictions.']['file_url.']['hide_file_ext'],
-			'fe_user_groups' => $conf['restrictions.']['file_url.']['fe_user_groups']
+			'FE_user_groups' => $conf['restrictions.']['file_url.']['FE_user_groups']
 		);
 		$pdata['file_url'] = tx_sevenpack_utility::setup_file_url( $pdata['file_url'], $url_config );
 		$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );

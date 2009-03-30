@@ -178,15 +178,14 @@ class tx_sevenpack_utility {
 
 			// Disable url if file extensions matches
 			if ( strlen ( $config['hide_file_ext'] ) > 0 ) {
-				$check_ext = tx_sevenpack_utility::explode_trim_lower( ',', $config['hide_file_ext'] );
+				$check_ext = tx_sevenpack_utility::explode_trim_lower ( ',', $config['hide_file_ext'] );
 				foreach ( $check_ext as $ext ) {
 					// Sanitize input
 					$ext = strtolower ( trim ( $ext ) );
 					$len = strlen ( $ext );
 					if ( ( $len > 0 ) && ( strlen ( $url ) >= $len ) ) {
 						$uext = strtolower ( substr ( $url, -$len ) );
-						//t3lib_div::debug ( $ext );
-						//t3lib_div::debug ( $uext );
+						//t3lib_div::debug ( 'ext' => $ext, 'uext' => $uext );
 						if ( $uext == $ext ) {
 							$show = FALSE;
 							break;
@@ -196,28 +195,19 @@ class tx_sevenpack_utility {
 			}
 
 			// Enable url if usergroup matches
-			if ( !$show && is_object ( $GLOBALS['TSFE']->fe_user ) ) {
-				$check_grp = strtolower ( trim ( $config['fe_user_groups'] ) );
-				if ( strpos ( $check_grp, 'all' ) === FALSE ) {
-
-					// Iterate through usergroups
-					$check_grp = tx_sevenpack_utility::explode_intval ( ',', $check_grp );
+			if ( !$show && is_object ( $GLOBALS['TSFE']->fe_user ) 
+			     && is_array ( $GLOBALS['TSFE']->fe_user->user ) 
+			) {
+				$allowed = strtolower ( trim ( $config['FE_user_groups'] ) );
+				if ( strpos ( $allowed, 'all' ) === FALSE ) {
 					if ( is_array ( $GLOBALS['TSFE']->fe_user->groupData )  ) {
-						foreach ( $check_grp as $grp ) {
-							//t3lib_div::debug ( $grp );
-							//t3lib_div::debug ( $GLOBALS['TSFE']->fe_user->groupData['uid'] );
-							if ( in_array ( $grp, $GLOBALS['TSFE']->fe_user->groupData['uid'] ) ) {
-								$show = TRUE;
-								break;
-							}
-						}
+						// Check group membership
+						$show = tx_sevenpack_utility::intval_list_check (
+							$allowed, $GLOBALS['TSFE']->fe_user->groupData['uid'] );
 					}
-
 				} else {
-
 					// All logged in usergroups
-					if ( is_array ( $GLOBALS['TSFE']->fe_user->user ) )
-						$show = TRUE;
+					$show = TRUE;
 				}
 			}
 
@@ -306,16 +296,34 @@ class tx_sevenpack_utility {
 
 
 	/**
+	 * Returns true if an integer in $allowed is in $current
+	 *
+	 * @return TRUE if there is an overlap FALSE otherwise
+	 */
+	function intval_list_check ( $allowed, $current ) {
+		if ( !is_array ( $allowed ) )
+			$allowed = tx_sevenpack_utility::explode_intval ( ',', strval ( $allowed ) );
+		if ( !is_array ( $current ) )
+			$current = tx_sevenpack_utility::explode_intval ( ',', strval ( $current ) );
+
+		$inter = array_intersect ( $allowed, $current );
+		//t3lib_div::debug( array ( 'alw' => $allowed, 'cur' => $current, 'match' => $inter ) );
+		if ( sizeof ( $inter ) > 0 ) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+
+	/**
 	 * Applies intval() to each element of an array
 	 *
 	 * @return The intvaled array
 	 */
 	function intval_array ( $arr ) {
-		$res = array();
-		foreach ( $arr as $val )
-			if ( is_numeric ( $val ) )
-				$res[] = intval ( $val );
-		return $res;
+		foreach ( $arr as &$val )
+			$val = intval ( $val );
+		return $arr;
 	}
 
 

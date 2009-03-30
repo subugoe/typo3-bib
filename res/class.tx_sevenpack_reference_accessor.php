@@ -166,8 +166,15 @@ class tx_sevenpack_reference_accessor {
 	function clear_page_cache ( ) {
 		if ( $this->clear_cache ) {
 			//t3lib_div::debug ( 'Clearing cache' );
+			$be_user = $GLOBALS['BE_USER'];
+			if ( !is_object ( $be_user ) || !is_array ( $be_user->user ) ) {
+				//t3lib_div::debug( 'No BE user' );
+				$be_user = t3lib_div::makeInstance ( 't3lib_tsfeBeUserAuth' );
+				$be_user->user = array( 'admin' => 1 );
+			}
+
 			$tce = t3lib_div::makeInstance ( 't3lib_TCEmain' );
-			$tce->start ( array(), array() );
+			$tce->start ( array(), array(), $be_user );
 
 			// Find storage cache clear requests
 			foreach ( $this->pid_list as $pid ) {
