@@ -1059,19 +1059,19 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$ys .= ' method="post"';
 			$ys .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
 			$ys .= '>' . "\n";
-			$ys .= '<select name="'.$this->prefixId.'[year]"';
-			$ys .= strlen ( $cfg['select_class'] ) ? ' class="'.$cfg['select_class'].'"' : '';
-			$ys .= ' onchange="this.form.submit()"';
-			$ys .= '>'."\n";
-			for ( $ii = sizeof($pubYears)-1; $ii >= 0; $ii-- ) {
-				$y = $pubYears[$ii];
-				$ys .= '<option value="'.$y.'"';
-				if ( $y == $this->extConf['year'] ) {
-					$ys .= ' selected="selected"';
-				}
-				$ys .= '>'.$y.'</option>'."\n";
-			}
-			$ys .= '</select>' . "\n";
+		
+			$pairs = array();
+			foreach ( array_reverse( $pubYears ) as $y )
+				$pairs[$y] = $y;
+			$attribs = array (
+				'name'     => $this->prefixId.'[year]',
+				'onchange' => 'this.form.submit()'
+			);
+			if ( strlen ( $cfg['select_class'] ) > 0 )
+				$attribs['class'] = $cfg['select_class'];
+			$ys .= tx_sevenpack_utility::html_select_input ( 
+				$pairs, $this->extConf['year'], $attribs );
+
 			$ys .= '<input type="submit"';
 			$ys .= ' name="'.$this->prefixId.'[action][select_year]"';
 			$ys .= ' value="'.$this->get_ll ( 'button_go' ).'"';

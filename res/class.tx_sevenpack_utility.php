@@ -235,7 +235,8 @@ class tx_sevenpack_utility {
 	function html_select_input ( $pairs, $value, $select_attribs ) {
 		$con .= '<select';
 		foreach ( $select_attribs as $a_key => $a_value ) {
-			$con .= ' ' . strval ( $a_key ) . '="' . strval ( $a_value ) . '"';
+			if ( !( $a_value === FALSE ) )
+				$con .= ' ' . strval ( $a_key ) . '="' . strval ( $a_value ) . '"';
 		}
 		$con .= '>' . "\n";
 		foreach ( $pairs as $p_value => $p_name ) {
