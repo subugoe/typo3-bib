@@ -321,9 +321,10 @@ class tx_sevenpack_utility {
 	 * @return The intvaled array
 	 */
 	function intval_array ( $arr ) {
-		foreach ( $arr as &$val )
-			$val = intval ( $val );
-		return $arr;
+		$res = array();
+		foreach ( $arr as $val )
+			$res[] = intval ( $val );
+		return $res;
 	}
 
 
@@ -332,8 +333,18 @@ class tx_sevenpack_utility {
 	 *
 	 * @return The imploded array
 	 */
-	function implode_intval ( $sep, $list ) {
-		$res = tx_sevenpack_utility::intval_array ( $list );
+	function implode_intval ( $sep, $list, $noEmpty = TRUE ) {
+		$res = array();
+		if ( $noEmpty ) {
+			foreach ( $list as $val ) {
+				$val = trim ( $val );
+				if ( strlen ( $val ) > 0 )
+					$res[] = strval ( intval ( $val ) );
+			}
+		} else {
+			$res = tx_sevenpack_utility::intval_array ( $list );
+		}
+
 		return implode ( $sep, $res );
 	}
 
@@ -341,7 +352,7 @@ class tx_sevenpack_utility {
 	/**
 	 * Explodes a string and applies intval to each element
 	 *
-	 * @return The imploded array
+	 * @return The exploded string
 	 */
 	function explode_intval ( $sep, $str ) {
 		$res = explode ( $sep, $str );
@@ -351,20 +362,75 @@ class tx_sevenpack_utility {
 
 	/**
 	 * Returns and array with the exploded string and 
-	 * the values trimed
+	 * the values trimmed
 	 *
 	 * @return The exploded string
 	 */
-	function explode_trim_lower ( $sep, $str ) {
-		$res = explode ( $sep, $str );
-		foreach ( $res as $key => &$val ) {
+	function explode_trim ( $sep, $str, $noEmpty = FALSE ) {
+		$res = array();
+		$tmp = explode ( $sep, $str );
+		foreach ( $tmp as $val ) {
 			$val = trim ( $val );
-			if ( strlen ( $val ) == 0 )
-				unset ( $res[$key] );
-			else
-				$val = strtolower ( $val );
+			if ( ( strlen ( $val ) > 0 ) || !$noEmpty )
+				$res[] = $val;
 		}
 		return $res;
+	}
+
+
+	/**
+	 * Returns and array with the exploded string and 
+	 * the values trimmed and converted to lowercase
+	 *
+	 * @return The exploded string
+	 */
+	function explode_trim_lower ( $sep, $str, $noEmpty = FALSE ) {
+		$res = array();
+		$tmp = explode ( $sep, $str );
+		foreach ( $tmp as $val ) {
+			$val = trim ( $val );
+			if ( ( strlen ( $val ) > 0 ) || !$noEmpty )
+				$res[] = strtolower ( $val );
+		}
+		return $res;
+	}
+
+
+	/**
+	 * Explodes a string by multiple separators
+	 *
+	 * @return The exploded string
+	 */
+	function multi_explode ( $seps, $str ) {
+		if ( is_array ( $seps ) ) {
+			$sep = strval ( $seps[0] );
+			for ( $ii = 1; $ii < sizeof ( $seps ); $ii++ ) {
+				$nsep = strval ( $sep[$ii] );
+				$str = str_replace ( $nsep, $sep, $str );
+			}
+		} else {
+			$sep = strval ( $seps );
+		}
+		return explode ( $sep, $str );
+	}
+
+
+	/**
+	 * Explodes a string by multiple separators and trims the results
+	 *
+	 * @return The exploded string
+	 */
+	function multi_explode_trim ( $seps, $str, $noEmpty = FALSE ) {
+		if ( is_array ( $seps ) ) {
+			$sep = strval ( $seps[0] );
+			for ( $ii = 1; $ii < sizeof ( $seps ); $ii++ ) {
+				$nsep = strval ( $seps[$ii] );
+				$str = str_replace ( $nsep, $sep, $str );
+			}
+		} else {
+			$sep = strval ( $seps );
+		}
+		return tx_sevenpack_utility::explode_trim ( $sep, $str, $noEmpty );
 	}
 
 }

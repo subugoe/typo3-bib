@@ -370,10 +370,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Initialize the default filter
-		$this->extConf['filters'] = array ( );
-		$this->initialize_flexform_filter ( );
-		$this->initialize_selection_filter ( );
-
+		$this->initialize_filters ( );
 
 		// Don't show hidden entries
 		$extConf['show_hidden'] = FALSE;
@@ -533,40 +530,38 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		//
-		// Setup the sub page filter
+		// Setup the browse filter
 		//
 		$extConf['filters']['browse'] = array();
-		$sp_filter =& $extConf['filters']['browse'];
+		$br_filter =& $extConf['filters']['browse'];
 
 		// Adjust sorting
 		if ( $extConf['split_bibtypes'] ) {
-			unset ( $sp_filter['sorting'] ); // To remove the reference
-			$sp_filter['sorting'] = array();
-			$sort =& $sp_filter['sorting'];
 			$dSort = 'DESC';
 			if ( $extConf['date_sorting'] == $this->SORT_ASC )
 				$dSort = 'ASC';
-			$sort[] = array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  );
-			$sort[] = array ( 'field' => $rta.'.year',    'dir' => $dSort );
-			$sort[] = array ( 'field' => $rta.'.month',   'dir' => $dSort );
-			$sort[] = array ( 'field' => $rta.'.day',     'dir' => $dSort );
-			$sort[] = array ( 'field' => $rta.'.state',   'dir' => 'ASC'  );
-			$sort[] = array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  );
-			$sort[] = array ( 'field' => $rta.'.title',   'dir' => 'ASC'  );
+			$br_filter['sorting'] = array(
+				array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
+				array ( 'field' => $rta.'.year',    'dir' => $dSort ),
+				array ( 'field' => $rta.'.month',   'dir' => $dSort ),
+				array ( 'field' => $rta.'.day',     'dir' => $dSort ),
+				array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
+				array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
+				array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
+			);
 		}
 
 		// Adjust year filter
 		if ( ( $extConf['d_mode'] == $this->D_Y_NAV ) && is_numeric ( $ecYear ) ) {
-			$sp_filter['year'] = array();
-			$sp_filter['year']['enabled'] = TRUE;
-			$sp_filter['year']['years'] = array ( $ecYear );
+			$br_filter['year'] = array();
+			$br_filter['year']['years'] = array ( $ecYear );
 		}
 
-		// Adjust the sub page filter limit
+		// Adjust the browse filter limit
 		if ( $subPage['max'] > 0 ) {
-			$sp_filter['limit'] = array();
-			$sp_filter['limit']['start'] = $subPage['current']*$iPP;
-			$sp_filter['limit']['num'] = $iPP;
+			$br_filter['limit'] = array();
+			$br_filter['limit']['start'] = $subPage['current']*$iPP;
+			$br_filter['limit']['num'] = $iPP;
 		}
 
 		// Setup reference accessor
@@ -636,7 +631,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
-	 * This initializes the nested filter array from the flexform and TS
+	 * This initializes all filters before the browsing filter
+	 *
+	 * @return FALSE or an error message
+	 */
+	function initialize_filters ( )
+	{
+		$this->extConf['filters'] = array();
+		$this->initialize_flexform_filter();
+		$this->initialize_selection_filter();
+	}
+
+
+	/**
+	 * This initializes filter array from the flexform
 	 *
 	 * @return FALSE or an error message
 	 */
@@ -645,178 +653,145 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$rT =& $this->ra->refTable;
 		$rta =& $this->ra->refTableAlias;
 
-		$this->extConf['filters']['flexform'] = array (
-			'pid' => array(),
-			'year' => array(),
-			'author' => array(),
-			'state' => array(),
-			'bibtype' => array(),
-			'origin' => array(),
-			'reviewed' => array(),
-			'in_library' => array(),
-			'borrowed' => array(),
-			'citeid' => array(),
-			'keywords' => array()
-		);
-
-		// Select the flexform filter
+		// Create and select the flexform filter
+		$this->extConf['filters']['flexform'] = array();
 		$filter =& $this->extConf['filters']['flexform'];
 
 		// Flexform helpers
 		$ff =& $this->cObj->data['pi_flexform'];
 		$fSheet = 's_filter';
 
-		//
 		// Pid filter
-		//
 		$filter['pid'] = $this->extConf['pid_list'];
 
-		//
 		// Year filter
-		//
-		$f =& $filter['year'];
-		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_year', $fSheet );
-		$f['years'] = array ();
-		$ffStr = $this->pi_getFFvalue ( $ff, 'years', $fSheet );
-		$ffStr = str_replace ( "\r", "\n", $ffStr );
-		$ffStr = str_replace ( "\n", ',', $ffStr );
-		$arr = explode ( ',', $ffStr );
-		foreach ( $arr as $y ) {
-			$y = trim ( $y );
-			$match = array();
-			if ( preg_match ( '/^\d+$/', $y, $match ) ) {
-				$f['years'][] = intval ( $match[0] );
-			} else if ( preg_match ( '/^(\d*)\s*-\s*(\d*)$/', $y, $match ) ) {
-				$range = array();
-				if ( intval ( $match[1] ) )
-					$range['from'] = intval ( $match[1] );
-				if ( intval ( $match[2] ) )
-					$range['to'] = intval ( $match[2] );
-				if ( sizeof ( $range ) )
-					$f['ranges'][] = $range;
+		if ( $this->pi_getFFvalue ( $ff, 'enable_year', $fSheet ) > 0 ) {
+			$f = array();
+			$f['years'] = array();
+			$f['ranges'] = array();
+			$ffStr = $this->pi_getFFvalue ( $ff, 'years', $fSheet );
+			$arr = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ffStr, TRUE );
+			foreach ( $arr as $y ) {
+				$match = array();
+				if ( preg_match ( '/^\d+$/', $y, $match ) ) {
+					$f['years'][] = intval ( $match[0] );
+				} else if ( preg_match ( '/^(\d*)\s*-\s*(\d*)$/', $y, $match ) ) {
+					$range = array();
+					if ( intval ( $match[1] ) )
+						$range['from'] = intval ( $match[1] );
+					if ( intval ( $match[2] ) )
+						$range['to'] = intval ( $match[2] );
+					if ( sizeof ( $range ) )
+						$f['ranges'][] = $range;
+				}
+			}
+			if ( ( sizeof ( $f['years'] ) + sizeof ( $f['ranges'] ) ) > 0 ) {
+				$filter['year'] = $f;
 			}
 		}
-		if ( !sizeof ( $f['years'] ) && !sizeof ( $f['ranges'] ) )
-			$f['enabled'] = FALSE;
 
-		//
 		// Author filter
-		//
 		$this->extConf['highlight_authors'] = $this->pi_getFFvalue ( $ff, 'highlight_authors', $fSheet );
 
-		$f =& $filter['author'];
-		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_author', $fSheet );
-		$f['rule'] = $this->pi_getFFvalue ( $ff, 'author_rule', $fSheet );
-		$f['authors'] = array ();
-		$authors = $this->pi_getFFvalue ( $ff, 'authors', $fSheet );
+		if ( $this->pi_getFFvalue ( $ff, 'enable_author', $fSheet ) != 0 ) {
+			$f = array();;
+			$f['authors'] = array();
+			$f['rule'] = $this->pi_getFFvalue ( $ff, 'author_rule', $fSheet );
+			$f['rule'] = intval ( $f['rule'] );
 
-		$authors = str_replace ( "\r", "\n", $authors );
-		$authors = explode ( "\n", $authors );
-		foreach ( $authors as $a ) {
-			$a = trim ( $a );
-			if ( strlen ( $a ) ) {
-				$fs = explode ( ',', $a );
-				foreach ( $fs as &$v )
-					$v = trim ( $v );
-				$f['authors'][] = array ( 'sn' => $fs[0], 'fn' => $fs[1] );
+			$authors = $this->pi_getFFvalue ( $ff, 'authors', $fSheet );
+			$authors = tx_sevenpack_utility::multi_explode_trim ( array ( "\r" , "\n" ), $authors, TRUE );
+			foreach ( $authors as $a ) {
+				$parts = t3lib_div::trimExplode ( ',', $a );
+				$f['authors'][] = array ( 'sn' => $parts[0], 'fn' => $parts[1] );
 			}
+			if ( sizeof ( $f['authors'] ) > 0 )
+				$filter['author'] = $f;
 		}
-		if ( !sizeof ( $f['authors'] ) )
-			$f['enabled'] = FALSE;
 
-		//
 		// State filter
-		//
-		$f =& $filter['state'];
-		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_state', $fSheet);
-		$states = intval ( $this->pi_getFFvalue ( $ff, 'states', $fSheet) );
-		$f['states'] = array();
+		if ( $this->pi_getFFvalue ( $ff, 'enable_state', $fSheet ) != 0 ) {
+			$f = array();
+			$f['states'] = array();
+			$states = intval ( $this->pi_getFFvalue ( $ff, 'states', $fSheet ) );
 
-		$j = 1;
-		for ( $i=0; $i < sizeof ( $this->ra->allStates ); $i++ ) {
-			if ( $states & $j )
-				$f['states'][] = $i;
-			$j = $j*2;
+			$j = 1;
+			for ( $i=0; $i < sizeof ( $this->ra->allStates ); $i++ ) {
+				if ( $states & $j )
+					$f['states'][] = $i;
+				$j = $j*2;
+			}
+			if ( sizeof ( $f['states'] ) > 0 )
+				$filter['state'] = $f;
 		}
 
 		// Bibtype filter
-		$f =& $filter['bibtype'];
-		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_bibtype', $fSheet);
-		$types = $this->pi_getFFvalue ( $ff, 'bibtypes', $fSheet);
-		$types = explode ( ',', $types );
-		foreach ( $types as &$v ) {
-			if ( ($v>0) && ($v<=16) )
-				$f['types'][] = intval ( $v );
-		}
-		if ( !sizeof ( $f['types'] ) )
-			$f['enabled'] = FALSE;
-
-		//
-		// Origin filter
-		//
-		$filter['origin']['enabled'] =
-			$this->pi_getFFvalue ( $ff, 'enable_origin', $fSheet);
-		$filter['origin']['origin'] =
-			$this->pi_getFFvalue ( $ff, 'origins', $fSheet );
-
-		//
-		// Reviewed filter
-		//
-		$filter['reviewed']['enabled'] =
-			$this->pi_getFFvalue ( $ff, 'enable_reviewes', $fSheet);
-		$filter['reviewed']['value'] =
-			$this->pi_getFFvalue ( $ff, 'reviewes', $fSheet );
-
-		//
-		// In library filter
-		//
-		$filter['in_library']['enabled'] =
-			$this->pi_getFFvalue ( $ff, 'enable_in_library', $fSheet);
-		$filter['in_library']['value'] =
-			$this->pi_getFFvalue ( $ff, 'in_library', $fSheet );
-
-		//
-		// Borrowed
-		//
-		$filter['borrowed']['enabled'] = 
-			$this->pi_getFFvalue ( $ff, 'enable_borrowed', $fSheet);
-		$filter['borrowed']['value'] = 
-			$this->pi_getFFvalue ( $ff, 'borrowed', $fSheet );
-
-		//
-		// Citeid filter
-		//
-		$f =& $filter['citeid'];
-		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_citeid', $fSheet);
-		$ids = $this->pi_getFFvalue ( $ff, 'citeids', $fSheet);
-		$ids = explode ( ',', $ids );
-		$tmp = array();
-		foreach ( $ids as $str ) {
-			$tmp = array_merge ( $tmp, explode ( "\n", $str ) );
-		}
-		$ids = array();
-		foreach ( $tmp as $v ) {
-			$v = trim($v);
-			if ( strlen($v) && !in_array ( $v, $ids ) ) {
-				$ids[] = $v;
+		if ( $this->pi_getFFvalue ( $ff, 'enable_bibtype', $fSheet ) != 0 ) {
+			$f = array();
+			$f['types'] = array();
+			$types = $this->pi_getFFvalue ( $ff, 'bibtypes', $fSheet );
+			$types = explode ( ',', $types );
+			foreach ( $types as $v ) {
+				$v = intval ( $v );
+				if ( ( $v >= 0 ) && ( $v < sizeof ( $this->ra->allBibTypes ) ) )
+					$f['types'][] = $v;
 			}
+			if ( sizeof ( $f['types'] ) > 0 )
+				$filter['bibtype'] = $f;
 		}
-		$f['ids'] = $ids;
-		if ( !sizeof ( $ids ) )
-			$f['enabled'] = FALSE;
 
-		//
+		// Origin filter
+		if ( $this->pi_getFFvalue ( $ff, 'enable_origin', $fSheet ) != 0 ) {
+			$f = array();
+			$f['origin'] = $this->pi_getFFvalue ( $ff, 'origins', $fSheet );
+			if( $f['origin'] == 1 )
+				$f['origin'] = 0; // Legacy value
+			else if( $f['origin'] == 2 )
+				$f['origin'] = 1; // Legacy value
+			$filter['origin'] = $f;
+		}
+
+		// Reviewed filter
+		if ( $this->pi_getFFvalue ( $ff, 'enable_reviewes', $fSheet ) != 0 ) {
+			$f = array();
+			$f['value'] = $this->pi_getFFvalue ( $ff, 'reviewes', $fSheet );
+			$filter['reviewed'] = $f;
+		}
+
+		// In library filter
+		if ( $this->pi_getFFvalue ( $ff, 'enable_in_library', $fSheet ) != 0 ) {
+			$f = array();
+			$f['value'] = $this->pi_getFFvalue ( $ff, 'in_library', $fSheet );
+			$filter['in_library'] = $f;
+		}
+
+		// Borrowed filter
+		if ( $this->pi_getFFvalue ( $ff, 'enable_borrowed', $fSheet ) != 0 ) {
+			$f = array();
+			$f['value'] = $this->pi_getFFvalue ( $ff, 'borrowed', $fSheet );
+			$filter['borrowed'] = $f;
+		}
+
+		// Citeid filter
+		if ( $this->pi_getFFvalue ( $ff, 'enable_citeid', $fSheet ) != 0 ) {
+			$f = array();
+			$ids = $this->pi_getFFvalue ( $ff, 'citeids', $fSheet);
+			$ids = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
+			$f['ids'] = array_unique ( $ids );
+			if ( sizeof ( $f['ids'] ) > 0 )
+				$filter['citeid'] = $f;
+		}
+
 		// Keywords filter
-		//
-		$f =& $filter['keywords'];
-		$f['enabled'] = $this->pi_getFFvalue ( $ff, 'enable_keywords', $fSheet);
-		$f['rule'] = $this->pi_getFFvalue ( $ff, 'keywords_rule', $fSheet);
-		$f['rule'] = intval ( $f['rule'] );
-		$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
-		$f['words'] = explode ( ',', $kw );
-		if ( sizeof ( $f['words']) == 0 )
-			$f['enabled'] = FALSE;
-
+		if ( $this->pi_getFFvalue ( $ff, 'enable_keywords', $fSheet) ) {
+			$f = array();
+			$f['rule'] = $this->pi_getFFvalue ( $ff, 'keywords_rule', $fSheet);
+			$f['rule'] = intval ( $f['rule'] );
+			$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
+			$f['words'] = explode ( ',', $kw );
+			if ( sizeof ( $f['words'] ) > 0 )
+				$filter['keywords'] = $f;
+		}
 
 		//t3lib_div::debug ( array ( 'pid list final' => $pid_list) );
 
@@ -826,15 +801,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$dSort = 'DESC';
 		if ( $this->extConf['date_sorting'] == $this->SORT_ASC )
 			$dSort = 'ASC';
-		$filter['sorting'] = array();
-		$sort =& $filter['sorting'];
-		$sort[] = array ( 'field' => $rta.'.year',    'dir' => $dSort );
-		$sort[] = array ( 'field' => $rta.'.month',   'dir' => $dSort );
-		$sort[] = array ( 'field' => $rta.'.day',     'dir' => $dSort );
-		$sort[] = array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  );
-		$sort[] = array ( 'field' => $rta.'.state',   'dir' => 'ASC'  );
-		$sort[] = array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  );
-		$sort[] = array ( 'field' => $rta.'.title',   'dir' => 'ASC'  );
+		$filter['sorting'] = array (
+			array ( 'field' => $rta.'.year',    'dir' => $dSort ),
+			array ( 'field' => $rta.'.month',   'dir' => $dSort ),
+			array ( 'field' => $rta.'.day',     'dir' => $dSort ),
+			array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
+			array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
+			array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
+			array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
+		);
 
 		//t3lib_div::debug ( $filter );
 
@@ -1765,7 +1740,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Format the author string$this->
 		$and   = ' '.$this->get_ll ( 'label_and', 'and', TRUE ).' ';
-		$et_al = $this->get_ll ( 'label_et_al', 'et al.', TRUE );
 
 		$max_authors = abs ( intval ( $this->extConf['max_authors'] ) );
 		$last_author = sizeof ( $authors ) - 1;
@@ -1786,6 +1760,18 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$a_sep  = $this->extConf['author_sep'];
 		$a_tmpl = $this->extConf['author_tmpl'];
+
+		$filter_authors = array();
+		if ( $hl_authors ) {
+			// Collect filter authors
+			foreach ( $this->extConf['filters'] as $filter ) {
+				if ( is_array( $filter['author']['authors'] ) ) {
+					$filter_authors = array_merge ( 
+						$filter_authors, $filter['author']['authors'] );
+				}
+			}
+		}
+		//t3lib_div::debug ( $filter_authors );
 
 		for ( $i_a=0; $i_a<=$last_author; $i_a++ ) {
 			$a =& $authors[$i_a];
@@ -1809,7 +1795,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Compose names and apply stdWrap
-			$a_str = str_replace ( array ( '###FORENAME###', '###SURNAME###' ), array ( $a_fn, $a_sn ), $a_tmpl );
+			$a_str = str_replace ( 
+				array ( '###FORENAME###', '###SURNAME###' ), 
+				array ( $a_fn, $a_sn ), $a_tmpl );
 			$stdWrap = $this->conf['field.']['author.'];
 			if ( is_array ( $this->conf['field.'][$bib_str.'.']['author.'] ) )
 				$stdWrap = $this->conf['field.'][$bib_str.'.']['author.'];
@@ -1817,12 +1805,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Wrap the filtered authors with a highlightning class on demand
 			if ( $hl_authors ) {
-				if( is_array( $this->extConf['filter']['author']['authors'] ) ) {
-					foreach ( $this->extConf['filter']['author']['authors'] as $fa ) {
-						if ( ($a['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a['fn'] == $fa['fn']) ) ) {
-							$a_str = $this->cObj->stdWrap ( $a_str, $this->conf['authors.']['highlight.'] );
-							break;
-						}
+				foreach ( $filter_authors as $fa ) {
+					if ( ($a['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a['fn'] == $fa['fn']) ) ) {
+						$a_str = $this->cObj->stdWrap ( 
+							$a_str, $this->conf['authors.']['highlight.'] );
+						break;
 					}
 				}
 			}
@@ -1830,7 +1817,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Append author name
 			$res .= $a_str;
 
-			// Append a separator or "et al."
+			// Append an author separator or "et al."
 			$app = '';
 			if ( $i_a < ($last_author-1) ) {
 				$app = $a_sep;
@@ -1838,14 +1825,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( $cut_authors ) {
 					$app = $a_sep;
 					if ( $i_a == $last_author ) {
+
 						// Append et al.
+						$et_al = $this->get_ll ( 'label_et_al', 'et al.', TRUE );
 						$app = ( strlen ( $et_al ) > 0 ) ? ' '.$et_al : '';
 
 						// Highlight "et al." on demand
 						if ( $hl_authors ) {
-							for ( $j=$last_author+1; $j<sizeof($authors); $j++ ) {
+							for ( $j = $last_author + 1; $j < sizeof ( $authors ); $j++ ) {
 								$a_et = $authors[$j];
-								foreach ( $this->extConf['filter']['author']['authors'] as $fa ) {
+								foreach ( $filter_authors as $fa ) {
 									if ( ($a_et['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a_et['fn'] == $fa['fn']) ) ) {
 										$app = $this->cObj->stdWrap ( $app, $this->conf['authors.']['highlight.'] );
 										$j = sizeof ( $authors );
@@ -1854,6 +1843,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 								}
 							}
 						}
+
 					}
 				} elseif ( $i_a < $last_author ) {
 					$app = $and;

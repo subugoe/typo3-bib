@@ -452,24 +452,25 @@ class tx_sevenpack_reference_accessor {
 		$WC = array();
 
 		// Filter by UID
-		if ( is_array ( $filter['uid'] ) && sizeof ( $filter['uid'] ) ) {
+		if ( is_array ( $filter['uid'] ) && ( sizeof ( $filter['uid'] ) > 0 ) ) {
 			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['uid'] );
 			$WC[] = $rta.'.uid IN ('.$csv.')';
 		}
 
 		// Filter by storage PID
-		if ( is_array ( $filter['pid'] ) && ( sizeof ( $filter['pid'] ) > 0) ) {
+		if ( is_array ( $filter['pid'] ) && ( sizeof ( $filter['pid'] ) > 0 ) ) {
 			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['pid'] );
 			$WC[] = $rta.'.pid IN ('.$csv.')';
 		}
 
 		// Filter by year
-		$f =& $filter['year'];
-		if ( $f && $f['enabled'] ) {
+		if ( is_array ( $filter['year'] ) && ( sizeof ( $filter['year'] ) > 0 ) ) {
+			$f =& $filter['year'];
 			$wca = '';
 			// years
-			if ( is_array ( $f['years'] ) && sizeof ( $f['years'] ) ) {
-				$wca .= '  '.$rta.'.year IN ('.implode ( ',', $f['years'] ).')'."\n";
+			if ( is_array ( $f['years'] ) && ( sizeof ( $f['years'] ) > 0 ) ) {
+				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['years'] );
+				$wca .= ' '.$rta.'.year IN ('.$csv.')'."\n";
 			}
 			// ranges
 			if ( is_array ( $f['ranges'] ) && sizeof ( $f['ranges'] ) ) {
@@ -477,7 +478,7 @@ class tx_sevenpack_reference_accessor {
 				if ( sizeof ( $ra ) ) {
 					for ( $i=0; $i < sizeof($ra); $i++ ) {
 						$r =& $ra[$i];
-						$both = (isset ( $r['from'] ) && isset ( $r['to'] )) ? TRUE : FALSE;
+						$both = ( isset ( $r['from'] ) && isset ( $r['to'] ) ) ? TRUE : FALSE;
 						if ( strlen ( $wca ) )
 							$wca .= ' OR ';
 						if ( $both )
@@ -497,9 +498,8 @@ class tx_sevenpack_reference_accessor {
 		}
 
 		// Filter by authors
-		$f =& $filter['author'];
-		//t3lib_div::debug ( $f );
-		if ( $f && $f['enabled'] && sizeof ( $f['authors'] ) ) {
+		if ( is_array ( $filter['author'] ) && ( sizeof ( $filter['author'] ) > 0 ) ) {
+			$f =& $filter['author'];
 			if ( $f['rule'] == 1 ) {
 				// AND
 				if ( is_array ( $f['sets'] ) && ( sizeof ( $f['sets'] ) > 0 ) ) {
@@ -534,8 +534,8 @@ class tx_sevenpack_reference_accessor {
 
 			} else {
 				// OR
-				$authors =& $f['authors'];
-				if ( sizeof ( $authors ) ) {
+				if ( sizeof ( $f['authors'] ) > 0 ) {
+					$authors =& $f['authors'];
 					$uid_lst = array();
 					foreach ( $authors as $au ) {
 						if ( is_numeric ( $au['uid'] ) )
@@ -556,99 +556,97 @@ class tx_sevenpack_reference_accessor {
 		}
 
 		// Filter by bibtype
-		$f =& $filter['bibtype'];
-		if ( $f && $f['enabled'] && is_array ( $f['types'] ) ) {
-			if ( sizeof ( $f['types'] ) ) {
+		if ( is_array ( $filter['bibtype'] ) && ( sizeof ( $filter['bibtype'] ) > 0 ) ) {
+			$f =& $filter['bibtype'];
+			if ( is_array ( $f['types'] ) && ( sizeof ( $f['types'] ) > 0 ) ) {
 				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['types'] );
-				$WC[] = $rta.'.bibtype IN (' . $csv . ')';
+				$WC[] = $rta.'.bibtype IN ('.$csv.')';
 			}
 		}
 
 		// Filter by publication state
-		$f =& $filter['state'];
-		if ( $f && $f['enabled'] && is_array ( $f['states'] ) ) {
-			if ( sizeof ( $f['states'] ) > 0 ) {
+		if ( is_array ( $filter['state'] ) && ( sizeof ( $filter['state'] ) > 0 ) ) {
+			$f =& $filter['state'];
+			if ( is_array ( $f['states'] ) && ( sizeof ( $f['states'] ) > 0 ) ) {
 				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['states'] );
-				$WC[] = $rta.'.state IN (' . $csv . ')';
+				$WC[] = $rta.'.state IN ('.$csv.')';
 			}
 		}
 
 		// Filter by origin
-		$f =& $filter['origin'];
-		if ( $f && $f['enabled'] ) {
-			$wca = '(';
-			if ( intval ( $f['origin'] ) <= 1 )
-				$wca .= $rta.'.extern='."'0'";
-			else
-				$wca .= $rta.'.extern='."'1'";
-			$wca .= ')';
-			$WC[] = $wca;
+		if ( is_array ( $filter['origin'] ) && ( sizeof ( $filter['origin'] ) > 0 ) ) {
+			$f =& $filter['origin'];
+			if ( is_numeric ( $f['origin'] ) ) {
+				$wca = $rta.'.extern = \'0\'';
+				if ( intval ( $f['origin'] ) != 0 )
+					$wca = $rta.'.extern != \'0\'';
+				$WC[] = $wca;
+			}
 		}
 
 		// Filter by reviewed
-		$f =& $filter['reviewed'];
-		if ( $f && $f['enabled'] ) {
-			$wca = '(';
-			if ( intval ( $f['value'] ) == 0 )
-				$wca .= $rta.'.reviewed='."'0'";
-			else
-				$wca .= $rta.'.reviewed='."'1'";
-			$wca .= ')';
-			$WC[] = $wca;
+		if ( is_array ( $filter['reviewed'] ) && ( sizeof ( $filter['reviewed'] ) > 0 ) ) {
+			$f =& $filter['reviewed'];
+			if ( is_numeric ( $f['value'] ) ) {
+				$wca = $rta.'.reviewed = \'0\'';
+				if ( intval ( $f['value'] ) != 0 )
+					$wca = $rta.'.reviewed! = \'0\'';
+				$WC[] = $wca;
+			}
 		}
 
 		// Filter by borrowed
-		$f =& $filter['borrowed'];
-		if ( $f && $f['enabled'] ) {
-			$wca = '(';
-			if ( intval ( $f['value'] ) == 0 )
-				$wca .= 'LENGTH('.$rta.'.borrowed_by)='."'0'";
-			else
-				$wca .= 'LENGTH('.$rta.'.borrowed_by)!='."'0'";
-			$wca .= ')';
-			$WC[] = $wca;
+		if ( is_array ( $filter['borrowed'] ) && ( sizeof ( $filter['borrowed'] ) > 0 ) ) {
+			$f =& $filter['borrowed'];
+			if ( is_numeric ( $f['value'] ) ) {
+				$wca = 'LENGTH('.$rta.'.borrowed_by) = \'0\'';
+				if ( intval ( $f['value'] ) != 0 )
+					$wca = 'LENGTH('.$rta.'.borrowed_by) != \'0\'';
+				$WC[] = $wca;
+			}
 		}
 
-		// Filter by in library
-		$f =& $filter['in_library'];
-		if ( $f && $f['enabled'] ) {
-			$wca = '(';
-			if ( intval ( $f['value'] ) == 0 )
-				$wca .= $rta.'.in_library='."'0'";
-			else
-				$wca .= $rta.'.in_library='."'1'";
-			$wca .= ')';
-			$WC[] = $wca;
+		// Filter by in_library
+		if ( is_array ( $filter['in_library'] ) && ( sizeof ( $filter['in_library'] ) > 0 ) ) {
+			$f =& $filter['in_library'];
+			if ( is_numeric ( $f['value'] ) ) {
+				$wca = $rta.'.in_library = \'0\'';
+				if ( intval ( $f['value'] ) != 0 )
+					$wca = $rta.'.in_library != \'0\'';
+				$WC[] = $wca;
+			}
 		}
 
 		// Filter by citeid
-		$f =& $filter['citeid'];
-		if ( $f && $f['enabled'] && sizeof ( $f['ids'] ) ) {
-			$wca = $rta.'.citeid IN (';
-			for ( $i=0; $i < sizeof ( $f['ids'] ); $i++ )  {
-				if ( $i > 0 ) $wca .= ',';
-				$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr ( $f['ids'][$i], $rT );
+		if ( is_array ( $filter['citeid'] ) && ( sizeof ( $filter['citeid'] ) > 0 ) ) {
+			$f =& $filter['citeid'];
+			if ( is_array ( $f['ids'] ) && ( sizeof ( $f['ids'] ) > 0 ) ) {
+				$wca = $rta.'.citeid IN (';
+				for ( $i=0; $i < sizeof ( $f['ids'] ); $i++ )  {
+					if ( $i > 0 ) $wca .= ',';
+					$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr ( $f['ids'][$i], $rT );
+				}
+				$wca .= ')';
+				$WC[] = $wca;
 			}
-			$wca .= ')';
-			$WC[] = $wca;
 		}
 
 		// Filter by keywords
-		$f =& $filter['keywords'];
-		if ( $f && $f['enabled'] && sizeof( $f['words'] ) ) {
-			$wca = array();
-			$rule = ($f['rule'] == 0) ? ' OR ' : ' AND ';
-			foreach ( $f['words'] as $word ) {
-				$word = strtolower ( trim ( $word ) );
-				if ( strlen ( $word ) > 0 ) {
-					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $rT );
-					#$WC[] = 'FIND_IN_SET('.$xword.','.$rta.'.keywords)';
-					#$WC[] = 'FIND_IN_SET('.$xword.',REPLACE('.$rta.'.keywords,\' \',\'\'))';
-					$wca[] = 'LOWER('.$rta.'.keywords) LIKE ' . $word;
+		if ( is_array ( $filter['keywords'] ) && ( sizeof ( $filter['keywords'] ) > 0 ) ) {
+			$f =& $filter['keywords'];
+			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
+				$wca = array();
+				$rule = ($f['rule'] == 0) ? ' OR ' : ' AND ';
+				foreach ( $f['words'] as $word ) {
+					$word = trim ( $word );
+					if ( strlen ( $word ) > 0 ) {
+						$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $rT );
+						$wca[] = $rta.'.keywords LIKE ' . $word;
+					}
 				}
+				if ( sizeof ( $wca ) > 0 )
+					$WC[] = '( ' . implode ( $rule, $wca ) . ' )';
 			}
-			if ( sizeof ( $wca ) > 0 )
-				$WC[] = '( ' . implode ( $rule, $wca ) . ' )';
 		}
 
 		return $WC;
@@ -671,7 +669,7 @@ class tx_sevenpack_reference_accessor {
 				$OC = array();
 				for ( $i=0; $i < sizeof ( $sortings ); $i++ ) {
 					$s =& $sortings[$i];
-					if ( isset( $s['field'] ) && isset ( $s['dir'] ) ) {
+					if ( isset ( $s['field'] ) && isset ( $s['dir'] ) ) {
 						$OC[] = $s['field'] . ' ' . $s['dir'];
 					}
 				}
