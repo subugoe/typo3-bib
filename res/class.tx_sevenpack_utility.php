@@ -355,9 +355,19 @@ class tx_sevenpack_utility {
 	 *
 	 * @return The exploded string
 	 */
-	function explode_intval ( $sep, $str ) {
-		$res = explode ( $sep, $str );
-		return tx_sevenpack_utility::intval_array ( $res );
+	function explode_intval ( $sep, $str, $noEmpty = TRUE ) {
+		$res = array();
+		$list = explode ( $sep, $str );
+		if ( $noEmpty ) {
+			foreach ( $list as $val ) {
+				$val = trim ( $val );
+				if ( strlen ( $val ) > 0 )
+					$res[] = intval ( $val );
+			}
+		} else {
+			$res = tx_sevenpack_utility::intval_array ( $list );
+		}
+		return $res;
 	}
 
 

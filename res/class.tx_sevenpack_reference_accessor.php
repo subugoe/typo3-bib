@@ -649,6 +649,47 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
+
+		// General keyword search
+		if ( is_array ( $filter['all'] ) && ( sizeof ( $filter['all'] ) > 0 ) ) {
+			$f =& $filter['all'];
+			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
+				$words = array();
+				$wca = array();
+				foreach ( $f['words'] as $word ) {
+					$word = trim ( $word );
+					if ( strlen ( $word ) > 0 ) {
+						$words[] = $word;
+					}
+				}
+				if ( sizeof ( $words ) > 0 ) {
+
+					// Fields
+					foreach ( $this->refFields as $field ) {
+						foreach ( $words as $word ) {
+							$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $rT );
+							$wca[] = $rta.'.'.$field.' LIKE '.$word;
+						}
+					}
+
+					// Authors
+					$a_ships = $this->search_author_authorships ( $words, $this->pid_list );
+					if ( sizeof ( $a_ships ) > 0 ) {
+						$uids = array();
+						foreach ( $a_ships as $as ) {
+							$uids[] = intval ( $as['pub_id'] );
+						}
+						$wca[] = $rta.'.uid IN (' . implode ( ',', $uids ) . ')';
+					}
+
+				}
+
+				if ( sizeof ( $wca ) > 0 ) {
+					$WC[] = '( ' . implode ( "\n".' OR ', $wca ) . ' )';
+				}
+			}
+		}
+
 		return $WC;
 	}
 
@@ -849,7 +890,7 @@ class tx_sevenpack_reference_accessor {
 
 		$cVal = NULL;
 		$cNum = NULL;
-		while ( $row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) )  {
+		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) )  {
 			$val = $row[$field];
 			if ( $cVal == $val )
 				$cNum++;
@@ -867,6 +908,67 @@ class tx_sevenpack_reference_accessor {
 
 
 	/**
+	 * Searches and returns authors whose name looks like any of the
+	 * words (array)
+	 *
+	 * @return An array containing the authors
+	 */
+	function search_authors ( $words, $pids ) {
+		$aT =& $this->authorTable;
+		$authors = array();
+		$WC = array();
+		$wca = array();
+		foreach ( $words as $word ) {
+			$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $aT );
+			$wca[] = 'forename LIKE ' . $word;
+			$wca[] = 'surname LIKE ' . $word;
+		}
+		$WC[] = '(' . implode ( ' OR ', $wca ) . ')';
+		if ( is_array ( $pids ) ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $pids );
+			$WC[] = 'pid IN ('.$csv.')';
+		} else {
+			$WC[] = 'pid='.intval ( $pids );
+		}
+
+		$WC = implode ( ' AND ', $WC );
+		$WC .= $this->enable_fields ( $aT );
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( '*', $aT, $WC );
+		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
+			$authors[] = $row;
+		}
+
+		return $authors;
+	}
+
+
+	/**
+	 * Searches and returns the authorships of authors whose name 
+	 * looks like any of the words (array)
+	 *
+	 * @return An array containing the authors
+	 */
+	function search_author_authorships ( $words, $pids ) {
+		$sT =& $this->aShipTable;
+		$ships = array();
+		$authors = $this->search_authors ( $words, $pids );
+		if ( sizeof ( $authors ) > 0 ) {
+			$uids = array();
+			foreach ( $authors as $author ) {
+				$uids[] = intval ( $author['uid'] );
+			}
+			$WC = 'author_id IN (' . implode ( ',' , $uids ) . ')';
+			$WC .= $this->enable_fields ( $sT );
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( '*', $sT, $WC );
+			while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
+				$ships[] = $row;
+			}
+		}
+		return $ships;
+	}
+
+
+	/**
 	 * Fetches the uid(s) of the given auhor.
 	 * Checked is against the forename and the surname.
 	 *
@@ -878,7 +980,7 @@ class tx_sevenpack_reference_accessor {
 		$db =& $GLOBALS['TYPO3_DB'];
 		$aT =& $this->authorTable;
 
-		$WC = '';
+		$WC = array();
 		$check_fn = FALSE;
 		$check_sn = FALSE;
 		if ( isset ( $a['fn'] ) && ( strlen ( $a['fn'] ) || $exact ) )
@@ -886,17 +988,17 @@ class tx_sevenpack_reference_accessor {
 		if ( isset ( $a['sn'] ) && ( strlen ( $a['sn'] ) || $exact ) )
 			$check_sn = TRUE;
 		if ( $check_fn )
-			$WC .= ' AND forename='.$db->fullQuoteStr ( $a['fn'], $aT )."\n";
+			$WC[] = 'forename='.$db->fullQuoteStr ( $a['fn'], $aT );
 		if ( $check_sn )
-			$WC .= ' AND surname='.$db->fullQuoteStr ( $a['sn'], $aT )."\n";
-		if ( strlen ( $WC ) ) {
-			$WC .= $this->enable_fields ( $aT )."\n";
+			$WC[] = 'surname='.$db->fullQuoteStr ( $a['sn'], $aT );
+		if ( sizeof ( $WC ) > 0 ) {
 			if ( is_array ( $pids ) ) {
-				$WC .= ' AND pid IN ('.implode ( ',', $pids ).')'."\n";
+				$WC[] = 'pid IN ('.implode ( ',', $pids ).')';
 			} else {
-				$WC .= ' AND pid='.intval ( $pids )."\n";
+				$WC[] = 'pid='.intval ( $pids );
 			}
-			$WC = preg_replace ( '/^\s*AND\s*/', '', $WC );
+			$WC = implode ( ' AND', $WC );
+			$WC .= $this->enable_fields ( $aT );
 			//t3lib_div::debug ($WC);
 			$res = $db->exec_SELECTquery ( 'uid,pid,surname,forename', $aT, $WC );
 			while ( $row = $db->sql_fetch_assoc ( $res ) ) {

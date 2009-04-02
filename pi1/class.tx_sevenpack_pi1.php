@@ -823,10 +823,29 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function initialize_selection_filter ( )
 	{
-		if ( is_string ( $this->piVars['ref_ids'] ) ) {
-			$this->extConf['filters']['selection'] = array (
-				'uid' => explode ( ',', $this->piVars['ref_ids'] )
-			);
+		if ( !$this->conf['allow_selection'] )
+			return FALSE;
+
+		$this->extConf['filters']['selection'] = array();
+		$filter =& $this->extConf['filters']['selection'];
+
+		// Publication ids
+		if ( is_string ( $this->piVars['search']['ref_ids'] ) ) {
+			$ids = $this->piVars['search']['ref_ids'];
+			$ids = tx_sevenpack_utility::explode_intval ( ',', $ids );
+
+			if( sizeof ( $ids ) > 0 ) {
+				$filter['uid'] = $ids;
+			}
+		}
+
+		// General search
+		if ( is_string ( $this->piVars['search']['all'] ) ) {
+			$words = $this->piVars['search']['all'];
+			$words = tx_sevenpack_utility::explode_trim ( ',', $words, TRUE );
+			if ( sizeof ( $words ) > 0 ) {
+				$filter['all']['words'] = $words;
+			}
 		}
 	}
 
