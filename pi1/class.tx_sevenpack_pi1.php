@@ -845,6 +845,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$words = tx_sevenpack_utility::explode_trim ( ',', $words, TRUE );
 			if ( sizeof ( $words ) > 0 ) {
 				$filter['all']['words'] = $words;
+				$filter['all']['rule'] = 1; // AND
+				$rule = strtoupper ( trim ( $this->piVars['search']['all_rule'] ) );
+				if ( strpos ( $rule, 'AND' ) === FALSE ) {
+					$filter['all']['rule'] = 0; // OR
+				}
 			}
 		}
 	}

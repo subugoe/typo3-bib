@@ -649,48 +649,72 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
-
 		// General keyword search
 		if ( is_array ( $filter['all'] ) && ( sizeof ( $filter['all'] ) > 0 ) ) {
 			$f =& $filter['all'];
 			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
-				$words = array();
 				$wca = array();
-				foreach ( $f['words'] as $word ) {
-					$word = trim ( $word );
-					if ( strlen ( $word ) > 0 ) {
-						$words[] = $word;
+				$words =& $f['words']; // OR
+				if ( $f['rule'] == 0 ) {
+					$wca[] = $this->get_filter_search_all_clause ( $words );
+				} else {
+					foreach ( $words as $word ) {
+						$wca[] = $this->get_filter_search_all_clause ( array ( $word ) );
 					}
 				}
-				if ( sizeof ( $words ) > 0 ) {
 
-					// Fields
-					foreach ( $this->refFields as $field ) {
-						foreach ( $words as $word ) {
-							$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $rT );
-							$wca[] = $rta.'.'.$field.' LIKE '.$word;
-						}
-					}
-
-					// Authors
-					$a_ships = $this->search_author_authorships ( $words, $this->pid_list );
-					if ( sizeof ( $a_ships ) > 0 ) {
-						$uids = array();
-						foreach ( $a_ships as $as ) {
-							$uids[] = intval ( $as['pub_id'] );
-						}
-						$wca[] = $rta.'.uid IN (' . implode ( ',', $uids ) . ')';
-					}
-
+				//t3lib_div::debug ( array ( 'wca' => $wca ) );
+				foreach ( $wca as $app ) {
+					if ( strlen ( $app ) > 0 )
+						$WC[] = $app;
 				}
 
-				if ( sizeof ( $wca ) > 0 ) {
-					$WC[] = '( ' . implode ( "\n".' OR ', $wca ) . ' )';
-				}
 			}
 		}
 
 		return $WC;
+	}
+
+
+	/**
+	 * This function returns the SQL WHERE clause part
+	 * for the search for keywords (OR)
+	 *
+	 * @param $words An array or words
+	 * @return The ORDER clause string
+	 */
+	function get_filter_search_all_clause ( $words ) {
+		$rT  =& $this->refTable;
+		$rta =& $this->refTableAlias;
+		$res = '';
+		$wca = array();
+
+		// Fields
+		foreach ( $this->refFields as $field ) {
+			foreach ( $words as $word ) {
+				$word = trim ( strval ( $word ) );
+				if ( strlen ( $word ) > 0 ) {
+					$word =  '%'.$word.'%';
+					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
+					$wca[] = $rta.'.'.$field.' LIKE '.$word;
+				}
+			}
+		}
+
+		// Authors
+		$a_ships = $this->search_author_authorships ( $words, $this->pid_list );
+		if ( sizeof ( $a_ships ) > 0 ) {
+			$uids = array();
+			foreach ( $a_ships as $as ) {
+				$uids[] = intval ( $as['pub_id'] );
+			}
+			$wca[] = $rta.'.uid IN (' . implode ( ',', $uids ) . ')';
+		}
+
+		if ( sizeof ( $wca ) > 0 )
+			$res = ' ( ' . implode ( "\n".' OR ', $wca ) . ' )';
+
+		return $res;
 	}
 
 

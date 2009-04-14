@@ -1,7 +1,23 @@
+2008-03-15      Sebastian Holtermann  <sebholt@web.de>
+
+	* Database: New DOI field
+	* Database: URL field for authors. This was disabled up to now. BE only
+	* List: Automatic link generation for DOI fields (Bjoern Pedersen)
+	* List: Support for the author URL field
+	* List: Support for file_url restrictions depending on the FE user group and the file_url ending
+	* List: Automatic sorting by publication state. #Published' first, 'in preparation' at last.
+	* List: Character set conversion from DB -> Display was removed entirely - Bjoern Pedersen
+	* Filter: New filter option for the keywords field - Bjoern Pedersen
+	* Filter: Added missing state filter option for 'in preparation'
+	* Editor: FE user group access to the FE editor can be configured in TS - Bjoern Pedersen
+	* Import: BibTeX import improvements e. g. for german umlauts - Bjoern Pedersen
+	* Code: Cleanups and improvements
+	* Release version 0.5.5
+
 2008-03-17      Marco Ziesing  <mz@puremedia-online.de>
 
-  * Backend: Added ajaxgroupsearch functionality to authorships
-             Set significant values to labels
+	* Backend: Added ajaxgroupsearch functionality to authorships
+	           Set significant values to labels
 	* General: Added missing XCLASS inclusions
 
 2008-03-15      Sebastian Holtermann  <sebholt@web.de>
