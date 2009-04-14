@@ -74,7 +74,7 @@ class tx_sevenpack_single_view {
 
 		$pi1 =& $this->pi1;
 		$single_mode = $pi1->extConf['single_mode'];
-		$preId =& $pi1->prefixId;
+		$preId =& $pi1->prefix_pi1;
 		$preSh =& $pi1->prefixShort;
 		$edConf =& $pi1->conf['editor.'];
 		$edExtConf =& $pi1->extConf['editor'];
@@ -580,7 +580,7 @@ class tx_sevenpack_single_view {
 
 		// Default widget
 		$widgetType = $cfg['type'];
-		$nameAttr   = ' name="'.$pi1->prefixId.'[DATA][pub][' . $field . ']"';
+		$nameAttr   = ' name="'.$pi1->prefix_pi1.'[DATA][pub][' . $field . ']"';
 		$htmlValue  = tx_sevenpack_utility::filter_pub_html ( $value, TRUE );
 
 		switch ( $widgetType )  {
@@ -642,7 +642,7 @@ class tx_sevenpack_single_view {
 
 		// Default widget
 		$widgetType = $cfg['type'];
-		$nameAttr   = ' name="'.$pi1->prefixId.'[DATA][pub][' . $field . ']"';
+		$nameAttr   = ' name="'.$pi1->prefix_pi1.'[DATA][pub][' . $field . ']"';
 		$htmlValue  = tx_sevenpack_utility::filter_pub_html ( $value, TRUE );
 
 		if ( $silentMode || $hiddenMode ) {
@@ -723,20 +723,20 @@ class tx_sevenpack_single_view {
 						'EXT:t3skin/icons/gfx/new_record.gif' ).'"';
 					$raiseBtn = '<input type="image"'.
 						' src="'.$tmpl->getFileName ( 'EXT:t3skin/icons/gfx/button_up.gif' ).'"'.
-						' name="'.$pi1->prefixId.'[action][raise_author]"'.
+						' name="'.$pi1->prefix_pi1.'[action][raise_author]"'.
 						' value="'.strval($i).'"/>';
 					$lowerBtn = '<input type="image"'.
 						' src="'.$tmpl->getFileName ( 'EXT:t3skin/icons/gfx/button_down.gif' ).'"'.
-						' name="'.$pi1->prefixId.'[action][lower_author]"'.
+						' name="'.$pi1->prefix_pi1.'[action][lower_author]"'.
 						' value="'.strval($i).'"/>';
 
 					$con .= '<input type="text" ';
-					$con .= 'name="'.$pi1->prefixId.'[DATA][pub][authors]['.$i.'][fn]" ';
+					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][fn]" ';
 					$con .= 'value="'.$fn.'"'.$Iclass.'/>';
 					$con .= '</td>';
 					$con .= '<td>';
 					$con .= '<input type="text" ';
-					$con .= 'name="'.$pi1->prefixId.'[DATA][pub][authors]['.$i.'][sn]" ';
+					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][sn]" ';
 					$con .= 'value="'.$sn.'"'.$Iclass.'/>';
 					$con .= '</td>';
 					$con .= '<td style="padding: 1px;">';
@@ -745,12 +745,12 @@ class tx_sevenpack_single_view {
 					$con .= ( ($i>0) && ($i<($aNum)) ) ? $raiseBtn : '';
 				} else if ( $silentMode ) {
 					$con .= '<input type="hidden" ';
-					$con .= 'name="'.$pi1->prefixId.'[DATA][pub][authors]['.$i.'][fn]" ';
+					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][fn]" ';
 					$con .= 'value="'.$fn.'"'.$Iclass.'/>'.$fn;
 					$con .= '</td>';
 					$con .= '<td>';
 					$con .= '<input type="hidden" ';
-					$con .= 'name="'.$pi1->prefixId.'[DATA][pub][authors]['.$i.'][sn]" ';
+					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][sn]" ';
 					$con .= 'value="'.$sn.'"'.$Iclass.'/>'.$sn;
 				} else {
 					$con .= $sn.'</td><td>'.$fn;
@@ -763,10 +763,10 @@ class tx_sevenpack_single_view {
 				$con .= '<tr><td colspan="2"></td>';
 				$con .= '<td>';
 				$con .= '<input type="submit"'
-					.  ' name="'.$pi1->prefixId.'[action][more_authors]"'
+					.  ' name="'.$pi1->prefix_pi1.'[action][more_authors]"'
 					.  ' value="+"/>';
 				$con .= '<input type="submit"'
-					.  ' name="'.$pi1->prefixId.'[action][less_authors]"'
+					.  ' name="'.$pi1->prefix_pi1.'[action][less_authors]"'
 					.  ' value="-"/>' . "\n";
 				$con .= '</td></tr>'."\n";
 			}
@@ -777,10 +777,10 @@ class tx_sevenpack_single_view {
 				$fn = $pi1->filter_pub_html ( $authors[$i]['fn'], TRUE );
 				$sn = $pi1->filter_pub_Html ( $authors[$i]['sn'], TRUE );
 				$con .= '<input type="hidden" ';
-				$con .= 'name="'.$pi1->prefixId.'[DATA][pub][authors]['.$i.'][fn]" ';
+				$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][fn]" ';
 				$con .= 'value="'.$fn.'"'.$Iclass.'/>';
 				$con .= '<input type="hidden" ';
-				$con .= 'name="'.$pi1->prefixId.'[DATA][pub][authors]['.$i.'][sn]" ';
+				$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][sn]" ';
 				$con .= 'value="'.$sn.'"'.$Iclass.'/>';
 			}
 		}
@@ -808,7 +808,7 @@ class tx_sevenpack_single_view {
 			case $this->pi1->W_EDIT:
 				$con .= tx_sevenpack_utility::html_select_input (
 					$pages, $value,
-					array ( 'name' => $this->pi1->prefixId . '[DATA][pub][pid]' )
+					array ( 'name' => $this->pi1->prefix_pi1.'[DATA][pub][pid]' )
 				);
 				break;
 			case $this->pi1->W_SHOW:
@@ -816,7 +816,7 @@ class tx_sevenpack_single_view {
 			case $this->pi1->W_HIDDEN:
 				if ( $mode != $this->pi1->W_SHOW ) {
 					$con .= '<input type="hidden"';
-					$con .= ' name="'.$this->pi1->prefixId.'[DATA][pub][pid]"';
+					$con .= ' name="'.$this->pi1->prefix_pi1.'[DATA][pub][pid]"';
 					$con .= ' value="'.$value.'"';
 					$con .= ' />';
 				}

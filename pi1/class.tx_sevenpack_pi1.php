@@ -48,6 +48,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $pi_checkCHash = TRUE;
 
 	public $prefixShort = 'tx_sevenpack';	// Get/Post variable prefix.
+	public $prefix_pi1 = 'tx_sevenpack_pi1';		// pi1 prefix id
 
 	// Enumeration for list modes
 	public $D_SIMPLE  = 0;
@@ -623,7 +624,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function error_msg ( $str )
 	{
 		$ret  = '<div class="'.$this->prefixShort.'-warning_box">'."\n";
-		$ret .= '<h3>'.$this->prefixId.' error</h3>'."\n";
+		$ret .= '<h3>'.$this->prefix_pi1.' error</h3>'."\n";
 		$ret .= '<div>'.$str.'</div>'."\n";
 		$ret .= '</div>'."\n";
 		return $ret;
@@ -980,7 +981,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $this->extConf['edit_mode'] ) $auto_cache = FALSE;
 
 		$vars = array_merge ( $this->extConf['additional_link_vars'], $vars );
-		$vars = array ( $this->prefixId => $vars );
+		$vars = array ( $this->prefix_pi1 => $vars );
 
 		$record = '';
 		if ( $this->extConf['ce_links'] && $current_record )
@@ -1078,7 +1079,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// The year selector
 			$ys = '';
-			$ys .= '<form name="'.$this->prefixId.'-year_select_form" ';
+			$ys .= '<form name="'.$this->prefix_pi1.'-year_select_form" ';
 			$ys .= 'action="'.$this->get_link_url ( array ( 'year' => '' ), FALSE ).'"';
 			$ys .= ' method="post"';
 			$ys .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
@@ -1088,7 +1089,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			foreach ( array_reverse( $pubYears ) as $y )
 				$pairs[$y] = $y;
 			$attribs = array (
-				'name'     => $this->prefixId.'[year]',
+				'name'     => $this->prefix_pi1.'[year]',
 				'onchange' => 'this.form.submit()'
 			);
 			if ( strlen ( $cfg['select_class'] ) > 0 )
@@ -1097,7 +1098,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$pairs, $this->extConf['year'], $attribs );
 
 			$ys .= '<input type="submit"';
-			$ys .= ' name="'.$this->prefixId.'[action][select_year]"';
+			$ys .= ' name="'.$this->prefix_pi1.'[action][select_year]"';
 			$ys .= ' value="'.$this->get_ll ( 'button_go' ).'"';
 			$ys .= strlen ( $cfg['input_class'] ) ? ' class="'.$cfg['input_class'].'"' : '';
 			$ys .= '/>' . "\n";
@@ -1988,7 +1989,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$translator['###ROW_CLASS###'] = $conf['classes.']['odd'];
 
 			$translator['###NUMBER_CLASS###'] = $this->prefixShort.'-enum';
-			//$translator['###TITLECLASS###'] = $this->prefixId.'-bibtitle';
+			//$translator['###TITLECLASS###'] = $this->prefix_pi1.'-bibtitle';
 
 			// Manipulators
 			$translator['###MANIPULATORS###'] = '';
