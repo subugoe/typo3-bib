@@ -777,10 +777,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $this->pi_getFFvalue ( $ff, 'enable_citeid', $fSheet ) != 0 ) {
 			$f = array();
 			$ids = $this->pi_getFFvalue ( $ff, 'citeids', $fSheet);
-			$ids = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
-			$f['ids'] = array_unique ( $ids );
-			if ( sizeof ( $f['ids'] ) > 0 )
+			if ( strlen ( $ids ) > 0 ) {
+				$ids = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
+				$f['ids'] = array_unique ( $ids );
 				$filter['citeid'] = $f;
+			}
 		}
 
 		// Keywords filter
@@ -789,9 +790,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['rule'] = $this->pi_getFFvalue ( $ff, 'keywords_rule', $fSheet);
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
-			$f['words'] = explode ( ',', $kw );
-			if ( sizeof ( $f['words'] ) > 0 )
+			if ( strlen ( $kw ) > 0 ) {
+				$f['words'] = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				$filter['keywords'] = $f;
+			}
+		}
+
+		// General keyword search
+		if ( $this->pi_getFFvalue ( $ff, 'enable_search_all', $fSheet) ) {
+			$f = array();
+			$f['rule'] = $this->pi_getFFvalue ( $ff, 'search_all_rule', $fSheet);
+			$f['rule'] = intval ( $f['rule'] );
+			$kw = $this->pi_getFFvalue ( $ff, 'search_all', $fSheet);
+			if ( strlen ( $kw ) > 0 ) {
+				$f['words'] = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$filter['all'] = $f;
+			}
 		}
 
 		//t3lib_div::debug ( array ( 'pid list final' => $pid_list) );

@@ -943,9 +943,12 @@ class tx_sevenpack_reference_accessor {
 		$WC = array();
 		$wca = array();
 		foreach ( $words as $word ) {
-			$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $aT );
-			$wca[] = 'forename LIKE ' . $word;
-			$wca[] = 'surname LIKE ' . $word;
+			$word = trim ( strval ( $word ) );
+			if ( strlen ( $word ) > 0 ) {
+				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $aT );
+				$wca[] = 'forename LIKE ' . $word;
+				$wca[] = 'surname LIKE ' . $word;
+			}
 		}
 		$WC[] = '(' . implode ( ' OR ', $wca ) . ')';
 		if ( is_array ( $pids ) ) {
@@ -962,6 +965,7 @@ class tx_sevenpack_reference_accessor {
 			$authors[] = $row;
 		}
 
+		//t3lib_div::debug ( array ( 'authors' => $authors ) );
 		return $authors;
 	}
 
@@ -988,6 +992,8 @@ class tx_sevenpack_reference_accessor {
 				$ships[] = $row;
 			}
 		}
+
+		//t3lib_div::debug ( array ( 'authorships' => $authors ) );
 		return $ships;
 	}
 

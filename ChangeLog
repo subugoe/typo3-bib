@@ -9,6 +9,7 @@
 	* List: Character set conversion from DB -> Display was removed entirely - Bjoern Pedersen
 	* Filter: New filter option for the keywords field - Bjoern Pedersen
 	* Filter: Added missing state filter option for 'in preparation'
+	* Filter: New 'Search in all fields' filter
 	* Editor: FE user group access to the FE editor can be configured in TS - Bjoern Pedersen
 	* Import: BibTeX import improvements e. g. for german umlauts - Bjoern Pedersen
 	* Code: Cleanups and improvements
