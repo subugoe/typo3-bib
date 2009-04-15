@@ -1027,7 +1027,7 @@ class tx_sevenpack_reference_accessor {
 			} else {
 				$WC[] = 'pid='.intval ( $pids );
 			}
-			$WC = implode ( ' AND', $WC );
+			$WC = implode ( ' AND ', $WC );
 			$WC .= $this->enable_fields ( $aT );
 			//t3lib_div::debug ($WC);
 			$res = $db->exec_SELECTquery ( 'uid,pid,surname,forename', $aT, $WC );

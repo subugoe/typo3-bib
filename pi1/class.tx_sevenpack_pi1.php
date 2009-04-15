@@ -355,9 +355,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		     && isset ( $this->conf['FE_edit_groups'] )
 		     && is_array ( $GLOBALS['TSFE']->fe_user->groupData )
 		) {
-			$allowed =& $this->conf['FE_edit_groups'];
+			$allowed = strtolower ( $this->conf['FE_edit_groups'] );
 			$current =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
-			if ( tx_sevenpack_utility::intval_list_check ( $allowed, $current ) ) {
+			if ( tx_sevenpack_utility::intval_list_check ( $allowed, $current ) 
+			     || ( !( strpos ( $allowed, 'all' ) === FALSE ) ) ) {
+				//t3lib_div::debug( 'FE user ok' );
 				$g_ok = TRUE;
 			}
 		}

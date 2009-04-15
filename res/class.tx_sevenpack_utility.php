@@ -78,26 +78,6 @@ class tx_sevenpack_utility {
 
 
 	/**
-	 * This does character conversions on database content
-	 *
-	 * @return The string filtered for html output
-	 */
-	function filter_pub_html ( $str, $hsc = FALSE ) {
-		if ( $hsc ) 
-			$str = htmlspecialchars ( $str, ENT_QUOTES, strtoupper ( $be_charset ) );
-
-		// Character conversion
-		//$be_charset = strtolower ( $this->extConf['be_charset'] );
-		//$fe_charset = strtolower ( $this->extConf['page_charset'] );
-		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
-		//	$cs =& $GLOBALS['TSFE']->csConvObj;
-		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
-		//}
-		return $str;
-	}
-
-
-	/**
 	 * Fixes illegal occurences of ampersands (&) in html strings
 	 * Well Typo3 seems to handle this as well
 	 *
@@ -117,6 +97,26 @@ class tx_sevenpack_utility {
 		$str = str_replace( '&;', '&amp;;', $str );
 		
 		//t3lib_div::debug ( array( 'post: ' => $str ) );
+		return $str;
+	}
+
+
+	/**
+	 * This function prepares database content fot HTML output
+	 *
+	 * @return The string filtered for html output
+	 */
+	function filter_pub_html ( $str, $hsc = FALSE ) {
+		if ( $hsc ) 
+			$str = htmlspecialchars ( $str, ENT_QUOTES, strtoupper ( $be_charset ) );
+
+		// Character conversion
+		//$be_charset = strtolower ( $this->extConf['be_charset'] );
+		//$fe_charset = strtolower ( $this->extConf['page_charset'] );
+		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
+		//	$cs =& $GLOBALS['TSFE']->csConvObj;
+		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
+		//}
 		return $str;
 	}
 
