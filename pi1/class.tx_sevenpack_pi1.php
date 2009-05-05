@@ -1255,6 +1255,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function setup_page_navi ()
 	{
 		$naviStr = '';
+		$naviTop = '';
+		$naviBottom = '';
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
@@ -1419,11 +1421,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Labels
 			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
-				$this->get_ll ( 'pageNav_label' ), $cfg['label.']);
+				$this->get_ll ( 'pageNav_label' ), $cfg['label.'] );
 
 			// Treat the template
 			$t_str = $this->enum_condition_block ( $this->template['PAGE_NAVI_BLOCK'] );
 			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
+			if( $cfg['top_disable'] != 1 )
+				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
+			if( $cfg['bottom_disable'] != 1 )
+				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
 
 			$hasStr = array ( '','' );
 		}
@@ -1431,8 +1437,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->template['VIEW'] = $cObj->substituteSubpart ( 
 			$this->template['VIEW'], '###HAS_PAGE_NAVI###', $hasStr );
 
-		$this->template['VIEW'] = $cObj->substituteMarker (
-			$this->template['VIEW'], '###PAGE_NAVI###', $naviStr );
+		$translator = array (
+			'###PAGE_NAVI###' => $naviStr,
+			'###PAGE_NAVI_TOP###' => $naviTop,
+			'###PAGE_NAVI_BOTTOM###' => $naviBottom
+		);
+
+		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
+			$this->template['VIEW'], $translator );
 	}
 
 

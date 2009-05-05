@@ -2,8 +2,6 @@
 plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	.tx_sevenpack-navi_year {
-		background-color: #7ca6a6; 
-		background-color: #fff;
 		border-bottom: 1px solid black; 
 		color: black;
 		padding: 0.5em;
@@ -13,14 +11,19 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	.tx_sevenpack-navi_page {
-		background-color: #c9dbd8;
-		background-color: #fff;
 		border-top: 0px solid black; 
 		border-bottom: 0px solid black; 
 		color: black;
 		margin: 0.5em 0em;
 		padding: 0px;
 		text-align: left;
+	}
+
+	.tx_sevenpack-navi_page_top, 
+	.tx_sevenpack-navi_page_bottom {
+		padding: 0px;
+		margin: 0px;
+		border-width: 0px;
 	}
 
 	span.tx_sevenpack-navi_current {

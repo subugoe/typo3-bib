@@ -227,11 +227,15 @@ plugin.tx_sevenpack_pi1 {
 			separator.wrap = <span class="tx_sevenpack-navi_separator">|</span>
 			separator.noTrimWrap = | | |
 
-			begin.wrap = |###SEPARATOR###
 			previous.wrap = |###SEPARATOR###
 			next.wrap = ###SEPARATOR###|
-			last.wrap = ###SEPARATOR###|
 		}
+
+		top_disable = 1
+		bottom_disable = 0
+
+		top.wrap = <div class="tx_sevenpack-navi_page_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_page_bottom">|</div>
 	}
 
 
