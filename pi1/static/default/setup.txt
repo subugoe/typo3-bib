@@ -36,10 +36,16 @@ plugin.tx_sevenpack_pi1 {
 
 	# List view
 	enum {
+		page = ###I_PAGE###
 		page.wrap = |.
+		all = ###I_ALL###
 		all.wrap = |.
-		bullet.wrap = |
-		empty.wrap = |
+		bullet = &bull;
+		#bullet.wrap = |
+		#empty = &nbsp;
+		#empty.wrap = |
+		file_img = ###FILE_IMG_LINK###
+		#file_img.wrap = |
 	}
 
 	# Label wraps

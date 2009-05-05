@@ -131,6 +131,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'STATISTIC_BLOCK', 
 		'ITEM_BLOCK', 'SPACER_BLOCK' );
 
+	public $label_translator = array();
+
+
 	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
@@ -1650,39 +1653,21 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
-	 * Returns the html interpretation of the publication
-	 * item as it is defined in the html template
-	 *
-	 * @return HTML string for a single item in the list view
-	 */
-	function get_item_html ( $pub, $templ )
-	{
-		//t3lib_div::debug ( array ( 'get_item_html($pub)' => $pub ) );
-		$translator = array();
-		$now = time();
-		$cObj =& $this->cObj;
-		$conf =& $this->conf;
-
-		// Load publication data into cObj
-		$cObj_restore = $cObj->data;
-		$cObj->data = $pub;
-
-		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
-		$data_wrap = array ( '', '' );
+	function prepare_pub_display( $pub, &$warnings = array() ) {
 
 		// Prepare processed row data
-		$pdata = array();
+		$pdata = $pub;
 		foreach ( $this->ra->refFields as $f ) {
-			if ( !$this->extConf['hide_fields'][$f] )
-				$pdata[$f] = tx_sevenpack_utility::filter_pub_html_display ( $pub[$f] );
+			$pdata[$f] = tx_sevenpack_utility::filter_pub_html_display ( $pdata[$f] );
 		}
 
 		// Preformat some data
 		// Bibtype
+		$pdata['bibtype_short'] = $this->ra->allBibTypes[$pdata['bibtype']];
 		$pdata['bibtype'] = $this->get_ll (
 			$this->ra->refTable.'_bibtype_I_'.$pdata['bibtype'],
 			'Unknown bibtype: '.$pdata['bibtype'], TRUE ) ;
+
 		// Extern
 		$pdata['extern'] = ( $pub['extern'] == 0 ? '' : 'extern' );
 
@@ -1708,8 +1693,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'FE_user_groups' => $conf['restrictions.']['file_url.']['FE_user_groups']
 		);
 		$pdata['file_url'] = tx_sevenpack_utility::setup_file_url( $pdata['file_url'], $url_config );
-		$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
-
 
 		// State
 		switch ( $pdata['state'] ) {
@@ -1725,21 +1708,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Format the author string
 		$pdata['authors'] = $this->get_item_authors_html ( $pub['authors'] );
 
-		if ( ( strlen ( $pub['citeid'] ) == 0 )
-		     && $this->extConf['edit_mode']
+		// Look for missing citeid
+		if ( ( strlen ( $pub['citeid'] ) == 0 ) && $this->extConf['edit_mode']
 		     && ($conf['editor.']['warnings.']['m_citeid'] > 0) ) {
-			$str = ' <div class="'.$this->prefixShort.'-missing_data">Citeid missing!</div>';
-			$data_wrap[1] = $str . $data_wrap[1];
+			$warnings[] = 'Citeid missing';
 		}
 
 		// Prepare the translator
 		// Remove empty field marker from the template
 		foreach ( $this->ra->pubFields as $f ) {
-			$upStr = strtoupper ( $f );
-			$hasStr = '';
-			$val   = trim ( strval ( $pdata[$f] ) );
-
-			$translator['###'.$upStr.'###'] = '';
+			$val = trim ( strval ( $pdata[$f] ) );
 
 			if ( strlen ( $val ) > 0 )  {
 				// Do some special treatment for certain fields
@@ -1760,8 +1738,44 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 						break;
 					default:
 				}
+			}
+			$pdata[$f] = $val;
+		}
 
-				// Wrap field bibtype and default
+		return $pdata;
+	}
+
+
+	/** 
+	 * Returns the html interpretation of the publication
+	 * item as it is defined in the html template
+	 *
+	 * @return HTML string for a single item in the list view
+	 */
+	function get_item_html ( $pdata, $templ )
+	{
+		//t3lib_div::debug ( array ( 'get_item_html($pdata)' => $pdata ) );
+		$translator = array();
+		$now = time();
+		$cObj =& $this->cObj;
+		$conf =& $this->conf;
+
+		$bib_str = $pdata['bibtype_short'];
+		$data_wrap = array ( '', '' );
+
+		// Prepare the translator
+		// Remove empty field marker from the template
+		foreach ( $this->ra->pubFields as $f ) {
+			$upStr = strtoupper ( $f );
+			$hasStr = '';
+			$translator['###'.$upStr.'###'] = '';
+
+			$val = strval ( $pdata[$f] );
+			if ( $this->extConf['hide_fields'][$f] )
+				$val = '';
+
+			if ( strlen ( $val ) > 0 )  {
+				// Wrap default or by bibtype
 				$stdWrap = $conf['field.'][$f.'.'];
 				if ( is_array ( $conf['field.'][$bib_str.'.'][$f.'.'] ) )
 					$stdWrap = $conf['field.'][$bib_str.'.'][$f.'.'];
@@ -1784,7 +1798,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$data_wrap[1] .= $tmp[1];
 
 		// Embrace hidden references with wrap
-		if ( ($pub['hidden'] != 0 ) && is_array ( $conf['editor.']['hidden.'] ) ) {
+		if ( ($pdata['hidden'] != 0 ) && is_array ( $conf['editor.']['hidden.'] ) ) {
 			$tmp = $cObj->stdWrap ( 'XxXx', $conf['editor.']['hidden.'] );
 			$tmp = explode ( 'XxXx', $tmp );
 			$data_wrap[0] = $tmp[0] . $data_wrap[0];
@@ -1792,22 +1806,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$data_wrap[1] .= $tmp[1];
 		}
 
-		// Replace labels
-		$l_trans = array ( );
-		$l_trans['###LABEL_ABSTRACT###']   = $cObj->stdWrap ( $this->get_ll ( 'label_abstract' ),  $conf['label.']['abstract.']  );
-		$l_trans['###LABEL_ANNOTATION###'] = $cObj->stdWrap ( $this->get_ll ( 'label_annotation' ), $conf['label.']['annotation.'] );
-		$l_trans['###LABEL_EDITION###']    = $cObj->stdWrap ( $this->get_ll ( 'label_edition' ),   $conf['label.']['edition.']   );
-		$l_trans['###LABEL_EDITOR###']     = $cObj->stdWrap ( $this->get_ll ( 'label_editor' ),    $conf['label.']['editor.']    );
-		$l_trans['###LABEL_ISBN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_isbn' ),      $conf['label.']['ISBN.']      );
-		$l_trans['###LABEL_KEYWORDS###']   = $cObj->stdWrap ( $this->get_ll ( 'label_keywords' ),  $conf['label.']['keywords.']  );
-		$l_trans['###LABEL_NOTE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_note' ),      $conf['label.']['note.']      );
-		$l_trans['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),        $conf['label.']['of.']        );
-		$l_trans['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),      $conf['label.']['page.']      );
-		$l_trans['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ), $conf['label.']['publisher.'] );
-		$l_trans['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),    $conf['label.']['volume.']    );
-
 		$templ = $cObj->substituteMarkerArrayCached ( $templ, $translator );
-		$templ = $cObj->substituteMarkerArrayCached ( $templ, $l_trans );
+		$templ = $cObj->substituteMarkerArrayCached ( $templ, $this->label_translator );
 
 		// Wrap elements with an anchor
 		$url_wrap = array ( '', '' );
@@ -1822,8 +1822,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// remove multiple line breaks
 		$templ = preg_replace ( "/\n+/", "\n", $templ );
 		//t3lib_div::debug ( $templ );
-
-		$cObj->data = $cObj_restore;
 
 		return $templ;
 	}
@@ -1842,7 +1840,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj_restore = $cObj->data;
 
 		// Format the author string$this->
-		$and   = ' '.$this->get_ll ( 'label_and', 'and', TRUE ).' ';
+		$and = ' '.$this->get_ll ( 'label_and', 'and', TRUE ).' ';
 
 		$max_authors = abs ( intval ( $this->extConf['max_authors'] ) );
 		$last_author = sizeof ( $authors ) - 1;
@@ -1979,6 +1977,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$conf =& $this->conf;
 		$filters =& $this->extConf['filters'];
 
+		// Store cObj data
+		$cObj_restore = $cObj->data;
+
 		// The author name template
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
 		if ( isset ( $conf['authors.']['template'] ) ) {
@@ -1993,20 +1994,40 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			);
 		}
 
+		// Initialize the label translator
+		$this->label_translator = array();
+		$lt =& $this->label_translator;
+		$lt['###LABEL_ABSTRACT###']   = $cObj->stdWrap ( $this->get_ll ( 'label_abstract' ),  $conf['label.']['abstract.']  );
+		$lt['###LABEL_ANNOTATION###'] = $cObj->stdWrap ( $this->get_ll ( 'label_annotation' ), $conf['label.']['annotation.'] );
+		$lt['###LABEL_EDITION###']    = $cObj->stdWrap ( $this->get_ll ( 'label_edition' ),   $conf['label.']['edition.']   );
+		$lt['###LABEL_EDITOR###']     = $cObj->stdWrap ( $this->get_ll ( 'label_editor' ),    $conf['label.']['editor.']    );
+		$lt['###LABEL_ISBN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_isbn' ),      $conf['label.']['ISBN.']      );
+		$lt['###LABEL_KEYWORDS###']   = $cObj->stdWrap ( $this->get_ll ( 'label_keywords' ),  $conf['label.']['keywords.']  );
+		$lt['###LABEL_NOTE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_note' ),      $conf['label.']['note.']      );
+		$lt['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),        $conf['label.']['of.']        );
+		$lt['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),      $conf['label.']['page.']      );
+		$lt['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ), $conf['label.']['publisher.'] );
+		$lt['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),    $conf['label.']['volume.']    );
+
+		// Initialize the enumeration template
+		$eid = 'page';
+		switch ( intval ( $this->extConf['enum_style'] ) ) {
+			case $this->ENUM_ALL:
+				$eid = 'all'; break;
+			case $this->ENUM_BULLET:
+				$eid = 'bullet'; break;
+			case $this->ENUM_EMPTY:
+				$eid = 'empty'; break;
+			case $this->ENUM_FILE_IMAGE:
+				$eid = 'file_img'; break;
+		}
+		$enum_base = strval ( $conf['enum.'][$eid] );
+		$enum_wrap = $conf['enum.'][$eid.'.'];
+
 		// Database accessor initialization
 		$ra->mFetch_initialize();
-		$dSort =& $this->extConf['date_sorting'];
 
-		$limit_start = intval ( $filters['browse']['limit']['start'] );
-		$i_page = $this->pubPageNum - $limit_start;
-		$i_page_delta = -1;
-		if ( $dSort == $this->SORT_ASC ) {
-			$i_page = $limit_start + 1;
-			$i_page_delta = 1;
-		}
-
-		$prevBibType = -1;
-		$prevYear = -1;
+		// Determine publication numbers
 		$pubs_before = 0;
 		if ( $this->extConf['d_mode'] == $this->D_Y_NAV ) {
 			foreach ( $this->pubYearHist as $y => $n ) {
@@ -2016,11 +2037,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
-		// Some counters
+		$prevBibType = -1;
+		$prevYear = -1;
+
+		// Initialize counters
+		$limit_start = intval ( $filters['browse']['limit']['start'] );
+		$i_page = $this->pubPageNum - $limit_start;
+		$i_page_delta = -1;
+		if ( $this->extConf['date_sorting'] == $this->SORT_ASC ) {
+			$i_page = $limit_start + 1;
+			$i_page_delta = 1;
+		}
+
 		$i_subpage = 1;
 		$i_bibtype = 1;
+
+		// Start the fetch loop
 		while ( $pub = $ra->mFetch ( ) )  {
-			$translator = array();
+			// Item data
+			$cObj->data = $pub;
+
+			// Get prepared publication data
+			$warnings = array();
+			$pdata = $this->prepare_pub_display( $pub, $warnings );
+
+			// Needed since stdWrap applies htmlspecialchars to url data
+			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
 
 			// All publications counter
 			$i_all = $pubs_before + $i_page;
@@ -2037,34 +2079,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Setup the item template
 			$templID = $this->templateBibTypes[$pub['bibtype']];
 			$data_block = $this->template[$templID];
+			$item_block = $this->template['ITEM_BLOCK'];
+
 			if ( strlen ( $data_block ) == 0 )
 				$data_block = $this->template['DEFAULT_DATA'];
-			$templ = $cObj->substituteMarker ( $this->template['ITEM_BLOCK'],
+
+			$templ = $cObj->substituteMarker ( $item_block,
 				'###ITEM_DATA###', $data_block );
 
 			$templ = $this->enum_condition_block ( $templ );
 
-			// Create a template translator dictionary
-			switch ( intval ( $this->extConf['enum_style'] ) ) {
-				case $this->ENUM_ALL:
-					$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( strval ( $i_all ), 
-						$conf['enum.']['all.'] );
-					break;
-				case $this->ENUM_BULLET:
-					$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( '&bull;', $conf['enum.']['bullet.'] );
-					break;
-				case $this->ENUM_EMPTY:
-					$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( '', $conf['enum.']['empty.'] );
-					break;
-				default:
-					$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( strval ( $i_page ), $conf['enum.']['page.'] );
+			// Initialize the translator
+			$translator = array();
+
+			$enum = $enum_base;
+			$enum = str_replace ( '###I_ALL###', strval ( $i_all ), $enum );
+			$enum = str_replace ( '###I_PAGE###', strval ( $i_page ), $enum );
+			if ( !( strpos( $enum, '###FILE_IMG_LINK###' ) === FALSE ) ) {
+				$repl = $this->file_image_link( $pdata['file_url'] );
+				$enum = str_replace ( '###FILE_IMG_LINK###', $repl, $enum );
 			}
+			$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( $enum, $enum_wrap );
 
 			// Row classes
-			if ( $evenOdd )
-				$translator['###ROW_CLASS###'] = $conf['classes.']['even'];
-			else
-				$translator['###ROW_CLASS###'] = $conf['classes.']['odd'];
+			$eo = $evenOdd ? 'even' : 'odd';
+
+			$translator['###ROW_CLASS###'] = $conf['classes.'][$eo];
 
 			$translator['###NUMBER_CLASS###'] = $this->prefixShort.'-enum';
 			//$translator['###TITLECLASS###'] = $this->prefix_pi1.'-bibtitle';
@@ -2086,10 +2126,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				);
 			}
 
-			$templ = $cObj->substituteSubpart ( $templ,
-				'###HAS_MANIPULATORS###', $subst_sub );
+			$templ = $cObj->substituteSubpart ( $templ, '###HAS_MANIPULATORS###', $subst_sub );
 
-			// Year separators
+			// Year separator label
 			if ( ($this->extConf['d_mode'] == $this->D_Y_SPLIT) && ( $pub['year'] != $prevYear ) )  {
 				$yearStr = $cObj->stdWrap ( strval ( $pub['year'] ), $conf['label.']['year.'] );
 				$t_str = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
@@ -2097,7 +2136,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$prevBibType = -1;
 			}
 
-			// Bibtype separators
+			// Bibtype separator label
 			if ( $this->extConf['split_bibtypes'] && ($pub['bibtype'] != $prevBibType) )  {
 				$bibStr = $cObj->stdWrap (
 					$this->get_ll ( 'bibtype_plural_'.$pub['bibtype'], $pub['bibtype'], TRUE ),
@@ -2107,11 +2146,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$items .= $cObj->substituteMarker ( $t_str, '###BIBTYPE###', $bibStr );
 			}
 
-			// Item data
+			// Apply translator
 			$templ = $cObj->substituteMarkerArrayCached ( $templ, $translator, array() );
 
-			$items .= $this->get_item_html ( $pub, $templ );
+			// Pass to item processor
+			$items .= $this->get_item_html ( $pdata, $templ );
 
+			// Update counters
 			$i_page += $i_page_delta;
 			$i_subpage++;
 			$i_bibtype++;
@@ -2122,6 +2163,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// clean up
 		$ra->mFetch_finish();
+
+		// Restore cObj data
+		$cObj->data = $cObj_restore;
 
 		if ( strlen ( $items ) )
 			$hasStr = array ( '', '' );
