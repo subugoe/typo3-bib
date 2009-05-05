@@ -369,11 +369,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$extConf['edit_mode'] = ( $g_ok && $extConf['editor']['enabled'] );
 
-		// Set the bullet mode
+		// Set the enumeration mode
 		$extConf['has_enum'] = TRUE;
 		if ( ( $extConf['enum_style'] == $this->ENUM_EMPTY ) ) {
 			$extConf['has_enum'] = FALSE;
 		}
+
+		// Initialize data display restrictions
+		$this->initialize_restrictions ( );
 
 		// Initialize the default filter
 		$this->initialize_filters ( );
@@ -633,6 +636,31 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$ret .= '<div>'.$str.'</div>'."\n";
 		$ret .= '</div>'."\n";
 		return $ret;
+	}
+
+
+	/**
+	 * This initializes field restrictions
+	 *
+	 * @return void
+	 */
+	function initialize_restrictions ( )
+	{
+		$this->extConf['restrict'] = FALSE;
+		$restrict = $this->conf['restrictions.'];
+		if ( is_array ( $restrict ) ) {
+			$res = $restrict['file_url.'];
+			if ( is_array ( $res ) ) {
+				$all = ( $res['hide_all'] != 0 );
+				$ext = tx_sevenpack_utility::explode_trim_lower ( 
+					',', $res['hide_file_ext'], TRUE );
+				$groups = tx_sevenpack_utility::explode_intval ( 
+					',', $res['FE_user_groups'] );
+			}
+			$this->extConf['restrict']['file_url']['hide_all'] = $all;
+			$this->extConf['restrict']['file_url']['hide_ext'] = $ext;
+			$this->extConf['restrict']['file_url']['fe_groups'] = $groups;
+		}
 	}
 
 
@@ -1653,6 +1681,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
+	/** 
+	 * Prepares database publication data for displaying
+	 *
+	 * @return The procesed publication data array
+	 */
 	function prepare_pub_display( $pub, &$warnings = array() ) {
 
 		// Prepare processed row data
@@ -1686,13 +1719,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pdata['month'] = '';
 		}
 
-		// File/URL
-		$url_config = array ( 
-			'DOI' => $pdata['DOI'],
-			'hide_file_ext' => $conf['restrictions.']['file_url.']['hide_file_ext'],
-			'FE_user_groups' => $conf['restrictions.']['file_url.']['FE_user_groups']
-		);
-		$pdata['file_url'] = tx_sevenpack_utility::setup_file_url( $pdata['file_url'], $url_config );
+		// Automatic url
+		$order = tx_sevenpack_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
+		$pdata['auto_url'] = $this->get_auto_url( $pdata, $order );
 
 		// State
 		switch ( $pdata['state'] ) {
@@ -1710,7 +1739,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Look for missing citeid
 		if ( ( strlen ( $pub['citeid'] ) == 0 ) && $this->extConf['edit_mode']
-		     && ($conf['editor.']['warnings.']['m_citeid'] > 0) ) {
+		     && ($this->conf['editor.']['warnings.']['m_citeid'] > 0) ) {
 			$warnings[] = 'Citeid missing';
 		}
 
@@ -1726,8 +1755,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					case 'file_url':
 						$val = preg_replace ( '/&([^;]{8})/', '&amp;\\1', $val );
 						// Cut the displayed string in the middle
-						if ( isset ( $conf['max_url_string_length'] ) ) {
-							$ml = abs ( intval ( $conf['max_url_string_length'] ) );
+						if ( isset ( $this->conf['max_url_string_length'] ) ) {
+							$ml = abs ( intval ( $this->conf['max_url_string_length'] ) );
 							if ( strlen ( $val ) > $ml ) {
 								$le = ceil ( $ml/2.0 );
 								$ls = $ml - $le;
@@ -1767,12 +1796,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Remove empty field marker from the template
 		foreach ( $this->ra->pubFields as $f ) {
 			$upStr = strtoupper ( $f );
+			$tkey = '###'.$upStr.'###';
 			$hasStr = '';
-			$translator['###'.$upStr.'###'] = '';
+			$translator[$tkey] = '';
 
 			$val = strval ( $pdata[$f] );
-			if ( $this->extConf['hide_fields'][$f] )
-				$val = '';
+
+			if ( strlen ( $val ) > 0 )  {
+				if ( $this->check_field_restriction ( $f, $val ) )
+					$val = '';
+			}
 
 			if ( strlen ( $val ) > 0 )  {
 				// Wrap default or by bibtype
@@ -1784,7 +1817,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 				if ( strlen ( $val ) > 0 ) {
 					$hasStr =  array ( '', '' );
-					$translator['###'.$upStr.'###'] = $val;
+					$translator[$tkey] = $val;
 				}
 			}
 
@@ -2063,6 +2096,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Needed since stdWrap applies htmlspecialchars to url data
 			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
+			$cObj->data['auto_url'] = htmlspecialchars_decode ( $pdata['auto_url'], ENT_QUOTES );
 
 			// All publications counter
 			$i_all = $pubs_before + $i_page;
@@ -2095,9 +2129,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$enum = $enum_base;
 			$enum = str_replace ( '###I_ALL###', strval ( $i_all ), $enum );
 			$enum = str_replace ( '###I_PAGE###', strval ( $i_page ), $enum );
-			if ( !( strpos( $enum, '###FILE_IMG_LINK###' ) === FALSE ) ) {
-				$repl = $this->file_image_link( $pdata['file_url'] );
-				$enum = str_replace ( '###FILE_IMG_LINK###', $repl, $enum );
+			if ( !( strpos( $enum, '###FILE_URL_ICON###' ) === FALSE ) ) {
+				$repl = $this->get_file_url_icon ( $pdata['file_url'] );
+				$enum = str_replace ( '###FILE_URL_ICON###', $repl, $enum );
 			}
 			$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( $enum, $enum_wrap );
 
@@ -2119,7 +2153,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$subst_sub = array ( '', '' );
 				$manip_all[] = $this->get_edit_manipulator ( $pub );
 				$manip_all[] = $this->get_hide_manipulator ( $pub );
-				$manip_all = $this->get_layout_table ( array ( $manip_all ) );
+				$manip_all = tx_sevenpack_utility::html_layout_table ( array ( $manip_all ) );
 
 				$translator['###MANIPULATORS###'] = $cObj->stdWrap (
 					$manip_all, $conf['editor.']['manipulators.']['all.']
@@ -2180,29 +2214,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
-	 * A layout table the contains all the strings in $rows
-	 */
-	function get_layout_table ( $rows ) {
-		// The edit button
-		$res = '<table class="'.$this->prefixShort.'-layout"><tbody>';
-		foreach ( $rows as $row ) {
-			$res .= '<tr>';
-			if ( is_array ( $row ) ) {
-				foreach ( $row as $cell ) {
-					$res .= '<td>' . strval ( $cell ) . '</td>';
-				}
-			} else {
-				$res .= '<td>' . strval ( $row ) . '</td>';
-			}
-			$res .= '</tr>';
-		}
-		$res .= '</tbody></table>';
-		return $res;
-	}
-
-
-	/**
-	 * Returns the edit button
+	 * Returns the new entry button
 	 */
 	function get_new_manipulator ( ) {
 		$label = $this->get_ll ( 'manipulators_new', 'New', TRUE );
@@ -2258,6 +2270,117 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['manipulators.']['hide.'] );
 
+		return $res;
+	}
+
+
+	/**
+	 * Returns TRUE if the field/value combination is restricted
+	 * and should not be displayed
+	 *
+	 * @return TRUE (restricted) or FALSE (not restricted)
+	 */
+	function check_field_restriction ( $field, $value ) {
+		$res = FALSE;
+
+		if ( strlen ( $value ) == 0 )
+			return FALSE;
+
+		if ( $this->extConf['hide_fields'][$field] ) {
+			return TRUE;
+		}
+
+		$restric =& $this->extConf['restrict'];
+		if ( !is_array ( $restric ) )
+			return FALSE;
+
+		if ( $field == 'file_url' && is_array ( $restric['file_url'] ) ) {
+			$rest =& $restric['file_url'];
+
+			//t3lib_div::debug( array ( '$rest: ' => $rest ) );
+
+			$show = TRUE;
+			// Disable on hide all
+			if ( $rest['hide_all'] )
+				$show = FALSE;
+
+			// Disable if file extensions matches
+			if ( $show && is_array ( $rest['hide_ext'] ) ) {
+				foreach ( $rest['hide_ext'] as $ext ) {
+					// Sanitize input
+					$len = strlen ( $ext );
+					if ( ( $len > 0 ) && ( strlen ( $value ) >= $len ) ) {
+						$uext = strtolower ( substr ( $value, -$len ) );
+						//t3lib_div::debug( array ( 'ext: ' => $ext, 'uext: ' => $uext ) );
+						if ( $uext == $ext ) {
+							$show = FALSE;
+							break;
+						}
+					}
+				}
+			}
+
+			// Enable if usergroup matches
+			if ( !$show && is_object ( $GLOBALS['TSFE']->fe_user )
+			     && is_array ( $GLOBALS['TSFE']->fe_user->user )
+			     && is_array ( $GLOBALS['TSFE']->fe_user->groupData )
+			     && is_array ( $rest['fe_groups'] ) )
+			{
+				// Check group membership
+				$show = tx_sevenpack_utility::intval_list_check (
+					$rest['fe_groups'], $GLOBALS['TSFE']->fe_user->groupData['uid'] );
+			}
+
+			if ( !$show )
+				$res = TRUE;
+		}
+
+		//t3lib_div::debug( array ( 'Restricted: ' => $res ? 'True' : 'False' ) );
+		return $res;
+	}
+
+
+	/**
+	 * Prepares the virtual auto_url from the data and field order
+	 *
+	 * @return The generated url
+	 */
+	function get_auto_url ( $pdata, $order ) {
+		//t3lib_div::debug( array ( 'Order: ' => $order ) );
+		$url = '';
+
+		foreach ( $order as $field ) {
+			if ( strlen ( $url ) > 0 )
+				break;
+			$data = trim ( strval ( $pdata[$field] ) );
+			if ( strlen ( $data ) > 0 ) {
+				$rest = $this->check_field_restriction ( $field, $data );
+				if ( !$rest ) {
+					if ( $field == 'DOI' ) {
+						$url = 'http://dx.doi.org/' .
+							tx_sevenpack_utility::filter_pub_html_display ( $data );
+					} else {
+						$url = $data;
+					}
+				}
+			}
+		}
+		//t3lib_div::debug ( array ( 'auto_url: ' => $url ) );
+		return $url;
+	}
+
+
+	/**
+	 * Returns the file url icon
+	 */
+	function get_file_url_icon( $url ) {
+		$res = '';
+		$rest = $this->check_field_restriction ( 'file_url', $url );
+		if ( $rest ) {
+			$res = 'Restricted';
+		} else {
+			$res = 'Not restricted';
+		}
 		return $res;
 	}
 

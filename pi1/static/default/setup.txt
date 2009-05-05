@@ -9,6 +9,8 @@ plugin.tx_sevenpack_pi1 {
 	# Links link to the content element (e.g. http://bla.html#c1234)
 	ce_links = 1
 
+	# url related values
+	auto_url_order = file_url,DOI
 	max_url_string_length = 60
 
 	# The list display mode (simple)
@@ -44,7 +46,7 @@ plugin.tx_sevenpack_pi1 {
 		#bullet.wrap = |
 		#empty = &nbsp;
 		#empty.wrap = |
-		file_img = ###FILE_IMG_LINK###
+		file_img = ###FILE_URL_ICON###
 		#file_img.wrap = |
 	}
 
@@ -137,7 +139,7 @@ plugin.tx_sevenpack_pi1 {
 		school.wrap = |,
 
 		# Title
-		title.typolink.parameter.field = file_url
+		title.typolink.parameter.field = auto_url
 		title.wrap = <div class="tx_sevenpack-title">|</div>
 
 		# Type

@@ -167,7 +167,7 @@ class tx_sevenpack_utility {
 	 * Prepares the file_url from the database string
 	 * and a configuration array
 	 *
-	 * @return The title string or FALSE
+	 * @return The processed url
 	 */
 	function setup_file_url ( $url, $config = array() ) {
 
@@ -215,14 +215,6 @@ class tx_sevenpack_utility {
 				$url = '';
 		}
 
-		// Generate DOI url
-		if ( strlen ( $url ) == 0 ) {
-			if ( strlen ( $config['DOI'] ) > 0 ) {
-				$url = 'http://dx.doi.org/' . 
-					tx_sevenpack_utility::filter_pub_html_display ( $config['DOI'] );
-			}
-		}
-
 		return $url;
 	}
 
@@ -252,6 +244,28 @@ class tx_sevenpack_utility {
 		return $con;
 	}
 
+
+	/**
+	 * A layout table the contains all the strings in $rows
+	 *
+	 * @return The html table code
+	 */
+	function html_layout_table ( $rows ) {
+		$res = '<table class="'.$this->prefixShort.'-layout"><tbody>';
+		foreach ( $rows as $row ) {
+			$res .= '<tr>';
+			if ( is_array ( $row ) ) {
+				foreach ( $row as $cell ) {
+					$res .= '<td>' . strval ( $cell ) . '</td>';
+				}
+			} else {
+				$res .= '<td>' . strval ( $row ) . '</td>';
+			}
+			$res .= '</tr>';
+		}
+		$res .= '</tbody></table>';
+		return $res;
+	}
 
 	/** 
 	 * Crops the first argument to a given range
