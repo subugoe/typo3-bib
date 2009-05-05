@@ -1306,7 +1306,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$idx1 = max ( 0,  $idxCur - $numLR );
 			}
 
-			$pageLinkTitle = $this->get_ll ( 'pageNav_pageLinkTitle', 'begin', TRUE );
+			$pageLinkTitle = $this->get_ll ( 'pageNav_pageLinkTitle', '%p', TRUE );
 
 			// Generate page navigation bar
 			$ii = 0;
@@ -1370,26 +1370,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$ii += 1;
 			}
 
-			$navi['begin'] = $this->get_ll ( 'pageNav_begin', 'begin', TRUE );
 			$navi['prev']  = $this->get_ll ( 'pageNav_previous', 'previous', TRUE  );
 			if ( $idxCur > 0 ) {
-				$title = $this->get_ll ( 'pageNav_beginLinkTitle', 'begin', TRUE );
-				$navi['begin'] = $this->get_link ( $navi['begin'], 
-					array('page'=>''), TRUE, array('title'=>$naviTitle['begin']) );
-
 				$title = $this->get_ll ( 'pageNav_previousLinkTitle', 'previous', TRUE  );
 				$page = max ( $idxCur-1, 0 );
 				$navi['prev'] = $this->get_link ( $navi['prev'], 
 					array ( 'page' => $page ), TRUE, array( 'title' => $title ) );
 			}
 
-			$navi['last']  = $this->get_ll ( 'pageNav_last', 'last', TRUE  );
 			$navi['next']  = $this->get_ll ( 'pageNav_next', 'next', TRUE  );
 			if ( $idxCur < $idxMax ) {
-				$title = $this->get_ll ( 'pageNav_lastLinkTitle', 'last', TRUE  );
-				$navi['last'] = $this->get_link ( $navi['last'],
-					array ( 'page' => $idxMax ), TRUE, array ( 'title' => $title ) );
-
 				$title = $this->get_ll ( 'pageNav_nextLinkTitle', 'next', TRUE  );
 				$page = min ( $idxCur+1, $idxMax );
 				$navi['next'] = $this->get_link ( $navi['next'] ,
@@ -1399,16 +1389,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Wrap
 			$navi['prev'] = $cObj->stdWrap ( $navi['prev'], $cfgNav['previous.'] );
 			$navi['next'] = $cObj->stdWrap ( $navi['next'], $cfgNav['next.'] );
-			if ( ( $idxMax + 1 ) > $numSel ) {
-				$navi['begin'] = $cObj->stdWrap ( $navi['begin'], 
-					$cfgNav['begin.'] );
-				$navi['last'] = $cObj->stdWrap ( $navi['last'], 
-					$cfgNav['last.'] );
-			} else {
-				$navi['begin'] = '';
-				$navi['last'] = '';
-			}
-
 
 			// Page separator
 			$sepSel = '&nbsp;';
@@ -1425,18 +1405,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$sepNav = $cObj->stdWrap ( $sepNav, $cfgNav['separator.'] );
 
 			// Replace separator
-			$navi['begin'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['begin'] );
 			$navi['prev'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['prev'] );
 			$navi['next'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['next'] );
-			$navi['last'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['last'] );
 
 			// Setup the translator
 			$translator = array (
 				'###SEL_PREV###'    => implode($sepSel, $sel['prev']),
 				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sepSel:'').implode($sepSel, $sel['cur']).(sizeof($sel['next'])?$sepSel:''),
 				'###SEL_NEXT###'    => implode($sepSel, $sel['next']),
-				'###NAVI_BACKWARDS###' => $navi['begin'].$navi['prev'],
-				'###NAVI_FORWARDS###'  => $navi['next'].$navi['last']
+				'###NAVI_BACKWARDS###' => $navi['prev'],
+				'###NAVI_FORWARDS###'  => $navi['next']
 			);
 
 			// Labels
