@@ -1120,68 +1120,103 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$ys .= '/>' . "\n";
 			$ys .= '</form>';
 
-			// Setermine ranges of year navigation bar
+			// Determine ranges of year navigation bar
 			$idxMax = sizeof ( $pubYears ) - 1;
 
-			// Number of years to display in the selection
+			// Number of years to display in the selection - must be odd
 			$numSel = 3;
 			if ( array_key_exists ( 'years', $cfgSel ) )
-				$numSel = intval ( $cfgSel['years'] );
+				$numSel = abs ( intval ( $cfgSel['years'] ) );
+			$numSel = ($numSel % 2) ? $numSel : ( $numSel + 1 );
 
-			$numLR = ($numSel % 2) ? ($numSel - 1) / 2 : $numSel / 2;
+			$numLR = intval ( ($numSel - 1) / 2 );
 
 			// Determine selection indices
 			$idxCur = intval(array_search($this->extConf['year'], $pubYears));
 
 			$idx1 = $idxCur - $numLR;
-			if ( $idx1 < 0 ) {
-				$idx1 = 0;
-				$numLR = $numLR + ($numLR - $idxCur);
+			if ( $idx1 < 1 ) {
+				$idx1 = 1;
+				$numLR = $numLR + ($numLR - $idxCur) + 1;
 			}
 			$idx2 = ($idxCur + $numLR);
-			if ( $idx2 > $idxMax ) {
+			if ( $idx2 > ( $idxMax - 1 ) ) {
 				$idx2 = $idxMax;
-				$numLR += $numLR - ($idxMax - $idxCur);
+				$numLR += $numLR - ($idxMax - $idxCur) + 1;
 				$idx1 = max ( 0,  $idxCur - $numLR );
 			}
 
-			// Generate year navigation bar
-			if ( ($idx1 > 0) && strlen ( $cfgSel['more_below'] ) ) {
-				$sel['prev'][] = $cObj->stdWrap ( $cfgSel['more_below'],
-					$cfgSel['more_below.'] );
-			}
-
 			$yearLinkTitle = $this->get_ll ( 'yearNav_yearLinkTitle', '%y', TRUE );
-			for ( $i = $idx1; $i <= $idx2; $i++ )  {
-				$year = strval ( $pubYears[$i] );
-				$link = $this->get_link ( $year, array('year'=>$year,'page'=>''), TRUE, 
-					array ( 'title'=>str_replace ( '%y', strval($year), $yearLinkTitle ) ) );
-				if ( $i < $idxCur ) {
-					$key  = 'prev'; 
-					$wrap = $cfgSel['below.'];
-				} else if ( $i > $idxCur ) {
-					$key  = 'next'; 
-					$wrap = $cfgSel['above.']; 
-				} else {
+
+			// Generate year navigation bar
+			$ii = 0;
+			while( $ii <= $idxMax ) {
+				$year = strval ( $pubYears[$ii] );
+				$link = $year;
+				$cr_link = TRUE;
+
+				if ( $ii == $idxCur ) {
+					// Current
 					$key  = 'cur'; 
 					$wrap = $cfgSel['current.'];
 					$link = $year;
+					$cr_link = FALSE;
+				} else if( $ii == 0 ) {
+					// First
+					$key  = 'prev';
+					$wrap = $cfgSel['first.'];
+				} else if ( $ii < $idx1 ) {
+					// More
+					$key  = 'prev';
+					$link = '...';
+					if ( array_key_exists ( 'more_below', $cfgSel  ) )
+						$link = strval ( $cfgSel['more_below'] );
+					$wrap = $cfgSel['more_below.'];
+					$cr_link = FALSE;
+					$ii = $idx1 - 1;
+				} else if ( $ii < $idxCur ) {
+					// Previous
+					$key  = 'prev';
+					$wrap = $cfgSel['below.'];
+				} else if ( $ii <= $idx2 ) {
+					// Following
+					$key  = 'next'; 
+					$wrap = $cfgSel['above.'];
+				} else if ( $ii < $idxMax ) {
+					// More
+					$key  = 'next'; 
+					$link = '...';
+					if ( array_key_exists ( 'more_above', $cfgSel  ) )
+						$link = strval ( $cfgSel['more_above'] );
+					$wrap = $cfgSel['more_above.'];
+					$cr_link = FALSE;
+					$ii = $idxMax - 1;
+				} else {
+					// Last
+					$key  = 'next';
+					$wrap = $cfgSel['last.'];
 				}
-				if ( is_array ( $wrap ) )
-					$sel[$key][] = $cObj->stdWrap ( $link, $wrap );
-				else
-					$sel[$key][] = $link;
-			}
 
-			if ( ($idx2 < $idxMax) && strlen ( $cfgSel['more_above'] ) ) {
-				$sel['next'][] = $cObj->stdWrap ( $cfgSel['more_above'],
-					$cfgSel['more_above.'] );
+				// Create link
+				if ( $cr_link ) {
+					$title = str_replace ( '%y', $year, $yearLinkTitle );
+					$link = $this->get_link ( $year, array ( 'year' => $year, 'page' => '' ), TRUE, 
+						array ( 'title' => $title ) );
+				}
+
+				if ( is_array ( $wrap ) )
+					$link = $cObj->stdWrap ( $link, $wrap );
+
+				$sel[$key][] = $link;
+				$ii += 1;
 			}
 
 			// Year separator
 			$sep = '&nbsp;';
 			if ( array_key_exists ( 'separator', $cfgSel  ) )
-				$sep = $cObj->stdWrap ( $cfgSel['separator'], $cfgSel['separator.'] );
+				$sep = strval ( $cfgSel['separator'] );
+			if( is_array( $cfgSel['separator.'] ) )
+				$sep = $cObj->stdWrap ( $sep, $cfgSel['separator.'] );
 
 			// Setup the translator
 			// Selection

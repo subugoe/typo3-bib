@@ -177,15 +177,17 @@ plugin.tx_sevenpack_pi1 {
 			separator.noTrimWrap  = || |
 
 			# Wraps for the current year and the years below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
 			below.wrap = |
 			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
 			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
 
 			# Strings and wraps for indicators for more years
 			more_below = ...
-			more_below.noTrimWrap = || |
+			more_below.noTrimWrap = | | |
 			more_above = ...
-			more_above.noTrimWrap = | ||
+			more_above.noTrimWrap = | | |
 		}
 	}
 
