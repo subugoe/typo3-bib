@@ -1141,7 +1141,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			$idx2 = ($idxCur + $numLR);
 			if ( $idx2 > ( $idxMax - 1 ) ) {
-				$idx2 = $idxMax;
+				$idx2 = $idxMax - 1;
 				$numLR += $numLR - ($idxMax - $idxCur) + 1;
 				$idx1 = max ( 0,  $idxCur - $numLR );
 			}
@@ -1159,7 +1159,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					// Current
 					$key  = 'cur'; 
 					$wrap = $cfgSel['current.'];
-					$link = $year;
 					$cr_link = FALSE;
 				} else if( $ii == 0 ) {
 					// First
@@ -1222,7 +1221,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Selection
 			$translator = array (
 				'###SEL_PREV###'    => implode($sep, $sel['prev']),
-				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sep:'').implode($spacer, $sel['cur']).(sizeof($sel['next'])?$sep:''),
+				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sep:'').implode($sep, $sel['cur']).(sizeof($sel['next'])?$sep:''),
 				'###SEL_NEXT###'    => implode($sep, $sel['next']),
 				'###YEAR_SELECT###' => $ys
 			);
@@ -1283,84 +1282,118 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			);
 			$navi = array();
 
-			// Number of years to display in the selection
-			$numSel = 3;
+			// Number of pages to display in the selection
+			$numSel = 5;
 			if ( array_key_exists ( 'pages', $cfgSel ) )
-				$numSel = intval ( $cfgSel['pages'] );
+				$numSel = abs ( intval ( $cfgSel['pages'] ) );
+			$numSel = ($numSel % 2) ? $numSel : ( $numSel + 1 );
 
-			$numLR = ($numSel % 2) ? ($numSel - 1) / 2 : $numSel / 2;
+			$numLR = intval ( ($numSel - 1) / 2 );
 
 			// Determine selection indices
-			$idxMin = 0;
 			$idxCur =& $subPage['current'];
 			$idxMax =& $subPage['max'];
 
 			$idx1 = $idxCur - $numLR;
-			if ( $idx1 < $idxMin ) {
-				$idx1 = 0;
-				$numLR = $numLR + ($numLR - $idxCur);
+			if ( $idx1 < 1 ) {
+				$idx1 = 1;
+				$numLR = $numLR + ($numLR - $idxCur) + 1;
 			}
 			$idx2 = ($idxCur + $numLR);
-			if ( $idx2 > $idxMax ) {
-				$idx2 = $idxMax;
-				$numLR += $numLR - ($idxMax - $idxCur);
-				$idx1 = max ( $idxMin,  $idxCur - $numLR );
+			if ( $idx2 > ( $idxMax - 1 ) ) {
+				$idx2 = $idxMax - 1;
+				$numLR += $numLR - ($idxMax - $idxCur) + 1;
+				$idx1 = max ( 0,  $idxCur - $numLR );
+			}
+
+			$pageLinkTitle = $this->get_ll ( 'pageNav_pageLinkTitle', 'begin', TRUE );
+
+			// Generate page navigation bar
+			$ii = 0;
+			while( $ii <= $idxMax ) {
+				$page = strval ( $ii + 1 );
+				$link = $page;
+				$cr_link = TRUE;
+
+				if ( $ii == $idxCur ) {
+					// Current
+					$key  = 'cur'; 
+					$wrap = $cfgSel['current.'];
+					$cr_link = FALSE;
+				} else if( $ii == 0 ) {
+					// First
+					$key  = 'prev';
+					$wrap = $cfgSel['first.'];
+				} else if ( $ii < $idx1 ) {
+					// More
+					$key  = 'prev';
+					$link = '...';
+					if ( array_key_exists ( 'more_below', $cfgSel  ) )
+						$link = strval ( $cfgSel['more_below'] );
+					$wrap = $cfgSel['more_below.'];
+					$cr_link = FALSE;
+					$ii = $idx1 - 1;
+				} else if ( $ii < $idxCur ) {
+					// Previous
+					$key  = 'prev';
+					$wrap = $cfgSel['below.'];
+				} else if ( $ii <= $idx2 ) {
+					// Following
+					$key  = 'next'; 
+					$wrap = $cfgSel['above.'];
+				} else if ( $ii < $idxMax ) {
+					// More
+					$key  = 'next'; 
+					$link = '...';
+					if ( array_key_exists ( 'more_above', $cfgSel  ) )
+						$link = strval ( $cfgSel['more_above'] );
+					$wrap = $cfgSel['more_above.'];
+					$cr_link = FALSE;
+					$ii = $idxMax - 1;
+				} else {
+					// Last
+					$key  = 'next';
+					$wrap = $cfgSel['last.'];
+				}
+
+				// Create link
+				if ( $cr_link ) {
+					$title = str_replace ( '%p', $page, $pageLinkTitle );
+					$link = $this->get_link ( $page, array ( 'page' => strval ( $ii ) ), TRUE, 
+						array ( 'title' => $title ) );
+				}
+
+				if ( is_array ( $wrap ) )
+					$link = $cObj->stdWrap ( $link, $wrap );
+
+				$sel[$key][] = $link;
+				$ii += 1;
 			}
 
 			$navi['begin'] = $this->get_ll ( 'pageNav_begin', 'begin', TRUE );
 			$navi['prev']  = $this->get_ll ( 'pageNav_previous', 'previous', TRUE  );
-			$navi['next']  = $this->get_ll ( 'pageNav_next', 'next', TRUE  );
-			$navi['last']  = $this->get_ll ( 'pageNav_last', 'last', TRUE  );
-
-			$naviTitle['begin'] = $this->get_ll ( 'pageNav_beginLinkTitle', 'begin', TRUE );
-			$naviTitle['prev']  = $this->get_ll ( 'pageNav_previousLinkTitle', 'previous', TRUE  );
-			$naviTitle['next']  = $this->get_ll ( 'pageNav_nextLinkTitle', 'next', TRUE  );
-			$naviTitle['last']  = $this->get_ll ( 'pageNav_lastLinkTitle', 'last', TRUE  );
-			$naviTitle['page']  = $this->get_ll ( 'pageNav_pageLinkTitle', 'begin', TRUE );
-
-			if ( $idxCur > $idxMin ) {
+			if ( $idxCur > 0 ) {
+				$title = $this->get_ll ( 'pageNav_beginLinkTitle', 'begin', TRUE );
 				$navi['begin'] = $this->get_link ( $navi['begin'], 
 					array('page'=>''), TRUE, array('title'=>$naviTitle['begin']) );
+
+				$title = $this->get_ll ( 'pageNav_previousLinkTitle', 'previous', TRUE  );
+				$page = max ( $idxCur-1, 0 );
 				$navi['prev'] = $this->get_link ( $navi['prev'], 
-					array('page'=>max($idxCur-1, 0)),
-					TRUE, array('title'=>$naviTitle['prev']) );
+					array ( 'page' => $page ), TRUE, array( 'title' => $title ) );
 			}
 
-			if ( ($idx1 > $idxMin) && strlen ( $cfgSel['more_below'] ) ) {
-				$sel['prev'][] = $cObj->stdWrap ( $cfgSel['more_below'],
-					$cfgSel['more_below.'] );
-			}
-
-			for ( $i = $idx1; $i <= $idx2; $i++ )  {
-				$ip_str = strval($i+1);
-				$link = $this->get_link ( $ip_str, array('page'=>$i), 
-					TRUE, array('title'=>str_replace('%p', $ip_str, $naviTitle['page'])) );
-				if ( $i < $idxCur ) {
-					$key  = 'prev';
-					$wrap =  $cfgSel['below.'];
-				} else if( $i > $idxCur ) {
-					$key  = 'next';
-					$wrap =  $cfgSel['above.'];
-				} else {
-					$key  = 'cur';
-					$wrap = $cfgSel['current.'];
-					$link = strval($i+1);
-				}
-				$sel[$key][] = $cObj->stdWrap ( $link, $wrap );
-			}
-
-			if ( ($idx2 < $idxMax) && strlen ( $cfgSel['more_above'] ) ) {
-				$sel['next'][] = $cObj->stdWrap ( $cfgSel['more_above'],
-					$cfgSel['more_above.'] );
-			}
-
+			$navi['last']  = $this->get_ll ( 'pageNav_last', 'last', TRUE  );
+			$navi['next']  = $this->get_ll ( 'pageNav_next', 'next', TRUE  );
 			if ( $idxCur < $idxMax ) {
-				$navi['next'] = $this->get_link ( $navi['next'] ,
-					array('page'=>min($idxCur+1, $idxMax)),
-					TRUE, array('title'=>$naviTitle['next']) );
+				$title = $this->get_ll ( 'pageNav_lastLinkTitle', 'last', TRUE  );
 				$navi['last'] = $this->get_link ( $navi['last'],
-					array('page'=>$idxMax ),
-					TRUE, array('title'=>$naviTitle['last']) );
+					array ( 'page' => $idxMax ), TRUE, array ( 'title' => $title ) );
+
+				$title = $this->get_ll ( 'pageNav_nextLinkTitle', 'next', TRUE  );
+				$page = min ( $idxCur+1, $idxMax );
+				$navi['next'] = $this->get_link ( $navi['next'] ,
+					array ( 'page' => $page ), TRUE, array ( 'title' => $title ) );
 			}
 
 			// Wrap
@@ -1376,27 +1409,31 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$navi['last'] = '';
 			}
 
+
 			// Page separator
 			$sepSel = '&nbsp;';
 			if ( array_key_exists ( 'separator', $cfgSel  ) )
-				$sepSel = $cObj->stdWrap ( $cfgSel['separator'], $cfgSel['separator.'] );
+				$sepSel = $cfgSel['separator'];
+			if ( is_array ( $cfgSel['separator.'] ) )
+				$sepSel = $cObj->stdWrap ( $sepSel, $cfgSel['separator.'] );
 
 			// Navigation separator
 			$sepNav = '&nbsp;';
 			if ( array_key_exists ( 'separator', $cfgNav  ) )
-				$sepNav = $cObj->stdWrap ( $cfgNav['separator'], $cfgNav['separator.'] );
+				$sepNav = $cfgNav['separator'];
+			if( is_array( $cfgNav['separator.'] ) )
+				$sepNav = $cObj->stdWrap ( $sepNav, $cfgNav['separator.'] );
 
 			// Replace separator
-			$navi['begin'] = str_replace('###SEPARATOR###', $sepNav, $navi['begin']);
-			$navi['prev'] = str_replace('###SEPARATOR###', $sepNav, $navi['prev']);
-			$navi['next'] = str_replace('###SEPARATOR###', $sepNav, $navi['next']);
-			$navi['last'] = str_replace('###SEPARATOR###', $sepNav, $navi['last']);
+			$navi['begin'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['begin'] );
+			$navi['prev'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['prev'] );
+			$navi['next'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['next'] );
+			$navi['last'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['last'] );
 
 			// Setup the translator
-			// Selection and Navigation
 			$translator = array (
 				'###SEL_PREV###'    => implode($sepSel, $sel['prev']),
-				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sepSel:'').implode($spacer, $sel['cur']).(sizeof($sel['next'])?$sepSel:''),
+				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sepSel:'').implode($sepSel, $sel['cur']).(sizeof($sel['next'])?$sepSel:''),
 				'###SEL_NEXT###'    => implode($sepSel, $sel['next']),
 				'###NAVI_BACKWARDS###' => $navi['begin'].$navi['prev'],
 				'###NAVI_FORWARDS###'  => $navi['next'].$navi['last']

@@ -201,22 +201,24 @@ plugin.tx_sevenpack_pi1 {
 		# Page selection
 		selection {
 			# The maximum number of pages to show
-			pages = 7
+			pages = 5
 
 			# Page separator
 			separator = ,
 			separator.noTrimWrap  = || |
 
 			# Wraps for the current page and the pages below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
 			below.wrap = |
 			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
 			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
 
 			# Strings and wraps for indicators for more pages
 			more_below = ...
-			more_below.wrap = |
+			more_below.noTrimWrap = | | |
 			more_above = ...
-			more_above.wrap = |
+			more_above.noTrimWrap = | | |
 		}
 
 		# First, previous, next, last page selection
