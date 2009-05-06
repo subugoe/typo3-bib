@@ -75,6 +75,7 @@
 			<label index="pageNav_pageLinkTitle">Page %p</label>
 			<label index="pageNav_previous">Previous</label>
 			<label index="pageNav_previousLinkTitle">Previous page</label>
+			<label index="prefNav_label">Preferences</label>
 			<label index="stat_total_label">Publications (total)</label>
 			<label index="stat_year_total_label">Publications (this year / total)</label>
 			<label index="upload_file">Upload file</label>
@@ -151,6 +152,7 @@
 			<label index="pageNav_pageLinkTitle">Seite %p</label>
 			<label index="pageNav_previous">Zurück</label>
 			<label index="pageNav_previousLinkTitle">Voherige Seite</label>
+			<label index="prefNav_label">Präferenzen</label>
 			<label index="stat_total_label">Publikationen (total)</label>
 			<label index="stat_year_total_label">Publikationen (dieses Jahr / total)</label>
 			<label index="upload_file">Datei hochladen</label>

@@ -167,7 +167,7 @@ plugin.tx_sevenpack_pi1 {
 	# Year naviagation
 	yearNav {
 		# Year label and wrap
-		label = yearNav.label
+		label = yearNav_label
 		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 
 		# Classes or the year selection form
@@ -197,13 +197,19 @@ plugin.tx_sevenpack_pi1 {
 			more_above = ...
 			more_above.noTrimWrap = | | |
 		}
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_year_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_year_bottom">|</div>
 	}
 
 
 	# Page naviagation
 	pageNav {
 		# Page label and wrap
-		label = pageNav.label
+		label = pageNav_label
 		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 
 		# Page selection
@@ -244,6 +250,14 @@ plugin.tx_sevenpack_pi1 {
 
 		top.wrap = <div class="tx_sevenpack-navi_page_top">|</div>
 		bottom.wrap = <div class="tx_sevenpack-navi_page_bottom">|</div>
+	}
+
+
+	# Preferences Navigation
+	prefNav {
+		# Page label and wrap
+		label = prefNav_label
+		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 	}
 
 

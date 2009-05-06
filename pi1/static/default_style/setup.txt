@@ -2,45 +2,40 @@
 plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-top_navigation {
-		padding: 0px;
-		margin: 0px;
+		padding: 1ex 0px;
+		padding-bottom: 0ex;
+		margin: 1ex 0px;
 		border-width: 0px; 
 		border-bottom: 1px solid black; 
-		margin-bottom: 1em;
 	}
 
-	.tx_sevenpack-navi_year {
-		color: black;
-		padding: 0.5em;
-		margin: 0em;
-		text-align: left;
-		min-width: 40em;
+	div.tx_sevenpack-navi_year,
+	div.tx_sevenpack-navi_page {
+		padding: 0em;
+		margin: 0px;
 	}
 
-	.tx_sevenpack-navi_page {
-		border-top: 0px solid black; 
-		border-bottom: 0px solid black; 
-		color: black;
-		margin: 0.5em 0em;
+	div.tx_sevenpack-navi_year_top,
+	div.tx_sevenpack-navi_year_bottom {
 		padding: 0px;
-		text-align: left;
+		margin: 1ex 0em;
+		border-width: 0px; 
 	}
 
 	.tx_sevenpack-navi_page_top, 
 	.tx_sevenpack-navi_page_bottom {
 		padding: 0px;
-		margin: 0px;
+		margin: 0.5em 0em;
 		border-width: 0px;
 	}
 
 	span.tx_sevenpack-navi_current {
-		font-size:larger;
-		font-weight:bold;
+		font-size: larger;
+		font-weight: bold;
 	}
 
 	.tx_sevenpack-navi_label {
 		font-weight: bold;
-		padding-left: 1em;
 		padding-right: 2em;
 	}
 

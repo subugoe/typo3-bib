@@ -127,9 +127,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $templateBibTypes = array (); // Initialized in main()
 
 	public $templateBlockTypes = array (
-		'YEAR_NAVI_BLOCK', 'PAGE_NAVI_BLOCK', 'EXPORT_BLOCK', 'IMPORT_BLOCK',  
-		'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'STATISTIC_BLOCK', 
-		'ITEM_BLOCK', 'SPACER_BLOCK' );
+		'YEAR_NAVI_BLOCK', 'PAGE_NAVI_BLOCK', 'PREF_NAVI_BLOCK', 'EXPORT_BLOCK', 
+		'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 
+		'STATISTIC_BLOCK', 'ITEM_BLOCK', 'SPACER_BLOCK' );
 
 	public $label_translator = array();
 
@@ -1132,14 +1132,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function list_view ()
 	{
-		$this->setup_year_navi ();  // setup year navigation element
-		$this->setup_page_navi ();  // setup page navigation element
+		$this->setup_year_navi ();  // setup year navigation
+		$this->setup_pref_navi ();  // setup preferences navigation
+		$this->setup_page_navi ();  // setup page navigation
 		$this->setup_new_entry ();  // setup new entry button
 		$this->setup_statistic ();  // setup statistic element
 		$this->setup_export_links ();  // setup export links
 		$this->setup_import_links ();  // setup import link
 		$this->setup_items (); // setup Items
 		$this->setup_spacer ();  // setup new entry button
+
+		$this->setup_top_navigation ();  // setup page navigation element
 
 		//t3lib_div::debug ( $this->template['VIEW'] );
 
@@ -1155,14 +1158,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function setup_year_navi ()
 	{
 		$naviStr = '';
+		$naviTop = '';
+		$naviBottom = '';
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
 		if ( ( $this->extConf['d_mode'] == $this->D_Y_NAV ) 
 		     && $this->stat['num_all'] 
-		     && (sizeof($this->stat['years']) > 0) )
+		     && ( sizeof ( $this->stat['years'] ) > 0 ) )
 		{
-
 			$cfg = array();
 			$cfgSel = array();
 			if ( is_array ( $this->conf['yearNav.'] ) ) {
@@ -1305,7 +1309,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$sep = $cObj->stdWrap ( $sep, $cfgSel['separator.'] );
 
 			// Setup the translator
-			// Selection
 			$translator = array (
 				'###SEL_PREV###'    => implode($sep, $sel['prev']),
 				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sep:'').implode($sep, $sel['cur']).(sizeof($sel['next'])?$sep:''),
@@ -1314,22 +1317,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			);
 			// Labels
 			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
-				$this->get_ll ( 'yearNav_label' ), $cfg['label.']);
-
-			//t3lib_div::debug ( $translator );
+				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
 
 			// Treat the template
 			$t_str = $this->enum_condition_block ( $this->template['YEAR_NAVI_BLOCK'] );
 			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
+			if ( $cfg['top_disable'] != 1 ) {
+				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
+				$this->extConf['has_top_navi'] = TRUE;
+			}
+			if ( $cfg['bottom_disable'] != 1 )
+				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
 
 			$hasStr = array ( '', '' );
 		}
 
-		$this->template['VIEW'] = $cObj->substituteSubpart ( 
+		$this->template['VIEW'] = $cObj->substituteSubpart (
 			$this->template['VIEW'], '###HAS_YEAR_NAVI###', $hasStr );
 
-		$this->template['VIEW'] = $cObj->substituteMarker (
-			$this->template['VIEW'], '###YEAR_NAVI###', $naviStr );
+		$translator = array (
+			'###YEAR_NAVI###' => $naviStr,
+			'###YEAR_NAVI_TOP###' => $naviTop,
+			'###YEAR_NAVI_BOTTOM###' => $naviBottom
+		);
+
+		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
+			$this->template['VIEW'], $translator );
 	}
 
 
@@ -1508,7 +1521,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Labels
 			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
-				$this->get_ll ( 'pageNav_label' ), $cfg['label.'] );
+				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
 
 			// Treat the template
 			$t_str = $this->enum_condition_block ( $this->template['PAGE_NAVI_BLOCK'] );
@@ -1532,6 +1545,60 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
 			$this->template['VIEW'], $translator );
+	}
+
+
+	/**
+	 * Sets up the preferences navigation element in the 
+	 * HTML-template
+	 *
+	 * @return void
+	 */
+	function setup_pref_navi ()
+	{
+		$naviStr = '';
+		$naviTop = '';
+		$naviBottom = '';
+		$hasStr = '';
+		$cObj =& $this->cObj;
+
+		if ( $this->extConf['show_pref_navi'] )
+		{
+			$cfg = array();
+			if ( is_array ( $this->conf['prefNav.'] ) )
+				$cfg =& $this->conf['prefNav.'];
+
+			// Treat the template
+			$t_str = $this->enum_condition_block ( $this->template['PREF_NAVI_BLOCK'] );
+
+
+			// Setup the translator
+			$translator = array (
+			);
+
+			// Labels
+			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
+				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
+
+			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
+			if ( $cfg['top_disable'] != 1 ) {
+				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
+				$this->extConf['has_top_navi'] = TRUE;
+			}
+			if ( $cfg['bottom_disable'] != 1 ) {
+				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
+			}
+
+			$hasStr = array ( '', '' );
+		}
+
+		$tmpl =& $this->template['VIEW'];
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_PREF_NAVI###', $hasStr );
+		$trans = array (
+			'###PREF_NAVI_TOP###' => $naviTop,
+			'###PREF_NAVI_BOTTOM###' => $naviBottom
+		);
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 
@@ -1604,10 +1671,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$stat_str = $year_str . ' / ' . $total_str;
 					break;
 			}
-
-			//t3lib_div::debug ( $mode );
-			//t3lib_div::debug ( $this->STAT_YEAR_TOTAL );
-			//t3lib_div::debug ( $stat_str );
 
 			// Export label
 			$translator['###LABEL###']     = $this->cObj->stdWrap ( $label,    $cfg['label.']  );
@@ -1733,7 +1796,23 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$this->template['VIEW'], '###HAS_IMPORT###', $hasStr );
 
 		$this->template['VIEW'] = $this->cObj->substituteMarker (
-			$this->template['VIEW'], '###IMPORT###', $str);
+			$this->template['VIEW'], '###IMPORT###', $str );
+	}
+
+
+	/** 
+	 * Setup the top navigation block
+	 *
+	 * @return void
+	 */
+	function setup_top_navigation ()
+	{
+		$hasStr = '';
+		if ( $this->extConf['has_top_navi'] ) {
+			$hasStr = array ( '', '' );
+		}
+		$this->template['VIEW'] = $this->cObj->substituteSubpart ( 
+			$this->template['VIEW'], '###HAS_TOP_NAVI###', $hasStr );
 	}
 
 
