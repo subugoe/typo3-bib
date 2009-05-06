@@ -128,7 +128,7 @@ class tx_sevenpack_utility {
 	 * @return The string filtered for html output
 	 */
 	function filter_pub_html_display ( $str, $hsc = FALSE ) {
-		$rand = rand();
+		$rand .= strval ( rand() ) . strval ( rand() );
 		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
 
 		// Remove not allowed tags

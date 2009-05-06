@@ -117,7 +117,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 	public $ra;  // The reference database accessor class
 	public $fetchRes;
-	public $icon_src;
+	public $icon_src = array();
 
 	// Statistics
 	public $stat;
@@ -385,7 +385,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		//t3lib_div::debug( array ( 'Edit mode' => array ( 'BE' => $be_ok, 'FE' => $fe_ok ) ) );
-		$extConf['edit_mode'] = ( ($g_ok || $fe_ok) && $extConf['editor']['enabled'] );
+		$extConf['edit_mode'] = ( ($be_ok || $fe_ok) && $extConf['editor']['enabled'] );
 
 		// Set the enumeration mode
 		$extConf['has_enum'] = TRUE;
@@ -394,10 +394,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Initialize data display restrictions
-		$this->initialize_restrictions ( );
+		$this->init_restrictions ( );
 
 		// Initialize the default filter
-		$this->initialize_filters ( );
+		$this->init_filters ( );
 
 		// Don't show hidden entries
 		$extConf['show_hidden'] = FALSE;
@@ -472,16 +472,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$extConf['single_mode'] = $this->piVars['single_mode'];
 			}
 
-			// Get edit icon sources
-			$tmpl =& $GLOBALS['TSFE']->tmpl;
-			$this->icon_src['new_record'] = 'src="'.$tmpl->getFileName (
-				'EXT:t3skin/icons/gfx/new_record.gif' ).'"';
-			$this->icon_src['edit'] = 'src="'.$tmpl->getFileName (
-				'EXT:t3skin/icons/gfx/edit2.gif' ).'"';
-			$this->icon_src['hide'] = 'src="'.$tmpl->getFileName (
-				'EXT:t3skin/icons/gfx/button_hide.gif' ).'"';
-			$this->icon_src['reveal'] = 'src="'.$tmpl->getFileName (
-				'EXT:t3skin/icons/gfx/button_unhide.gif' ).'"';
+			// Initialize edit icons
+			$this->init_edit_icons();
 
 			// Switch to an import view on demand
 			$allImport = intval ( $this->IMP_BIBTEX | $this->IMP_XML );
@@ -590,7 +582,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		// Initialize the html template
 		//
-		$err = $this->initialize_template ( );
+		$err = $this->init_template ( );
 		if ( $err )
 			return $this->finalize ( $err );
 
@@ -655,7 +647,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function initialize_restrictions ( )
+	function init_restrictions ( )
 	{
 		$this->extConf['restrict'] = FALSE;
 		$restrict = $this->conf['restrictions.'];
@@ -683,11 +675,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return FALSE or an error message
 	 */
-	function initialize_filters ( )
+	function init_filters ( )
 	{
 		$this->extConf['filters'] = array();
-		$this->initialize_flexform_filter();
-		$this->initialize_selection_filter();
+		$this->init_flexform_filter();
+		$this->init_selection_filter();
 	}
 
 
@@ -696,7 +688,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return FALSE or an error message
 	 */
-	function initialize_flexform_filter ( )
+	function init_flexform_filter ( )
 	{
 		$rT =& $this->ra->refTable;
 		$rta =& $this->ra->refTableAlias;
@@ -883,7 +875,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return FALSE or an error message
 	 */
-	function initialize_selection_filter ( )
+	function init_selection_filter ( )
 	{
 		if ( !$this->conf['allow_selection'] )
 			return FALSE;
@@ -923,7 +915,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return TRUE on error, FALSE otherwise
 	 */
-	function initialize_template ()
+	function init_template ()
 	{
 		// Allready initialized?
 		if ( isset ( $this->template['VIEW'] ) ) 
@@ -959,6 +951,51 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$err = $this->error_msg ( $err );
 
 		return $err;
+	}
+
+
+	/** 
+	 * Initialize the edit icons
+	 *
+	 * @return void
+	 */
+	function init_edit_icons ()
+	{
+		$base = 'EXT:t3skin/icons/gfx/';
+		$list = array ( 
+			'new_record' => 'new_record.gif',
+			'edit' => 'edit2.gif',
+			'hide' => 'button_hide.gif',
+			'reveal' => 'button_unhide.gif'
+		);
+		$tmpl =& $GLOBALS['TSFE']->tmpl;
+		foreach ( $list as $key => $val ) {
+			$this->icon_src[$key] = 'src="' . $tmpl->getFileName ( $base . $val ) . '"';
+		}
+	}
+
+
+	/** 
+	 * Initialize the list view icons
+	 *
+	 * @return void
+	 */
+	function init_list_icons ()
+	{
+		// Get edit icon sources
+		$base = 'EXT:cms/tslib/media/fileicons/';
+		$list = array (
+			'file_pdf' => 'pdf.gif',
+			'file_ppt' => 'default.gif',
+			'file_doc' => 'doc.gif',
+			'file_odt' => 'default.gif',
+			'file_misc' => 'default.gif'
+		);
+		$tmpl =& $GLOBALS['TSFE']->tmpl;
+		$ic =& $this->icon_src;
+		foreach ( $list as $key => $val ) {
+			$ic[$key] = 'src="' . $tmpl->getFileName ( $base . $val ) . '"';
+		}
 	}
 
 
@@ -1808,7 +1845,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$conf =& $this->conf;
 
 		$bib_str = $pdata['bibtype_short'];
-		$data_wrap = array ( '', '' );
+		$all_base = 'rnd' . strval ( rand() ) . 'rnd';
+		$all_wrap = $all_base;
 
 		// Prepare the translator
 		// Remove empty field marker from the template
@@ -1842,19 +1880,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$templ = $cObj->substituteSubpart ( $templ, '###HAS_'.$upStr.'###', $hasStr );
 		}
 
-		$tmp = $cObj->stdWrap ( 'XxXx', $conf['reference.'] );
-		$tmp = explode ( 'XxXx', $tmp );
-		$data_wrap[0] = $tmp[0] . $data_wrap[0];
-		if ( sizeof ( $tmp ) > 1  )
-			$data_wrap[1] .= $tmp[1];
+		// Reference wrap
+		$all_wrap = $cObj->stdWrap ( $all_wrap, $conf['reference.'] );
 
 		// Embrace hidden references with wrap
-		if ( ($pdata['hidden'] != 0 ) && is_array ( $conf['editor.']['hidden.'] ) ) {
-			$tmp = $cObj->stdWrap ( 'XxXx', $conf['editor.']['hidden.'] );
-			$tmp = explode ( 'XxXx', $tmp );
-			$data_wrap[0] = $tmp[0] . $data_wrap[0];
-			if ( sizeof ( $tmp ) > 1  )
-				$data_wrap[1] .= $tmp[1];
+		if ( ( $pdata['hidden'] != 0 ) && is_array ( $conf['editor.']['hidden.'] ) ) {
+			$all_wrap = $cObj->stdWrap ( $all_wrap, $conf['editor.']['hidden.'] );
 		}
 
 		$templ = $cObj->substituteMarkerArrayCached ( $templ, $translator );
@@ -1866,7 +1897,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$url_wrap = $cObj->typolinkWrap ( array ( 'parameter' => $pdata['file_url'] ) );
 		}
 		$templ = $cObj->substituteSubpart ( $templ, '###URL_WRAP###', $url_wrap );
-		$templ = $cObj->substituteSubpart ( $templ, '###REFERENCE_WRAP###', $data_wrap );
+
+		$all_wrap = explode ( $all_base, $all_wrap );
+		$templ = $cObj->substituteSubpart ( $templ, '###REFERENCE_WRAP###', $all_wrap );
 
 		// remove empty divs
 		$templ = preg_replace ( "/<div[^>]*>[\s\r\n]*<\/div>/", "\n", $templ );

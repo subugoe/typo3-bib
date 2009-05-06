@@ -120,10 +120,10 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		vertical-align: top;
 	}
 	td.tx_sevenpack-item_even {
-		background-color: #dddddd;
+
 	}
 	td.tx_sevenpack-item_odd {
-		background-color: #ffffff;
+
 	}
 	td.tx_sevenpack-enum {
 		text-align: right;
