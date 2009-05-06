@@ -1,11 +1,18 @@
 
 plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
-	.tx_sevenpack-navi_year {
+	div.tx_sevenpack-top_navigation {
+		padding: 0px;
+		margin: 0px;
+		border-width: 0px; 
 		border-bottom: 1px solid black; 
+		margin-bottom: 1em;
+	}
+
+	.tx_sevenpack-navi_year {
 		color: black;
 		padding: 0.5em;
-		margin: 1em 0em;
+		margin: 0em;
 		text-align: left;
 		min-width: 40em;
 	}
@@ -116,7 +123,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	td.tx_sevenpack-item_even,
 	td.tx_sevenpack-item_odd {
-		padding: 0.5ex 0.3em;
+		padding: 1ex 0.3em;
 		vertical-align: top;
 	}
 	td.tx_sevenpack-item_even {
@@ -127,7 +134,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 	td.tx_sevenpack-enum {
 		text-align: right;
-		padding-right: 0.5ex;
+		padding-right: 0.5em;
 		max-width: 4em;
 	}
 
