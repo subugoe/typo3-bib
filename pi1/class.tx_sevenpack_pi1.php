@@ -118,10 +118,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $ra;  // The reference database accessor class
 	public $fetchRes;
 	public $icon_src;
-	public $pubYearHist;
-	public $pubYears;
 
-	public $pubAllNum;
+	// Statistics
+	public $stat;
 	public $pubPageNum; // The number of publications on the current page
 
 	public $templateBibTypes = array (); // Initialized in main()
@@ -214,7 +213,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$ecEditor['citeid_gen_old']   = $this->pi_getFFvalue ( $ff, 'citeid_gen_old', $fSheet );
 		$ecEditor['clear_page_cache'] = $this->pi_getFFvalue ( $ff, 'clear_cache',    $fSheet );
 
-		// Overwrite list view configuration from TSsetup
+		// Configuration by TypoScript selected
 		if ( intval ( $extConf['d_mode'] ) < 0 )
 			$extConf['d_mode'] = intval ( $this->conf['display_mode'] );
 		if ( intval ( $extConf['enum_style'] ) < 0 )
@@ -224,6 +223,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( intval ( $extConf['stat_mode'] ) < 0 )
 			$extConf['stat_mode'] = intval ( $this->conf['stat_mode'] );
 
+		if ( intval ( $extConf['sub_page']['ipp'] ) < 0 ) {
+			$extConf['sub_page']['ipp'] = intval ( $this->conf['items_per_page'] );
+		}
+		if ( intval ( $extConf['max_authors'] ) < 0 ) {
+			$extConf['max_authors'] = intval ( $this->conf['max_authors'] );
+		}
+
+		// Override some values from typoscript
 		if ( array_key_exists ( 'split_bibtypes', $this->conf ) )
 			$extConf['split_bibtypes'] = $this->conf['split_bibtypes'] ? TRUE : FALSE;
 		if ( array_key_exists ( 'show_abstract', $this->conf ) )
@@ -231,12 +238,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( array_key_exists ( 'export_mode', $this->conf ) )
 			$extConf['export_mode'] = $this->conf['export_mode'];
 
-		if ( intval ( $extConf['sub_page']['ipp'] ) < 0 ) {
-			$extConf['sub_page']['ipp'] = intval ( $this->conf['items_per_page'] );
-		}
-		if ( intval ( $extConf['max_authors'] ) < 0 ) {
-			$extConf['max_authors'] = intval ( $this->conf['max_authors'] );
-		}
 
 		// Activate export modes
 		$extConf['enable_export'] = 0;
@@ -273,6 +274,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( array_key_exists ( 'citeid_gen_old', $eo ) )
 				$extConf['editor']['citeid_gen_old'] = $eo['citeid_gen_old'] ? TRUE : FALSE;
 		}
+		$this->ra->clear_cache = $extConf['editor']['clear_page_cache'];
 
 		//
 		// Get storage page(s)
@@ -286,7 +288,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pid_list = array_merge ( $pid_list, $tmp );
 		}
 
-		// Remove doubles and zero
+		// Remove doubles and zero 
 		$pid_list = array_unique ( $pid_list );
 		if ( in_array ( 0, $pid_list ) ) {
 			unset ( $pid_list[array_search(0,$pid_list)] );
@@ -310,8 +312,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		} else {
 			return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
 		}
-
-		$this->ra->clear_cache = $extConf['editor']['clear_page_cache'];
 
 		// Adjustments
 		switch ( $extConf['d_mode'] ) {
@@ -346,7 +346,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			default:
 				$extConf['stat_mode'] = $this->STAT_TOTAL; // emergency default
 		}
-		$extConf['sub_page']['ipp'] = max ( intval ( $extConf['sub_page']['ipp'] ), 0 );
 		$extConf['sub_page']['ipp'] = max ( intval ( $extConf['sub_page']['ipp'] ), 0 );
 		$extConf['max_authors']     = max ( intval ( $extConf['max_authors']     ), 0 );
 
@@ -390,13 +389,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Don't show hidden entries
 		$extConf['show_hidden'] = FALSE;
 		if ( $extConf['edit_mode'] ) {
-			// Hidden entries can only be seen in edit mode
 			$extConf['show_hidden'] = TRUE;
-			if ( array_key_exists('show_hidden', $this->piVars ) ) {
-				if ( !$this->piVars['show_hidden'] ) {
-					$extConf['show_hidden'] = FALSE;
-				}
-			}
 		}
 		$this->ra->show_hidden = $extConf['show_hidden'];
 
@@ -466,7 +459,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$extConf['single_mode'] = $this->piVars['single_mode'];
 			}
 
-			// Get icon sources
+			// Get edit icon sources
 			$tmpl =& $GLOBALS['TSFE']->tmpl;
 			$this->icon_src['new_record'] = 'src="'.$tmpl->getFileName (
 				'EXT:t3skin/icons/gfx/new_record.gif' ).'"';
@@ -489,22 +482,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Switch to an export view on demand
 		$piv_exp = intval ( $this->piVars['export'] );
-		if ( $piv_exp != 0 )
-			if ( intval ( $extConf['export_mode'] ) != 0 )
-				if ( ( $piv_exp & $this->extConf['enable_export'] ) != 0 ) {
-					$extConf['view_mode']   = $this->VIEW_DIALOG;
-					$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
-				};
+		if ( intval ( $extConf['export_mode'] ) != 0 )
+			if ( ( $piv_exp & $extConf['enable_export'] ) != 0 ) {
+				$extConf['view_mode']   = $this->VIEW_DIALOG;
+				$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
+			};
 
 		// Overall publication statistics
+		$this->stat = array();
 		$this->ra->set_filters ( $extConf['filters'] );
-		$this->pubYearHist = $this->ra->fetch_histogram ( 'year' );
-		$this->pubYears  = array_keys ( $this->pubYearHist );
-		$this->pubAllNum = array_sum ( $this->pubYearHist );
-		sort ( $this->pubYears );
+		$hist = $this->ra->fetch_histogram ( 'year' );
+		$this->stat['year_hist'] = $hist;
+		$this->stat['years'] = array_keys ( $hist );
+		$this->stat['num_all'] = array_sum ( $hist );
+		sort ( $this->stat['years'] );
 
-		//t3lib_div::debug ( $this->pubYearHist );
-		//t3lib_div::debug ( $this->pubYears );
+		//t3lib_div::debug ( $this->stat );
 
 		//
 		// Determine the year to display
@@ -517,18 +510,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$ecYear = intval ( date ( 'Y' ) ); // System year
 
 		// The selected year has no publications so select the closest year
-		// with at least one publication
 		// Set default link variables
 		if ( $extConf['d_mode'] == $this->D_Y_NAV ) {
-			if ( $this->pubAllNum > 0) {
-				$ecYear = tx_sevenpack_utility::find_nearest_int ( $ecYear, $this->pubYears );
+			if ( $this->stat['num_all'] > 0) {
+				$ecYear = tx_sevenpack_utility::find_nearest_int ( $ecYear, $this->stat['years'] );
 			}
 			$extConf['additional_link_vars']['year'] = $ecYear;
 		}
 
-		$this->pubPageNum = $this->pubAllNum;
+		$this->stat['num_page'] = $this->stat['num_all'];
 		if ( $this->extConf['d_mode'] == $this->D_Y_NAV )
-			$this->pubPageNum = $this->pubYearHist[$ecYear];
+			$this->stat['num_page'] = $this->stat['year_hist'][$ecYear];
 
 		//
 		// Determine the number of sub pages and the current sub page (zero based)
@@ -536,7 +528,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$subPage =& $extConf['sub_page'];
 		$iPP =& $subPage['ipp'];
 		if ( $iPP > 0 ) {
-			$subPage['max']     = floor(($this->pubPageNum-1)/$iPP);
+			$subPage['max']     = floor(($this->stat['num_page']-1)/$iPP);
 			$subPage['current'] = tx_sevenpack_utility::crop_to_range (
 				$this->piVars['page'], 0, $subPage['max']);
 		} else {
@@ -1115,7 +1107,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( ($this->extConf['d_mode'] == $this->D_Y_NAV) && $this->pubAllNum && (sizeof($this->pubYears) > 1) )  {
+		if ( ( $this->extConf['d_mode'] == $this->D_Y_NAV ) 
+		     && $this->stat['num_all'] 
+		     && (sizeof($this->stat['years']) > 0) )
+		{
 
 			$cfg = array();
 			$cfgSel = array();
@@ -1131,7 +1126,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				'next' => array(),
 			);
 
-			$pubYears =& $this->pubYears;
+			$pubYears =& $this->stat['years'];
 
 			// The year selector
 			$ys = '';
@@ -1172,7 +1167,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$numLR = intval ( ($numSel - 1) / 2 );
 
 			// Determine selection indices
-			$idxCur = intval(array_search($this->extConf['year'], $pubYears));
+			$idxCur = intval ( 
+				array_search ( $this->extConf['year'], $pubYears ) );
 
 			$idx1 = $idxCur - $numLR;
 			if ( $idx1 < 1 ) {
@@ -1304,7 +1300,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$subPage =& $this->extConf['sub_page'];
 		$iPP =& intval ( $subPage['ipp'] );
 
-		if ( ( $iPP > 0 ) && ( $this->pubPageNum > $iPP ) ) {
+		if ( ( $iPP > 0 ) && ( $this->stat['num_page'] > $iPP ) ) {
 
 			$cfg = array();
 			$cfgSel = array();
@@ -1528,7 +1524,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$mode = intval ( $this->extConf['stat_mode'] );
 
-		if ( ( $mode != $this->STAT_NONE) && $this->pubAllNum ) {
+		if ( ( $mode != $this->STAT_NONE) && $this->stat['num_all'] ) {
 
 			$cfg = array();
 			if ( is_array ( $this->conf['stat.'] ) )
@@ -1544,8 +1540,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$mode = $this->STAT_TOTAL;
 
 			$year = intval ( $this->extConf['year'] );
-			$total_str = $this->cObj->stdWrap ( strval ( $this->pubAllNum ), $cfg['value_total.'] );
-			$year_str = $this->cObj->stdWrap ( strval ( $this->pubYearHist[$year] ), $cfg['value_year.'] );
+			$total_str = $this->cObj->stdWrap ( strval ( $this->stat['num_all'] ), $cfg['value_total.'] );
+			$year_str = $this->cObj->stdWrap ( strval ( $this->stat['year_hist'][$year] ), $cfg['value_year.'] );
 
 			switch ( $mode ) {
 				case $this->STAT_TOTAL:
@@ -1589,7 +1585,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$str = '';
 		$hasStr = '';
 
-		if ( ( $this->extConf['enable_export'] != 0 ) && ( $this->pubAllNum > 0) )  {
+		if ( ( $this->extConf['enable_export'] != 0 ) && ( $this->stat['num_all'] > 0) )  {
 
 			$cfg = array();
 			if ( is_array ( $this->conf['export.'] ) )
@@ -2072,7 +2068,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Determine publication numbers
 		$pubs_before = 0;
 		if ( $this->extConf['d_mode'] == $this->D_Y_NAV ) {
-			foreach ( $this->pubYearHist as $y => $n ) {
+			foreach ( $this->stat['year_hist'] as $y => $n ) {
 				if ( $y == $this->extConf['year'] )
 					break;
 				$pubs_before += $n;
@@ -2084,7 +2080,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Initialize counters
 		$limit_start = intval ( $filters['browse']['limit']['start'] );
-		$i_page = $this->pubPageNum - $limit_start;
+		$i_page = $this->stat['num_page'] - $limit_start;
 		$i_page_delta = -1;
 		if ( $this->extConf['date_sorting'] == $this->SORT_ASC ) {
 			$i_page = $limit_start + 1;
