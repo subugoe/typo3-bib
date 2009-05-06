@@ -46,6 +46,7 @@
 			<label index="tt_content.pi_flexform.enum.count_all">Count (All)</label>
 			<label index="tt_content.pi_flexform.enum.count_page">Count (Page)</label>
 			<label index="tt_content.pi_flexform.enum.empty">None</label>
+			<label index="tt_content.pi_flexform.enum.file_icon">File icon</label>
 			<label index="tt_content.pi_flexform.enum_style">Enumeration style</label>
 			<label index="tt_content.pi_flexform.export_mode">Export options</label>
 			<label index="tt_content.pi_flexform.export_mode.0">BibTeX</label>
@@ -134,6 +135,7 @@
 			<label index="tt_content.pi_flexform.enum.count_all">Zähler (Alle)</label>
 			<label index="tt_content.pi_flexform.enum.count_page">Zähler (Seite)</label>
 			<label index="tt_content.pi_flexform.enum.empty">Keine</label>
+			<label index="tt_content.pi_flexform.enum.file_icon">Datei Icon</label>
 			<label index="tt_content.pi_flexform.enum_style">Aufzählungs Stil</label>
 			<label index="tt_content.pi_flexform.export_mode">Export Optionen</label>
 			<label index="tt_content.pi_flexform.export_mode.0">BibTeX</label>

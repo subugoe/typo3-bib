@@ -46,8 +46,8 @@ plugin.tx_sevenpack_pi1 {
 		#bullet.wrap = |
 		#empty = &nbsp;
 		#empty.wrap = |
-		file_img = ###FILE_URL_ICON###
-		#file_img.wrap = |
+		file_icon = ###FILE_URL_ICON###
+		#file_icon.wrap = |
 	}
 
 	# Label wraps
@@ -257,6 +257,12 @@ plugin.tx_sevenpack_pi1 {
 		value_total.wrap = |
 	}
 
+
+	file_icons {
+		default = EXT:cms/tslib/media/fileicons/default.gif
+		doc = EXT:cms/tslib/media/fileicons/doc.gif
+		pdf = EXT:cms/tslib/media/fileicons/pdf.gif
+	}
 
 	# Export
 	export {

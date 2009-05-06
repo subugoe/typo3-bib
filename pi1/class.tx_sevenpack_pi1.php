@@ -80,6 +80,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $ENUM_ALL    = 2;
 	public $ENUM_BULLET = 3;
 	public $ENUM_EMPTY  = 4;
+	public $ENUM_FILE_ICON = 5;
 
 	// Widget modes
 	public $W_SHOW   = 0;
@@ -331,6 +332,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			case $this->ENUM_ALL:
 			case $this->ENUM_BULLET:
 			case $this->ENUM_EMPTY:
+			case $this->ENUM_FILE_ICON:
 				break;
 			default:
 				$extConf['enum_style'] = $this->ENUM_ALL; // emergency default
@@ -394,10 +396,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Initialize data display restrictions
-		$this->init_restrictions ( );
+		$this->init_restrictions();
+
+		// Initialize icons
+		$this->init_list_icons();
 
 		// Initialize the default filter
-		$this->init_filters ( );
+		$this->init_filters();
 
 		// Don't show hidden entries
 		$extConf['show_hidden'] = FALSE;
@@ -983,18 +988,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function init_list_icons ()
 	{
 		// Get edit icon sources
-		$base = 'EXT:cms/tslib/media/fileicons/';
-		$list = array (
-			'file_pdf' => 'pdf.gif',
-			'file_ppt' => 'default.gif',
-			'file_doc' => 'doc.gif',
-			'file_odt' => 'default.gif',
-			'file_misc' => 'default.gif'
-		);
+		$list = array ( 
+			'default' => 'EXT:cms/tslib/media/fileicons/default.gif' );
+		$more = $this->conf['file_icons.'];
+		if ( is_array ( $more ) )
+			$list = array_merge ( $list, $more );
+
 		$tmpl =& $GLOBALS['TSFE']->tmpl;
-		$ic =& $this->icon_src;
+		$this->icon_src['files'] = array();
+		$ic =& $this->icon_src['files'];
 		foreach ( $list as $key => $val ) {
-			$ic[$key] = 'src="' . $tmpl->getFileName ( $base . $val ) . '"';
+			$ic['.'.$key] = $tmpl->getFileName ( $val );
 		}
 	}
 
@@ -2102,11 +2106,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$eid = 'bullet'; break;
 			case $this->ENUM_EMPTY:
 				$eid = 'empty'; break;
-			case $this->ENUM_FILE_IMAGE:
-				$eid = 'file_img'; break;
+			case $this->ENUM_FILE_ICON:
+				$eid = 'file_icon'; break;
 		}
 		$enum_base = strval ( $conf['enum.'][$eid] );
 		$enum_wrap = $conf['enum.'][$eid.'.'];
+
 
 		// Database accessor initialization
 		$ra->mFetch_initialize();
@@ -2348,8 +2353,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $field == 'file_url' && is_array ( $restric['file_url'] ) ) {
 			$rest =& $restric['file_url'];
 
-			//t3lib_div::debug( array ( '$rest: ' => $rest ) );
-
 			$show = TRUE;
 			// Disable on hide all
 			if ( $rest['hide_all'] )
@@ -2376,6 +2379,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$groups = $rest['fe_groups'];
 				if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
 					$show = TRUE;
+			}
+
+			// Disable if local file does not exist
+			if ( strpos ( $value, 'fileadmin/' ) === 0 ) {
+				if ( !file_exists ( $value ) ) {
+					$show = FALSE;
+					//t3lib_div::debug( array ( 'Local file does not exist: ' => $value ) );
+				}
 			}
 
 			if ( !$show )
@@ -2422,12 +2433,37 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function get_file_url_icon( $url ) {
 		$res = '';
-		$rest = $this->check_field_restriction ( 'file_url', $url );
-		if ( $rest ) {
-			$res = 'Restricted';
-		} else {
-			$res = 'Not restricted';
+		$sources =& $this->icon_src['files'];
+		$src = $sources['.default'];
+
+		if ( strlen ( $url ) > 0 ) {
+			$cr_link = TRUE;
+
+			if ( $cr_link ) {
+				$rest = $this->check_field_restriction ( 'file_url', $url );
+				if ( $rest ) { 
+					$cr_link = FALSE;
+				}
+			}
+
+			foreach ( $sources as $ext => $file  ) {
+				$len = strlen( $ext );
+				if ( strlen ( $url ) >= $len ) {
+					$sub = strtolower( substr ( $url, -$len ) );
+					if ( $sub == $ext ) {
+						$src = $file;
+						break;
+					}
+				}
+			}
 		}
+		$res = '<img src="' . $src . '"';
+
+		$res .= '/>';
+		if ( $cr_link ) {
+			$res = $this->cObj->getTypoLink ( $res, $url );
+		}
+		//t3lib_div::debug ( array ( 'image: ' => $res ) );
 		return $res;
 	}
 

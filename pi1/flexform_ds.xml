@@ -77,7 +77,11 @@
 							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.empty</numIndex>
 							<numIndex index="1">4</numIndex>
 						</numIndex>
-					</items>   
+						<numIndex index="5" type="array">
+							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.file_icon</numIndex>
+							<numIndex index="1">5</numIndex>
+						</numIndex>
+					</items>
 					<maxitems>1</maxitems>
 					<size>1</size>
 					<default>-1</default>
