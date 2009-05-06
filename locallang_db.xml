@@ -13,7 +13,7 @@
 			<label index="tx_sevenpack_authors_authors">Author(s)</label>
 			<label index="tx_sevenpack_authors_forename">Forename</label>
 			<label index="tx_sevenpack_authors_surname">Surname</label>
-			<label index="tx_sevenpack_authors_url">File / URL</label>
+			<label index="tx_sevenpack_authors_url">File URL</label>
 			<label index="tx_sevenpack_authorships">Sevenpack authorships</label>
 			<label index="tx_sevenpack_authorships_author_id">Author UID</label>
 			<label index="tx_sevenpack_authorships_pub_id">Publication UID</label>
@@ -51,7 +51,7 @@
 			<label index="tx_sevenpack_references_edition">Edition</label>
 			<label index="tx_sevenpack_references_editor">Editor</label>
 			<label index="tx_sevenpack_references_extern">External</label>
-			<label index="tx_sevenpack_references_file_url">File / URL</label>
+			<label index="tx_sevenpack_references_file_url">File URL</label>
 			<label index="tx_sevenpack_references_howpublished">How published</label>
 			<label index="tx_sevenpack_references_in_library">Is in library</label>
 			<label index="tx_sevenpack_references_institution">Institution</label>
@@ -73,9 +73,11 @@
 			<label index="tx_sevenpack_references_state_I_2">submitted</label>
 			<label index="tx_sevenpack_references_state_I_3">to be published</label>
 			<label index="tx_sevenpack_references_state_I_4">in preparation</label>
+			<label index="tx_sevenpack_references_tags">Tags</label>
 			<label index="tx_sevenpack_references_title">Title</label>
 			<label index="tx_sevenpack_references_type">Type</label>
 			<label index="tx_sevenpack_references_volume">Volume</label>
+			<label index="tx_sevenpack_references_web_url">Web URL</label>
 			<label index="tx_sevenpack_references_year">Year</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -146,9 +148,11 @@
 			<label index="tx_sevenpack_references_state_I_2">eingereicht</label>
 			<label index="tx_sevenpack_references_state_I_3">noch nicht publiziert</label>
 			<label index="tx_sevenpack_references_state_I_4">in Vorbereitung</label>
+			<label index="tx_sevenpack_references_tags">Tags</label>
 			<label index="tx_sevenpack_references_title">Titel</label>
 			<label index="tx_sevenpack_references_type">Typ</label>
 			<label index="tx_sevenpack_references_volume">Band</label>
+			<label index="tx_sevenpack_references_web_url">Web URL</label>
 			<label index="tx_sevenpack_references_year">Jahr</label>
 		</languageKey>
 		<languageKey index="it" type="array">
@@ -191,7 +195,7 @@
 			<label index="tx_sevenpack_references_edition">Edizione</label>
 			<label index="tx_sevenpack_references_editor">Curatore</label>
 			<label index="tx_sevenpack_references_extern">Pubblicazione esterna (lavoro ppecedente)</label>
-			<label index="tx_sevenpack_references_file_url">File / URL</label>
+			<label index="tx_sevenpack_references_file_url">File URL</label>
 			<label index="tx_sevenpack_references_howpublished">Pubblicato come</label>
 			<label index="tx_sevenpack_references_institution">Istituzione</label>
 			<label index="tx_sevenpack_references_journal">Rivista</label>

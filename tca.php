@@ -60,7 +60,7 @@ $TCA['tx_sevenpack_references'] = array (
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
-				'rows' => '5',
+				'rows' => '3',
 			)
 		),
 		'journal' => Array (
@@ -191,7 +191,7 @@ $TCA['tx_sevenpack_references'] = array (
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
-				'rows' => '5',
+				'rows' => '10',
 			)
 		),
 		'affiliation' => Array (
@@ -228,12 +228,41 @@ $TCA['tx_sevenpack_references'] = array (
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
-				'rows' => '5',
+				'rows' => '2',
+			)
+		),
+		'tags' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_tags',
+			'config' => Array (
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '2',
 			)
 		),
 		'file_url' => Array (
 #			'exclude' => 1,
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_file_url',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '48',
+				'max' => '255',
+				'checkbox' => '0',
+				'wizards' => Array(
+					'_PADDING' => 2,
+					'link' => Array(
+						'type' => 'popup',
+						'title' => 'Link',
+						'icon' => 'link_popup.gif',
+						'script' => 'browse_links.php?mode=wizard',
+						'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+					),
+				),
+			)
+		),
+		'web_url' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_web_url',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -453,7 +482,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, file_url, misc, editor, publisher, series, address, edition, chapter, howpublished, booktitle, organization, school, institution, state, type, ISBN, extern, reviewed, in_library, borrowed_by' )
+		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, misc, editor, publisher, series, address, edition, chapter, howpublished, booktitle, organization, school, institution, state, type, ISBN, extern, reviewed, in_library, borrowed_by' )
 	),
 );
 

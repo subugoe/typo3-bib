@@ -9,6 +9,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 class tx_sevenpack_single_view {
 
 	public $pi1; // Plugin 1
+	public $conf; // configuration array
 	public $ra;  // Reference accessor
 	public $LLPrefix = 'editor_';
 	public $idGenerator = FALSE;
@@ -18,15 +19,15 @@ class tx_sevenpack_single_view {
 
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
+		$this->conf =& $pi1->conf['editor.'];
 		$this->ra =& $pi1->ra;
 		$this->ra->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
 		// Load editor language data
 		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/pi1/locallang_editor.xml' );
 
 		// Create an instance of the citeid generator
-		if ( isset ( $this->pi1->conf['editor.']['citeid_generator_file'] ) ) {
-			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName ( 
-				$this->pi1->conf['editor.']['citeid_generator_file'] );
+		if ( isset ( $this->conf['citeid_generator_file'] ) ) {
+			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName ( $this->conf['citeid_generator_file'] );
 			if ( file_exists ( $ext_file ) ) {
 				require_once ( $ext_file );
 				$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator_ext' );
@@ -76,7 +77,7 @@ class tx_sevenpack_single_view {
 		$single_mode = $pi1->extConf['single_mode'];
 		$preId =& $pi1->prefix_pi1;
 		$preSh =& $pi1->prefixShort;
-		$edConf =& $pi1->conf['editor.'];
+		$edConf =& $this->conf;
 		$edExtConf =& $pi1->extConf['editor'];
 
 		$pub = array(); // The publication data
@@ -503,7 +504,7 @@ class tx_sevenpack_single_view {
 		$cfg_fields = array();
 		foreach ( $all_groups as $group ) {
 			$cfg_fields[$group] = array();
-			$cfg_arr =& $this->pi1->conf['editor.']['groups.'][$group.'.'];
+			$cfg_arr =& $this->conf['groups.'][$group.'.'];
 			if ( is_array ( $cfg_arr ) ) {
 				foreach ( $all_types as $type ) {
 					$cfg_fields[$group][$type] = array();
@@ -575,8 +576,12 @@ class tx_sevenpack_single_view {
 	{
 		$cfg =& $GLOBALS['TCA'][$this->ra->refTable]['columns'][$field]['config'];
 		$con = ''; // Content
-		$Iclass = ' class="'.$this->pi1->prefixShort.'-editor_input'.'"';
+		$cclass = $this->pi1->prefixShort.'-editor_input';
+		$Iclass = ' class="'.$cclass.'"';
 		$pi1 =& $this->pi1;
+
+		$isize = intval ( $this->conf['input_size'] );
+		if ( $isize == 0 ) $isize = 60;
 
 		// Default widget
 		$widgetType = $cfg['type'];
@@ -588,15 +593,16 @@ class tx_sevenpack_single_view {
 				$con .= '<input type="text"'.$nameAttr.' value="'.$htmlValue.'"';
 				if ( $cfg['max'] )
 					$con .= ' maxlength="'.$cfg['max'].'"';
-				if ( $cfg['size'] )
-					$con .= ' size="'.$cfg['size'].'"';
+				$size = intval ( $cfg['size'] );
+				if ( $size > 40 ) $size = $isize;
+				$con .= ' size="' . strval ( $size ) . '"';
 				$con .= $Iclass.'/>';
-			break;
+				break;
 
-			case 'text' : 
+			case 'text' :
 				$con .= '<textarea' . $nameAttr;
 				$con .= ' rows="'.$cfg['rows'].'"';
-				$con .= ' cols="'.$cfg['cols'].'"';
+				$con .= ' cols="' . strval ( $isize ) . '"';
 				$con .= $Iclass.'>' . $htmlValue . '</textarea>';
 				break;
 
@@ -681,8 +687,14 @@ class tx_sevenpack_single_view {
 	function get_authors_widget ( $value, $mode )
 	{
 		$con = ''; // Content
-		$Iclass = ' class="'.$this->pi1->prefixShort.'-editor_input'.'"';
+		$cclass = $this->pi1->prefixShort.'-editor_input';
 		$pi1 =& $this->pi1;
+
+		$isize = intval ( $this->conf['author_input_size'] );
+		if ( $isize == 0 ) $isize = 30;
+
+		$key_action = $pi1->prefix_pi1.'[action]';
+		$key_data = $pi1->prefix_pi1.'[DATA][pub][authors]';
 
 		$editMode = ( $mode == $pi1->W_EDIT );
 		$silentMode = ( $mode == $pi1->W_SILENT );
@@ -714,44 +726,38 @@ class tx_sevenpack_single_view {
 				//t3lib_div::debug ( array('fn' => $fn, 'sn' => $sn) );
 				$con .= '<tr>';
 				$con .= '<th class="'.$pi1->prefixShort.'-editor_author_num">';
-				$con .= strval($i+1);
+				$con .= strval ( $i+1 );
 				$con .= '</th>';
 				$con .= '<td>';
 				if ( $editMode ) {
-					$tmpl =& $GLOBALS['TSFE']->tmpl;
-					$this->icon_src['new_record'] = 'src="'.$tmpl->getFileName (
-						'EXT:t3skin/icons/gfx/new_record.gif' ).'"';
-					$raiseBtn = '<input type="image"'.
-						' src="'.$tmpl->getFileName ( 'EXT:t3skin/icons/gfx/button_up.gif' ).'"'.
-						' name="'.$pi1->prefix_pi1.'[action][raise_author]"'.
-						' value="'.strval($i).'"/>';
-					$lowerBtn = '<input type="image"'.
-						' src="'.$tmpl->getFileName ( 'EXT:t3skin/icons/gfx/button_down.gif' ).'"'.
-						' name="'.$pi1->prefix_pi1.'[action][lower_author]"'.
-						' value="'.strval($i).'"/>';
 
-					$con .= '<input type="text" ';
-					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][fn]" ';
-					$con .= 'value="'.$fn.'"'.$Iclass.'/>';
-					$con .= '</td>';
-					$con .= '<td>';
-					$con .= '<input type="text" ';
-					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][sn]" ';
-					$con .= 'value="'.$sn.'"'.$Iclass.'/>';
-					$con .= '</td>';
-					$con .= '<td style="padding: 1px;">';
-					$con .= ( ($i>=0) && ($i<($aNum-1)) ) ? $lowerBtn : '';
+					$lowerBtn = tx_sevenpack_utility::html_image_input ( 
+						$key_action.'[lower_author]', strval ( $i ), $pi1->icon_src['down'] );
+					$raiseBtn = tx_sevenpack_utility::html_image_input ( 
+						$key_action.'[raise_author]', strval ( $i ), $pi1->icon_src['up'] );
+
+					$con .= tx_sevenpack_utility::html_text_input ( 
+						$key_data.'['.$i.'][fn]', $fn,
+						array ( 'size' => $isize, 'maxlength' => 255, 'class' => $cclass ) );
+					$con .= '</td><td>';
+					$con .= tx_sevenpack_utility::html_text_input ( 
+						$key_data.'['.$i.'][sn]', $sn,
+						array ( 'size' => $isize, 'maxlength' => 255, 'class' => $cclass ) );
+
+					$con .= '</td><td style="padding: 1px;">';
+
+					$con .= ( $i < ($aNum-1) ) ? $lowerBtn : '';
 					$con .= '</td><td style="padding: 1px;">';
 					$con .= ( ($i>0) && ($i<($aNum)) ) ? $raiseBtn : '';
+
 				} else if ( $silentMode ) {
-					$con .= '<input type="hidden" ';
-					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][fn]" ';
-					$con .= 'value="'.$fn.'"'.$Iclass.'/>'.$fn;
-					$con .= '</td>';
-					$con .= '<td>';
-					$con .= '<input type="hidden" ';
-					$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][sn]" ';
-					$con .= 'value="'.$sn.'"'.$Iclass.'/>'.$sn;
+					$con .=  tx_sevenpack_utility::html_hidden_input (
+						$key_data.'['.$i.'][fn]', $fn, array ( 'class' => $cclass ) );
+					$con .= $fn;
+					$con .= '</td><td>';
+					$con .=  tx_sevenpack_utility::html_hidden_input (
+						$key_data.'['.$i.'][sn]', $sn, array ( 'class' => $cclass ) );
+					$con .= $sn;
 				} else {
 					$con .= $sn.'</td><td>'.$fn;
 				}
@@ -761,14 +767,13 @@ class tx_sevenpack_single_view {
 			// Append +/- Buttons
 			if ( $editMode ) {
 				$con .= '<tr><td colspan="2"></td>';
-				$con .= '<td>';
-				$con .= '<input type="submit"'
-					.  ' name="'.$pi1->prefix_pi1.'[action][more_authors]"'
-					.  ' value="+"/>';
-				$con .= '<input type="submit"'
-					.  ' name="'.$pi1->prefix_pi1.'[action][less_authors]"'
-					.  ' value="-"/>' . "\n";
-				$con .= '</td></tr>'."\n";
+				$con .= '<td colspan="3">';
+				$con .= tx_sevenpack_utility::html_submit_input (
+					$key_action.'[more_authors]', '+' );
+				$con .= ' ';
+				$con .= tx_sevenpack_utility::html_submit_input (
+					$key_action.'[less_authors]', '-' );
+				$con .= '</td></tr>' . "\n";
 			}
 			$con .= '</tbody>';
 			$con .= '</table>' . "\n";
@@ -776,12 +781,10 @@ class tx_sevenpack_single_view {
 			for ( $i=0; $i < sizeof ( $authors ); $i++ ) {
 				$fn = $pi1->filter_pub_html ( $authors[$i]['fn'], TRUE );
 				$sn = $pi1->filter_pub_Html ( $authors[$i]['sn'], TRUE );
-				$con .= '<input type="hidden" ';
-				$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][fn]" ';
-				$con .= 'value="'.$fn.'"'.$Iclass.'/>';
-				$con .= '<input type="hidden" ';
-				$con .= 'name="'.$pi1->prefix_pi1.'[DATA][pub][authors]['.$i.'][sn]" ';
-				$con .= 'value="'.$sn.'"'.$Iclass.'/>';
+				$con .= tx_sevenpack_utility::html_hidden_input (
+					$key_data.'['.$i.'][fn]', $fn, array ( 'class' => $cclass ) );
+				$con .= tx_sevenpack_utility::html_hidden_input (
+					$key_data.'['.$i.'][sn]', $sn, array ( 'class' => $cclass ) );
 			}
 		}
 		return $con;

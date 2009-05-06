@@ -43,8 +43,8 @@ class tx_sevenpack_reference_accessor {
 	public $pubFields = array (
 		'bibtype', 'citeid', 'authors', 'title', 'journal', 'year',
 		'month', 'day', 'volume', 'number', 'pages', 'abstract',
-		'affiliation', 'note', 'annotation', 'keywords',
-		'file_url', 'misc', 'editor', 'publisher', 'series',
+		'affiliation', 'note', 'annotation', 'keywords', 'tags',
+		'file_url', 'web_url', 'misc', 'editor', 'publisher', 'series',
 		'address', 'edition', 'chapter', 'howpublished',
 		'booktitle', 'organization', 'school', 'institution',
 		'state', 'type', 'ISBN', 'DOI',
@@ -60,8 +60,8 @@ class tx_sevenpack_reference_accessor {
 	public $refFields = array (
 		'bibtype', 'citeid', 'title', 'journal', 'year',
 		'month', 'day', 'volume', 'number', 'pages', 'abstract',
-		'affiliation', 'note', 'annotation', 'keywords',
-		'file_url', 'misc', 'editor', 'publisher', 'series',
+		'affiliation', 'note', 'annotation', 'keywords', 'tags',
+		'file_url', 'web_url', 'misc', 'editor', 'publisher', 'series',
 		'address', 'edition', 'chapter', 'howpublished',
 		'booktitle', 'organization', 'school', 'institution',
 		'state', 'type', 'ISBN', 'DOI',

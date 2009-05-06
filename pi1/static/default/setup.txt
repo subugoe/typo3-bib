@@ -10,7 +10,7 @@ plugin.tx_sevenpack_pi1 {
 	ce_links = 1
 
 	# url related values
-	auto_url_order = file_url,DOI
+	auto_url_order = file_url,web_url,DOI
 	max_url_string_length = 60
 
 	# The list display mode (simple)
@@ -258,11 +258,25 @@ plugin.tx_sevenpack_pi1 {
 	}
 
 
+	# File icons
 	file_icons {
 		default = EXT:cms/tslib/media/fileicons/default.gif
 		doc = EXT:cms/tslib/media/fileicons/doc.gif
 		pdf = EXT:cms/tslib/media/fileicons/pdf.gif
 	}
+
+
+	# Edit icons
+	edit_icons {
+		new_record = EXT:t3skin/icons/gfx/new_record.gif
+		edit = EXT:t3skin/icons/gfx/edit2.gif
+		hide = EXT:t3skin/icons/gfx/button_hide.gif
+		reveal = EXT:t3skin/icons/gfx/button_unhide.gif
+
+		up = EXT:t3skin/icons/gfx/button_up.gif
+		down = EXT:t3skin/icons/gfx/button_down.gif
+	}
+
 
 	# Export
 	export {
@@ -305,6 +319,10 @@ plugin.tx_sevenpack_pi1 {
 	# Frontend editor
 	editor {
 		numAuthors = 5
+
+		input_size = 60;
+		author_input_size = 25;
+
 		manipulators {
 			all.wrap  = <div class="tx_sevenpack-manipulator_block">|</div>
 			hide.wrap = <div class="tx_sevenpack-manip">|</div>
@@ -324,7 +342,7 @@ plugin.tx_sevenpack_pi1 {
 		groups {
 			all {
 				required = state
-				optional = affiliation,keywords,file_url,DOI
+				optional = affiliation,keywords,tags,file_url,web_url,DOI
 				library = extern,reviewed,in_library,borrowed_by
 			}
 

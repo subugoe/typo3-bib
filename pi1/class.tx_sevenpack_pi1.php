@@ -966,16 +966,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function init_edit_icons ()
 	{
-		$base = 'EXT:t3skin/icons/gfx/';
-		$list = array ( 
-			'new_record' => 'new_record.gif',
-			'edit' => 'edit2.gif',
-			'hide' => 'button_hide.gif',
-			'reveal' => 'button_unhide.gif'
-		);
+		$list = array ();
+		$more = $this->conf['edit_icons.'];
+		if ( is_array ( $more ) )
+			$list = array_merge ( $list, $more );
+
 		$tmpl =& $GLOBALS['TSFE']->tmpl;
 		foreach ( $list as $key => $val ) {
-			$this->icon_src[$key] = 'src="' . $tmpl->getFileName ( $base . $val ) . '"';
+			$this->icon_src[$key] = $tmpl->getFileName ( $base . $val );
 		}
 	}
 
@@ -987,7 +985,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function init_list_icons ()
 	{
-		// Get edit icon sources
 		$list = array ( 
 			'default' => 'EXT:cms/tslib/media/fileicons/default.gif' );
 		$more = $this->conf['file_icons.'];
@@ -1812,7 +1809,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$charset = strtoupper ( $this->extConf['be_charset'] );
 				switch ( $f ) {
 					case 'file_url':
-						$val = preg_replace ( '/&([^;]{8})/', '&amp;\\1', $val );
+					case 'web_url':
+						$val = tx_sevenpack_utility::fix_html_ampersand ( $val );
 						// Cut the displayed string in the middle
 						if ( isset ( $this->conf['max_url_string_length'] ) ) {
 							$ml = abs ( intval ( $this->conf['max_url_string_length'] ) );
@@ -2274,7 +2272,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function get_new_manipulator ( ) {
 		$label = $this->get_ll ( 'manipulators_new', 'New', TRUE );
-		$imgSrc = $this->icon_src['new_record'];
+		$imgSrc = 'src="'.$this->icon_src['new_record'].'"';
 		$img = '<img '.$imgSrc.' alt="'.$label.'" ' . 
 			'class="'.$this->prefixShort.'-new_icon" />';
 
@@ -2290,7 +2288,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function get_edit_manipulator ( $pub ) {
 		// The edit button
 		$label = $this->get_ll ( 'manipulators_edit', 'Edit', TRUE );
-		$imgSrc = $this->icon_src['edit'];
+		$imgSrc = 'src="'.$this->icon_src['edit'].'"';
 		$img = '<img '.$imgSrc.' alt="'.$label.'" ' . 
 			'class="'.$this->prefixShort.'-edit_icon" />';
 
@@ -2310,11 +2308,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function get_hide_manipulator ( $pub ) {
 		if ( $pub['hidden'] == 0 )  {
 			$label = $this->get_ll ( 'manipulators_hide', 'Hide', TRUE );
-			$imgSrc = $this->icon_src['hide'];
+			$imgSrc = 'src="'.$this->icon_src['hide'].'"';
 			$action = array('hide'=>1);
 		}  else  {
 			$label = $this->get_ll ( 'manipulators_reveal', 'Reveal', TRUE );
-			$imgSrc = $this->icon_src['reveal'];
+			$imgSrc = 'src="'.$this->icon_src['reveal'].'"';
 			$action = array('reveal'=>1);
 		}
 

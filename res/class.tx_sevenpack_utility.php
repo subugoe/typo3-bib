@@ -192,13 +192,76 @@ class tx_sevenpack_utility {
 
 
 	/**
+	 * Returns a html input element
+	 *
+	 * @return The hidden input element
+	 */
+	function html_input ( $type, $name, $value, $attribs = array() ) {
+		$con = '<input type="' . strval ( $type ) . '"' .
+			' name="' . strval ( $name ) . '"' .
+			' value="' . strval ( $value ) . '"';
+		foreach ( $attribs as $a_key => $a_value ) {
+			if ( !( $a_value === FALSE ) )
+				$con .= ' '.strval($a_key).'="'.strval($a_value).'"';
+		}
+		$con .= '>';
+		return $con;
+	}
+
+
+	/**
+	 * Returns a sumit input
+	 *
+	 * @return The submit input element
+	 */
+	function html_submit_input ( $name, $value, $attribs = array() ) {
+		return tx_sevenpack_utility::html_input (
+			'submit', $name, $value, $attribs );
+	}
+
+
+	/**
+	 * Returns a image input
+	 *
+	 * @return The image input element
+	 */
+	function html_image_input ( $name, $value, $src, $attribs = array() ) {
+		$attribs = array_merge ( $attribs, array ( 'src'=>$src ) );
+		return tx_sevenpack_utility::html_input (
+			'image', $name, $value, $attribs );
+	}
+
+
+	/**
+	 * Returns a hidden input
+	 *
+	 * @return The hidden input element
+	 */
+	function html_hidden_input ( $name, $value, $attribs = array() ) {
+		return tx_sevenpack_utility::html_input ( 
+			'hidden', $name, $value, $attribs );
+	}
+
+
+	/**
+	 * Returns a text input
+	 *
+	 * @return The text input element
+	 */
+	function html_text_input ( $name, $value, $attribs = array() ) {
+		return tx_sevenpack_utility::html_input ( 
+			'text', $name, $value, $attribs );
+	}
+
+
+	/**
 	 * Returns a select input
 	 *
-	 * @return The title string or FALSE
+	 * @return The select element
 	 */
-	function html_select_input ( $pairs, $value, $select_attribs ) {
+	function html_select_input ( $pairs, $value, $attribs = array() ) {
 		$con .= '<select';
-		foreach ( $select_attribs as $a_key => $a_value ) {
+		foreach ( $attribs as $a_key => $a_value ) {
 			if ( !( $a_value === FALSE ) )
 				$con .= ' ' . strval ( $a_key ) . '="' . strval ( $a_value ) . '"';
 		}
@@ -223,7 +286,7 @@ class tx_sevenpack_utility {
 	 * @return The html table code
 	 */
 	function html_layout_table ( $rows ) {
-		$res = '<table class="'.$this->prefixShort.'-layout"><tbody>';
+		$res = '<table class="tx_sevenpack-layout"><tbody>';
 		foreach ( $rows as $row ) {
 			$res .= '<tr>';
 			if ( is_array ( $row ) ) {
