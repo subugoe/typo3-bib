@@ -163,7 +163,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Initialize current configuration
-		$extConf['additional_link_vars'] = array();
+		$extConf['link_vars'] = array();
 		$extConf['sub_page'] = array();
 
 		// Determine charsets
@@ -174,8 +174,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
 		$extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
 
+
 		//
-		// Retrieve FlexForm values
+		// Retrieve general FlexForm values
 		//
 		$ff =& $this->cObj->data['pi_flexform'];
 		$fSheet = 'sDEF';
@@ -204,14 +205,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$extConf['hide_fields'][$field] = 0;
 		}
 		//t3lib_div::debug ( $extConf['hide_fields'] );
-
-		// Frontend editor setup
-		$ecEditor =& $extConf['editor'];
-		$fSheet = 's_fe_editor';
-		$ecEditor['enabled']          = $this->pi_getFFvalue ( $ff, 'enable_editor',  $fSheet );
-		$ecEditor['citeid_gen_new']   = $this->pi_getFFvalue ( $ff, 'citeid_gen_new', $fSheet );
-		$ecEditor['citeid_gen_old']   = $this->pi_getFFvalue ( $ff, 'citeid_gen_old', $fSheet );
-		$ecEditor['clear_page_cache'] = $this->pi_getFFvalue ( $ff, 'clear_cache',    $fSheet );
 
 		// Configuration by TypoScript selected
 		if ( intval ( $extConf['d_mode'] ) < 0 )
@@ -263,18 +256,29 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
+
+		//
+		// Frontend editor configuration
+		//
+		$ecEditor =& $extConf['editor'];
+		$fSheet = 's_fe_editor';
+		$ecEditor['enabled']          = $this->pi_getFFvalue ( $ff, 'enable_editor',  $fSheet );
+		$ecEditor['citeid_gen_new']   = $this->pi_getFFvalue ( $ff, 'citeid_gen_new', $fSheet );
+		$ecEditor['citeid_gen_old']   = $this->pi_getFFvalue ( $ff, 'citeid_gen_old', $fSheet );
+		$ecEditor['clear_page_cache'] = $this->pi_getFFvalue ( $ff, 'clear_cache',    $fSheet );
+
 		// Overwrite editor configuration from TSsetup
-		if ( array_key_exists ( 'editor.', $this->conf ) )
-			if ( array_key_exists ( 'enabled', $this->conf['editor.'] ) )
-				$extConf['editor']['enabled'] = $this->conf['editor.']['enabled'] ? TRUE : FALSE;
 		if ( is_array( $this->conf['editor.'] ) ) {
 			$eo =& $this->conf['editor.'];
+			if ( array_key_exists ( 'enabled', $eo ) )
+				$extConf['editor']['enabled'] = $eo['enabled'] ? TRUE : FALSE;
 			if ( array_key_exists ( 'citeid_gen_new', $eo ) )
 				$extConf['editor']['citeid_gen_new'] = $eo['citeid_gen_new'] ? TRUE : FALSE;
 			if ( array_key_exists ( 'citeid_gen_old', $eo ) )
 				$extConf['editor']['citeid_gen_old'] = $eo['citeid_gen_old'] ? TRUE : FALSE;
 		}
 		$this->ra->clear_cache = $extConf['editor']['clear_page_cache'];
+
 
 		//
 		// Get storage page(s)
@@ -349,30 +353,39 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$extConf['sub_page']['ipp'] = max ( intval ( $extConf['sub_page']['ipp'] ), 0 );
 		$extConf['max_authors']     = max ( intval ( $extConf['max_authors']     ), 0 );
 
+
+		//
 		// Fetch some configuration from the HTTP request
+		//
 		if ( array_key_exists ( 'items_per_page', $this->piVars ) ) {
-			$extConf['sub_page']['ipp'] = max ( intval ( $this->piVars['items_per_page'] ), 0 );
+			$IPP = max ( intval ( $this->piVars['items_per_page'] ), 0 );
+			$extConf['sub_page']['ipp'] = $IPP;
+			$extConf['link_vars']['items_per_page'] = $IPP;
 		}
 
+
+		//
+		// Enable Enable the edit mode
 		// Check if this BE user has edit permissions
-		$g_ok = FALSE;
+		//
+		$be_ok = FALSE;
 		if ( is_object ( $GLOBALS['BE_USER'] ) ) {
-			if ( $GLOBALS['BE_USER']->isAdmin() ) {
-				$g_ok = TRUE;
-			} else {
-				$g_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ra->refTable );
-			}
+			if ( $GLOBALS['BE_USER']->isAdmin() )
+				$be_ok = TRUE;
+			else
+				$be_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ra->refTable );
 		}
 
 		// allow FE-user editing from special groups (set via TS)
-		//t3lib_div::debug( $g_ok ? 'OK' : 'NO OK' );
-		if ( !$g_ok && isset ( $this->conf['FE_edit_groups'] ) ) {
+		$fe_ok = FALSE;
+		if ( !$be_ok && isset ( $this->conf['FE_edit_groups'] ) ) {
 			$groups = $this->conf['FE_edit_groups'];
 			if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
-				$g_ok = TRUE;
+				$fe_ok = TRUE;
 		}
 
-		$extConf['edit_mode'] = ( $g_ok && $extConf['editor']['enabled'] );
+		//t3lib_div::debug( array ( 'Edit mode' => array ( 'BE' => $be_ok, 'FE' => $fe_ok ) ) );
+		$extConf['edit_mode'] = ( ($g_ok || $fe_ok) && $extConf['editor']['enabled'] );
 
 		// Set the enumeration mode
 		$extConf['has_enum'] = TRUE;
@@ -452,9 +465,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				unset ( $this->piVars['single_mode'] );
 			}
 
-			if ( isset($extConf['single_mode']) ) {
+			if ( isset ( $extConf['single_mode'] ) ) {
 				$this->piVars['single_mode'] = $extConf['single_mode'];
-			} else if ( isset($this->piVars['single_mode']) ) {
+			} else if ( isset ( $this->piVars['single_mode'] ) ) {
 					$extConf['view_mode']   = $this->VIEW_SINGLE;
 					$extConf['single_mode'] = $this->piVars['single_mode'];
 			}
@@ -515,7 +528,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( $this->stat['num_all'] > 0) {
 				$ecYear = tx_sevenpack_utility::find_nearest_int ( $ecYear, $this->stat['years'] );
 			}
-			$extConf['additional_link_vars']['year'] = $ecYear;
+			$extConf['link_vars']['year'] = $ecYear;
 		}
 
 		$this->stat['num_page'] = $this->stat['num_all'];
@@ -528,7 +541,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$subPage =& $extConf['sub_page'];
 		$iPP =& $subPage['ipp'];
 		if ( $iPP > 0 ) {
-			$subPage['max']     = floor(($this->stat['num_page']-1)/$iPP);
+			$subPage['max']     = floor ( ( $this->stat['num_page']-1 ) / $iPP );
 			$subPage['current'] = tx_sevenpack_utility::crop_to_range (
 				$this->piVars['page'], 0, $subPage['max']);
 		} else {
@@ -610,9 +623,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $this->extConf['debug'] )
 			$str .= t3lib_div::view_array (
 				array ( 
-					'extConf'=>$this->extConf,
-					'conf'=>$this->conf,
-					'piVars'=>$this->piVars,
+					'extConf' => $this->extConf,
+					'conf' => $this->conf,
+					'piVars' => $this->piVars,
 					'HTTP_POST_VARS' => $GLOBALS['HTTP_POST_VARS'],
 					'HTTP_GET_VARS' => $GLOBALS['HTTP_GET_VARS'],
 					//'$this->cObj->data' => $this->cObj->data
@@ -1028,7 +1041,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	{
 		if ( $this->extConf['edit_mode'] ) $auto_cache = FALSE;
 
-		$vars = array_merge ( $this->extConf['additional_link_vars'], $vars );
+		$vars = array_merge ( $this->extConf['link_vars'], $vars );
 		$vars = array ( $this->prefix_pi1 => $vars );
 
 		$record = '';
