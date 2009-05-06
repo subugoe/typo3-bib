@@ -164,58 +164,30 @@ class tx_sevenpack_utility {
 
 
 	/**
-	 * Prepares the file_url from the database string
-	 * and a configuration array
+	 * Check if the frontend user is in a usergroup
 	 *
-	 * @return The processed url
+	 * @return TRUE if the user is in a given group FALSE otherwise
 	 */
-	function setup_file_url ( $url, $config = array() ) {
-
-		//t3lib_div::debug ( $GLOBALS['TSFE']->fe_user );
-		if ( ( strlen ( $url ) > 0 ) && ( strlen ( $config['hide_file_ext'] ) > 0) ) {
-
-			$show = TRUE;
-
-			// Disable url if file extensions matches
-			if ( strlen ( $config['hide_file_ext'] ) > 0 ) {
-				$check_ext = tx_sevenpack_utility::explode_trim_lower ( ',', $config['hide_file_ext'] );
-				foreach ( $check_ext as $ext ) {
-					// Sanitize input
-					$ext = strtolower ( trim ( $ext ) );
-					$len = strlen ( $ext );
-					if ( ( $len > 0 ) && ( strlen ( $url ) >= $len ) ) {
-						$uext = strtolower ( substr ( $url, -$len ) );
-						//t3lib_div::debug ( 'ext' => $ext, 'uext' => $uext );
-						if ( $uext == $ext ) {
-							$show = FALSE;
-							break;
-						}
-					}
-				}
+	function check_fe_user_groups ( $groups, $admin_ok = TRUE ) {
+		if ( $admin_ok && is_object( $GLOBALS['BE_USER'] )
+		    && $GLOBALS['BE_USER']->isAdmin()
+		) return TRUE;
+		if ( is_object ( $GLOBALS['TSFE']->fe_user )
+		  && is_array ( $GLOBALS['TSFE']->fe_user->user )
+		  && is_array ( $GLOBALS['TSFE']->fe_user->groupData ) )
+		{
+			if ( is_string ( $groups ) ) {
+				$groups = strtolower ( $groups );
+				if ( !( strpos ( $groups, 'all' ) === FALSE ) )
+					return TRUE;
+				$groups = tx_sevenpack_utility::explode_intval ( ',', $groups );
 			}
-
-			// Enable url if usergroup matches
-			if ( !$show && is_object ( $GLOBALS['TSFE']->fe_user ) 
-			     && is_array ( $GLOBALS['TSFE']->fe_user->user ) 
-			) {
-				$allowed = strtolower ( trim ( $config['FE_user_groups'] ) );
-				if ( strpos ( $allowed, 'all' ) === FALSE ) {
-					if ( is_array ( $GLOBALS['TSFE']->fe_user->groupData )  ) {
-						// Check group membership
-						$show = tx_sevenpack_utility::intval_list_check (
-							$allowed, $GLOBALS['TSFE']->fe_user->groupData['uid'] );
-					}
-				} else {
-					// All logged in usergroups
-					$show = TRUE;
-				}
+			$cur =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
+			if ( tx_sevenpack_utility::intval_list_check ( $groups, $cur ) ) {
+				return TRUE;
 			}
-
-			if ( !$show )
-				$url = '';
 		}
-
-		return $url;
+		return FALSE;
 	}
 
 
@@ -266,6 +238,7 @@ class tx_sevenpack_utility {
 		$res .= '</tbody></table>';
 		return $res;
 	}
+
 
 	/** 
 	 * Crops the first argument to a given range
@@ -321,10 +294,9 @@ class tx_sevenpack_utility {
 		if ( !is_array ( $current ) )
 			$current = tx_sevenpack_utility::explode_intval ( ',', strval ( $current ) );
 
-		$inter = array_intersect ( $allowed, $current );
-		//t3lib_div::debug( array ( 'alw' => $allowed, 'cur' => $current, 'match' => $inter ) );
-		if ( sizeof ( $inter ) > 0 ) {
-			return TRUE;
+		foreach ( $current as $cur ) {
+			if ( in_array ( $cur, $allowed ) )
+				return TRUE;
 		}
 		return FALSE;
 	}

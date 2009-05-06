@@ -238,14 +238,27 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['max_authors'] = intval ( $this->conf['max_authors'] );
 		}
 
+		// Activate export modes
 		$extConf['enable_export'] = 0;
 		if ( intval ( $extConf['export_mode'] ) > 0 ) {
-			if ( isset ( $this->conf['export.']['enable_export'] ) ) {
-				$eex = tx_sevenpack_utility::explode_trim_lower ( ',', $this->conf['export.']['enable_export'] );
+			$eex = $this->conf['export.']['enable_export'];
+			if ( strlen ( $eex ) > 0 )
+				$eex = tx_sevenpack_utility::explode_trim_lower ( ',', $eex, TRUE );
+
+			// Check restrictions
+			$grp = $this->conf['export.']['FE_groups_only'];
+			if ( strlen ( $grp ) > 0 )
+				$grp = tx_sevenpack_utility::check_fe_user_groups ( $grp );
+			else
+				$grp = TRUE;
+	
+			// Add export modes
+			if ( is_array ( $eex ) && $grp ) {
+				$ec_ee =& $extConf['enable_export'];
 				if ( in_array ( 'bibtex', $eex ) )
-					$extConf['enable_export'] = $extConf['enable_export'] | $this->EXP_BIBTEX;
+					$ec_ee = $ec_ee | $this->EXP_BIBTEX;
 				if ( in_array ( 'xml', $eex ) )
-					$extConf['enable_export'] = $extConf['enable_export'] | $this->EXP_XML;
+					$ec_ee = $ec_ee | $this->EXP_XML;
 			}
 		}
 
@@ -345,7 +358,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Check if this BE user has edit permissions
 		$g_ok = FALSE;
 		if ( is_object ( $GLOBALS['BE_USER'] ) ) {
-			if ( $GLOBALS['BE_USER']->isAdmin ( ) ) {
+			if ( $GLOBALS['BE_USER']->isAdmin() ) {
 				$g_ok = TRUE;
 			} else {
 				$g_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ra->refTable );
@@ -354,17 +367,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// allow FE-user editing from special groups (set via TS)
 		//t3lib_div::debug( $g_ok ? 'OK' : 'NO OK' );
-		if ( !$g_ok && is_array ( $GLOBALS['TSFE']->fe_user->user ) 
-		     && isset ( $this->conf['FE_edit_groups'] )
-		     && is_array ( $GLOBALS['TSFE']->fe_user->groupData )
-		) {
-			$allowed = strtolower ( $this->conf['FE_edit_groups'] );
-			$current =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
-			if ( tx_sevenpack_utility::intval_list_check ( $allowed, $current ) 
-			     || ( !( strpos ( $allowed, 'all' ) === FALSE ) ) ) {
-				//t3lib_div::debug( 'FE user ok' );
+		if ( !$g_ok && isset ( $this->conf['FE_edit_groups'] ) ) {
+			$groups = $this->conf['FE_edit_groups'];
+			if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
 				$g_ok = TRUE;
-			}
 		}
 
 		$extConf['edit_mode'] = ( $g_ok && $extConf['editor']['enabled'] );
@@ -654,8 +660,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$all = ( $res['hide_all'] != 0 );
 				$ext = tx_sevenpack_utility::explode_trim_lower ( 
 					',', $res['hide_file_ext'], TRUE );
-				$groups = tx_sevenpack_utility::explode_intval ( 
-					',', $res['FE_user_groups'] );
+				$groups = strtolower ( $res['FE_user_groups'] );
+				if ( strpos ( $groups, 'all' ) === FALSE )
+					$groups = tx_sevenpack_utility::explode_intval ( ',', $groups );
+				else
+					$groups = 'all';
 			}
 			$this->extConf['restrict']['file_url']['hide_all'] = $all;
 			$this->extConf['restrict']['file_url']['hide_ext'] = $ext;
@@ -2321,14 +2330,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Enable if usergroup matches
-			if ( !$show && is_object ( $GLOBALS['TSFE']->fe_user )
-			     && is_array ( $GLOBALS['TSFE']->fe_user->user )
-			     && is_array ( $GLOBALS['TSFE']->fe_user->groupData )
-			     && is_array ( $rest['fe_groups'] ) )
-			{
-				// Check group membership
-				$show = tx_sevenpack_utility::intval_list_check (
-					$rest['fe_groups'], $GLOBALS['TSFE']->fe_user->groupData['uid'] );
+			if ( !$show && isset ( $rest['fe_groups'] ) ) {
+				$groups = $rest['fe_groups'];
+				if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
+					$show = TRUE;
 			}
 
 			if ( !$show )
