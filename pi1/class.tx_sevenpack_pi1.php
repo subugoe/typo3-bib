@@ -1626,8 +1626,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$attribs['class'] = $cfg['select_class'];
 			$btn = tx_sevenpack_utility::html_select_input ( 
 				$pairs, $this->extConf['sub_page']['ipp'], $attribs );
-			$con .= $cObj->stdWrap ( $btn, $cfg['ipp_select.'] );
 			$con .= $cObj->stdWrap ( $label, $cfg['ipp_label.'] );
+			$con .= $cObj->stdWrap ( $btn, $cfg['ipp_select.'] );
 
 			// show abstracts
 			$attribs = array ( 'onchange' => 'this.form.submit()' );
