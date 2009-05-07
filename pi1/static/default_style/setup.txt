@@ -154,6 +154,11 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		max-width: 4em;
 	}
 
+	div.tx_sevenpack-file_url_icon {
+		padding: 0px;
+		margin: 0px;
+		width: 32px;
+	}
 
 	.tx_sevenpack-button {
 		margin: 0em 0.5em;
@@ -203,7 +208,6 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	.tx_sevenpack-tags_block {
 		margin: 1ex 0px;
 	}
-
 
 	div.tx_sevenpack-missing_data  { 
 		font-weight: bold;

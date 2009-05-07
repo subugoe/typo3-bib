@@ -379,7 +379,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			$extConf['sub_page']['ipp'] = $IPP;
 
-			t3lib_div::debug( $this->piVars );
+			//t3lib_div::debug( $this->piVars );
 
 			// Show abstracts
 			$show = FALSE;
@@ -2623,9 +2623,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$img .= '/>';
 			$res .= $img;
 
-			if ( $cr_link ) {
+			if ( $cr_link )
 				$res = $this->cObj->getTypoLink ( $res, $url );
-			}
+
+			$res = $this->cObj->stdWrap ( $res, $this->conf['enum.']['file_icon.'] );
 		} else {
 			$res = '&nbsp;';
 		}
