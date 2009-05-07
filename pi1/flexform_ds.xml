@@ -89,6 +89,17 @@
 			</TCEforms>
 		</enum_style>
 
+		<!-- Split up bibliography types -->
+		<show_pref>
+			<TCEforms>
+				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_preferences</label>
+				<config>
+					<type>check</type>
+					<default>0</default>
+				</config>
+			</TCEforms>
+		</show_pref>
+
 		<!-- Date sorting -->
 		<date_sorting>
 			<TCEforms>
@@ -139,8 +150,12 @@
 							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.keywords</numIndex>
 							<numIndex index="1">4</numIndex>
 						</numIndex>
+						<numIndex index="4" type="array">
+							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.tags</numIndex>
+							<numIndex index="1">5</numIndex>
+						</numIndex>
 					</items>
-					<maxitems>4</maxitems>
+					<maxitems>5</maxitems>
 					<size>3</size>
 				</config>
 			</TCEforms>

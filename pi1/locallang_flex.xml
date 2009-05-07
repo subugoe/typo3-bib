@@ -81,11 +81,13 @@
 			<label index="tt_content.pi_flexform.sheet_fe_editor">FE editor</label>
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
 			<label index="tt_content.pi_flexform.sheet_general">General</label>
+			<label index="tt_content.pi_flexform.show_preferences">Show preferences bar</label>
 			<label index="tt_content.pi_flexform.show_textfields">Show textfields</label>
 			<label index="tt_content.pi_flexform.show_textfields.abstract">Abstract</label>
 			<label index="tt_content.pi_flexform.show_textfields.annotation">Annotation</label>
 			<label index="tt_content.pi_flexform.show_textfields.keywords">Keywords</label>
 			<label index="tt_content.pi_flexform.show_textfields.note">Note</label>
+			<label index="tt_content.pi_flexform.show_textfields.tags">Tags</label>
 			<label index="tt_content.pi_flexform.split_bibtypes">Split up bibliography types</label>
 			<label index="tt_content.pi_flexform.stat_mode">Statistic mode</label>
 			<label index="tt_content.pi_flexform.stat_mode.0">None</label>
@@ -170,11 +172,13 @@
 			<label index="tt_content.pi_flexform.sheet_fe_editor">FE Editor</label>
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
 			<label index="tt_content.pi_flexform.sheet_general">Allgemein</label>
+			<label index="tt_content.pi_flexform.show_preferences">Zeige Präferenzen Leiste</label>
 			<label index="tt_content.pi_flexform.show_textfields">Zeige Textfelder</label>
 			<label index="tt_content.pi_flexform.show_textfields.abstract">Zusammenfassung</label>
 			<label index="tt_content.pi_flexform.show_textfields.annotation">Anmerkung</label>
 			<label index="tt_content.pi_flexform.show_textfields.keywords">Schlüsselwörter</label>
 			<label index="tt_content.pi_flexform.show_textfields.note">Bemerkung</label>
+			<label index="tt_content.pi_flexform.show_textfields.tags">Tags</label>
 			<label index="tt_content.pi_flexform.split_bibtypes">Trenne nach Bibliographie Typen</label>
 			<label index="tt_content.pi_flexform.stat_mode">Statistik Modus</label>
 			<label index="tt_content.pi_flexform.stat_mode.0">Keiner</label>

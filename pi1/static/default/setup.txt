@@ -60,7 +60,8 @@ plugin.tx_sevenpack_pi1 {
 		chapter.wrap = |:
 		editor.wrap = |
 		ISBN.wrap = |:
-		keywords.wrap = <strong>|</strong>:
+		keywords.wrap = <strong>|:</strong>
+		tags.wrap = <strong>|:</strong>
 		note.wrap = <strong>|:</strong>
 		publisher.wrap = |:
 	}
@@ -104,6 +105,7 @@ plugin.tx_sevenpack_pi1 {
 		ISBN.noTrimWrap = |###LABEL_ISBN### ||
 		journal.wrap = |,
 		keywords.noTrimWrap = |<p class="tx_sevenpack-keywords_block">###LABEL_KEYWORDS### |</p>|
+		tags.noTrimWrap = |<p class="tx_sevenpack-tags_block">###LABEL_TAGS### |</p>|
 		misc.wrap = |.
 
 		# Month
@@ -168,10 +170,10 @@ plugin.tx_sevenpack_pi1 {
 	yearNav {
 		# Year label and wrap
 		label = yearNav_label
-		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
 
 		# Classes or the year selection form
-		form_class = tx_sevenpack-inline_form
+		form_class = tx_sevenpack-year_select_form
 		select_class =
 		input_class = tx_sevenpack-button
 
@@ -210,7 +212,7 @@ plugin.tx_sevenpack_pi1 {
 	pageNav {
 		# Page label and wrap
 		label = pageNav_label
-		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
 
 		# Page selection
 		selection {
@@ -257,7 +259,29 @@ plugin.tx_sevenpack_pi1 {
 	prefNav {
 		# Page label and wrap
 		label = prefNav_label
-		label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
+
+		ipp_label.noTrimWrap = |<span class="tx_sevenpack-navi_label">|</span> |
+		#ipp_select.wrap = |
+		abstract_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+		#abstract_btn.wrap = |
+		keywords_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+		#keywords_btn.wrap = |
+
+		# Classes or the ipp selection form
+		form_class = tx_sevenpack-inline_form
+		select_class =
+		input_class = tx_sevenpack-button
+
+		# Item per page values
+		ipp_values  = 5,10,20,30,40,50
+		ipp_default = 10
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_pref_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_pref_bottom">|</div>
 	}
 
 

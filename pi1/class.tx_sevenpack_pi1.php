@@ -183,7 +183,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fSheet = 'sDEF';
 		$extConf['d_mode']          = $this->pi_getFFvalue ( $ff, 'display_mode',   $fSheet );
 		$extConf['enum_style']      = $this->pi_getFFvalue ( $ff, 'enum_style',     $fSheet );
-		$extConf['show_abstracts']  = $this->pi_getFFvalue ( $ff, 'show_abstracts', $fSheet );
+		$extConf['show_pref']       = $this->pi_getFFvalue ( $ff, 'show_pref',      $fSheet );
 		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue ( $ff, 'items_per_page', $fSheet );
 		$extConf['max_authors']     = $this->pi_getFFvalue ( $ff, 'max_authors',    $fSheet );
 		$extConf['split_bibtypes']  = $this->pi_getFFvalue ( $ff, 'split_bibtypes', $fSheet );
@@ -193,7 +193,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$show_fields = $this->pi_getFFvalue ( $ff, 'show_textfields', $fSheet);
 		$show_fields = explode ( ',', $show_fields );
-		$extConf['hide_fields'] = array ( 'abstract' => 1, 'annotation' => 1, 'note' => 1, 'keywords' => 1 );
+		$extConf['hide_fields'] = array ( 'abstract' => 1, 'annotation' => 1, 
+			'note' => 1, 'keywords' => 1, 'tags' => 1 );
 		foreach ( $show_fields as $f ) {
 			$field = FALSE;
 			switch ( $f ) {
@@ -201,9 +202,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				case 2: $field = 'annotation'; break;
 				case 3: $field = 'note';       break;
 				case 4: $field = 'keywords';   break;
+				case 5: $field = 'tags';       break;
 			}
-			if ( $field )
-				$extConf['hide_fields'][$field] = 0;
+			if ( $field ) $extConf['hide_fields'][$field] = 0;
 		}
 		//t3lib_div::debug ( $extConf['hide_fields'] );
 
@@ -227,8 +228,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Override some values from typoscript
 		if ( array_key_exists ( 'split_bibtypes', $this->conf ) )
 			$extConf['split_bibtypes'] = $this->conf['split_bibtypes'] ? TRUE : FALSE;
-		if ( array_key_exists ( 'show_abstract', $this->conf ) )
-			$extConf['show_abstract'] = $this->conf['show_abstract'] ? TRUE : FALSE;
 		if ( array_key_exists ( 'export_mode', $this->conf ) )
 			$extConf['export_mode'] = $this->conf['export_mode'];
 
@@ -359,10 +358,43 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		// Fetch some configuration from the HTTP request
 		//
-		if ( array_key_exists ( 'items_per_page', $this->piVars ) ) {
-			$IPP = max ( intval ( $this->piVars['items_per_page'] ), 0 );
+		if ( $extConf['show_pref'] ) {
+			// Items per page
+			$IPP = $extConf['sub_page']['ipp'];
+			$extConf['pref_ipps'] = tx_sevenpack_utility::explode_intval (
+				',', $this->conf['prefNav.']['ipp_values'] );
+			if ( is_numeric ( $this->conf['prefNav.']['ipp_default']  ) ) {
+				$extConf['pref_ipp'] = intval ( $this->conf['prefNav.']['ipp_default'] );
+				$IPP = $extConf['pref_ipp'];
+			}
+
+			$pvar = $this->piVars['items_per_page'];
+			if ( is_numeric ( $pvar ) ) {
+				$pvar = max ( intval ( $pvar ), 0 );
+				if ( in_array ( $pvar, $extConf['pref_ipps'] ) ) {
+					$IPP = $pvar;
+					if ( $IPP != $extConf['pref_ipp'] )
+						$extConf['link_vars']['items_per_page'] = $IPP;
+				}
+			}
 			$extConf['sub_page']['ipp'] = $IPP;
-			$extConf['link_vars']['items_per_page'] = $IPP;
+
+			t3lib_div::debug( $this->piVars );
+
+			// Show abstracts
+			$show = FALSE;
+			if ( $this->piVars['show_abstracts'] != 0 )
+				$show = TRUE;
+			$extConf['hide_fields']['abstract'] = $show ? FALSE : TRUE;
+			$extConf['link_vars']['show_abstracts'] = $show ? '1' : '0';
+
+			// Show keywords
+			$show = FALSE;
+			if ( $this->piVars['show_keywords'] != 0 )
+				$show = TRUE;
+			$extConf['hide_fields']['keywords'] =  $show ? FALSE : TRUE;
+			$extConf['link_vars']['show_keywords'] = $show ? '1' : '0';
+			$extConf['hide_fields']['tags'] = $extConf['hide_fields']['keywords'];
 		}
 
 
@@ -1562,7 +1594,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( $this->extConf['show_pref_navi'] )
+		if ( $this->extConf['show_pref'] )
 		{
 			$cfg = array();
 			if ( is_array ( $this->conf['prefNav.'] ) )
@@ -1571,16 +1603,69 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Treat the template
 			$t_str = $this->enum_condition_block ( $this->template['PREF_NAVI_BLOCK'] );
 
+			// Form start
+			$erase = array ( 'items_per_page' => '', 
+				'show_abstracts' => '', 'show_keywords' => '' );
+			$con = '';
+			$con .= '<form name="'.$this->prefix_pi1.'-preferences_form" ';
+			$con .= 'action="' . $this->get_link_url ( $erase, FALSE ) . '"';
+			$con .= ' method="post"';
+			$con .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
+			$con .= '>' . "\n";
+
+			// ipp selection
+			$label = $this->get_ll ( 'prefNav_ipp_sel' );
+			$pairs = array();
+			foreach ( $this->extConf['pref_ipps'] as $y )
+				$pairs[$y] = $y;
+			$attribs = array (
+				'name'     => $this->prefix_pi1.'[items_per_page]',
+				'onchange' => 'this.form.submit()'
+			);
+			if ( strlen ( $cfg['select_class'] ) > 0 )
+				$attribs['class'] = $cfg['select_class'];
+			$btn = tx_sevenpack_utility::html_select_input ( 
+				$pairs, $this->extConf['sub_page']['ipp'], $attribs );
+			$con .= $cObj->stdWrap ( $btn, $cfg['ipp_select.'] );
+			$con .= $cObj->stdWrap ( $label, $cfg['ipp_label.'] );
+
+			// show abstracts
+			$attribs = array ( 'onchange' => 'this.form.submit()' );
+			$label = $this->get_ll ( 'prefNav_show_abstracts' );
+			$check = $this->extConf['hide_fields']['abstract'] ? FALSE : TRUE;
+			$btn = tx_sevenpack_utility::html_check_input ( 
+				$this->prefix_pi1.'[show_abstracts]', '1' , $check, $attribs );
+			$con .= $cObj->stdWrap ( $label, $cfg['abstract_label.'] );
+			$con .= $cObj->stdWrap ( $btn, $cfg['abstract_btn.'] );
+
+			// show keywords
+			$label = $this->get_ll ( 'prefNav_show_keywords' );
+			$check = $this->extConf['hide_fields']['keywords'] ? FALSE : TRUE;
+			$btn = tx_sevenpack_utility::html_check_input ( 
+				$this->prefix_pi1.'[show_keywords]', '1', $check, $attribs );
+			$con .= $cObj->stdWrap ( $label, $cfg['keywords_label.'] );
+			$con .= $cObj->stdWrap ( $btn, $cfg['keywords_btn.'] );
+
+			// Go button
+			$con .= '<input type="submit"';
+			$con .= ' name="'.$this->prefix_pi1.'[action][eval_pref]"';
+			$con .= ' value="'.$this->get_ll ( 'button_go' ).'"';
+			$con .= strlen ( $cfg['input_class'] ) ? ' class="'.$cfg['input_class'].'"' : '';
+			$con .= '/>' . "\n";
+
+			// Form end
+			$con .= '</form>';
 
 			// Setup the translator
 			$translator = array (
+				'###FORM###' => $con
 			);
-
 			// Labels
 			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
 				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
 
 			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
+
 			if ( $cfg['top_disable'] != 1 ) {
 				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
 				$this->extConf['has_top_navi'] = TRUE;
@@ -2168,6 +2253,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$lt['###LABEL_EDITOR###']     = $cObj->stdWrap ( $this->get_ll ( 'label_editor' ),    $conf['label.']['editor.']    );
 		$lt['###LABEL_ISBN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_isbn' ),      $conf['label.']['ISBN.']      );
 		$lt['###LABEL_KEYWORDS###']   = $cObj->stdWrap ( $this->get_ll ( 'label_keywords' ),  $conf['label.']['keywords.']  );
+		$lt['###LABEL_TAGS###']       = $cObj->stdWrap ( $this->get_ll ( 'label_tags' ),      $conf['label.']['tags.']      );
 		$lt['###LABEL_NOTE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_note' ),      $conf['label.']['note.']      );
 		$lt['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),        $conf['label.']['of.']        );
 		$lt['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),      $conf['label.']['page.']      );
@@ -2510,10 +2596,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function get_file_url_icon( $url ) {
 		$res = '';
-		$sources =& $this->icon_src['files'];
-		$src = $sources['.default'];
 
 		if ( strlen ( $url ) > 0 ) {
+			$sources =& $this->icon_src['files'];
+			$src = $sources['.default'];
 			$cr_link = TRUE;
 
 			if ( $cr_link ) {
@@ -2533,13 +2619,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					}
 				}
 			}
-		}
-		$res = '<img src="' . $src . '"';
+			$img = '<img src="' . $src . '"';
+			$img .= '/>';
+			$res .= $img;
 
-		$res .= '/>';
-		if ( $cr_link ) {
-			$res = $this->cObj->getTypoLink ( $res, $url );
+			if ( $cr_link ) {
+				$res = $this->cObj->getTypoLink ( $res, $url );
+			}
+		} else {
+			$res = '&nbsp;';
 		}
+
 		//t3lib_div::debug ( array ( 'image: ' => $res ) );
 		return $res;
 	}

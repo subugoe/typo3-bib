@@ -10,9 +10,11 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	div.tx_sevenpack-navi_year,
-	div.tx_sevenpack-navi_page {
+	div.tx_sevenpack-navi_page.
+	div.tx_sevenpack-navi_pref {
 		padding: 0em;
 		margin: 0px;
+		border-width: 0px;
 	}
 
 	div.tx_sevenpack-navi_year_top,
@@ -22,11 +24,29 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		border-width: 0px; 
 	}
 
-	.tx_sevenpack-navi_page_top, 
-	.tx_sevenpack-navi_page_bottom {
+	div.tx_sevenpack-navi_page_top, 
+	div.tx_sevenpack-navi_page_bottom {
 		padding: 0px;
 		margin: 0.5em 0em;
 		border-width: 0px;
+	}
+
+	div.tx_sevenpack-navi_pref_top, 
+	div.tx_sevenpack-navi_pref_bottom {
+		padding: 0px;
+		margin: 0.5em 0em;
+		border-width: 0px;
+	}
+
+	.tx_sevenpack-inline_form,
+	.tx_sevenpack-year_select_form {
+		display: inline;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	.tx_sevenpack-year_select_form {
+		margin-left: 5em;
 	}
 
 	span.tx_sevenpack-navi_current {
@@ -34,8 +54,15 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		font-weight: bold;
 	}
 
-	.tx_sevenpack-navi_label {
+	.tx_sevenpack-navi_label,
+	.tx_sevenpack-navi_main_label {
 		font-weight: bold;
+		padding-right: 1em;
+		padding-left: 1em;
+	}
+
+	.tx_sevenpack-navi_main_label {
+		padding-left: 0em;
 		padding-right: 2em;
 	}
 
@@ -49,7 +76,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		padding: 0px;
 	}
 
-	.tx_sevenpack-navi_export {
+	div.tx_sevenpack-navi_export {
 		text-align: left;
 		margin: 1em 0em;
 		padding: 0px;
@@ -61,7 +88,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin-right: 1em;
 	}
 
-	.tx_sevenpack-navi_import {
+	div.tx_sevenpack-navi_import {
 		text-align: left;
 		margin: 1em 0em;
 		padding: 0px;
@@ -73,7 +100,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin-right: 1em;
 	}
 
-	.tx_sevenpack-navi_statistic {
+	div.tx_sevenpack-navi_statistic {
 		text-align: left;
 		padding: 0px;
 		margin: 1em 0em;
@@ -82,12 +109,6 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	.tx_sevenpack-statistic_label {
 		font-weight: bold;
 		margin-right: 1em;
-	}
-
-	.tx_sevenpack-inline_form {
-		display: inline;
-		padding: 0px;
-		margin: 0px 6em;
 	}
 
 	table.tx_sevenpack-list {
@@ -173,15 +194,14 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	.tx_sevenpack-type {
 		font-style: italic;
 	}
-	.tx_sevenpack-abstract_block {
-	}
-	.tx_sevenpack-note_block {
-	}
-	.tx_sevenpack-annotation_block {
-	}
-	.tx_sevenpack-misc_block {
-	}
-	.tx_sevenpack-keywords_block {
+
+	.tx_sevenpack-abstract_block,
+	.tx_sevenpack-note_block,
+	.tx_sevenpack-annotation_block,
+	.tx_sevenpack-misc_block,
+	.tx_sevenpack-keywords_block,
+	.tx_sevenpack-tags_block {
+		margin: 1ex 0px;
 	}
 
 

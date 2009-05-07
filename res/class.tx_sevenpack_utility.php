@@ -210,6 +210,19 @@ class tx_sevenpack_utility {
 
 
 	/**
+	 * Returns a checkbox input
+	 *
+	 * @return The checkbox input element
+	 */
+	function html_check_input ( $name, $value, $checked, $attribs = array() ) {
+		if ( $checked )
+			$attribs['checked'] = 'checked';
+		return tx_sevenpack_utility::html_input (
+			'checkbox', $name, $value, $attribs );
+	}
+
+
+	/**
 	 * Returns a sumit input
 	 *
 	 * @return The submit input element
