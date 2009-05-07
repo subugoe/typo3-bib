@@ -1977,13 +1977,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 						$val = tx_sevenpack_utility::fix_html_ampersand ( $val );
 						// Cut the displayed string in the middle
 						if ( isset ( $this->conf['max_url_string_length'] ) ) {
+							$url = $val;
 							$ml = abs ( intval ( $this->conf['max_url_string_length'] ) );
-							if ( strlen ( $val ) > $ml ) {
+							if ( strlen ( $url ) > $ml ) {
 								$le = ceil ( $ml/2.0 );
 								$ls = $ml - $le;
-								$str = mb_substr  ( $val, 0, $ls  , $charset ) . '...';
-								$val = $str . mb_substr  ( $val, strlen ( $val ) - $le, $le  , $charset );
+								$str = mb_substr  ( $url, 0, $ls  , $charset ) . '...';
+								$url = $str . mb_substr  ( $url, strlen ( $url ) - $le, $le  , $charset );
 							}
+							$pdata[$f.'_fix'] = $url;
 						}
 						break;
 					default:
@@ -2060,7 +2062,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Wrap elements with an anchor
 		$url_wrap = array ( '', '' );
 		if ( strlen ( $pdata['file_url'] ) > 0 ) {
-			$url_wrap = $cObj->typolinkWrap ( array ( 'parameter' => $pdata['file_url'] ) );
+			$url_wrap = $cObj->typolinkWrap ( array ( 'parameter' => $pdata['auto_url'] ) );
 		}
 		$templ = $cObj->substituteSubpart ( $templ, '###URL_WRAP###', $url_wrap );
 
@@ -2626,7 +2628,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( $cr_link )
 				$res = $this->cObj->getTypoLink ( $res, $url );
 
-			$res = $this->cObj->stdWrap ( $res, $this->conf['enum.']['file_icon.'] );
+			$res = $this->cObj->stdWrap ( $res, $this->conf['enum.']['file_icon_image.'] );
 		} else {
 			$res = '&nbsp;';
 		}

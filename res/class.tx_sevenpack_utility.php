@@ -168,7 +168,7 @@ class tx_sevenpack_utility {
 	 *
 	 * @return TRUE if the user is in a given group FALSE otherwise
 	 */
-	function check_fe_user_groups ( $groups, $admin_ok = TRUE ) {
+	function check_fe_user_groups ( $groups, $admin_ok = FALSE ) {
 		if ( $admin_ok && is_object( $GLOBALS['BE_USER'] )
 		    && $GLOBALS['BE_USER']->isAdmin()
 		) return TRUE;

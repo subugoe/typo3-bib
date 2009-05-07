@@ -47,7 +47,10 @@ plugin.tx_sevenpack_pi1 {
 		#empty = &nbsp;
 		#empty.wrap = |
 		file_icon = ###FILE_URL_ICON###
-		file_icon.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
+		#file_icon.wrap = |
+
+		# These are wraps for special items
+		file_icon_image.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
 	}
 
 	# Label wraps
