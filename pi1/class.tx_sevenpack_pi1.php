@@ -127,7 +127,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $templateBibTypes = array (); // Initialized in main()
 
 	public $templateBlockTypes = array (
-		'YEAR_NAVI_BLOCK', 'PAGE_NAVI_BLOCK', 'PREF_NAVI_BLOCK', 'EXPORT_BLOCK', 
+		'PAGE_NAVI_BLOCK', 'PREF_NAVI_BLOCK', 'EXPORT_BLOCK', 
 		'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 
 		'STATISTIC_BLOCK', 'ITEM_BLOCK', 'SPACER_BLOCK' );
 
@@ -1200,9 +1200,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function setup_year_navi ()
 	{
-		$naviStr = '';
-		$naviTop = '';
-		$naviBottom = '';
+		$trans = array();
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
@@ -1210,187 +1208,24 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		     && $this->stat['num_all'] 
 		     && ( sizeof ( $this->stat['years'] ) > 0 ) )
 		{
-			$cfg = array();
-			$cfgSel = array();
-			if ( is_array ( $this->conf['yearNav.'] ) ) {
-				$cfg =& $this->conf['yearNav.'];
-				if ( is_array ( $cfg['selection.'] ) )
-					$cfgSel =& $cfg['selection.'];
-			}
+			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_year.php' ) );
 
-			$sel = array(
-				'prev' => array(),
-				'cur'  => array(),
-				'next' => array(),
-			);
+			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_year' );
+			$obj->initialize ( $this );
 
-			$pubYears =& $this->stat['years'];
+			$trans = $obj->translator();
 
-			// The year selector
-			$ys = '';
-			$ys .= '<form name="'.$this->prefix_pi1.'-year_select_form" ';
-			$ys .= 'action="'.$this->get_link_url ( array ( 'year' => '' ), FALSE ).'"';
-			$ys .= ' method="post"';
-			$ys .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
-			$ys .= '>' . "\n";
-		
-			$pairs = array();
-			foreach ( array_reverse( $pubYears ) as $y )
-				$pairs[$y] = $y;
-			$attribs = array (
-				'name'     => $this->prefix_pi1.'[year]',
-				'onchange' => 'this.form.submit()'
-			);
-			if ( strlen ( $cfg['select_class'] ) > 0 )
-				$attribs['class'] = $cfg['select_class'];
-			$btn = tx_sevenpack_utility::html_select_input ( 
-				$pairs, $this->extConf['year'], $attribs );
-			$ys .= $cObj->stdWrap ( $btn, $cfg['select.'] );
-
-			$attribs = array ();
-			if ( strlen ( $cfg['input_class'] ) > 0 )
-				$attribs['class'] =  $cfg['input_class'];
-			$btn = tx_sevenpack_utility::html_submit_input ( 
-				$this->prefix_pi1.'[action][select_year]',
-				$this->get_ll ( 'button_go' ), $attribs );
-			$ys .= $cObj->stdWrap ( $btn, $cfg['input.'] );
-
-			// End of form
-			$ys .= '</form>';
-
-			// Determine ranges of year navigation bar
-			$idxMax = sizeof ( $pubYears ) - 1;
-
-			// Number of years to display in the selection - must be odd
-			$numSel = 3;
-			if ( array_key_exists ( 'years', $cfgSel ) )
-				$numSel = abs ( intval ( $cfgSel['years'] ) );
-			$numSel = ($numSel % 2) ? $numSel : ( $numSel + 1 );
-
-			$numLR = intval ( ($numSel - 1) / 2 );
-
-			// Determine selection indices
-			$idxCur = intval ( 
-				array_search ( $this->extConf['year'], $pubYears ) );
-
-			$idx1 = $idxCur - $numLR;
-			if ( $idx1 < 1 ) {
-				$idx1 = 1;
-				$numLR = $numLR + ($numLR - $idxCur) + 1;
-			}
-			$idx2 = ($idxCur + $numLR);
-			if ( $idx2 > ( $idxMax - 1 ) ) {
-				$idx2 = $idxMax - 1;
-				$numLR += $numLR - ($idxMax - $idxCur) + 1;
-				$idx1 = max ( 0,  $idxCur - $numLR );
-			}
-
-			$yearLinkTitle = $this->get_ll ( 'yearNav_yearLinkTitle', '%y', TRUE );
-
-			// Generate year navigation bar
-			$ii = 0;
-			while( $ii <= $idxMax ) {
-				$year = strval ( $pubYears[$ii] );
-				$link = $year;
-				$cr_link = TRUE;
-
-				if ( $ii == $idxCur ) {
-					// Current
-					$key  = 'cur'; 
-					$wrap = $cfgSel['current.'];
-					$cr_link = FALSE;
-				} else if( $ii == 0 ) {
-					// First
-					$key  = 'prev';
-					$wrap = $cfgSel['first.'];
-				} else if ( $ii < $idx1 ) {
-					// More
-					$key  = 'prev';
-					$link = '...';
-					if ( array_key_exists ( 'more_below', $cfgSel  ) )
-						$link = strval ( $cfgSel['more_below'] );
-					$wrap = $cfgSel['more_below.'];
-					$cr_link = FALSE;
-					$ii = $idx1 - 1;
-				} else if ( $ii < $idxCur ) {
-					// Previous
-					$key  = 'prev';
-					$wrap = $cfgSel['below.'];
-				} else if ( $ii <= $idx2 ) {
-					// Following
-					$key  = 'next'; 
-					$wrap = $cfgSel['above.'];
-				} else if ( $ii < $idxMax ) {
-					// More
-					$key  = 'next'; 
-					$link = '...';
-					if ( array_key_exists ( 'more_above', $cfgSel  ) )
-						$link = strval ( $cfgSel['more_above'] );
-					$wrap = $cfgSel['more_above.'];
-					$cr_link = FALSE;
-					$ii = $idxMax - 1;
-				} else {
-					// Last
-					$key  = 'next';
-					$wrap = $cfgSel['last.'];
-				}
-
-				// Create link
-				if ( $cr_link ) {
-					$title = str_replace ( '%y', $year, $yearLinkTitle );
-					$link = $this->get_link ( $year, array ( 'year' => $year, 'page' => '' ), TRUE, 
-						array ( 'title' => $title ) );
-				}
-
-				if ( is_array ( $wrap ) )
-					$link = $cObj->stdWrap ( $link, $wrap );
-
-				$sel[$key][] = $link;
-				$ii += 1;
-			}
-
-			// Year separator
-			$sep = '&nbsp;';
-			if ( array_key_exists ( 'separator', $cfgSel  ) )
-				$sep = strval ( $cfgSel['separator'] );
-			if( is_array( $cfgSel['separator.'] ) )
-				$sep = $cObj->stdWrap ( $sep, $cfgSel['separator.'] );
-
-			// Setup the translator
-			$translator = array (
-				'###SEL_PREV###'    => implode($sep, $sel['prev']),
-				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sep:'').implode($sep, $sel['cur']).(sizeof($sel['next'])?$sep:''),
-				'###SEL_NEXT###'    => implode($sep, $sel['next']),
-				'###YEAR_SELECT###' => $ys
-			);
-			// Labels
-			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
-				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
-
-			// Treat the template
-			$t_str = $this->enum_condition_block ( $this->template['YEAR_NAVI_BLOCK'] );
-			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
-			if ( $cfg['top_disable'] != 1 ) {
-				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
+			if ( strlen ( $trans['###YEAR_NAVI_TOP###'] ) > 0 ) {
 				$this->extConf['has_top_navi'] = TRUE;
 			}
-			if ( $cfg['bottom_disable'] != 1 )
-				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
 
 			$hasStr = array ( '', '' );
 		}
 
-		$this->template['VIEW'] = $cObj->substituteSubpart (
-			$this->template['VIEW'], '###HAS_YEAR_NAVI###', $hasStr );
-
-		$translator = array (
-			'###YEAR_NAVI###' => $naviStr,
-			'###YEAR_NAVI_TOP###' => $naviTop,
-			'###YEAR_NAVI_BOTTOM###' => $naviBottom
-		);
-
-		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
-			$this->template['VIEW'], $translator );
+		$tmpl =& $this->template['VIEW'];
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_YEAR_NAVI###', $hasStr );
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 
@@ -1401,52 +1236,24 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function setup_author_navi ()
 	{
-		$naviStr = '';
-		$naviTop = '';
-		$naviBottom = '';
+		$trans = array();
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( $this->extConf['show_nav_author'] )
+		if ( !$this->extConf['show_nav_author'] )
 		{
-			$cfg = array();
-			$cfgSel = array();
-			if ( is_array ( $this->conf['authorNav.'] ) ) {
-				$cfg =& $this->conf['authorNav.'];
-				if ( is_array ( $cfg['selection.'] ) )
-					$cfgSel =& $cfg['selection.'];
-			}
-
 			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_author.php' ) );
 
 			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_author' );
 			$obj->initialize ( $this );
-
-			$naviStr = $obj->get();
-
-			if ( $cfg['top_disable'] != 1 ) {
-				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
-				$this->extConf['has_top_navi'] = TRUE;
-			}
-			if ( $cfg['bottom_disable'] != 1 ) {
-				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
-			}
-
+			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
 		}
 
-		$this->template['VIEW'] = $cObj->substituteSubpart (
-			$this->template['VIEW'], '###HAS_AUTHOR_NAVI###', $hasStr );
-
-		$translator = array (
-			'###AUTHOR_NAVI_TOP###' => $naviTop,
-			'###AUTHOR_NAVI_BOTTOM###' => $naviBottom
-		);
-
-		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
-			$this->template['VIEW'], $translator );
-
+		$tmpl =& $this->template['VIEW'];
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_AUTHOR_NAVI###', $hasStr );
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 

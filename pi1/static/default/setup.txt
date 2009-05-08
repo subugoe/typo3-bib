@@ -171,6 +171,8 @@ plugin.tx_sevenpack_pi1 {
 
 	# Year naviagation
 	yearNav {
+		template = EXT:sevenpack/res/templates/navi_year.html
+
 		# Year label and wrap
 		label = yearNav_label
 		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>

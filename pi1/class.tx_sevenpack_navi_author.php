@@ -12,36 +12,26 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 	function initialize ( $pi1 ) {
 		parent::initialize( $pi1 );
+		if( is_array ( $pi1->conf['authorNav.'] ) )
+			$this->conf =& $pi1->conf['authorNav.'];
+
+		$this->pref = 'AUTHOR_NAVI';
 		$this->load_template ( '###AUTHOR_NAVI_BLOCK###' );
 	}
 
 
 	function get ( ) {
-		$con = '';
 		$cObj =& $this->pi1->cObj;
+		$con = '';
 
-		$cfg = array();
-		$cfgSel = array();
-		if ( is_array ( $this->conf['authorNav.'] ) ) {
-			$cfg =& $this->conf['authorNav.'];
-			if ( is_array ( $cfg['selection.'] ) )
-				$cfgSel =& $cfg['selection.'];
-		}
+		$cfg =& $this->conf;
+		$cfgSel = is_array ( $cfg['selection.'] ) ? $cfg['selection.'] : array();
 
-		// Treat the template
+		// Translator
 		$trans = array();
 
 		$tmpl = $this->pi1->enum_condition_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
-
-
-		if ( $cfg['top_disable'] != 1 ) {
-			$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
-			$this->extConf['has_top_navi'] = TRUE;
-		}
-		if ( $cfg['bottom_disable'] != 1 ) {
-			$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
-		}
 
 		return $con;
 	}
