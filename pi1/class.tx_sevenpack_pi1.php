@@ -356,6 +356,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 		//
+		// Author navi
+		// Fetch some configuration from the HTTP request
+		//
+		$extConf['show_nav_author'] = TRUE;
+
+		//
+		// Preference navi
 		// Fetch some configuration from the HTTP request
 		//
 		if ( $extConf['show_pref'] ) {
@@ -1165,16 +1172,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function list_view ()
 	{
 		$this->setup_year_navi ();  // setup year navigation
+		$this->setup_author_navi (); // setup author navigation
 		$this->setup_pref_navi ();  // setup preferences navigation
 		$this->setup_page_navi ();  // setup page navigation
+
 		$this->setup_new_entry ();  // setup new entry button
-		$this->setup_statistic ();  // setup statistic element
 		$this->setup_export_links ();  // setup export links
 		$this->setup_import_links ();  // setup import link
-		$this->setup_items (); // setup Items
-		$this->setup_spacer ();  // setup new entry button
+		$this->setup_statistic ();  // setup statistic element
+
+		$this->setup_spacer ();  // setup spacer
 
 		$this->setup_top_navigation ();  // setup page navigation element
+
+		$this->setup_items (); // setup the publication items
 
 		//t3lib_div::debug ( $this->template['VIEW'] );
 
@@ -1232,14 +1243,19 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			);
 			if ( strlen ( $cfg['select_class'] ) > 0 )
 				$attribs['class'] = $cfg['select_class'];
-			$ys .= tx_sevenpack_utility::html_select_input ( 
+			$btn = tx_sevenpack_utility::html_select_input ( 
 				$pairs, $this->extConf['year'], $attribs );
+			$ys .= $cObj->stdWrap ( $btn, $cfg['select.'] );
 
-			$ys .= '<input type="submit"';
-			$ys .= ' name="'.$this->prefix_pi1.'[action][select_year]"';
-			$ys .= ' value="'.$this->get_ll ( 'button_go' ).'"';
-			$ys .= strlen ( $cfg['input_class'] ) ? ' class="'.$cfg['input_class'].'"' : '';
-			$ys .= '/>' . "\n";
+			$attribs = array ();
+			if ( strlen ( $cfg['input_class'] ) > 0 )
+				$attribs['class'] =  $cfg['input_class'];
+			$btn = tx_sevenpack_utility::html_submit_input ( 
+				$this->prefix_pi1.'[action][select_year]',
+				$this->get_ll ( 'button_go' ), $attribs );
+			$ys .= $cObj->stdWrap ( $btn, $cfg['input.'] );
+
+			// End of form
 			$ys .= '</form>';
 
 			// Determine ranges of year navigation bar
@@ -1375,6 +1391,62 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
 			$this->template['VIEW'], $translator );
+	}
+
+
+	/**
+	 * Sets up the author navigation element in the 
+	 *
+	 * @return void
+	 */
+	function setup_author_navi ()
+	{
+		$naviStr = '';
+		$naviTop = '';
+		$naviBottom = '';
+		$hasStr = '';
+		$cObj =& $this->cObj;
+
+		if ( $this->extConf['show_nav_author'] )
+		{
+			$cfg = array();
+			$cfgSel = array();
+			if ( is_array ( $this->conf['authorNav.'] ) ) {
+				$cfg =& $this->conf['authorNav.'];
+				if ( is_array ( $cfg['selection.'] ) )
+					$cfgSel =& $cfg['selection.'];
+			}
+
+			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_author.php' ) );
+
+			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_author' );
+			$obj->initialize ( $this );
+
+			$naviStr = $obj->get();
+
+			if ( $cfg['top_disable'] != 1 ) {
+				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
+				$this->extConf['has_top_navi'] = TRUE;
+			}
+			if ( $cfg['bottom_disable'] != 1 ) {
+				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
+			}
+
+			$hasStr = array ( '', '' );
+		}
+
+		$this->template['VIEW'] = $cObj->substituteSubpart (
+			$this->template['VIEW'], '###HAS_AUTHOR_NAVI###', $hasStr );
+
+		$translator = array (
+			'###AUTHOR_NAVI_TOP###' => $naviTop,
+			'###AUTHOR_NAVI_BOTTOM###' => $naviBottom
+		);
+
+		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
+			$this->template['VIEW'], $translator );
+
 	}
 
 

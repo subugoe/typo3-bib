@@ -1,8 +1,5 @@
 #cat=PLUGIN.SEVENPACK/clist/a; type=string; label=Storage folder list: A comma separated list of page IDs where database entries are be stored.
 plugin.tx_sevenpack_pi1.pid_list = 0
 
-#cat=PLUGIN.SEVENPACK/file/b; type=file; label=Template file: The HTML template file.
-plugin.tx_sevenpack_pi1.template = EXT:sevenpack/res/table.tmpl
-
 #cat=PLUGIN.SEVENPACK//b; type=check; label=Debug: Enable debug messages
 plugin.tx_sevenpack_pi1.debug = 0

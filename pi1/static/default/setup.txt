@@ -4,7 +4,7 @@ plugin.tx_sevenpack_pi1 {
 	debug = {$plugin.tx_sevenpack_pi1.debug}
 
 	# HTML template
-	template = {$plugin.tx_sevenpack_pi1.template}
+	template = EXT:sevenpack/res/table.tmpl
 
 	# Links link to the content element (e.g. http://bla.html#c1234)
 	ce_links = 1
@@ -180,6 +180,9 @@ plugin.tx_sevenpack_pi1 {
 		select_class =
 		input_class = tx_sevenpack-button
 
+		#select.wrap = |
+		#input.wrap = |
+
 		# Year selection
 		selection {
 			# The maximum number of years to show
@@ -285,6 +288,16 @@ plugin.tx_sevenpack_pi1 {
 
 		top.wrap = <div class="tx_sevenpack-navi_pref_top">|</div>
 		bottom.wrap = <div class="tx_sevenpack-navi_pref_bottom">|</div>
+	}
+
+
+	# Preferences Navigation
+	authorNav {
+		# Page label and wrap
+		label = authorNav_label
+		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
+
+		template = EXT:sevenpack/res/templates/navi_author.html
 	}
 
 
