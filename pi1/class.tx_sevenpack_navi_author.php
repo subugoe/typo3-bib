@@ -7,9 +7,12 @@ if ( !isset($GLOBALS['TSFE']) )
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/pi1/class.tx_sevenpack_navi.php') );
 
+
 class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
-
+	/*
+	 * Initialize
+	 */
 	function initialize ( $pi1 ) {
 		parent::initialize( $pi1 );
 		if( is_array ( $pi1->conf['authorNav.'] ) )
@@ -20,6 +23,9 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	}
 
 
+	/*
+	 * Returns content
+	 */
 	function get ( ) {
 		$cObj =& $this->pi1->cObj;
 		$con = '';

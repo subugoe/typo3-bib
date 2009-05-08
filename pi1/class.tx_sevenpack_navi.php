@@ -52,7 +52,7 @@ class tx_sevenpack_navi {
 
 		$val = '';
 		if ( $this->conf['bottom_disable'] == 0 )
-			$val['bottom'] = $cObj->stdWrap ( $con, $cfg['bottom.'] );
+			$val = $cObj->stdWrap ( $con, $cfg['bottom.'] );
 		$res[$pref.'_BOTTOM###'] = $val;
 
 		return $res;
@@ -100,17 +100,14 @@ class tx_sevenpack_navi {
 
 			//t3lib_div::debug( array('$ii' =>$ii, '$text' => $text) );
 
-			if ( $ii == $idxCur ) {
-				// Current
+			if ( $ii == $idxCur ) { // Current
 				$key  = 'cur'; 
 				$wrap = $cfgSel['current.'];
 				$cr_link = FALSE;
-			} else if( $ii == 0 ) {
-				// First
+			} else if( $ii == 0 ) { // First
 				$key  = 'prev';
 				$wrap = $cfgSel['first.'];
-			} else if ( $ii < $idx1 ) {
-				// More
+			} else if ( $ii < $idx1 ) { // More before
 				$key  = 'prev';
 				$text = '...';
 				if ( array_key_exists ( 'more_below', $cfgSel  ) )
@@ -118,16 +115,13 @@ class tx_sevenpack_navi {
 				$wrap = $cfgSel['more_below.'];
 				$cr_link = FALSE;
 				$ii = $idx1 - 1;
-			} else if ( $ii < $idxCur ) {
-				// Previous
+			} else if ( $ii < $idxCur ) { // Previous
 				$key  = 'prev';
 				$wrap = $cfgSel['below.'];
-			} else if ( $ii <= $idx2 ) {
-				// Following
+			} else if ( $ii <= $idx2 ) {  // Following
 				$key  = 'next'; 
 				$wrap = $cfgSel['above.'];
-			} else if ( $ii < $idxMax ) {
-				// More
+			} else if ( $ii < $idxMax ) { // More after
 				$key  = 'next'; 
 				$text = '...';
 				if ( array_key_exists ( 'more_above', $cfgSel  ) )
@@ -135,8 +129,7 @@ class tx_sevenpack_navi {
 				$wrap = $cfgSel['more_above.'];
 				$cr_link = FALSE;
 				$ii = $idxMax - 1;
-			} else {
-				// Last
+			} else { // Last
 				$key  = 'next';
 				$wrap = $cfgSel['last.'];
 			}

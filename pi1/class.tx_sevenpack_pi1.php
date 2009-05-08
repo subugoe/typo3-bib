@@ -127,7 +127,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $templateBibTypes = array (); // Initialized in main()
 
 	public $templateBlockTypes = array (
-		'PAGE_NAVI_BLOCK', 'PREF_NAVI_BLOCK', 'EXPORT_BLOCK', 
+		'PREF_NAVI_BLOCK', 'EXPORT_BLOCK', 
 		'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 
 		'STATISTIC_BLOCK', 'ITEM_BLOCK', 'SPACER_BLOCK' );
 
@@ -183,7 +183,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fSheet = 'sDEF';
 		$extConf['d_mode']          = $this->pi_getFFvalue ( $ff, 'display_mode',   $fSheet );
 		$extConf['enum_style']      = $this->pi_getFFvalue ( $ff, 'enum_style',     $fSheet );
-		$extConf['show_pref']       = $this->pi_getFFvalue ( $ff, 'show_pref',      $fSheet );
+		$extConf['show_nav_pref']   = $this->pi_getFFvalue ( $ff, 'show_pref',      $fSheet );
 		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue ( $ff, 'items_per_page', $fSheet );
 		$extConf['max_authors']     = $this->pi_getFFvalue ( $ff, 'max_authors',    $fSheet );
 		$extConf['split_bibtypes']  = $this->pi_getFFvalue ( $ff, 'split_bibtypes', $fSheet );
@@ -359,32 +359,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Author navi
 		// Fetch some configuration from the HTTP request
 		//
-		$extConf['show_nav_author'] = TRUE;
+		#$extConf['show_nav_author'] = TRUE;
 
 		//
 		// Preference navi
 		// Fetch some configuration from the HTTP request
 		//
-		if ( $extConf['show_pref'] ) {
+		if ( $extConf['show_nav_pref'] ) {
 			// Items per page
-			$IPP = $extConf['sub_page']['ipp'];
+			$iPP = $extConf['sub_page']['ipp'];
 			$extConf['pref_ipps'] = tx_sevenpack_utility::explode_intval (
 				',', $this->conf['prefNav.']['ipp_values'] );
 			if ( is_numeric ( $this->conf['prefNav.']['ipp_default']  ) ) {
 				$extConf['pref_ipp'] = intval ( $this->conf['prefNav.']['ipp_default'] );
-				$IPP = $extConf['pref_ipp'];
+				$iPP = $extConf['pref_ipp'];
 			}
 
 			$pvar = $this->piVars['items_per_page'];
 			if ( is_numeric ( $pvar ) ) {
 				$pvar = max ( intval ( $pvar ), 0 );
 				if ( in_array ( $pvar, $extConf['pref_ipps'] ) ) {
-					$IPP = $pvar;
-					if ( $IPP != $extConf['pref_ipp'] )
-						$extConf['link_vars']['items_per_page'] = $IPP;
+					$iPP = $pvar;
+					if ( $iPP != $extConf['pref_ipp'] )
+						$extConf['link_vars']['items_per_page'] = $iPP;
 				}
 			}
-			$extConf['sub_page']['ipp'] = $IPP;
+			$extConf['sub_page']['ipp'] = $iPP;
 
 			//t3lib_div::debug( $this->piVars );
 
@@ -575,15 +575,25 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Determine the number of sub pages and the current sub page (zero based)
 		//
 		$subPage =& $extConf['sub_page'];
-		$iPP =& $subPage['ipp'];
+		$iPP = $subPage['ipp'];
 		if ( $iPP > 0 ) {
 			$subPage['max']     = floor ( ( $this->stat['num_page']-1 ) / $iPP );
 			$subPage['current'] = tx_sevenpack_utility::crop_to_range (
-				$this->piVars['page'], 0, $subPage['max']);
+				$this->piVars['page'], 0, $subPage['max'] );
 		} else {
 			$subPage['max']     = 0;
 			$subPage['current'] = 0;
 		}
+
+		//
+		// Enable page and year navigation
+		//
+		if ( $extConf['d_mode'] == $this->D_Y_NAV )
+			if ( $this->stat['num_all'] > 0 )
+		     if ( sizeof ( $this->stat['years'] ) > 0 )
+					$extConf['show_nav_year'] = TRUE;
+		if ( ( $iPP > 0 ) && ( $this->stat['num_page'] > $iPP ) )
+			$extConf['show_nav_page'] = TRUE;
 
 		//
 		// Setup the browse filter
@@ -1171,10 +1181,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function list_view ()
 	{
-		$this->setup_year_navi ();  // setup year navigation
 		$this->setup_author_navi (); // setup author navigation
 		$this->setup_pref_navi ();  // setup preferences navigation
 		$this->setup_page_navi ();  // setup page navigation
+		$this->setup_year_navi ();  // setup year navigation
 
 		$this->setup_new_entry ();  // setup new entry button
 		$this->setup_export_links ();  // setup export links
@@ -1182,7 +1192,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->setup_statistic ();  // setup statistic element
 
 		$this->setup_spacer ();  // setup spacer
-
 		$this->setup_top_navigation ();  // setup page navigation element
 
 		$this->setup_items (); // setup the publication items
@@ -1204,10 +1213,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( ( $this->extConf['d_mode'] == $this->D_Y_NAV ) 
-		     && $this->stat['num_all'] 
-		     && ( sizeof ( $this->stat['years'] ) > 0 ) )
-		{
+		if ( $this->extConf['show_nav_year'] ) {
 			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_year.php' ) );
 
@@ -1215,12 +1221,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$obj->initialize ( $this );
 
 			$trans = $obj->translator();
-
-			if ( strlen ( $trans['###YEAR_NAVI_TOP###'] ) > 0 ) {
-				$this->extConf['has_top_navi'] = TRUE;
-			}
-
 			$hasStr = array ( '', '' );
+
+			if ( strlen ( $trans['###YEAR_NAVI_TOP###'] ) > 0 )
+				$this->extConf['has_top_navi'] = TRUE;
 		}
 
 		$tmpl =& $this->template['VIEW'];
@@ -1230,7 +1234,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
-	 * Sets up the author navigation element in the 
+	 * Sets up the author navigation bar
 	 *
 	 * @return void
 	 */
@@ -1240,15 +1244,18 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( !$this->extConf['show_nav_author'] )
-		{
+		if ( !$this->extConf['show_nav_author'] ) {
 			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_author.php' ) );
 
 			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_author' );
 			$obj->initialize ( $this );
+
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
+
+			if ( strlen ( $trans['###YEAR_NAVI_TOP###'] ) > 0 )
+				$this->extConf['has_top_navi'] = TRUE;
 		}
 
 		$tmpl =& $this->template['VIEW'];
@@ -1258,317 +1265,69 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
-	 * Sets up the page navigation element in the 
-	 * HTML-template
+	 * Sets up the page navigation bar
 	 *
 	 * @return void
 	 */
 	function setup_page_navi ()
 	{
-		$naviStr = '';
-		$naviTop = '';
-		$naviBottom = '';
+		$trans = array();
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		// Retrive page indices (numbers)
-		$subPage =& $this->extConf['sub_page'];
-		$iPP =& intval ( $subPage['ipp'] );
+		if ( $this->extConf['show_nav_page'] ) {
+			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_page.php' ) );
 
-		if ( ( $iPP > 0 ) && ( $this->stat['num_page'] > $iPP ) ) {
+			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_page' );
+			$obj->initialize ( $this );
 
-			$cfg = array();
-			$cfgSel = array();
-			$cfgNav = array();
-			if ( is_array ( $this->conf['pageNav.'] ) ) {
-				$cfg =& $this->conf['pageNav.'];
-				if ( is_array ( $cfg['selection.'] ) )
-					$cfgSel =& $cfg['selection.'];
-				if ( is_array ( $cfg['navigation.'] ) )
-					$cfgNav =& $cfg['navigation.'];
-			}
+			$trans = $obj->translator();
+			$hasStr = array ( '', '' );
 
-			$sel  = array(
-				'prev' => array(),
-				'cur'  => array(),
-				'next' => array()
-			);
-			$navi = array();
-
-			// Number of pages to display in the selection
-			$numSel = 5;
-			if ( array_key_exists ( 'pages', $cfgSel ) )
-				$numSel = abs ( intval ( $cfgSel['pages'] ) );
-			$numSel = ($numSel % 2) ? $numSel : ( $numSel + 1 );
-
-			$numLR = intval ( ($numSel - 1) / 2 );
-
-			// Determine selection indices
-			$idxCur =& $subPage['current'];
-			$idxMax =& $subPage['max'];
-
-			$idx1 = $idxCur - $numLR;
-			if ( $idx1 < 1 ) {
-				$idx1 = 1;
-				$numLR = $numLR + ($numLR - $idxCur) + 1;
-			}
-			$idx2 = ($idxCur + $numLR);
-			if ( $idx2 > ( $idxMax - 1 ) ) {
-				$idx2 = $idxMax - 1;
-				$numLR += $numLR - ($idxMax - $idxCur) + 1;
-				$idx1 = max ( 0,  $idxCur - $numLR );
-			}
-
-			$pageLinkTitle = $this->get_ll ( 'pageNav_pageLinkTitle', '%p', TRUE );
-
-			// Generate page navigation bar
-			$ii = 0;
-			while( $ii <= $idxMax ) {
-				$page = strval ( $ii + 1 );
-				$link = $page;
-				$cr_link = TRUE;
-
-				if ( $ii == $idxCur ) {
-					// Current
-					$key  = 'cur'; 
-					$wrap = $cfgSel['current.'];
-					$cr_link = FALSE;
-				} else if( $ii == 0 ) {
-					// First
-					$key  = 'prev';
-					$wrap = $cfgSel['first.'];
-				} else if ( $ii < $idx1 ) {
-					// More
-					$key  = 'prev';
-					$link = '...';
-					if ( array_key_exists ( 'more_below', $cfgSel  ) )
-						$link = strval ( $cfgSel['more_below'] );
-					$wrap = $cfgSel['more_below.'];
-					$cr_link = FALSE;
-					$ii = $idx1 - 1;
-				} else if ( $ii < $idxCur ) {
-					// Previous
-					$key  = 'prev';
-					$wrap = $cfgSel['below.'];
-				} else if ( $ii <= $idx2 ) {
-					// Following
-					$key  = 'next'; 
-					$wrap = $cfgSel['above.'];
-				} else if ( $ii < $idxMax ) {
-					// More
-					$key  = 'next'; 
-					$link = '...';
-					if ( array_key_exists ( 'more_above', $cfgSel  ) )
-						$link = strval ( $cfgSel['more_above'] );
-					$wrap = $cfgSel['more_above.'];
-					$cr_link = FALSE;
-					$ii = $idxMax - 1;
-				} else {
-					// Last
-					$key  = 'next';
-					$wrap = $cfgSel['last.'];
-				}
-
-				// Create link
-				if ( $cr_link ) {
-					$title = str_replace ( '%p', $page, $pageLinkTitle );
-					$link = $this->get_link ( $page, array ( 'page' => strval ( $ii ) ), TRUE, 
-						array ( 'title' => $title ) );
-				}
-
-				if ( is_array ( $wrap ) )
-					$link = $cObj->stdWrap ( $link, $wrap );
-
-				$sel[$key][] = $link;
-				$ii += 1;
-			}
-
-			$navi['prev']  = $this->get_ll ( 'pageNav_previous', 'previous', TRUE  );
-			if ( $idxCur > 0 ) {
-				$title = $this->get_ll ( 'pageNav_previousLinkTitle', 'previous', TRUE  );
-				$page = max ( $idxCur-1, 0 );
-				$navi['prev'] = $this->get_link ( $navi['prev'], 
-					array ( 'page' => $page ), TRUE, array( 'title' => $title ) );
-			}
-
-			$navi['next']  = $this->get_ll ( 'pageNav_next', 'next', TRUE  );
-			if ( $idxCur < $idxMax ) {
-				$title = $this->get_ll ( 'pageNav_nextLinkTitle', 'next', TRUE  );
-				$page = min ( $idxCur+1, $idxMax );
-				$navi['next'] = $this->get_link ( $navi['next'] ,
-					array ( 'page' => $page ), TRUE, array ( 'title' => $title ) );
-			}
-
-			// Wrap
-			$navi['prev'] = $cObj->stdWrap ( $navi['prev'], $cfgNav['previous.'] );
-			$navi['next'] = $cObj->stdWrap ( $navi['next'], $cfgNav['next.'] );
-
-			// Page separator
-			$sepSel = '&nbsp;';
-			if ( array_key_exists ( 'separator', $cfgSel  ) )
-				$sepSel = $cfgSel['separator'];
-			if ( is_array ( $cfgSel['separator.'] ) )
-				$sepSel = $cObj->stdWrap ( $sepSel, $cfgSel['separator.'] );
-
-			// Navigation separator
-			$sepNav = '&nbsp;';
-			if ( array_key_exists ( 'separator', $cfgNav  ) )
-				$sepNav = $cfgNav['separator'];
-			if( is_array( $cfgNav['separator.'] ) )
-				$sepNav = $cObj->stdWrap ( $sepNav, $cfgNav['separator.'] );
-
-			// Replace separator
-			$navi['prev'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['prev'] );
-			$navi['next'] = str_replace ( '###SEPARATOR###', $sepNav, $navi['next'] );
-
-			// Setup the translator
-			$translator = array (
-				'###SEL_PREV###'    => implode($sepSel, $sel['prev']),
-				'###SEL_CURRENT###' => (sizeof($sel['prev'])?$sepSel:'').implode($sepSel, $sel['cur']).(sizeof($sel['next'])?$sepSel:''),
-				'###SEL_NEXT###'    => implode($sepSel, $sel['next']),
-				'###NAVI_BACKWARDS###' => $navi['prev'],
-				'###NAVI_FORWARDS###'  => $navi['next']
-			);
-
-			// Labels
-			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
-				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
-
-			// Treat the template
-			$t_str = $this->enum_condition_block ( $this->template['PAGE_NAVI_BLOCK'] );
-			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
-			if( $cfg['top_disable'] != 1 )
-				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
-			if( $cfg['bottom_disable'] != 1 )
-				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
-
-			$hasStr = array ( '','' );
+			if ( strlen ( $trans['###PAGE_NAVI_TOP###'] ) > 0 )
+				$this->extConf['has_top_navi'] = TRUE;
 		}
 
-		$this->template['VIEW'] = $cObj->substituteSubpart ( 
-			$this->template['VIEW'], '###HAS_PAGE_NAVI###', $hasStr );
-
-		$translator = array (
-			'###PAGE_NAVI###' => $naviStr,
-			'###PAGE_NAVI_TOP###' => $naviTop,
-			'###PAGE_NAVI_BOTTOM###' => $naviBottom
-		);
-
-		$this->template['VIEW'] = $cObj->substituteMarkerArrayCached (
-			$this->template['VIEW'], $translator );
+		$tmpl =& $this->template['VIEW'];
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_PAGE_NAVI###', $hasStr );
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 
 	/**
-	 * Sets up the preferences navigation element in the 
-	 * HTML-template
+	 * Sets up the preferences navigation bar
 	 *
 	 * @return void
 	 */
 	function setup_pref_navi ()
 	{
-		$naviStr = '';
-		$naviTop = '';
-		$naviBottom = '';
+		$trans = array();
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( $this->extConf['show_pref'] )
-		{
-			$cfg = array();
-			if ( is_array ( $this->conf['prefNav.'] ) )
-				$cfg =& $this->conf['prefNav.'];
+		if ( $this->extConf['show_nav_pref'] ) {
+			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_pref.php' ) );
 
-			// Treat the template
-			$t_str = $this->enum_condition_block ( $this->template['PREF_NAVI_BLOCK'] );
+			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_pref' );
+			$obj->initialize ( $this );
 
-			// Form start
-			$erase = array ( 'items_per_page' => '', 
-				'show_abstracts' => '', 'show_keywords' => '' );
-			$con = '';
-			$con .= '<form name="'.$this->prefix_pi1.'-preferences_form" ';
-			$con .= 'action="' . $this->get_link_url ( $erase, FALSE ) . '"';
-			$con .= ' method="post"';
-			$con .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
-			$con .= '>' . "\n";
-
-			// ipp selection
-			$label = $this->get_ll ( 'prefNav_ipp_sel' );
-			$pairs = array();
-			foreach ( $this->extConf['pref_ipps'] as $y )
-				$pairs[$y] = $y;
-			$attribs = array (
-				'name'     => $this->prefix_pi1.'[items_per_page]',
-				'onchange' => 'this.form.submit()'
-			);
-			if ( strlen ( $cfg['select_class'] ) > 0 )
-				$attribs['class'] = $cfg['select_class'];
-			$btn = tx_sevenpack_utility::html_select_input ( 
-				$pairs, $this->extConf['sub_page']['ipp'], $attribs );
-			$con .= $cObj->stdWrap ( $label, $cfg['ipp_label.'] );
-			$con .= $cObj->stdWrap ( $btn, $cfg['ipp_select.'] );
-
-			// show abstracts
-			$attribs = array ( 'onchange' => 'this.form.submit()' );
-			$label = $this->get_ll ( 'prefNav_show_abstracts' );
-			$check = $this->extConf['hide_fields']['abstract'] ? FALSE : TRUE;
-			$btn = tx_sevenpack_utility::html_check_input ( 
-				$this->prefix_pi1.'[show_abstracts]', '1' , $check, $attribs );
-			$con .= $cObj->stdWrap ( $label, $cfg['abstract_label.'] );
-			$con .= $cObj->stdWrap ( $btn, $cfg['abstract_btn.'] );
-
-			// show keywords
-			$label = $this->get_ll ( 'prefNav_show_keywords' );
-			$check = $this->extConf['hide_fields']['keywords'] ? FALSE : TRUE;
-			$btn = tx_sevenpack_utility::html_check_input ( 
-				$this->prefix_pi1.'[show_keywords]', '1', $check, $attribs );
-			$con .= $cObj->stdWrap ( $label, $cfg['keywords_label.'] );
-			$con .= $cObj->stdWrap ( $btn, $cfg['keywords_btn.'] );
-
-			// Go button
-			$con .= '<input type="submit"';
-			$con .= ' name="'.$this->prefix_pi1.'[action][eval_pref]"';
-			$con .= ' value="'.$this->get_ll ( 'button_go' ).'"';
-			$con .= strlen ( $cfg['input_class'] ) ? ' class="'.$cfg['input_class'].'"' : '';
-			$con .= '/>' . "\n";
-
-			// Form end
-			$con .= '</form>';
-
-			// Setup the translator
-			$translator = array (
-				'###FORM###' => $con
-			);
-			// Labels
-			$translator['###NAVI_LABEL###'] = $cObj->stdWrap (
-				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
-
-			$naviStr = $cObj->substituteMarkerArrayCached ( $t_str, $translator );
-
-			if ( $cfg['top_disable'] != 1 ) {
-				$naviTop = $cObj->stdWrap ( $naviStr, $cfg['top.'] );
-				$this->extConf['has_top_navi'] = TRUE;
-			}
-			if ( $cfg['bottom_disable'] != 1 ) {
-				$naviBottom = $cObj->stdWrap ( $naviStr, $cfg['bottom.'] );
-			}
-
+			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
+
+			if ( strlen ( $trans['###PREF_NAVI_TOP###'] ) > 0 )
+				$this->extConf['has_top_navi'] = TRUE;
 		}
 
 		$tmpl =& $this->template['VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_PREF_NAVI###', $hasStr );
-		$trans = array (
-			'###PREF_NAVI_TOP###' => $naviTop,
-			'###PREF_NAVI_BOTTOM###' => $naviBottom
-		);
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 
 	/** 
-	 * Setup the add-new-entry element in the
-	 * HTML-template
+	 * Setup the add-new-entry element
 	 *
 	 * @return void
 	 */
@@ -1594,8 +1353,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/** 
-	 * Setup the statistic element in the
-	 * HTML-template
+	 * Setup the statistic element
 	 *
 	 * @return void
 	 */
@@ -1653,8 +1411,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/** 
-	 * Setup the export-link element in the
-	 * HTML-template
+	 * Setup the export-link element 
 	 *
 	 * @return void
 	 */

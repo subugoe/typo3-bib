@@ -7,9 +7,12 @@ if ( !isset($GLOBALS['TSFE']) )
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/pi1/class.tx_sevenpack_navi.php') );
 
+
 class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 
-
+	/*
+	 * Intialize
+	 */
 	function initialize ( $pi1 ) {
 		parent::initialize( $pi1 );
 		if ( is_array ( $pi1->conf['yearNav.'] ) )
@@ -39,13 +42,15 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 	}
 
 
+	/*
+	 * Returns content
+	 */
 	function get ( ) {
 		$cObj =& $this->pi1->cObj;
 		$con = '';
 
 		$cfg =& $this->conf;
 		$cfgSel = is_array ( $cfg['selection.'] ) ? $cfg['selection.'] : array();
-
 
 		// The data
 		$year = $this->pi1->extConf['year'];
@@ -100,6 +105,7 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		if ( array_key_exists ( 'years', $cfgSel ) )
 			$numSel = abs ( intval ( $cfgSel['years'] ) );
 
+		$trans = array();
 		$trans['###SELECTION###'] = $this->selection ( $cfgSel, $indices, $numSel );
 		$trans['###YEAR_SELECT###'] = $ys;
 		$trans['###NAVI_LABEL###'] = $label;
@@ -112,8 +118,8 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_author.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_author.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_year.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_year.php']);
 }
 
 ?>
