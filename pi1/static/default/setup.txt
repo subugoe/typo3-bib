@@ -162,6 +162,9 @@ plugin.tx_sevenpack_pi1 {
 		inbook.volume.noTrimWrap = | ###LABEL_VOLUME### ||
 		proceedings.volume.noTrimWrap = | ###LABEL_VOLUME### ||
 
+		# File URL
+		web_url.typolink.parameter.field = web_url
+
 		# Year
 		year.wrap = |.
 	}

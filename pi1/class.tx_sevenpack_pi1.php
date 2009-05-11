@@ -1594,7 +1594,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Automatic url
 		$order = tx_sevenpack_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
-		$pdata['auto_url'] = $this->get_auto_url( $pdata, $order );
+		$pdata['auto_url'] = $this->get_auto_url ( $pdata, $order );
 
 		// State
 		switch ( $pdata['state'] ) {
@@ -1628,23 +1628,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					case 'file_url':
 					case 'web_url':
 						$val = tx_sevenpack_utility::fix_html_ampersand ( $val );
-						// Cut the displayed string in the middle
-						if ( isset ( $this->conf['max_url_string_length'] ) ) {
-							$url = $val;
-							$ml = abs ( intval ( $this->conf['max_url_string_length'] ) );
-							if ( strlen ( $url ) > $ml ) {
-								$le = ceil ( $ml/2.0 );
-								$ls = $ml - $le;
-								$str = mb_substr  ( $url, 0, $ls  , $charset ) . '...';
-								$url = $str . mb_substr  ( $url, strlen ( $url ) - $le, $le  , $charset );
-							}
-							$pdata[$f.'_fix'] = $url;
-						}
+						$pdata[$f] = $val;
 						break;
 					default:
+						$pdata[$f] = $val;
 				}
 			}
-			$pdata[$f] = $val;
 		}
 
 		return $pdata;
@@ -1961,15 +1950,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Start the fetch loop
 		while ( $pub = $ra->mFetch ( ) )  {
-			// Item data
-			$cObj->data = $pub;
-
 			// Get prepared publication data
 			$warnings = array();
 			$pdata = $this->prepare_pub_display( $pub, $warnings );
 
-			// Needed since stdWrap applies htmlspecialchars to url data
+			// Item data
+			$cObj->data = $pub;
+			// Needed since stdWrap/Typolink applies htmlspecialchars to url data
 			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
+			$cObj->data['web_url'] = htmlspecialchars_decode ( $pdata['web_url'], ENT_QUOTES );
 			$cObj->data['auto_url'] = htmlspecialchars_decode ( $pdata['auto_url'], ENT_QUOTES );
 
 			// All publications counter

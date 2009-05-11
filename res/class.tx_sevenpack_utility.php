@@ -78,6 +78,23 @@ class tx_sevenpack_utility {
 
 
 	/**
+	 * Crops a string to a maximal length by cutting in the middle
+	 *
+	 * @return The string filtered for html output
+	 */
+	function crop_middle ( $str, $len, $charset = 'UTF-8' ) {
+		$res = $str;
+		if ( strlen ( $str ) > $len ) {
+			$le = ceil ( $len/2.0 );
+			$ls = $len - $le;
+			$res  = mb_substr  ( $str, 0, $ls, $charset ) . '...';
+			$res .= mb_substr  ( $str, strlen ( $str ) - $le, $le, $charset );
+		}
+		return $res;
+	}
+
+
+	/**
 	 * Fixes illegal occurences of ampersands (&) in html strings
 	 * Well Typo3 seems to handle this as well
 	 *
