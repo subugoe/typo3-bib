@@ -33,8 +33,13 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$cfg =& $this->conf;
 		$cfgSel = is_array ( $cfg['selection.'] ) ? $cfg['selection.'] : array();
 
+		// The label
+		$nlabel = $cObj->stdWrap ( $this->pi1->get_ll ( 'authorNav_label' ), 
+			$cfg['label.'] );
+
 		// Translator
 		$trans = array();
+		$trans['###NAVI_LABEL###'] = $nlabel;
 
 		$tmpl = $this->pi1->enum_condition_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );

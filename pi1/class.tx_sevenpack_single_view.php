@@ -721,9 +721,9 @@ class tx_sevenpack_single_view {
 				if ( $i > ( $aNum - 1 ) && ( $mode != $pi1->W_EDIT ) )
 					break;
 				
-				$fn = tx_sevenpack_utility::filter_pub_html ( $authors[$i]['fn'], TRUE );
-				$sn = tx_sevenpack_utility::filter_pub_Html ( $authors[$i]['sn'], TRUE );
-				//t3lib_div::debug ( array('fn' => $fn, 'sn' => $sn) );
+				$fn = tx_sevenpack_utility::filter_pub_html ( $authors[$i]['forename'], TRUE );
+				$sn = tx_sevenpack_utility::filter_pub_Html ( $authors[$i]['surname'], TRUE );
+				//t3lib_div::debug ( array('forename' => $fn, 'surname' => $sn) );
 				$con .= '<tr>';
 				$con .= '<th class="'.$pi1->prefixShort.'-editor_author_num">';
 				$con .= strval ( $i+1 );
@@ -737,11 +737,11 @@ class tx_sevenpack_single_view {
 						$key_action.'[raise_author]', strval ( $i ), $pi1->icon_src['up'] );
 
 					$con .= tx_sevenpack_utility::html_text_input ( 
-						$key_data.'['.$i.'][fn]', $fn,
+						$key_data.'['.$i.'][forename]', $fn,
 						array ( 'size' => $isize, 'maxlength' => 255, 'class' => $cclass ) );
 					$con .= '</td><td>';
 					$con .= tx_sevenpack_utility::html_text_input ( 
-						$key_data.'['.$i.'][sn]', $sn,
+						$key_data.'['.$i.'][surname]', $sn,
 						array ( 'size' => $isize, 'maxlength' => 255, 'class' => $cclass ) );
 
 					$con .= '</td><td style="padding: 1px;">';
@@ -752,11 +752,11 @@ class tx_sevenpack_single_view {
 
 				} else if ( $silentMode ) {
 					$con .=  tx_sevenpack_utility::html_hidden_input (
-						$key_data.'['.$i.'][fn]', $fn, array ( 'class' => $cclass ) );
+						$key_data.'['.$i.'][forename]', $fn, array ( 'class' => $cclass ) );
 					$con .= $fn;
 					$con .= '</td><td>';
 					$con .=  tx_sevenpack_utility::html_hidden_input (
-						$key_data.'['.$i.'][sn]', $sn, array ( 'class' => $cclass ) );
+						$key_data.'['.$i.'][surname]', $sn, array ( 'class' => $cclass ) );
 					$con .= $sn;
 				} else {
 					$con .= $sn.'</td><td>'.$fn;
@@ -779,12 +779,12 @@ class tx_sevenpack_single_view {
 			$con .= '</table>' . "\n";
 		} else {
 			for ( $i=0; $i < sizeof ( $authors ); $i++ ) {
-				$fn = $pi1->filter_pub_html ( $authors[$i]['fn'], TRUE );
-				$sn = $pi1->filter_pub_Html ( $authors[$i]['sn'], TRUE );
+				$fn = $pi1->filter_pub_html ( $authors[$i]['forename'], TRUE );
+				$sn = $pi1->filter_pub_Html ( $authors[$i]['surname'], TRUE );
 				$con .= tx_sevenpack_utility::html_hidden_input (
-					$key_data.'['.$i.'][fn]', $fn, array ( 'class' => $cclass ) );
+					$key_data.'['.$i.'][forename]', $fn, array ( 'class' => $cclass ) );
 				$con .= tx_sevenpack_utility::html_hidden_input (
-					$key_data.'['.$i.'][sn]', $sn, array ( 'class' => $cclass ) );
+					$key_data.'['.$i.'][surname]', $sn, array ( 'class' => $cclass ) );
 			}
 		}
 		return $con;
@@ -857,14 +857,14 @@ class tx_sevenpack_single_view {
 						if ( is_array ( $data[$f] ) ) {
 							$pub['authors'] = array();
 							foreach ( $data[$f] as $v ) {
-								$fn = trim ( $v['fn'] );
-								$sn = trim ( $v['sn'] );
+								$fn = trim ( $v['forename'] );
+								$sn = trim ( $v['surname'] );
 								if ( $hsc ) {
 									$fn = htmlspecialchars ( $fn, ENT_QUOTES, $charset );
 									$sn = htmlspecialchars ( $sn, ENT_QUOTES, $charset );
 								}
 								if ( strlen ( $fn ) || strlen ( $sn ) ) {
-									$pub['authors'][] = array ( 'fn'=>$fn, 'sn'=>$sn );
+									$pub['authors'][] = array ( 'forename' => $fn, 'surname' => $sn );
 								}
 							}
 						}

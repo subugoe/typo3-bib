@@ -209,8 +209,8 @@ class tx_sevenpack_reference_accessor {
 					case 'authors':
 						if ( is_array ( $v ) ) {
 							foreach ( $v as &$a ) {
-								$a['fn'] = $cs->conv ( $a['fn'], $cs_from, $cs_to );
-								$a['sn'] = $cs->conv ( $a['sn'], $cs_from, $cs_to );
+								$a['forename'] = $cs->conv ( $a['forename'], $cs_from, $cs_to );
+								$a['surname']  = $cs->conv ( $a['surname'], $cs_from, $cs_to );
 							}
 						}
 					default:
@@ -689,20 +689,24 @@ class tx_sevenpack_reference_accessor {
 		$res = '';
 		$wca = array();
 
+		// Wildcard words
+		$wwords = array();
+		foreach ( $words as $word ) {
+			$word = trim ( strval ( $word ) );
+			if ( strlen ( $word ) > 0 )
+				$wwords[] = '%'.$word.'%';
+		}
+
 		// Fields
 		foreach ( $this->refFields as $field ) {
-			foreach ( $words as $word ) {
-				$word = trim ( strval ( $word ) );
-				if ( strlen ( $word ) > 0 ) {
-					$word =  '%'.$word.'%';
-					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
-					$wca[] = $rta.'.'.$field.' LIKE '.$word;
-				}
+			foreach ( $wwords as $word ) {
+				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
+				$wca[] = $rta.'.'.$field.' LIKE '.$word;
 			}
 		}
 
 		// Authors
-		$a_ships = $this->search_author_authorships ( $words, $this->pid_list );
+		$a_ships = $this->search_author_authorships ( $wwords, $this->pid_list );
 		if ( sizeof ( $a_ships ) > 0 ) {
 			$uids = array();
 			foreach ( $a_ships as $as ) {
@@ -937,17 +941,26 @@ class tx_sevenpack_reference_accessor {
 	 *
 	 * @return An array containing the authors
 	 */
-	function search_authors ( $words, $pids ) {
+	function search_authors ( $words, $pids, $fields = array ( 'forename', 'surname' ) ) {
 		$aT =& $this->authorTable;
+		$all_fields = array ( 'forename', 'surname', 'url' );
 		$authors = array();
 		$WC = array();
 		$wca = array();
 		foreach ( $words as $word ) {
 			$word = trim ( strval ( $word ) );
 			if ( strlen ( $word ) > 0 ) {
-				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $aT );
-				$wca[] = 'forename LIKE ' . $word;
-				$wca[] = 'surname LIKE ' . $word;
+				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $aT );
+				foreach ( $all_fields as $field ) {
+					if ( in_array ( $field, $fields ) )
+						t3lib_div::debug( $word );
+						if ( preg_match ( '/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word ) ) {
+							t3lib_div::debug( 'Wildcard' );
+							$wca[] = $field . ' LIKE ' . $word;
+						} else {
+							$wca[] = $field . '=' . $word;
+						}
+				}
 			}
 		}
 		$WC[] = '(' . implode ( ' OR ', $wca ) . ')';
@@ -976,10 +989,10 @@ class tx_sevenpack_reference_accessor {
 	 *
 	 * @return An array containing the authors
 	 */
-	function search_author_authorships ( $words, $pids ) {
+	function search_author_authorships ( $words, $pids, $fields = array ( 'forename', 'surname' ) ) {
 		$sT =& $this->aShipTable;
 		$ships = array();
-		$authors = $this->search_authors ( $words, $pids );
+		$authors = $this->search_authors ( $words, $pids, $fields );
 		if ( sizeof ( $authors ) > 0 ) {
 			$uids = array();
 			foreach ( $authors as $author ) {
@@ -1004,23 +1017,26 @@ class tx_sevenpack_reference_accessor {
 	 *
 	 * @return Not defined
 	 */
-	function fetch_author_uids ( $author, $pids, $exact=TRUE ) {
+	function fetch_author_uids ( $author, $pids ) {
 		$uids = array();
-		$a =& $author;
+		$all_fields = array ( 'forename', 'surname', 'url' );
 		$db =& $GLOBALS['TYPO3_DB'];
 		$aT =& $this->authorTable;
 
 		$WC = array();
-		$check_fn = FALSE;
-		$check_sn = FALSE;
-		if ( isset ( $a['fn'] ) && ( strlen ( $a['fn'] ) || $exact ) )
-			$check_fn = TRUE;
-		if ( isset ( $a['sn'] ) && ( strlen ( $a['sn'] ) || $exact ) )
-			$check_sn = TRUE;
-		if ( $check_fn )
-			$WC[] = 'forename='.$db->fullQuoteStr ( $a['fn'], $aT );
-		if ( $check_sn )
-			$WC[] = 'surname='.$db->fullQuoteStr ( $a['sn'], $aT );
+
+		foreach ( $all_fields as $field ) {
+			if ( array_key_exists ( $field, $author ) ) {
+				$chk = ' = ';
+				$word = $author[$field];
+				if ( preg_match ( '/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word ) ) {
+					//t3lib_div::debug( 'Wildcard' );
+					$chk = ' LIKE ';
+				}
+				$WC[] = $field . $chk . $db->fullQuoteStr ( $word, $aT );
+			}
+		}
+
 		if ( sizeof ( $WC ) > 0 ) {
 			if ( is_array ( $pids ) ) {
 				$WC[] = 'pid IN ('.implode ( ',', $pids ).')';
@@ -1029,16 +1045,10 @@ class tx_sevenpack_reference_accessor {
 			}
 			$WC = implode ( ' AND ', $WC );
 			$WC .= $this->enable_fields ( $aT );
-			//t3lib_div::debug ($WC);
-			$res = $db->exec_SELECTquery ( 'uid,pid,surname,forename', $aT, $WC );
+			//t3lib_div::debug ( $WC );
+			$res = $db->exec_SELECTquery ( 'uid,pid', $aT, $WC );
 			while ( $row = $db->sql_fetch_assoc ( $res ) ) {
-				if ( !$check_fn || ($row['forename'] == $a['fn']) ) {
-					if ( !$check_sn || ($row['surname'] == $a['sn']) ) {
-						$uids[] = array ( 'uid' => $row['uid'], 'pid' => $row['pid'] );
-						if ( $exact )
-							break;
-					}
-				}
+				$uids[] = array ( 'uid' => $row['uid'], 'pid' => $row['pid'] );
 			}
 		}
 		//t3lib_div::debug ( array ( 'uids' => $uids ) );
@@ -1059,7 +1069,7 @@ class tx_sevenpack_reference_accessor {
 			$a_filter['sets'] = array();
 			foreach ( $authors as &$a ) {
 				if ( !is_numeric ( $a['uid'] ) ) {
-					$uids = $this->fetch_author_uids ( $a, $filter['pid'], FALSE );
+					$uids = $this->fetch_author_uids ( $a, $filter['pid'] );
 					for ( $i=0; $i < sizeof ( $uids ); $i++ ) {
 						$uid = $uids[$i];
 						if ( $i == 0 ) {
@@ -1113,8 +1123,8 @@ class tx_sevenpack_reference_accessor {
 			$a = array();
 			$a['uid'] = $row['uid'];
 			$a['pid'] = $row['pid'];
-			$a['fn']  = $row['forename'];
-			$a['sn']  = $row['surname'];
+			$a['forename'] = $row['forename'];
+			$a['surname']  = $row['surname'];
 			$a['url'] = $row['url'];
 			$a['sorting'] = $row['sorting'];
 			$authors[] = $a;
@@ -1198,8 +1208,8 @@ class tx_sevenpack_reference_accessor {
 	function modification_key ( $pub ) {
 		$key = '';
 		foreach ( $pub['authors'] as $a ) {
-			$key .= $a['sn'];
-			$key .= $a['fn'];
+			$key .= $a['surname'];
+			$key .= $a['forename'];
 		};
 		$key .= $pub['title'];
 		$key .= strval ( $pub['crdate'] );
@@ -1325,7 +1335,7 @@ class tx_sevenpack_reference_accessor {
 			$author['sorting'] = $sort;
 
 			if ( !is_numeric ( $author['uid'] ) ) {
-				$uids = $this->fetch_author_uids ( $author, $pid, TRUE );
+				$uids = $this->fetch_author_uids ( $author, $pid );
 				//t3lib_div::debug ( array ('author'=>$author, 'uids'=>$uids ) );
 
 				if ( sizeof ( $uids ) > 0 ) {
@@ -1403,14 +1413,16 @@ class tx_sevenpack_reference_accessor {
 	 */
 	function insert_author ( $author ) {
 		$ia = array();
-		$ia['forename'] = $author['fn'];
-		$ia['surname']  = $author['sn'];
+		$ia['forename'] = $author['forename'];
+		$ia['surname']  = $author['surname'];
 		$ia['url']      = $author['url'];
 		$ia['pid']      = intval ( $author['pid'] );
 
 		$ia['tstamp'] = time();
 		$ia['crdate'] = time();
 		$ia['cruser_id'] = $GLOBALS['BE_USER']->user['uid'];
+
+		//t3lib_div::debug( array ( 'insert author ' => $ia ) );
 
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery ( $this->authorTable, $ia );
 		$a_uid = $GLOBALS['TYPO3_DB']->sql_insert_id ( );

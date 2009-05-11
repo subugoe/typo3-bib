@@ -248,8 +248,8 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 					} else {
 						$value .= ' and ';
 					}
-					$fn = $this->bibtex_format_string ( $a['fn'] );
-					$sn = $this->bibtex_format_string ( $a['sn'] );
+					$fn = $this->bibtex_format_string ( $a['forename'] );
+					$sn = $this->bibtex_format_string ( $a['surname'] );
 					if ( strlen ( $sn ) && strlen ( $fn ) )
 						$value .= $sn.', '.$fn;
 					else

@@ -787,7 +787,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$authors = tx_sevenpack_utility::multi_explode_trim ( array ( "\r" , "\n" ), $authors, TRUE );
 			foreach ( $authors as $a ) {
 				$parts = t3lib_div::trimExplode ( ',', $a );
-				$f['authors'][] = array ( 'sn' => $parts[0], 'fn' => $parts[1] );
+				$author = array();
+				if ( strlen ( $parts[0] ) > 0 )
+					$author['surname'] = $parts[0];
+				if ( strlen ( $parts[1] ) > 0 )
+					$author['forename'] = $parts[1];
+				if ( sizeof ( $author ) > 0 )
+					$f['authors'][] = $author;
 			}
 			if ( sizeof ( $f['authors'] ) > 0 )
 				$filter['author'] = $f;
@@ -1776,14 +1782,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$cObj->data['url'] = htmlspecialchars_decode ( $a['url'], ENT_QUOTES );
 
 			// The forename
-			$a_fn = trim ( $a['fn'] );
+			$a_fn = trim ( $a['forename'] );
 			if ( strlen ( $a_fn ) > 0 ) {
 				$a_fn = tx_sevenpack_utility::filter_pub_html_display ( $a_fn );
 				$a_fn = $this->cObj->stdWrap ( $a_fn, $this->conf['authors.']['forename.'] );
 			}
 
 			// The surname
-			$a_sn = trim ( $a['sn'] );
+			$a_sn = trim ( $a['surname'] );
 			if ( strlen ( $a_sn ) > 0 ) {
 				$a_sn = tx_sevenpack_utility::filter_pub_html_display ( $a_sn );
 				$a_sn = $this->cObj->stdWrap ( $a_sn, $this->conf['authors.']['surname.'] );
@@ -1801,10 +1807,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Wrap the filtered authors with a highlightning class on demand
 			if ( $hl_authors ) {
 				foreach ( $filter_authors as $fa ) {
-					if ( ($a['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a['fn'] == $fa['fn']) ) ) {
-						$a_str = $this->cObj->stdWrap ( 
-							$a_str, $this->conf['authors.']['highlight.'] );
-						break;
+					if ( $a['surname'] == $fa['surname'] ) {
+						if ( !$fa['forename'] || ($a['forename'] == $fa['forename']) ) {
+							$a_str = $this->cObj->stdWrap ( 
+								$a_str, $this->conf['authors.']['highlight.'] );
+							break;
+						}
 					}
 				}
 			}
@@ -1830,10 +1838,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 							for ( $j = $last_author + 1; $j < sizeof ( $authors ); $j++ ) {
 								$a_et = $authors[$j];
 								foreach ( $filter_authors as $fa ) {
-									if ( ($a_et['sn'] == $fa['sn']) && ( !$fa['fn'] || ($a_et['fn'] == $fa['fn']) ) ) {
-										$app = $this->cObj->stdWrap ( $app, $this->conf['authors.']['highlight.'] );
-										$j = sizeof ( $authors );
-										break;
+									if ( $a_et['surname'] == $fa['surname'] ) {
+										if ( !$fa['forename'] || ($a_et['forename'] == $fa['forename']) ) {
+											$app = $this->cObj->stdWrap ( $app, $this->conf['authors.']['highlight.'] );
+											$j = sizeof ( $authors );
+											break;
+										}
 									}
 								}
 							}

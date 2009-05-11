@@ -159,9 +159,13 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 							}
 						} else {
 							// In person
-							$pfields = array ( 'sn', 'fn' );
-							if ( in_array ( $tag, $pfields ) && ( $type == 'complete' ) ) {
-								$author[$tag] = $value;
+							$sn_fields = array ( 'surname', 'sn' );
+							$fn_fields = array ( 'forename', 'fn' );
+							if ( in_array ( $tag, $sn_fields ) && ( $type == 'complete' ) ) {
+								$author['surname'] = $value;
+							} else
+							if ( in_array ( $tag, $fn_fields ) && ( $type == 'complete' ) ) {
+								$author['forename'] = $value;
 							} else
 							if ( ( $tag == 'person' ) && ( $type == 'close' ) ) {
 								// Leave person

@@ -89,8 +89,8 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 				$aXML = array ( );
 				foreach ( $authors as $a ) {
 					$a_str = '';
-					$fn = $this->xml_format_string ( $a['fn'] );
-					$sn = $this->xml_format_string ( $a['sn'] );
+					$fn = $this->xml_format_string ( $a['forename'] );
+					$sn = $this->xml_format_string ( $a['surname'] );
 					if ( strlen($fn) )
 						$a_str .= '<fn>'.$fn.'</fn>';
 					if ( strlen($sn) )

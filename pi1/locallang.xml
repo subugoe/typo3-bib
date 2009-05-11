@@ -6,6 +6,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+			<label index="authorNav_label">Author</label>
 			<label index="bibtype_plural_0">Unknown</label>
 			<label index="bibtype_plural_1">Articles</label>
 			<label index="bibtype_plural_10">Master theses</label>
@@ -87,6 +88,7 @@
 			<label index="yearNav_yearLinkTitle">Publikations in %y</label>
 		</languageKey>
 		<languageKey index="de" type="array">
+			<label index="authorNav_label">Autor</label>
 			<label index="bibtype_plural_0">Unbekannt</label>
 			<label index="bibtype_plural_1">Artikel</label>
 			<label index="bibtype_plural_10">Masterarbeiten</label>

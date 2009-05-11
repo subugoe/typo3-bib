@@ -717,18 +717,18 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 				foreach ( $a_split as &$a_part ) {
 					$a_part = trim ( $a_part );
 				}
-				$author['fn'] = trim ( $a_split[0] );
+				$author['forename'] = trim ( $a_split[0] );
 				unset ( $a_split[0] );
-				$author['sn'] = trim ( implode ( ' ', $a_split ) );
+				$author['surname'] = trim ( implode ( ' ', $a_split ) );
 			} else {
 				// Comma in author string
 				$a_split = explode ( ',', $a_str );
 				foreach ( $a_split as &$a_part ) {
 					$a_part = trim ( $a_part );
 				}
-				$author['sn'] = trim ( $a_split[0] );
+				$author['surname'] = trim ( $a_split[0] );
 				unset ( $a_split[0] );
-				$author['fn'] = trim ( implode ( ', ', $a_split ) );
+				$author['forename'] = trim ( implode ( ', ', $a_split ) );
 			}
 			$res[] = $author;
 		}
