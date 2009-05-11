@@ -308,6 +308,54 @@ plugin.tx_sevenpack_pi1 {
 		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
 
 		template = EXT:sevenpack/res/templates/navi_author.html
+
+		# Classes or the year selection form
+		form_class = tx_sevenpack-author_select_form
+		select_class =
+		input_class = tx_sevenpack-button
+
+		#select.wrap = |
+		#input.wrap = |
+
+		# Letter selection
+		letters {
+			# Page separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Wraps for the current page and the pages below and above
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+
+		}
+
+		# Author selection
+		selection {
+			# The maximum number of pages to show
+			authors = 3
+
+			# Page separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Wraps for the current page and the pages below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
+
+			# Strings and wraps for indicators for more pages
+			more_below = ...
+			more_below.noTrimWrap = | | |
+			more_above = ...
+			more_above.noTrimWrap = | | |
+		}
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_author_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_author_bottom">|</div>
 	}
 
 

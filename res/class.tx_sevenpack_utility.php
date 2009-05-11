@@ -362,11 +362,12 @@ class tx_sevenpack_utility {
 				$res = $stack[0];
 			} else {
 				// Find nearest
-				for ( $i=1; $i < sizeof ( $stack ); $i++ ) {
-					$d0 = abs ( $value - $stack[$i-1] );
-					$d1 = abs ( $value - $stack[$i] );
+				$res = end ( $stack );
+				for ( $ii=1; $ii < sizeof ( $stack ); $ii++ ) {
+					$d0 = abs ( $value - $stack[$ii-1] );
+					$d1 = abs ( $value - $stack[$ii] );
 					if ( $d0 <= $d1 ) {
-						$res = $stack[$i-1];
+						$res = $stack[$ii-1];
 						break;
 					}
 				}

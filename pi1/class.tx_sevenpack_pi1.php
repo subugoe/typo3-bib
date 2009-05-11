@@ -342,12 +342,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 		//
-		// Author navi
-		// Fetch some configuration from the HTTP request
-		//
-		#$extConf['show_nav_author'] = TRUE;
-
-		//
 		// Preference navi
 		// Fetch some configuration from the HTTP request
 		//
@@ -390,6 +384,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['hide_fields']['tags'] = $extConf['hide_fields']['keywords'];
 		}
 
+
+		//
+		// Author navi
+		// Fetch some configuration from the HTTP request
+		//
+		$extConf['show_nav_author'] = TRUE;
+		if ( $extConf['show_nav_author'] == TRUE ) {
+			$extConf['author_navi'] = array();
+			$aconf =& $extConf['author_navi'];
+			$lvars =& $extConf['link_vars'];
+
+			$lvars['author_letter'] = '';
+			$p_val = $this->piVars['author_letter'];
+			if ( strlen ( $p_val ) > 0 ) {
+				$aconf['sel_letter'] = $p_val;
+				$lvars['author_letter'] = $p_val;
+			}
+
+			$lvars['author'] = '';
+			$p_val = $this->piVars['author'];
+			if ( strlen ( $p_val ) > 0 ) {
+				$aconf['sel_author'] = $p_val;
+				$lvars['author'] = $p_val;
+			}
+
+		}
 
 		//
 		// Enable Enable the edit mode
@@ -523,14 +543,66 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
 			};
 
-		// Overall publication statistics
+		//
+		// Fetch publication statistics
+		//
 		$this->stat = array();
 		$this->ra->set_filters ( $extConf['filters'] );
+
+		// Author navigation setup
+		if ( $extConf['show_nav_author'] = TRUE ) {
+			$aconf =& $extConf['author_navi'];
+			$this->stat['authors'] = array();
+			$astat =& $this->stat['authors'];
+
+			$filter = array ( );
+
+			$astat['surnames'] = $this->ra->fetch_author_surnames();
+			$astat['sel_surnames'] = array();
+			if ( strlen ( $aconf['sel_letter'] ) > 0 ) {
+				$char = $aconf['sel_letter'];
+				$char2 = htmlentities ( $char, ENT_QUOTES, 'UTF-8' );
+				$pats = array ( $char . '%' );
+				if ( $char2 != $char )
+					$pats[] = $char2 . '%';
+
+				// Fetch surnames
+				$astat['sel_surnames'] = $this->ra->fetch_author_surnames ( $pats );
+
+				// Setup filter
+				foreach ( $pats as $pat )
+					$filter[] = array ( 'surname' => $pat );
+			}
+
+			if ( strlen ( $aconf['sel_author'] ) > 0 ) {
+				$name = $aconf['sel_author'];
+				$name2 = htmlentities ( $name, ENT_QUOTES, 'UTF-8' );
+				$pats = array ( $name );
+				if ( $name2 != $name ) $pats[] = $name2;
+
+				// Setup filter
+				$filter = array ( );
+				foreach ( $pats as $pat )
+					$filter[] = array ( 'surname' => $pat );
+			}
+
+			// Append filter
+			if ( sizeof ( $filter ) > 0 )  {
+				$ff =& $extConf['filters'];
+				$ff['author'] = array();
+				$ff['author']['author'] = array();
+				$ff['author']['author']['authors'] = $filter;
+			}
+		}
+
+		t3lib_div::debug ( $extConf['filters'] );
+		$this->ra->set_filters ( $extConf['filters'] );
+
 		$hist = $this->ra->fetch_histogram ( 'year' );
 		$this->stat['year_hist'] = $hist;
 		$this->stat['years'] = array_keys ( $hist );
-		$this->stat['num_all'] = array_sum ( $hist );
 		sort ( $this->stat['years'] );
+		$this->stat['num_all'] = array_sum ( $hist );
 
 		//t3lib_div::debug ( $this->stat );
 
@@ -547,7 +619,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// The selected year has no publications so select the closest year
 		// Set default link variables
 		if ( $extConf['d_mode'] == $this->D_Y_NAV ) {
-			if ( $this->stat['num_all'] > 0) {
+			if ( $this->stat['num_all'] > 0 ) {
 				$ecYear = tx_sevenpack_utility::find_nearest_int ( $ecYear, $this->stat['years'] );
 			}
 			$extConf['link_vars']['year'] = $ecYear;
@@ -1275,7 +1347,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 		$cObj =& $this->cObj;
 
-		if ( !$this->extConf['show_nav_author'] ) {
+		if ( $this->extConf['show_nav_author'] ) {
 			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_author.php' ) );
 

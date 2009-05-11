@@ -11,7 +11,8 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-navi_year,
 	div.tx_sevenpack-navi_page.
-	div.tx_sevenpack-navi_pref {
+	div.tx_sevenpack-navi_pref,
+	div.tx_sevenpack-navi_author {
 		padding: 0em;
 		margin: 0px;
 		border-width: 0px;
@@ -38,14 +39,26 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		border-width: 0px;
 	}
 
+	div.tx_sevenpack-navi_author_top, 
+	div.tx_sevenpack-navi_author_bottom {
+		padding: 0px;
+		margin: 0.5em 0em;
+		border-width: 0px;
+	}
+
 	.tx_sevenpack-inline_form,
-	.tx_sevenpack-year_select_form {
+	.tx_sevenpack-year_select_form,
+	.tx_sevenpack-author_select_form {
 		display: inline;
 		padding: 0px;
 		margin: 0px;
 	}
 
 	.tx_sevenpack-year_select_form {
+		margin-left: 5em;
+	}
+
+	.tx_sevenpack-author_select_form {
 		margin-left: 5em;
 	}
 

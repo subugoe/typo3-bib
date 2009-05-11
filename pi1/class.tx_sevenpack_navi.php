@@ -73,6 +73,12 @@ class tx_sevenpack_navi {
 		$idxCur = $indices[1];
 		$idxMax = $indices[2];
 
+		$no_cur = FALSE;
+		if ( $idxCur < 0) {
+			$idxCur = floor ( ( $idxMax - $idxMin ) / 2 );
+			$no_cur = TRUE;
+		}
+
 		// Number of items to display in the selection - must be odd
 		$numSel = intval ( $numSel );
 		$numSel = ($numSel % 2) ? $numSel : ( $numSel + 1 );
@@ -101,9 +107,13 @@ class tx_sevenpack_navi {
 			//t3lib_div::debug( array('$ii' =>$ii, '$text' => $text) );
 
 			if ( $ii == $idxCur ) { // Current
-				$key  = 'cur'; 
-				$wrap = $cfgSel['current.'];
-				$cr_link = FALSE;
+				$key  = 'cur';
+				if ( !$no_cur ) {
+					$wrap = $cfgSel['current.'];
+					$cr_link = FALSE;
+				} else {
+					$wrap = $cfgSel['below.'];
+				}
 			} else if( $ii == 0 ) { // First
 				$key  = 'prev';
 				$wrap = $cfgSel['first.'];

@@ -427,7 +427,7 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
-		//t3lib_div::debug ( array ( 'WHERE clause: ' => $WC ) );
+		t3lib_div::debug ( array ( 'WHERE clause: ' => $WC ) );
 		return $WC;
 	}
 
@@ -936,6 +936,37 @@ class tx_sevenpack_reference_accessor {
 
 
 	/**
+	 * Fetches all author surnames
+	 *
+	 * @return An array containing the authors
+	 */
+	function fetch_author_surnames ( $patterns = array() ) {
+		$aT =& $this->authorTable;
+		$WC = array();
+		$names = array();
+		if ( sizeof ( $this->pid_list ) > 0 ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
+			$WC[] .= 'pid IN ('.$csv.')';
+		}
+		if ( sizeof ( $patterns ) > 0 ) {
+			$wca = array();
+			foreach ( $patterns as $pat ) {
+				$wca[] = 'surname LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr ( $pat, $aT );
+			}
+			$WC[] = '( ' . implode ( ' OR ', $wca ) . ' )';
+		}
+		$WC = implode ( ' AND ', $WC );
+		$WC .= $this->enable_fields ( $aT );
+		//t3lib_div::debug( $WC );
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'distinct(surname)', $aT, $WC, '', 'surname ASC'  );
+		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
+			$names[] = $row['surname'];
+		}
+		return $names;
+	}
+
+
+	/**
 	 * Searches and returns authors whose name looks like any of the
 	 * words (array)
 	 *
@@ -953,9 +984,9 @@ class tx_sevenpack_reference_accessor {
 				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $aT );
 				foreach ( $all_fields as $field ) {
 					if ( in_array ( $field, $fields ) )
-						t3lib_div::debug( $word );
+						//t3lib_div::debug( $word );
 						if ( preg_match ( '/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word ) ) {
-							t3lib_div::debug( 'Wildcard' );
+							//t3lib_div::debug( 'Wildcard' );
 							$wca[] = $field . ' LIKE ' . $word;
 						} else {
 							$wca[] = $field . '=' . $word;
@@ -1068,8 +1099,12 @@ class tx_sevenpack_reference_accessor {
 			$authors =& $filter['author']['authors'];
 			$a_filter['sets'] = array();
 			foreach ( $authors as &$a ) {
+				//t3lib_div::debug ( $a );
 				if ( !is_numeric ( $a['uid'] ) ) {
-					$uids = $this->fetch_author_uids ( $a, $filter['pid'] );
+					$pid = $this->pid_list;
+					if ( isset ( $filter['pid'] ) )
+						$pid = $filter['pid'];
+					$uids = $this->fetch_author_uids ( $a, $pid );
 					for ( $i=0; $i < sizeof ( $uids ); $i++ ) {
 						$uid = $uids[$i];
 						if ( $i == 0 ) {
