@@ -3,9 +3,6 @@ plugin.tx_sevenpack_pi1 {
 	pid_list = {$plugin.tx_sevenpack_pi1.pid_list}
 	debug = {$plugin.tx_sevenpack_pi1.debug}
 
-	# HTML template
-	template = EXT:sevenpack/res/table.tmpl
-
 	# Links link to the content element (e.g. http://bla.html#c1234)
 	ce_links = 1
 
@@ -24,6 +21,13 @@ plugin.tx_sevenpack_pi1 {
 
 	# Maximal number references per page (0=all)
 	items_per_page = 12
+
+	# HTML template files
+	templates {
+		main = EXT:sevenpack/res/templates/main.html
+		blocks = EXT:sevenpack/res/templates/blocks.html
+		items = EXT:sevenpack/res/templates/items.html
+	}
 
 	# Number of authors to display (0=all)
 	max_authors = 0

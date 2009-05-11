@@ -122,14 +122,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 	// Statistics
 	public $stat;
-	public $pubPageNum; // The number of publications on the current page
-
-	public $templateBibTypes = array (); // Initialized in main()
-
-	public $templateBlockTypes = array (
-		'PREF_NAVI_BLOCK', 'EXPORT_BLOCK', 
-		'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 'YEAR_BLOCK', 'BIBTYPE_BLOCK', 
-		'STATISTIC_BLOCK', 'ITEM_BLOCK', 'SPACER_BLOCK' );
 
 	public $label_translator = array();
 
@@ -156,12 +148,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$rT = $this->ra->refTable;
 		$rta = $this->ra->refTableAlias;
 
-		// Initialize bibtype template index
-		//t3lib_div::debug ( $this->ra->allBibTypes );
-		$this->templateBibTypes[-1] = 'DEFAULT_DATA';
-		foreach ( $this->ra->allBibTypes as $k=>$v ) {
-			$this->templateBibTypes[$k] = strtoupper($v).'_DATA';
-		}
 
 		// Initialize current configuration
 		$extConf['link_vars'] = array();
@@ -637,8 +623,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Initialize the html template
 		//
 		$err = $this->init_template ( );
-		if ( $err )
-			return $this->finalize ( $err );
+		if ( sizeof ( $err ) > 0 ) {
+			$bad = '';
+			foreach ( $err as $msg )
+				$bad .= $this->error_msg ( $msg );
+			return $this->finalize ( $bad );
+		}
 
 		//
 		// Switch to requested view mode
@@ -971,38 +961,73 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function init_template ()
 	{
+		$err = array();
+
 		// Allready initialized?
-		if ( isset ( $this->template['VIEW'] ) ) 
-			return FALSE;
+		if ( isset ( $this->template['LIST_VIEW'] ) )
+			return $err;
 
-		$err = FALSE;
+		// Misc blocks
+		$block_types = array (
+			'EXPORT_BLOCK', 'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 
+			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 
+			'STATISTIC_BLOCK', 'SPACER_BLOCK' );
 
-		$this->extConf['template'] = $this->conf['template'];
-		$file =& $this->extConf['template'];
+		// Bibtype data blocks
+		//t3lib_div::debug ( $this->ra->allBibTypes );
+		$bib_types = array ();
+		foreach ( $this->ra->allBibTypes as $val ) {
+			$bib_types[] = strtoupper ( $val ) . '_DATA';
+		}
+		$bib_types[] = 'DEFAULT_DATA';
+		$bib_types[] = 'ITEM_BLOCK';
 
-		$tmpl = $this->cObj->fileResource($file);
-		if ( strlen ( $tmpl ) ) {
-			//t3lib_div::debug (array('file:' => $file, 'code: '=>$tmpl));
-
-			$this->template = array();
-			foreach ( $this->templateBibTypes as $t ) {
-				$this->template[$t] = $this->cObj->getSubpart ( $tmpl,'###'.$t.'###' );
-			}
-			foreach ( $this->templateBlockTypes as $t ) {
-				$this->template[$t] = $this->cObj->getSubpart ( $tmpl, '###'.$t.'###' );
-			}
-
-			$this->template['VIEW'] = $this->cObj->getSubpart ( $tmpl, '###LIST_VIEW###' );
-
-			//t3lib_div::debug ($this->template);
-			if ( !strlen ( $this->template['VIEW'] ) )
-				$err = 'No or empty ###LIST_VIEW### tag was found in the template file '.$file;
-		} else {
-			$err = 'The template file '.$file.' is not readable or empty';
+		$tlist =& $this->conf['templates.'];
+		if ( !is_array ( $tlist ) ) {
+			$err[] = 'HTML templates are not set in TypoScript';
+			return $err;
 		}
 
-		if ( $err )
-			$err = $this->error_msg ( $err );
+		$info = array (
+			'main' => array (
+				'file' => $tlist['main'],
+				'parts' => array ( 'LIST_VIEW' )
+			),
+			'blocks' => array (
+				'file' => $tlist['blocks'],
+				'parts' => $block_types
+			),
+			'items' => array (
+				'file' => $tlist['items'],
+				'parts' => $bib_types,
+				'no_warn' => TRUE
+			)
+		);
+
+		//t3lib_div::debug( $info );
+
+		foreach ( $info as $key => $val ) {
+			if ( strlen ( $val['file'] ) == 0 ) {
+				$err[] = 'HTML template file for \'' . $key . '\' is not set' ;
+				continue;
+			}
+			$tmpl = $this->cObj->fileResource ( $val['file'] );
+			if ( strlen ( $tmpl ) == 0 ) {
+				$err[] = 'The HTML template file \'' . $val['file'] . '\' for \'' . $key . 
+					'\' is not readable or empty';
+				continue;
+			}
+			foreach ( $val['parts'] as $part ) {
+				$pstr = '###' . $part . '###';
+				$pstr = $this->cObj->getSubpart ( $tmpl, $pstr );
+				if ( ( strlen ( $pstr ) == 0 ) && !$val['no_warn'] ) {
+					 $err[] = 'The subpart \'' . $pstr . '\' in the HTML template file \'' . $val['file'] . '\' is empty';
+				}
+				$this->template[$part] = $pstr;
+			}
+		}
+
+		//t3lib_div::debug( $this->template );
 
 		return $err;
 	}
@@ -1196,9 +1221,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$this->setup_items (); // setup the publication items
 
-		//t3lib_div::debug ( $this->template['VIEW'] );
+		//t3lib_div::debug ( $this->template['LIST_VIEW'] );
 
-		return $this->template['VIEW'];
+		return $this->template['LIST_VIEW'];
 	}
 
 
@@ -1227,7 +1252,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$this->extConf['has_top_navi'] = TRUE;
 		}
 
-		$tmpl =& $this->template['VIEW'];
+		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_YEAR_NAVI###', $hasStr );
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
@@ -1258,7 +1283,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$this->extConf['has_top_navi'] = TRUE;
 		}
 
-		$tmpl =& $this->template['VIEW'];
+		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_AUTHOR_NAVI###', $hasStr );
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
@@ -1289,7 +1314,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$this->extConf['has_top_navi'] = TRUE;
 		}
 
-		$tmpl =& $this->template['VIEW'];
+		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_PAGE_NAVI###', $hasStr );
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
@@ -1320,7 +1345,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$this->extConf['has_top_navi'] = TRUE;
 		}
 
-		$tmpl =& $this->template['VIEW'];
+		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_PREF_NAVI###', $hasStr );
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
@@ -1344,11 +1369,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			//t3lib_div::debug ( $linkStr );
 		}
 
-		$this->template['VIEW'] = $this->cObj->substituteSubpart (
-			$this->template['VIEW'], '###HAS_NEW_ENTRY###', $hasStr );
-
-		$this->template['VIEW'] = $this->cObj->substituteMarker (
-			$this->template['VIEW'], '###NEW_ENTRY###', $linkStr );
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_NEW_ENTRY###', $hasStr );
+		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###NEW_ENTRY###', $linkStr );
 	}
 
 
@@ -1402,11 +1425,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$hasStr = array ( '','' );
 		}
 
-		$this->template['VIEW'] = $this->cObj->substituteSubpart ( 
-			$this->template['VIEW'], '###HAS_STATISTIC###', $hasStr );
-
-		$this->template['VIEW'] = $this->cObj->substituteMarker (
-			$this->template['VIEW'], '###STATISTIC###', $str);
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_STATISTIC###', $hasStr );
+		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###STATISTIC###', $str );
 	}
 
 
@@ -1459,11 +1480,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$hasStr = array ( '','' );
 		}
 
-		$this->template['VIEW'] = $this->cObj->substituteSubpart ( 
-			$this->template['VIEW'], '###HAS_EXPORT###', $hasStr );
-
-		$this->template['VIEW'] = $this->cObj->substituteMarker (
-			$this->template['VIEW'], '###EXPORT###', $str);
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_EXPORT###', $hasStr );
+		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###EXPORT###', $str );
 	}
 
 
@@ -1513,11 +1532,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$hasStr = array ( '','' );
 		}
 
-		$this->template['VIEW'] = $this->cObj->substituteSubpart ( 
-			$this->template['VIEW'], '###HAS_IMPORT###', $hasStr );
-
-		$this->template['VIEW'] = $this->cObj->substituteMarker (
-			$this->template['VIEW'], '###IMPORT###', $str );
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_IMPORT###', $hasStr );
+		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###IMPORT###', $str );
 	}
 
 
@@ -1532,8 +1549,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $this->extConf['has_top_navi'] ) {
 			$hasStr = array ( '', '' );
 		}
-		$this->template['VIEW'] = $this->cObj->substituteSubpart ( 
-			$this->template['VIEW'], '###HAS_TOP_NAVI###', $hasStr );
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_TOP_NAVI###', $hasStr );
 	}
 
 
@@ -1968,8 +1985,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Setup the item template
-			$templID = $this->templateBibTypes[$pub['bibtype']];
-			$data_block = $this->template[$templID];
+			$data_block = strtoupper ( $pdata['bibtype_short'] ) . '_DATA';
+			$data_block = $this->template[$data_block];
 			$item_block = $this->template['ITEM_BLOCK'];
 
 			if ( strlen ( $data_block ) == 0 )
@@ -2061,12 +2078,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( strlen ( $items ) )
 			$hasStr = array ( '', '' );
 
-		$this->template['VIEW'] = $cObj->substituteSubpart (
-			$this->template['VIEW'], '###HAS_ITEMS###', $hasStr );
-
-		// Treat template
-		$this->template['VIEW'] = $cObj->substituteMarker (
-			$this->template['VIEW'], '###ITEMS###', $items );
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_ITEMS###', $hasStr );
+		$tmpl = $cObj->substituteMarker ( $tmpl, '###ITEMS###', $items );
 	}
 
 
@@ -2300,8 +2314,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function setup_spacer ()
 	{
 		$t_str = $this->enum_condition_block ( $this->template['SPACER_BLOCK'] );
-		$this->template['VIEW'] = $this->cObj->substituteMarker (
-			$this->template['VIEW'], '###SPACER###', $t_str );
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###SPACER###', $t_str );
 	}
 
 
