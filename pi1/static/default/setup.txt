@@ -181,17 +181,16 @@ plugin.tx_sevenpack_pi1 {
 		template = EXT:sevenpack/res/templates/navi_year.html
 
 		# Year label wrap
-		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
+		label.wrap = |:
 
 		# Classes or the year selection form
 		form_class = tx_sevenpack-year_select_form
+		go_btn_class = tx_sevenpack-button
 		select_class =
-		input_class = tx_sevenpack-button
 
-		# Form wraps
 		#form.wrap = |
 		#select.wrap = |
-		#input.wrap = |
+		go_btn.wrap = |
 
 		# Year selection
 		selection {
@@ -231,7 +230,7 @@ plugin.tx_sevenpack_pi1 {
 		template = EXT:sevenpack/res/templates/navi_page.html
 
 		# Page label wrap
-		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
+		label.wrap = |:
 
 		# Page selection
 		selection {
@@ -279,19 +278,27 @@ plugin.tx_sevenpack_pi1 {
 		template = EXT:sevenpack/res/templates/navi_pref.html
 
 		# Page label and wrap
-		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
+		label.wrap = |:
 
-		ipp_label.noTrimWrap = |<span class="tx_sevenpack-navi_label">|</span> |
+		ipp_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
+		ipp_label.wrap = <span class="tx_sevenpack-navi_pref_label">|</span>
 		#ipp_select.wrap = |
-		abstract_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+
+		abstract_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
+		abstract_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
 		#abstract_btn.wrap = |
-		keywords_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+		
+		keywords_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
+		keywords_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
 		#keywords_btn.wrap = |
 
 		# Classes or the ipp selection form
-		form_class = tx_sevenpack-inline_form
+		form_class = tx_sevenpack-inline_form tx_sevenpack-navi_pref_selection
 		select_class =
-		input_class = tx_sevenpack-button
+		go_btn_class = tx_sevenpack-button
+
+		go_btn.wrap = |
+		#select.wrap = |
 
 		# Item per page values
 		ipp_values  = 5,10,20,30,40,50

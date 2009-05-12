@@ -104,7 +104,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$sns =& $this->pi1->stat['authors']['sel_surnames'];
 
 		$indices = array ( 0, $this->sel_name_idx, sizeof ( $sns ) - 1 );
-		
+
 		$numSel = 3;
 		if ( array_key_exists ( 'authors', $cfgSel ) )
 			$numSel = abs ( intval ( $cfgSel['authors'] ) );
@@ -130,15 +130,18 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$con .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
 		$con .= '>' . "\n";
 
-		$pairs = array();
 		$names = $this->pi1->stat['authors']['sel_surnames'];
+		$sel_name = '';
+		if ( $this->sel_name_idx > 0 )
+			$sel_name = $names[$this->sel_name_idx];
+
+		$pairs = array ( '' => '-- All authors --' );
 		foreach ( $names as $name )
 			$pairs[$name] = $name;
 		$attribs = array (
 			'name'     => $this->pi1->prefix_pi1.'[author]',
 			'onchange' => 'this.form.submit()'
 		);
-		$sel_name = $names[$this->sel_name_idx];
 		if ( strlen ( $cfg['select_class'] ) > 0 )
 			$attribs['class'] = $cfg['select_class'];
 		$btn = tx_sevenpack_utility::html_select_input ( 

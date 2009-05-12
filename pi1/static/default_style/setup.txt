@@ -30,7 +30,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	div.tx_sevenpack-navi_page_bottom {
 		clear: both;
 		padding: 0px;
-		margin: 0.5em 0em;
+		margin: 1ex 0em;
 		border-width: 0px;
 	}
 
@@ -38,7 +38,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	div.tx_sevenpack-navi_pref_bottom {
 		clear: both;
 		padding: 0px;
-		margin: 0.5em 0em;
+		margin: 1ex 0em;
 		border-width: 0px;
 	}
 
@@ -46,7 +46,8 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	div.tx_sevenpack-navi_author_bottom {
 		clear: both;
 		padding: 0px;
-		margin: 0.5em 0em;
+		margin: 1ex 0em;
+		margin-bottom: 1.5ex;
 		border-width: 0px;
 	}
 
@@ -58,22 +59,60 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin: 0px;
 	}
 
-	/*
-	 * Year navi
-	 */
-	.tx_sevenpack-year_select_form {
+	.tx_sevenpack-navi_year_selection,
+	.tx_sevenpack-navi_author_letters,
+	.tx_sevenpack-navi_author_selection,
+	.tx_sevenpack-navi_page_selection {
+		float: left;
+	}
+
+	div.tx_sevenpack-float_clear {
+		clear: both;
+		padding: 0px;
+		margin: 0px;
+		border-width: 0px;
+		height: 0px;
+		width: 0px;
+	}
+
+	.tx_sevenpack-year_select_form,
+	.tx_sevenpack-author_select_form {
 		float: right;
 	}
 
-	.tx_sevenpack-navi_year_selection {
-		position: relative;
-		left: 20em;
-		top: 0px;
+	/*
+	 * Author navigation
+	 */
+	.tx_sevenpack-navi_author_selection {
+		margin-left: 12em;
 	}
 
-	.tx_sevenpack-author_select_form {
-		margin-left: 5em;
+	.tx_sevenpack-navi_author_select {
+		float: right;
 	}
+
+	div.tx_sevenpack-navi_author_row {
+		margin-top: 1ex;
+	}
+
+	/*
+	 * Preferences navigation
+	 */
+	.tx_sevenpack-navi_pref_selection {
+		display: block;
+		float: left;
+	}
+
+	.tx_sevenpack-navi_pref_label {
+		padding: 0px;
+		padding-right: 0.33em;
+	}
+
+	.tx_sevenpack-navi_pref_widget {
+		padding: 0px;
+		padding-right: 1em;
+	}
+
 
 	span.tx_sevenpack-navi_current {
 		font-size: larger;
@@ -83,13 +122,13 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	.tx_sevenpack-navi_label,
 	.tx_sevenpack-navi_main_label {
 		font-weight: bold;
-		padding-right: 1em;
-		padding-left: 1em;
 	}
 
-	.tx_sevenpack-navi_main_label {
-		padding-left: 0em;
-		padding-right: 2em;
+	div.tx_sevenpack-navi_main_label {
+		width: 12em;
+		padding: 0px;
+		margin: 0px;
+		float: left;
 	}
 
 	span.tx_sevenpack-navi_separator {

@@ -63,12 +63,12 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		//
 		// The year select for
 		//
-		$ys = '';
-		$ys .= '<form name="'.$this->pi1->prefix_pi1.'-year_select_form" ';
-		$ys .= 'action="'.$this->pi1->get_link_url ( array ( 'year' => '' ), FALSE ).'"';
-		$ys .= ' method="post"';
-		$ys .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
-		$ys .= '>' . "\n";
+		$sel = '';
+		$sel .= '<form name="'.$this->pi1->prefix_pi1.'-year_select_form" ';
+		$sel .= 'action="'.$this->pi1->get_link_url ( array ( 'year' => '' ), FALSE ).'"';
+		$sel .= ' method="post"';
+		$sel .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
+		$sel .= '>' . "\n";
 		
 		$pairs = array();
 		foreach ( array_reverse( $years ) as $y )
@@ -82,20 +82,20 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		$btn = tx_sevenpack_utility::html_select_input ( 
 			$pairs, $year, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $cfg['select.'] );
-		$ys .= $btn;
+		$sel .= $btn;
 
 		$attribs = array ();
-		if ( strlen ( $cfg['input_class'] ) > 0 )
-			$attribs['class'] =  $cfg['input_class'];
+		if ( strlen ( $cfg['go_btn_class'] ) > 0 )
+			$attribs['class'] =  $cfg['go_btn_class'];
 		$btn = tx_sevenpack_utility::html_submit_input ( 
 			$this->pi1->prefix_pi1.'[action][select_year]',
 			$this->pi1->get_ll ( 'button_go' ), $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['input.'] );
-		$ys .= $btn;
+		$btn = $cObj->stdWrap ( $btn, $cfg['go_btn.'] );
+		$sel .= $btn;
 
 		// End of form
-		$ys .= '</form>';
-		$ys = $cObj->stdWrap ( $ys, $cfg['form.'] );
+		$sel .= '</form>';
+		$sel = $cObj->stdWrap ( $sel, $cfg['form.'] );
 
 
 		//
@@ -114,9 +114,9 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		$selection = $cObj->stdWrap ( $selection, $cfgSel['all_wrap.'] );
 
 		$trans = array();
-		$trans['###SELECTION###'] = $selection;
-		$trans['###YEAR_SELECT###'] = $ys;
 		$trans['###NAVI_LABEL###'] = $label;
+		$trans['###SELECTION###'] = $selection;
+		$trans['###SELECT_FORM###'] = $sel;
 
 		$tmpl = $this->pi1->enum_condition_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );

@@ -427,7 +427,7 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
-		t3lib_div::debug ( array ( 'WHERE clause: ' => $WC ) );
+		//t3lib_div::debug ( array ( 'WHERE clause: ' => $WC ) );
 		return $WC;
 	}
 

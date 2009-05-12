@@ -595,7 +595,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
-		t3lib_div::debug ( $extConf['filters'] );
+		//t3lib_div::debug ( $extConf['filters'] );
 		$this->ra->set_filters ( $extConf['filters'] );
 
 		$hist = $this->ra->fetch_histogram ( 'year' );
