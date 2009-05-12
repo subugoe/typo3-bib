@@ -89,7 +89,18 @@
 			</TCEforms>
 		</enum_style>
 
-		<!-- Split up bibliography types -->
+		<!-- Show author navigation -->
+		<show_authors>
+			<TCEforms>
+				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_authors</label>
+				<config>
+					<type>check</type>
+					<default>0</default>
+				</config>
+			</TCEforms>
+		</show_authors>
+
+		<!-- Show preferences navigation -->
 		<show_pref>
 			<TCEforms>
 				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_preferences</label>
@@ -99,6 +110,7 @@
 				</config>
 			</TCEforms>
 		</show_pref>
+
 
 		<!-- Date sorting -->
 		<date_sorting>

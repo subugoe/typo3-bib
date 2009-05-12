@@ -36,10 +36,13 @@ class tx_sevenpack_navi_stat extends tx_sevenpack_navi  {
 		$label = '';
 
 		// Setup mode
+		$d_mode = $this->pi1->extConf['d_mode'];
 		$mode = intval ( $this->pi1->extConf['stat_mode'] );
-		if ( $mode != $this->pi1->D_Y_NAV )
-			if ( $mode == $this->pi1->STAT_YEAR_TOTAL )
+		if ( $d_mode != $this->pi1->D_Y_NAV ) {
+			if ( $mode == $this->pi1->STAT_YEAR_TOTAL ) {
 				$mode = $this->pi1->STAT_TOTAL;
+			}
+		}
 
 		// Setup values
 		$year = intval ( $this->pi1->extConf['year'] );

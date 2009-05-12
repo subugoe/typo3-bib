@@ -169,6 +169,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fSheet = 'sDEF';
 		$extConf['d_mode']          = $this->pi_getFFvalue ( $ff, 'display_mode',   $fSheet );
 		$extConf['enum_style']      = $this->pi_getFFvalue ( $ff, 'enum_style',     $fSheet );
+		$extConf['show_nav_author'] = $this->pi_getFFvalue ( $ff, 'show_authors',   $fSheet );
 		$extConf['show_nav_pref']   = $this->pi_getFFvalue ( $ff, 'show_pref',      $fSheet );
 		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue ( $ff, 'items_per_page', $fSheet );
 		$extConf['max_authors']     = $this->pi_getFFvalue ( $ff, 'max_authors',    $fSheet );
@@ -389,8 +390,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Author navi
 		// Fetch some configuration from the HTTP request
 		//
-		$extConf['show_nav_author'] = TRUE;
-		if ( $extConf['show_nav_author'] == TRUE ) {
+		if ( $extConf['show_nav_author'] ) {
 			$extConf['author_navi'] = array();
 			$aconf =& $extConf['author_navi'];
 			$lvars =& $extConf['link_vars'];
@@ -561,7 +561,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		// Author navigation setup
 		//
-		if ( $extConf['show_nav_author'] = TRUE ) {
+		if ( $extConf['show_nav_author'] ) {
 			$aconf =& $extConf['author_navi'];
 			$this->stat['authors'] = array();
 			$astat =& $this->stat['authors'];
@@ -637,8 +637,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		$this->stat['num_page'] = $this->stat['num_all'];
-		if ( $this->extConf['d_mode'] == $this->D_Y_NAV )
+		if ( $this->extConf['d_mode'] == $this->D_Y_NAV ) {
 			$this->stat['num_page'] = $this->stat['year_hist'][$ecYear];
+		}
 
 		//
 		// Determine the number of sub pages and the current sub page (zero based)
@@ -658,9 +659,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Enable page and year navigation
 		//
 		if ( $extConf['d_mode'] == $this->D_Y_NAV )
-			if ( $this->stat['num_all'] > 0 )
-		     if ( sizeof ( $this->stat['years'] ) > 0 )
-					$extConf['show_nav_year'] = TRUE;
+			$extConf['show_nav_year'] = TRUE;
 		if ( ( $iPP > 0 ) && ( $this->stat['num_page'] > $iPP ) )
 			$extConf['show_nav_page'] = TRUE;
 
@@ -675,15 +674,27 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$dSort = 'DESC';
 			if ( $extConf['date_sorting'] == $this->SORT_ASC )
 				$dSort = 'ASC';
-			$br_filter['sorting'] = array(
-				array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
-				array ( 'field' => $rta.'.year',    'dir' => $dSort ),
-				array ( 'field' => $rta.'.month',   'dir' => $dSort ),
-				array ( 'field' => $rta.'.day',     'dir' => $dSort ),
-				array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
-				array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
-				array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
-			);
+			if ( $extConf['d_mode'] == $this->D_SIMPLE ) {
+				$br_filter['sorting'] = array (
+					array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
+					array ( 'field' => $rta.'.year',    'dir' => $dSort ),
+					array ( 'field' => $rta.'.month',   'dir' => $dSort ),
+					array ( 'field' => $rta.'.day',     'dir' => $dSort ),
+					array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
+					array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
+					array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
+				);
+			} else {
+				$br_filter['sorting'] = array (
+					array ( 'field' => $rta.'.year',    'dir' => $dSort ),
+					array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
+					array ( 'field' => $rta.'.month',   'dir' => $dSort ),
+					array ( 'field' => $rta.'.day',     'dir' => $dSort ),
+					array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
+					array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
+					array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
+				);
+			}
 		}
 
 		// Adjust year filter
@@ -1375,7 +1386,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
 
-			if ( strlen ( $trans['###YEAR_NAVI_TOP###'] ) > 0 )
+			if ( strlen ( $trans['###AUTHOR_NAVI_TOP###'] ) > 0 )
 				$this->extConf['has_top_navi'] = TRUE;
 		}
 

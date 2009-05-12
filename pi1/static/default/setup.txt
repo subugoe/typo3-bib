@@ -51,10 +51,10 @@ plugin.tx_sevenpack_pi1 {
 		#empty = &nbsp;
 		#empty.wrap = |
 		file_icon = ###FILE_URL_ICON###
-		#file_icon.wrap = |
+		file_icon.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
 
 		# These are wraps for special items
-		file_icon_image.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
+		file_icon_image.wrap = |
 	}
 
 	# Label wraps
@@ -330,11 +330,15 @@ plugin.tx_sevenpack_pi1 {
 
 		# Letter selection
 		letters {
-			# Page separator
+			# Letter separator
 			separator = ,
 			separator.noTrimWrap  = || |
 
-			# Wraps for the current page and the pages below and above
+			# Separator between ALL and list
+			all_sep = ::
+			all_sep.noTrimWrap  = | | |
+
+			# Wraps for the current letter and the pages below and above
 			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
 
 			#all_wrap.wrap = |
@@ -384,6 +388,12 @@ plugin.tx_sevenpack_pi1 {
 
 		value_year.wrap = |
 		value_total.wrap = |
+
+		top_disable = 1
+		bottom_disable = 0
+
+		top.wrap = <div class="tx_sevenpack-navi_author_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_author_bottom">|</div>
 	}
 
 

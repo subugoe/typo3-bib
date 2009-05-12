@@ -81,6 +81,7 @@
 			<label index="tt_content.pi_flexform.sheet_fe_editor">FE editor</label>
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
 			<label index="tt_content.pi_flexform.sheet_general">General</label>
+			<label index="tt_content.pi_flexform.show_authors">Show author browser</label>
 			<label index="tt_content.pi_flexform.show_preferences">Show preferences bar</label>
 			<label index="tt_content.pi_flexform.show_textfields">Show textfields</label>
 			<label index="tt_content.pi_flexform.show_textfields.abstract">Abstract</label>
@@ -172,6 +173,7 @@
 			<label index="tt_content.pi_flexform.sheet_fe_editor">FE Editor</label>
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
 			<label index="tt_content.pi_flexform.sheet_general">Allgemein</label>
+			<label index="tt_content.pi_flexform.show_authors">Zeige Autoren Leiste</label>
 			<label index="tt_content.pi_flexform.show_preferences">Zeige Präferenzen Leiste</label>
 			<label index="tt_content.pi_flexform.show_textfields">Zeige Textfelder</label>
 			<label index="tt_content.pi_flexform.show_textfields.abstract">Zusammenfassung</label>

@@ -7,6 +7,10 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="authorNav_label">Author</label>
+			<label index="authorNav_all_authors">All authors</label>
+			<label index="authorNav_all_letters">All</label>
+			<label index="authorNav_authorLinkTitle">Publications from %a</label>
+			<label index="authorNav_LetterLinkTitle">Authors with %l</label>
 			<label index="bibtype_plural_0">Unknown</label>
 			<label index="bibtype_plural_1">Articles</label>
 			<label index="bibtype_plural_10">Master theses</label>
@@ -89,6 +93,10 @@
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="authorNav_label">Autor</label>
+			<label index="authorNav_all_authors">Alle Autoren</label>
+			<label index="authorNav_all_letters">Alle</label>
+			<label index="authorNav_authorLinkTitle">Publikationen von %a</label>
+			<label index="authorNav_LetterLinkTitle">Autoren mit %l</label>
 			<label index="bibtype_plural_0">Unbekannt</label>
 			<label index="bibtype_plural_1">Artikel</label>
 			<label index="bibtype_plural_10">Masterarbeiten</label>

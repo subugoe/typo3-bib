@@ -26,7 +26,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 		$this->pref = 'AUTHOR_NAVI';
 		$this->load_template ( '###AUTHOR_NAVI_BLOCK###' );
-		$this->sel_link_title = $pi1->get_ll ( 'yearNav_yearLinkTitle', '%sn', TRUE );
+		$this->sel_link_title = $pi1->get_ll ( 'authorNav_authorLinkTitle', '%a', TRUE );
 	}
 
 
@@ -41,7 +41,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	 * Creates a link for the selection
 	 */
 	function sel_get_link ( $text, $ii ) {
-		$title = str_replace ( '%sn', $text, $this->sel_link_title );
+		$title = str_replace ( '%a', $text, $this->sel_link_title );
 		$lnk = $this->pi1->get_link ( $text, array ( 'author' => $text ), TRUE, 
 			array ( 'title' => $title ) );
 		return $lnk;
@@ -130,12 +130,16 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$con .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
 		$con .= '>' . "\n";
 
+		// The raw data
 		$names = $this->pi1->stat['authors']['sel_surnames'];
 		$sel_name = '';
 		if ( $this->sel_name_idx > 0 )
 			$sel_name = $names[$this->sel_name_idx];
 
-		$pairs = array ( '' => '-- All authors --' );
+		$all = $this->pi1->get_ll ( 'authorNav_all_authors', 'All authors', TRUE );
+		$all = '-- ' . $all . ' --';
+		// The processed data pairs
+		$pairs = array ( '' => $all );
 		foreach ( $names as $name )
 			$pairs[$name] = $name;
 		$attribs = array (
@@ -176,6 +180,9 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$extConf =& $this->extConf;
 		$cfgLSel = is_array ( $cfg['letters.'] ) ? $cfg['letters.'] : array();
 
+		//
+		// Acquire letters
+		//
 		$letters = array();
 		$sns =& $this->pi1->stat['authors']['surnames'];
 		foreach ( $sns as $name ) {
@@ -194,34 +201,51 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		usort ( $letters, 'strcoll' );
 		//t3lib_div::debug ( $letters );
 
-		$con = array();
-
+		//
+		// Create list
+		//
 		// The letter separator
 		$let_sep = ', ';
 		if ( isset ( $cfgLSel['separator'] ) )
 			$let_sep = $cfgLSel['separator'];
-		if ( is_array ( $cfgLSel['separator.'] ) )
-			$let_sep = $cObj->stdWrap ( $let_sep, $cfgLSel['separator.'] );
+		$let_sep = $cObj->stdWrap ( $let_sep, $cfgLSel['separator.'] );
 
+		$title_tmpl = $this->pi1->get_ll ( 'authorNav_LetterLinkTitle', '%l', TRUE );
+
+		// Iterate through letters
 		foreach ( $letters as $ll ) {
 			$txt = $ll;
 			if ( $ll == $extConf['sel_letter'] ) {
 				$txt = $cObj->stdWrap ( $txt, $cfgLSel['current.'] );
 			} else {
-				$txt = $this->pi1->get_link ( $txt, array ( 'author_letter' => $ll, 'author' => ''  ) );
+				$title = str_replace ( '%l', $ll, $title_tmpl );
+				$txt = $this->pi1->get_link ( $txt, 
+					array ( 'author_letter' => $ll, 'author' => '' ), 
+					TRUE, array ( 'title' => $title ) );
 			}
 			$let_sel[] = $txt;
 		}
-		$con = implode ( $let_sep, $let_sel);
+		$lst = implode ( $let_sep, $let_sel);
 
-		$txt = 'All';
+		//
+		// All link
+		//
+		$sep = '-';
+		if ( isset ( $cfgLSel['all_sep'] ) )
+			$sep = $cfgLSel['all_sep'];
+		$sep = $cObj->stdWrap ( $sep, $cfgLSel['all_sep.'] );
+
+		$txt = $this->pi1->get_ll ( 'authorNav_all_letters', 'All', TRUE );
 		if ( strlen ( $extConf['sel_letter'] ) == 0 ) {
 			$txt = $cObj->stdWrap ( $txt, $cfgLSel['current.'] );
 		} else {
 			$txt = $this->pi1->get_link ( $txt, array ( 'author_letter' => '', 'author' => '' ) );
 		}
-		$con .= ' - ' . $txt;
 
+		//
+		// Compose
+		//
+		$con = $txt . $sep . $lst;
 		$con = $cObj->stdWrap ( $con, $cfgLSel['all_wrap.'] );
 
 		return $con;

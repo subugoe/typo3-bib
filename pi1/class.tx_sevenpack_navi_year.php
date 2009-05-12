@@ -71,8 +71,14 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		$sel .= '>' . "\n";
 		
 		$pairs = array();
-		foreach ( array_reverse( $years ) as $y )
-			$pairs[$y] = $y;
+		if ( sizeof ( $years ) > 0 ) {
+			foreach ( array_reverse( $years ) as $y )
+				$pairs[$y] = $y;
+		} else {
+			$year = strval ( intval ( date ( 'Y' ) ) );
+			$pairs = array ( $year => $year );
+		}
+
 		$attribs = array (
 			'name'     => $this->pi1->prefix_pi1.'[year]',
 			'onchange' => 'this.form.submit()'
