@@ -127,7 +127,12 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 
 		// All together
-		$all = $txt . $sep . $sel;
+		if ( sizeof ( $sns ) > 0 ) {
+			$all = $txt . $sep . $sel;
+		} else {
+			$all = '&nbsp;';
+		}
+
 		$all = $cObj->stdWrap ( $all, $cfgSel['all_wrap.'] );
 
 		return $all;
@@ -151,7 +156,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		// The raw data
 		$names = $this->pi1->stat['authors']['sel_surnames'];
 		$sel_name = '';
-		if ( $this->sel_name_idx > 0 )
+		if ( $this->sel_name_idx >= 0 )
 			$sel_name = $names[$this->sel_name_idx];
 
 		$all = $this->pi1->get_ll ( 'authorNav_select_all', 'All authors', TRUE );
@@ -172,17 +177,24 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$btn = $cObj->stdWrap ( $btn, $cfg['select.'] );
 		$con .= $btn;
 
+		// Go button
 		$attribs = array ();
-		if ( strlen ( $cfg['input_class'] ) > 0 )
-			$attribs['class'] =  $cfg['input_class'];
+		if ( strlen ( $cfg['go_btn_class'] ) > 0 )
+			$attribs['class'] =  $cfg['go_btn_class'];
 		$btn = tx_sevenpack_utility::html_submit_input ( 
 			$this->pi1->prefix_pi1.'[action][select_author]',
 			$this->pi1->get_ll ( 'button_go' ), $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['input.'] );
+		$btn = $cObj->stdWrap ( $btn, $cfg['go_btn.'] );
 		$con .= $btn;
 
 		// End of form
 		$con .= '</form>';
+
+		// Finalise
+		if ( sizeof ( $pairs ) == 1 ) {
+			$con = '&nbsp';
+		}
+
 		$con = $cObj->stdWrap ( $con, $cfg['form.'] );
 
 		return $con;

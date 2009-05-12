@@ -297,7 +297,7 @@ plugin.tx_sevenpack_pi1 {
 		select_class =
 		go_btn_class = tx_sevenpack-button
 
-		go_btn.wrap = |
+		#go_btn.wrap = |
 		#select.wrap = |
 
 		# Item per page values
@@ -322,11 +322,11 @@ plugin.tx_sevenpack_pi1 {
 		# Classes or the year selection form
 		form_class = tx_sevenpack-author_select_form
 		select_class =
-		input_class = tx_sevenpack-button
+		go_btn_class = tx_sevenpack-button
 
 		#form.wrap = |
+		#go_btn.wrap = |
 		#select.wrap = |
-		#input.wrap = |
 
 		# Letter selection
 		letters {
