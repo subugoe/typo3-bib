@@ -353,6 +353,10 @@ plugin.tx_sevenpack_pi1 {
 			separator = ,
 			separator.noTrimWrap  = || |
 
+			# Separator between ALL and list
+			all_sep = ::
+			all_sep.noTrimWrap  = | | |
+
 			# Wraps for the current page and the pages below and above
 			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
 			below.wrap = |

@@ -101,6 +101,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$cfg =& $this->conf;
 		$cfgSel = is_array ( $cfg['selection.'] ) ? $cfg['selection.'] : array();
 
+		// Selection
 		$sns =& $this->pi1->stat['authors']['sel_surnames'];
 
 		$indices = array ( 0, $this->sel_name_idx, sizeof ( $sns ) - 1 );
@@ -110,9 +111,26 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 			$numSel = abs ( intval ( $cfgSel['authors'] ) );
 
 		$sel = $this->selection ( $cfgSel, $indices, $numSel );
-		$sel = $cObj->stdWrap ( $sel, $cfgSel['all_wrap.'] );
 
-		return $sel;
+		// All and Separator
+		$sep = ' - ';
+		if ( isset ( $cfgSel['all_sep'] ) )
+			$sep = $cfgSel['all_sep'];
+		$sep = $cObj->stdWrap ( $sep, $cfgSel['all_sep.'] );
+
+		$txt = $this->pi1->get_ll ( 'authorNav_all_authors', 'All', TRUE );
+		if ( $this->sel_name_idx < 0 ) {
+			$txt = $cObj->stdWrap ( $txt, $cfgSel['current.'] );
+		} else {
+			$txt = $this->pi1->get_link ( $txt, array ( 'author' => '' ) );
+		}
+
+
+		// All together
+		$all = $txt . $sep . $sel;
+		$all = $cObj->stdWrap ( $all, $cfgSel['all_wrap.'] );
+
+		return $all;
 	}
 
 
@@ -136,7 +154,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		if ( $this->sel_name_idx > 0 )
 			$sel_name = $names[$this->sel_name_idx];
 
-		$all = $this->pi1->get_ll ( 'authorNav_all_authors', 'All authors', TRUE );
+		$all = $this->pi1->get_ll ( 'authorNav_select_all', 'All authors', TRUE );
 		$all = '-- ' . $all . ' --';
 		// The processed data pairs
 		$pairs = array ( '' => $all );

@@ -7,8 +7,9 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="authorNav_label">Author</label>
-			<label index="authorNav_all_authors">All authors</label>
+			<label index="authorNav_select_all">All authors</label>
 			<label index="authorNav_all_letters">All</label>
+			<label index="authorNav_all_authors">All</label>
 			<label index="authorNav_authorLinkTitle">Publications from %a</label>
 			<label index="authorNav_LetterLinkTitle">Authors with %l</label>
 			<label index="bibtype_plural_0">Unknown</label>
@@ -93,8 +94,9 @@
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="authorNav_label">Autor</label>
-			<label index="authorNav_all_authors">Alle Autoren</label>
+			<label index="authorNav_select_all">Alle Autoren</label>
 			<label index="authorNav_all_letters">Alle</label>
+			<label index="authorNav_all_authors">Alle</label>
 			<label index="authorNav_authorLinkTitle">Publikationen von %a</label>
 			<label index="authorNav_LetterLinkTitle">Autoren mit %l</label>
 			<label index="bibtype_plural_0">Unbekannt</label>
