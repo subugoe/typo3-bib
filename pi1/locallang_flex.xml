@@ -83,6 +83,7 @@
 			<label index="tt_content.pi_flexform.sheet_general">General</label>
 			<label index="tt_content.pi_flexform.show_authors">Show author browser</label>
 			<label index="tt_content.pi_flexform.show_preferences">Show preferences bar</label>
+			<label index="tt_content.pi_flexform.show_search">Show search bar</label>
 			<label index="tt_content.pi_flexform.show_textfields">Show textfields</label>
 			<label index="tt_content.pi_flexform.show_textfields.abstract">Abstract</label>
 			<label index="tt_content.pi_flexform.show_textfields.annotation">Annotation</label>
@@ -174,7 +175,8 @@
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
 			<label index="tt_content.pi_flexform.sheet_general">Allgemein</label>
 			<label index="tt_content.pi_flexform.show_authors">Zeige Autoren Leiste</label>
-			<label index="tt_content.pi_flexform.show_preferences">Zeige Präferenzen Leiste</label>
+			<label index="tt_content.pi_flexform.show_preferences">Zeige Präferenzen-Leiste</label>
+			<label index="tt_content.pi_flexform.show_search">Zeige Such-Leiste</label>
 			<label index="tt_content.pi_flexform.show_textfields">Zeige Textfelder</label>
 			<label index="tt_content.pi_flexform.show_textfields.abstract">Zusammenfassung</label>
 			<label index="tt_content.pi_flexform.show_textfields.annotation">Anmerkung</label>

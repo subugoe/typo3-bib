@@ -169,6 +169,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fSheet = 'sDEF';
 		$extConf['d_mode']          = $this->pi_getFFvalue ( $ff, 'display_mode',   $fSheet );
 		$extConf['enum_style']      = $this->pi_getFFvalue ( $ff, 'enum_style',     $fSheet );
+		$extConf['show_nav_search'] = $this->pi_getFFvalue ( $ff, 'show_search',    $fSheet );
 		$extConf['show_nav_author'] = $this->pi_getFFvalue ( $ff, 'show_authors',   $fSheet );
 		$extConf['show_nav_pref']   = $this->pi_getFFvalue ( $ff, 'show_pref',      $fSheet );
 		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue ( $ff, 'items_per_page', $fSheet );
@@ -343,8 +344,39 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 		//
+		// Author navi
+		//
+		if ( $extConf['show_nav_search'] ) {
+
+		}
+
+
+		//
+		// Author navi
+		//
+		if ( $extConf['show_nav_author'] ) {
+			$extConf['author_navi'] = array();
+			$aconf =& $extConf['author_navi'];
+			$lvars =& $extConf['link_vars'];
+
+			$lvars['author_letter'] = '';
+			$p_val = $this->piVars['author_letter'];
+			if ( strlen ( $p_val ) > 0 ) {
+				$aconf['sel_letter'] = $p_val;
+				$lvars['author_letter'] = $p_val;
+			}
+
+			$lvars['author'] = '';
+			$p_val = $this->piVars['author'];
+			if ( strlen ( $p_val ) > 0 ) {
+				$aconf['sel_author'] = $p_val;
+				$lvars['author'] = $p_val;
+			}
+		}
+
+
+		//
 		// Preference navi
-		// Fetch some configuration from the HTTP request
 		//
 		if ( $extConf['show_nav_pref'] ) {
 			// Items per page
@@ -383,31 +415,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['hide_fields']['keywords'] =  $show ? FALSE : TRUE;
 			$extConf['link_vars']['show_keywords'] = $show ? '1' : '0';
 			$extConf['hide_fields']['tags'] = $extConf['hide_fields']['keywords'];
-		}
-
-
-		//
-		// Author navi
-		// Fetch some configuration from the HTTP request
-		//
-		if ( $extConf['show_nav_author'] ) {
-			$extConf['author_navi'] = array();
-			$aconf =& $extConf['author_navi'];
-			$lvars =& $extConf['link_vars'];
-
-			$lvars['author_letter'] = '';
-			$p_val = $this->piVars['author_letter'];
-			if ( strlen ( $p_val ) > 0 ) {
-				$aconf['sel_letter'] = $p_val;
-				$lvars['author_letter'] = $p_val;
-			}
-
-			$lvars['author'] = '';
-			$p_val = $this->piVars['author'];
-			if ( strlen ( $p_val ) > 0 ) {
-				$aconf['sel_author'] = $p_val;
-				$lvars['author'] = $p_val;
-			}
 		}
 
 
@@ -1315,6 +1322,21 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
+	 * Returns an instance of a navigation bar class
+	 *
+	 * @return The url
+	 */
+	function get_navi_instance ( $type )
+	{
+		$file = 'EXT:'.$this->extKey.'/pi1/class.' . $type . '.php';
+		require_once ( $GLOBALS['TSFE']->tmpl->getFileName ( $file ) );
+		$obj = t3lib_div::makeInstance ( $type );
+		$obj->initialize ( $this );
+		return $obj;
+	}
+
+
+	/**
 	 * This function composes the html-view of a set of publications
 	 *
 	 * @return The list view
@@ -1354,11 +1376,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_year'] ) {
-			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_year.php' ) );
-
-			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_year' );
-			$obj->initialize ( $this );
+			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_year' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1385,11 +1403,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_author'] ) {
-			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_author.php' ) );
-
-			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_author' );
-			$obj->initialize ( $this );
+			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_author' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1416,11 +1430,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_page'] ) {
-			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_page.php' ) );
-
-			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_page' );
-			$obj->initialize ( $this );
+			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_page' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1447,11 +1457,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_pref'] ) {
-			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_pref.php' ) );
-
-			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_pref' );
-			$obj->initialize ( $this );
+			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_pref' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1502,11 +1508,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_stat'] ) {
-			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_stat.php' ) );
-
-			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_stat' );
-			$obj->initialize ( $this );
+			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_stat' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );

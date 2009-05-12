@@ -89,6 +89,17 @@
 			</TCEforms>
 		</enum_style>
 
+		<!-- Show search bar -->
+		<show_search>
+			<TCEforms>
+				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_search</label>
+				<config>
+					<type>check</type>
+					<default>0</default>
+				</config>
+			</TCEforms>
+		</show_search>
+
 		<!-- Show author navigation -->
 		<show_authors>
 			<TCEforms>
