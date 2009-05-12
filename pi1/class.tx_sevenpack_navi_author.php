@@ -77,7 +77,6 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$nlabel = $cObj->stdWrap ( 
 			$this->pi1->get_ll ( 'authorNav_label' ), $cfg['label.'] );
 
-
 		// Translator
 		$trans = array();
 		$trans['###NAVI_LABEL###'] = $nlabel;
@@ -159,8 +158,13 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		if ( $this->sel_name_idx >= 0 )
 			$sel_name = $names[$this->sel_name_idx];
 
+		// The 'All with %l' select option
 		$all = $this->pi1->get_ll ( 'authorNav_select_all', 'All authors', TRUE );
-		$all = '-- ' . $all . ' --';
+		$rep = '?';
+		if ( strlen ( $this->extConf['sel_letter'] ) > 0 )
+			$rep =  htmlentities( $this->extConf['sel_letter'], ENT_QUOTES, 'UTF-8' );
+		$all = str_replace ( '%l', $rep, $all );
+
 		// The processed data pairs
 		$pairs = array ( '' => $all );
 		foreach ( $names as $name )
