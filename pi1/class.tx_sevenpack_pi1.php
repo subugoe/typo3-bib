@@ -1165,15 +1165,23 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			//t3lib_div::debug ( 'Loading language file ' . $file );
 			$tmpLang = t3lib_div::readLLfile ( $file, $this->LLkey );
-			$this->LOCAL_LANG['default'] = array_merge ( 
-				$this->LOCAL_LANG['default'], $tmpLang['default'] );
-			//t3lib_div::debug ( $this->LLkey );
-			//t3lib_div::debug ( $tmpLang );
-
-			if ( $this->LLkey != 'default' ) {
-				$this->LOCAL_LANG[$this->LLkey] = array_merge ( 
-					$this->LOCAL_LANG[$this->LLkey] , $tmpLang[$this->LLkey] );
+			foreach ( $this->LOCAL_LANG as $lang => $list ) {
+				foreach ( $list as $key => $word ) {
+					$tmpLang[$lang][$key] = $word;
+				}
 			}
+			$this->LOCAL_LANG = $tmpLang;
+
+			if ( $this->altLLkey ) {
+				$tmpLang = t3lib_div::readLLfile ( $file, $this->altLLkey );
+				foreach ( $this->LOCAL_LANG as $lang => $list ) {
+					foreach ( $list as $key => $word ) {
+						$tmpLang[$lang][$key] = $word;
+					}
+				}
+				$this->LOCAL_LANG = $tmpLang;
+			}
+
 			$this->extConf['LL_ext'][] = $file;
 		}
 		//t3lib_div::debug ( $this->LOCAL_LANG );

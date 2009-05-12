@@ -188,6 +188,8 @@ plugin.tx_sevenpack_pi1 {
 		select_class =
 		input_class = tx_sevenpack-button
 
+		# Form wraps
+		#form.wrap = |
 		#select.wrap = |
 		#input.wrap = |
 
@@ -212,6 +214,8 @@ plugin.tx_sevenpack_pi1 {
 			more_below.noTrimWrap = | | |
 			more_above = ...
 			more_above.noTrimWrap = | | |
+
+			#all_wrap.wrap = |
 		}
 
 		top_disable = 0
@@ -304,7 +308,6 @@ plugin.tx_sevenpack_pi1 {
 	# Preferences Navigation
 	authorNav {
 		# Page label and wrap
-		label = authorNav_label
 		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
 
 		template = EXT:sevenpack/res/templates/navi_author.html
@@ -314,6 +317,7 @@ plugin.tx_sevenpack_pi1 {
 		select_class =
 		input_class = tx_sevenpack-button
 
+		#form.wrap = |
 		#select.wrap = |
 		#input.wrap = |
 
@@ -326,6 +330,7 @@ plugin.tx_sevenpack_pi1 {
 			# Wraps for the current page and the pages below and above
 			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
 
+			#all_wrap.wrap = |
 		}
 
 		# Author selection
@@ -349,6 +354,8 @@ plugin.tx_sevenpack_pi1 {
 			more_below.noTrimWrap = | | |
 			more_above = ...
 			more_above.noTrimWrap = | | |
+
+			#all_wrap.wrap = |
 		}
 
 		top_disable = 0

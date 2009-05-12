@@ -57,10 +57,12 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		$years = $this->pi1->stat['years'];
 
 		// The label
-		$label = $cObj->stdWrap ( $this->pi1->get_ll ( 'yearNav_label' ), 
-			$cfg['label.'] );
+		$label = $this->pi1->get_ll ( 'yearNav_label' );
+		$label = $cObj->stdWrap ( $label, $cfg['label.'] );
 
-		// The year selector
+		//
+		// The year select for
+		//
 		$ys = '';
 		$ys .= '<form name="'.$this->pi1->prefix_pi1.'-year_select_form" ';
 		$ys .= 'action="'.$this->pi1->get_link_url ( array ( 'year' => '' ), FALSE ).'"';
@@ -93,9 +95,12 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 
 		// End of form
 		$ys .= '</form>';
+		$ys = $cObj->stdWrap ( $ys, $cfg['form.'] );
 
 
-		// Create selection
+		//
+		// The year selection
+		//
 		$indices = array ( 0,
 			intval ( array_search ( $year, $years ) ),
 			sizeof ( $years ) - 1
@@ -105,8 +110,11 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		if ( array_key_exists ( 'years', $cfgSel ) )
 			$numSel = abs ( intval ( $cfgSel['years'] ) );
 
+		$selection = $this->selection ( $cfgSel, $indices, $numSel );
+		$selection = $cObj->stdWrap ( $selection, $cfgSel['all_wrap.'] );
+
 		$trans = array();
-		$trans['###SELECTION###'] = $this->selection ( $cfgSel, $indices, $numSel );
+		$trans['###SELECTION###'] = $selection;
 		$trans['###YEAR_SELECT###'] = $ys;
 		$trans['###NAVI_LABEL###'] = $label;
 

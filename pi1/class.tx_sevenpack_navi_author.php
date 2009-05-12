@@ -97,6 +97,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	 * The author surname select
 	 */
 	function get_selection ( ) {
+		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
 		$cfgSel = is_array ( $cfg['selection.'] ) ? $cfg['selection.'] : array();
 
@@ -108,7 +109,10 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		if ( array_key_exists ( 'authors', $cfgSel ) )
 			$numSel = abs ( intval ( $cfgSel['authors'] ) );
 
-		return $this->selection ( $cfgSel, $indices, $numSel );
+		$sel = $this->selection ( $cfgSel, $indices, $numSel );
+		$sel = $cObj->stdWrap ( $sel, $cfgSel['all_wrap.'] );
+
+		return $sel;
 	}
 
 
@@ -154,6 +158,8 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 		// End of form
 		$con .= '</form>';
+		$con = $cObj->stdWrap ( $con, $cfg['form.'] );
+
 		return $con;
 	}
 
@@ -212,7 +218,8 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 			$txt = $this->pi1->get_link ( $txt, array ( 'author_letter' => '', 'author' => '' ) );
 		}
 		$con .= ' - ' . $txt;
-		$let_sel = $con;
+
+		$con = $cObj->stdWrap ( $con, $cfgLSel['all_wrap.'] );
 
 		return $con;
 	}

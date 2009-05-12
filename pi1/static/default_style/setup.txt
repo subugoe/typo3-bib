@@ -20,13 +20,15 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-navi_year_top,
 	div.tx_sevenpack-navi_year_bottom {
+		clear: both;
 		padding: 0px;
 		margin: 1ex 0em;
-		border-width: 0px; 
+		border-width: 0px;
 	}
 
 	div.tx_sevenpack-navi_page_top, 
 	div.tx_sevenpack-navi_page_bottom {
+		clear: both;
 		padding: 0px;
 		margin: 0.5em 0em;
 		border-width: 0px;
@@ -34,6 +36,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-navi_pref_top, 
 	div.tx_sevenpack-navi_pref_bottom {
+		clear: both;
 		padding: 0px;
 		margin: 0.5em 0em;
 		border-width: 0px;
@@ -41,6 +44,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-navi_author_top, 
 	div.tx_sevenpack-navi_author_bottom {
+		clear: both;
 		padding: 0px;
 		margin: 0.5em 0em;
 		border-width: 0px;
@@ -54,8 +58,17 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin: 0px;
 	}
 
+	/*
+	 * Year navi
+	 */
 	.tx_sevenpack-year_select_form {
-		margin-left: 5em;
+		float: right;
+	}
+
+	.tx_sevenpack-navi_year_selection {
+		position: relative;
+		left: 20em;
+		top: 0px;
 	}
 
 	.tx_sevenpack-author_select_form {
