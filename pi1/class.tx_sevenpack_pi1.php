@@ -202,7 +202,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( intval ( $extConf['date_sorting'] ) < 0 )
 			$extConf['date_sorting'] = intval ( $this->conf['date_sorting'] );
 		if ( intval ( $extConf['stat_mode'] ) < 0 )
-			$extConf['stat_mode'] = intval ( $this->conf['stat_mode'] );
+			$extConf['stat_mode'] = intval ( $this->conf['statNav.']['mode'] );
 
 		if ( intval ( $extConf['sub_page']['ipp'] ) < 0 ) {
 			$extConf['sub_page']['ipp'] = intval ( $this->conf['items_per_page'] );
@@ -408,8 +408,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$aconf['sel_author'] = $p_val;
 				$lvars['author'] = $p_val;
 			}
-
 		}
+
+
+		//
+		// Statistic navi
+		//
+		if ( intval ( $this->extConf['stat_mode'] ) != $this->STAT_NONE ) {
+			$extConf['show_nav_stat'] = TRUE;
+		}
+
 
 		//
 		// Enable Enable the edit mode
@@ -537,11 +545,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Switch to an export view on demand
 		$piv_exp = intval ( $this->piVars['export'] );
-		if ( intval ( $extConf['export_mode'] ) != 0 )
+		if ( intval ( $extConf['export_mode'] ) != 0 ) {
 			if ( ( $piv_exp & $extConf['enable_export'] ) != 0 ) {
 				$extConf['view_mode']   = $this->VIEW_DIALOG;
 				$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
-			};
+			}
+		}
 
 		//
 		// Fetch publication statistics
@@ -549,7 +558,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->stat = array();
 		$this->ra->set_filters ( $extConf['filters'] );
 
+		//
 		// Author navigation setup
+		//
 		if ( $extConf['show_nav_author'] = TRUE ) {
 			$aconf =& $extConf['author_navi'];
 			$this->stat['authors'] = array();
@@ -1048,8 +1059,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Misc blocks
 		$block_types = array (
 			'EXPORT_BLOCK', 'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 
-			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 
-			'STATISTIC_BLOCK', 'SPACER_BLOCK' );
+			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK' );
 
 		// Bibtype data blocks
 		//t3lib_div::debug ( $this->ra->allBibTypes );
@@ -1096,10 +1106,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				continue;
 			}
 			foreach ( $val['parts'] as $part ) {
-				$pstr = '###' . $part . '###';
-				$pstr = $this->cObj->getSubpart ( $tmpl, $pstr );
+				$ptag = '###' . $part . '###';
+				$pstr = $this->cObj->getSubpart ( $tmpl, $ptag );
 				if ( ( strlen ( $pstr ) == 0 ) && !$val['no_warn'] ) {
-					 $err[] = 'The subpart \'' . $pstr . '\' in the HTML template file \'' . $val['file'] . '\' is empty';
+					 $err[] = 'The subpart \'' . $ptag . '\' in the HTML template file \'' . $val['file'] . '\' is empty';
 				}
 				$this->template[$part] = $pstr;
 			}
@@ -1468,52 +1478,27 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function setup_statistic ()
 	{
-		$str = '';
+		$trans = array();
 		$hasStr = '';
+		$cObj =& $this->cObj;
 
-		$mode = intval ( $this->extConf['stat_mode'] );
+		if ( $this->extConf['show_nav_stat'] ) {
+			require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+				'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_navi_stat.php' ) );
 
-		if ( ( $mode != $this->STAT_NONE) && $this->stat['num_all'] ) {
+			$obj = t3lib_div::makeInstance ( 'tx_sevenpack_navi_stat' );
+			$obj->initialize ( $this );
 
-			$cfg = array();
-			if ( is_array ( $this->conf['stat.'] ) )
-				$cfg =& $this->conf['stat.'];
+			$trans = $obj->translator();
+			$hasStr = array ( '', '' );
 
-			$str = $this->enum_condition_block ( $this->template['STATISTIC_BLOCK'] );
-			$label = '';
-			$translator = array();
-			$exports = array();
-
-			if ( ( $this->extConf['d_mode'] != $this->D_Y_NAV ) && 
-				( $mode == $this->STAT_YEAR_TOTAL ) )
-				$mode = $this->STAT_TOTAL;
-
-			$year = intval ( $this->extConf['year'] );
-			$total_str = $this->cObj->stdWrap ( strval ( $this->stat['num_all'] ), $cfg['value_total.'] );
-			$year_str = $this->cObj->stdWrap ( strval ( $this->stat['year_hist'][$year] ), $cfg['value_year.'] );
-
-			switch ( $mode ) {
-				case $this->STAT_TOTAL:
-					$label = $this->get_ll ( 'stat_total_label', 'total', TRUE );
-					$stat_str = $total_str;
-					break;
-				case $this->STAT_YEAR_TOTAL:
-					$label = $this->get_ll ( 'stat_year_total_label', 'this year', TRUE );
-					$stat_str = $year_str . ' / ' . $total_str;
-					break;
-			}
-
-			// Export label
-			$translator['###LABEL###']     = $this->cObj->stdWrap ( $label,    $cfg['label.']  );
-			$translator['###STATISTIC###'] = $this->cObj->stdWrap ( $stat_str, $cfg['values.'] );
-
-			$str = $this->cObj->substituteMarkerArrayCached ( $str, $translator, array() );
-			$hasStr = array ( '','' );
+			if ( strlen ( $trans['###STAT_NAVI_TOP###'] ) > 0 )
+				$this->extConf['has_top_navi'] = TRUE;
 		}
 
 		$tmpl =& $this->template['LIST_VIEW'];
-		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_STATISTIC###', $hasStr );
-		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###STATISTIC###', $str );
+		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_STAT_NAVI###', $hasStr );
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 

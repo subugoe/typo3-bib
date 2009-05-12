@@ -81,8 +81,8 @@
 			<label index="prefNav_ipp_sel">References per page</label>
 			<label index="prefNav_show_abstracts">Show abstracts</label>
 			<label index="prefNav_show_keywords">Show keywords</label>
-			<label index="stat_total_label">Publications (total)</label>
-			<label index="stat_year_total_label">Publications (this year / total)</label>
+			<label index="stat_total_label">Total</label>
+			<label index="stat_year_total_label">This year / Total</label>
 			<label index="upload_file">Upload file</label>
 			<label index="yearNav_label">Year</label>
 			<label index="yearNav_yearLinkTitle">Publikations in %y</label>
@@ -163,8 +163,8 @@
 			<label index="prefNav_ipp_sel">Referenzen pro Seite</label>
 			<label index="prefNav_show_abstracts">Zeige Zusammenfassung</label>
 			<label index="prefNav_show_keywords">Zeige Schlüsselwörter</label>
-			<label index="stat_total_label">Publikationen (total)</label>
-			<label index="stat_year_total_label">Publikationen (dieses Jahr / total)</label>
+			<label index="stat_total_label">Total</label>
+			<label index="stat_year_total_label">Dieses Jahr / Total</label>
 			<label index="upload_file">Datei hochladen</label>
 			<label index="yearNav_label">Jahr</label>
 			<label index="yearNav_yearLinkTitle">Publikationen im Jahr %y</label>

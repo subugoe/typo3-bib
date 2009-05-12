@@ -374,9 +374,12 @@ plugin.tx_sevenpack_pi1 {
 
 
 	# Statistic
-	stat_mode = 0
-	stat {
-		label.wrap = <span class="tx_sevenpack-statistic_label">|:</span>
+	statNav {
+
+		template = EXT:sevenpack/res/templates/navi_stat.html
+
+		mode = 0
+		label.wrap = |:
 		values.wrap = |
 
 		value_year.wrap = |

@@ -141,40 +141,23 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		padding: 0px;
 	}
 
-	div.tx_sevenpack-navi_export {
-		text-align: left;
-		margin: 1em 0em;
-		padding: 0px;
-		font-size: smaller;
-	}
-
-	.tx_sevenpack-export_label {
-		font-weight: bold;
-		margin-right: 1em;
-	}
-
-	div.tx_sevenpack-navi_import {
-		text-align: left;
-		margin: 1em 0em;
-		padding: 0px;
-		font-size: smaller;
-	}
-
-	.tx_sevenpack-import_label {
-		font-weight: bold;
-		margin-right: 1em;
-	}
-
+	div.tx_sevenpack-navi_export,
+	div.tx_sevenpack-navi_import,
 	div.tx_sevenpack-navi_statistic {
 		text-align: left;
-		padding: 0px;
 		margin: 1em 0em;
+		padding: 0px;
+		font-size: smaller;
 	}
 
+	.tx_sevenpack-export_label,
+	.tx_sevenpack-import_label,
 	.tx_sevenpack-statistic_label {
 		font-weight: bold;
 		margin-right: 1em;
 	}
+
+
 
 	table.tx_sevenpack-list {
 		margin: 0.5em 0px;
