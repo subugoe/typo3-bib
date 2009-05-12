@@ -170,6 +170,7 @@ plugin.tx_sevenpack_pi1 {
 		year.wrap = |.
 	}
 
+
 	# CSS classes
 	classes {
 		even = tx_sevenpack-item_even
@@ -177,7 +178,22 @@ plugin.tx_sevenpack_pi1 {
 	}
 
 
-	# Year naviagation
+	# Search navigation
+	searchNav {
+		template = EXT:sevenpack/res/templates/navi_search.html
+
+		# Year label wrap
+		label.wrap = |:
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_year_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_year_bottom">|</div>
+	}
+
+
+	# Year navigation
 	yearNav {
 		template = EXT:sevenpack/res/templates/navi_year.html
 
@@ -223,93 +239,6 @@ plugin.tx_sevenpack_pi1 {
 
 		top.wrap = <div class="tx_sevenpack-navi_year_top">|</div>
 		bottom.wrap = <div class="tx_sevenpack-navi_year_bottom">|</div>
-	}
-
-
-	# Page naviagation
-	pageNav {
-		template = EXT:sevenpack/res/templates/navi_page.html
-
-		# Page label wrap
-		label.wrap = |:
-
-		# Page selection
-		selection {
-			# The maximum number of pages to show
-			pages = 5
-
-			# Page separator
-			separator = ,
-			separator.noTrimWrap  = || |
-
-			# Wraps for the current page and the pages below and above
-			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
-			below.wrap = |
-			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
-			above.wrap = |
-			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
-
-			# Strings and wraps for indicators for more pages
-			more_below = ...
-			more_below.noTrimWrap = | | |
-			more_above = ...
-			more_above.noTrimWrap = | | |
-		}
-
-		# First, previous, next, last page selection
-		navigation {
-			separator = |
-			separator.wrap = <span class="tx_sevenpack-navi_separator">|</span>
-			separator.noTrimWrap = | | |
-
-			previous.wrap = |###SEPARATOR###
-			next.wrap = ###SEPARATOR###|
-		}
-
-		top_disable = 1
-		bottom_disable = 0
-
-		top.wrap = <div class="tx_sevenpack-navi_page_top">|</div>
-		bottom.wrap = <div class="tx_sevenpack-navi_page_bottom">|</div>
-	}
-
-
-	# Preferences Navigation
-	prefNav {
-		template = EXT:sevenpack/res/templates/navi_pref.html
-
-		# Page label and wrap
-		label.wrap = |:
-
-		ipp_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
-		ipp_label.wrap = <span class="tx_sevenpack-navi_pref_label">|</span>
-		#ipp_select.wrap = |
-
-		abstract_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
-		abstract_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
-		#abstract_btn.wrap = |
-		
-		keywords_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
-		keywords_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
-		#keywords_btn.wrap = |
-
-		# Classes or the ipp selection form
-		form_class = tx_sevenpack-inline_form tx_sevenpack-navi_pref_selection
-		select_class =
-		go_btn_class = tx_sevenpack-button
-
-		#go_btn.wrap = |
-		#select.wrap = |
-
-		# Item per page values
-		ipp_values  = 5,10,20,30,40,50
-		ipp_default = 10
-
-		top_disable = 0
-		bottom_disable = 1
-
-		top.wrap = <div class="tx_sevenpack-navi_pref_top">|</div>
-		bottom.wrap = <div class="tx_sevenpack-navi_pref_bottom">|</div>
 	}
 
 
@@ -379,6 +308,93 @@ plugin.tx_sevenpack_pi1 {
 
 		top.wrap = <div class="tx_sevenpack-navi_author_top">|</div>
 		bottom.wrap = <div class="tx_sevenpack-navi_author_bottom">|</div>
+	}
+
+
+	# Preferences Navigation
+	prefNav {
+		template = EXT:sevenpack/res/templates/navi_pref.html
+
+		# Page label and wrap
+		label.wrap = |:
+
+		ipp_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
+		ipp_label.wrap = <span class="tx_sevenpack-navi_pref_label">|</span>
+		#ipp_select.wrap = |
+
+		abstract_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
+		abstract_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
+		#abstract_btn.wrap = |
+		
+		keywords_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
+		keywords_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
+		#keywords_btn.wrap = |
+
+		# Classes or the ipp selection form
+		form_class = tx_sevenpack-inline_form tx_sevenpack-navi_pref_selection
+		select_class =
+		go_btn_class = tx_sevenpack-button
+
+		#go_btn.wrap = |
+		#select.wrap = |
+
+		# Item per page values
+		ipp_values  = 5,10,20,30,40,50
+		ipp_default = 10
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_pref_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_pref_bottom">|</div>
+	}
+
+
+	# Page naviagation
+	pageNav {
+		template = EXT:sevenpack/res/templates/navi_page.html
+
+		# Page label wrap
+		label.wrap = |:
+
+		# Page selection
+		selection {
+			# The maximum number of pages to show
+			pages = 5
+
+			# Page separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Wraps for the current page and the pages below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
+
+			# Strings and wraps for indicators for more pages
+			more_below = ...
+			more_below.noTrimWrap = | | |
+			more_above = ...
+			more_above.noTrimWrap = | | |
+		}
+
+		# First, previous, next, last page selection
+		navigation {
+			separator = |
+			separator.wrap = <span class="tx_sevenpack-navi_separator">|</span>
+			separator.noTrimWrap = | | |
+
+			previous.wrap = |###SEPARATOR###
+			next.wrap = ###SEPARATOR###|
+		}
+
+		top_disable = 1
+		bottom_disable = 0
+
+		top.wrap = <div class="tx_sevenpack-navi_page_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_page_bottom">|</div>
 	}
 
 

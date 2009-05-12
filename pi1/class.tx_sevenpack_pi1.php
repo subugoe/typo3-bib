@@ -1343,15 +1343,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function list_view ()
 	{
+		$this->setup_search_navi ();  // setup year navigation
+		$this->setup_year_navi ();  // setup year navigation
 		$this->setup_author_navi (); // setup author navigation
 		$this->setup_pref_navi ();  // setup preferences navigation
 		$this->setup_page_navi ();  // setup page navigation
-		$this->setup_year_navi ();  // setup year navigation
 
-		$this->setup_new_entry ();  // setup new entry button
-		$this->setup_export_links ();  // setup export links
-		$this->setup_import_links ();  // setup import link
-		$this->setup_statistic ();  // setup statistic element
+		$this->setup_new_entry_navi ();  // setup new entry button
+
+		$this->setup_export_navi ();  // setup export links
+		$this->setup_import_navi ();  // setup import link
+		$this->setup_statistic_navi ();  // setup statistic element
 
 		$this->setup_spacer ();  // setup spacer
 		$this->setup_top_navigation ();  // setup page navigation element
@@ -1361,6 +1363,33 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//t3lib_div::debug ( $this->template['LIST_VIEW'] );
 
 		return $this->template['LIST_VIEW'];
+	}
+
+
+	/** 
+	 * Returns the year navigation bar
+	 *
+	 * @return A HTML string with the year navigation bar
+	 */
+	function setup_search_navi ()
+	{
+		$trans = array();
+		$hasStr = '';
+		$cObj =& $this->cObj;
+
+		if ( $this->extConf['show_nav_search'] ) {
+			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_search' );
+
+			$trans = $obj->translator();
+			$hasStr = array ( '', '' );
+
+			if ( strlen ( $trans['###SEARCH_NAVI_TOP###'] ) > 0 )
+				$this->extConf['has_top_navi'] = TRUE;
+		}
+
+		$tmpl =& $this->template['LIST_VIEW'];
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_SEARCH_NAVI###', $hasStr );
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 	}
 
 
@@ -1477,7 +1506,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function setup_new_entry ()
+	function setup_new_entry_navi ()
 	{
 		$linkStr = '';
 		$hasStr = '';
@@ -1501,7 +1530,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function setup_statistic ()
+	function setup_statistic_navi ()
 	{
 		$trans = array();
 		$hasStr = '';
@@ -1528,7 +1557,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function setup_export_links ()
+	function setup_export_navi ()
 	{
 		$str = '';
 		$hasStr = '';
@@ -1584,7 +1613,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function setup_import_links ()
+	function setup_import_navi ()
 	{
 		$str = '';
 		$hasStr = '';
