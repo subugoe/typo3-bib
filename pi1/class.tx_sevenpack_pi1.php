@@ -1054,8 +1054,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/** 
-	 * Initializes an array which contains the subparts of the
-	 * html template.
+	 * Initializes an array which contains subparts of the
+	 * html templates.
 	 *
 	 * @return TRUE on error, FALSE otherwise
 	 */
@@ -1067,13 +1067,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( isset ( $this->template['LIST_VIEW'] ) )
 			return $err;
 
-		// Misc blocks
-		$block_types = array (
-			'EXPORT_BLOCK', 'IMPORT_BLOCK', 'NEW_ENTRY_BLOCK', 
-			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK' );
+		// List blocks
+		$list_blocks = array (
+			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK' 
+		);
 
 		// Bibtype data blocks
-		//t3lib_div::debug ( $this->ra->allBibTypes );
 		$bib_types = array ();
 		foreach ( $this->ra->allBibTypes as $val ) {
 			$bib_types[] = strtoupper ( $val ) . '_DATA';
@@ -1081,6 +1080,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$bib_types[] = 'DEFAULT_DATA';
 		$bib_types[] = 'ITEM_BLOCK';
 
+		// Misc navigation blocks
+		$navi_blocks = array ( 'EXPORT_NAVI_BLOCK', 
+			'IMPORT_NAVI_BLOCK', 'NEW_ENTRY_NAVI_BLOCK' );
+
+		// Fetch the template file list
 		$tlist =& $this->conf['templates.'];
 		if ( !is_array ( $tlist ) ) {
 			$err[] = 'HTML templates are not set in TypoScript';
@@ -1092,14 +1096,18 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				'file' => $tlist['main'],
 				'parts' => array ( 'LIST_VIEW' )
 			),
-			'blocks' => array (
-				'file' => $tlist['blocks'],
-				'parts' => $block_types
+			'list_blocks' => array (
+				'file' => $tlist['list_blocks'],
+				'parts' => $list_blocks
 			),
-			'items' => array (
-				'file' => $tlist['items'],
+			'list_items' => array (
+				'file' => $tlist['list_items'],
 				'parts' => $bib_types,
 				'no_warn' => TRUE
+			),
+			'navi_misc' => array (
+				'file' => $tlist['navi_misc'],
+				'parts' => $navi_blocks,
 			)
 		);
 
@@ -1469,7 +1477,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 
 		if ( $this->extConf['edit_mode'] )  {
-			$tmpl = $this->enum_condition_block ( $this->template['NEW_ENTRY_BLOCK'] );
+			$tmpl = $this->enum_condition_block ( $this->template['NEW_ENTRY_NAVI_BLOCK'] );
 			$linkStr = $this->get_new_manipulator ( );
 			$linkStr = $this->cObj->substituteMarker ( $tmpl, '###NEW_ENTRY###', $linkStr );
 			$hasStr = array ( '','' );
@@ -1529,7 +1537,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( is_array ( $this->conf['export.'] ) )
 				$cfg =& $this->conf['export.'];
 
-			$str = $this->enum_condition_block ( $this->template['EXPORT_BLOCK'] );
+			$str = $this->enum_condition_block ( $this->template['EXPORT_NAVI_BLOCK'] );
 			$translator = array();
 			$exports = array();
 
@@ -1585,7 +1593,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( is_array ( $this->conf['import.'] ) )
 				$cfg =& $this->conf['import.'];
 
-			$str = $this->enum_condition_block ( $this->template['IMPORT_BLOCK'] );
+			$str = $this->enum_condition_block ( $this->template['IMPORT_NAVI_BLOCK'] );
 			$translator = array();
 			$imports = array();
 
