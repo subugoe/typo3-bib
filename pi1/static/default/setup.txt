@@ -185,11 +185,20 @@ plugin.tx_sevenpack_pi1 {
 		# Year label wrap
 		label.wrap = |:
 
+		# Classes or the year selection form
+		form_class = tx_sevenpack-search_form
+		search_btn_class = tx_sevenpack-button
+		clear_btn_class = tx_sevenpack-button
+
+		#form.wrap = |
+		search_btn.wrap = |
+		clear_btn.wrap = |
+
 		top_disable = 0
 		bottom_disable = 1
 
-		top.wrap = <div class="tx_sevenpack-navi_year_top">|</div>
-		bottom.wrap = <div class="tx_sevenpack-navi_year_bottom">|</div>
+		top.wrap = <div class="tx_sevenpack-navi_search_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_search_bottom">|</div>
 	}
 
 
@@ -493,6 +502,9 @@ plugin.tx_sevenpack_pi1 {
 
 		field_labels.wrap = |:
 		field_widgets.wrap = |
+
+		# Deletes authors that have no publications on save/delete
+		delete_no_ref_authors = 1
 
 		warnings {
 			# Missing citeid

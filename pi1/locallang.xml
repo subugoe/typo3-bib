@@ -30,6 +30,8 @@
 			<label index="bibtype_plural_8">Contributions to proceedings</label>
 			<label index="bibtype_plural_9">Manuals</label>
 			<label index="button_go">Go</label>
+			<label index="button_clear">Clear</label>
+			<label index="button_search">Search</label>
 			<label index="export_bibtex">BibTeX</label>
 			<label index="export_bibtexLinkTitle">Export as BibTeX</label>
 			<label index="export_file_new">Newly generated</label>
@@ -118,6 +120,8 @@
 			<label index="bibtype_plural_8">Beiträge zu Verhandlungen</label>
 			<label index="bibtype_plural_9">Handbücher</label>
 			<label index="button_go">Los</label>
+			<label index="button_clear">Zurücksetzen</label>
+			<label index="button_search">Suche</label>
 			<label index="export_bibtex">BibTeX</label>
 			<label index="export_bibtexLinkTitle">Exportiere als BibTeX</label>
 			<label index="export_file_new">Neu generiert</label>

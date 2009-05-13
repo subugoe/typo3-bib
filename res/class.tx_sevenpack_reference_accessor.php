@@ -940,25 +940,14 @@ class tx_sevenpack_reference_accessor {
 	 *
 	 * @return An array containing the authors
 	 */
-	function fetch_author_surnames ( $patterns = array() ) {
+	function fetch_author_surnames ( ) {
 		$aT =& $this->authorTable;
-		$WC = array();
+		$ata =& $this->authorTableAlias;
 		$names = array();
-		if ( sizeof ( $this->pid_list ) > 0 ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
-			$WC[] .= 'pid IN ('.$csv.')';
-		}
-		if ( sizeof ( $patterns ) > 0 ) {
-			$wca = array();
-			foreach ( $patterns as $pat ) {
-				$wca[] = 'surname LIKE ' . $GLOBALS['TYPO3_DB']->fullQuoteStr ( $pat, $aT );
-			}
-			$WC[] = '( ' . implode ( ' OR ', $wca ) . ' )';
-		}
-		$WC = implode ( ' AND ', $WC );
-		$WC .= $this->enable_fields ( $aT );
-		//t3lib_div::debug( $WC );
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'distinct(surname)', $aT, $WC, '', 'surname ASC'  );
+
+		$query = $this->get_reference_select_clause ( 'distinct('.$ata.'.surname)', $ata.'.surname ASC', $ata.'.uid' );
+		//t3lib_div::debug( $query );
+		$res = $GLOBALS['TYPO3_DB']->sql_query ( $query );
 		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
 			$names[] = $row['surname'];
 		}
@@ -1521,6 +1510,38 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 		return $ret;
+	}
+
+
+	/**
+	 * Deletes authors that have no publications
+	 *
+	 * @return void
+	 */
+	function delete_no_ref_authors ( ) {
+		$aT =& $this->authorTable;
+		$sT =& $this->aShipTable;
+
+		$sel = 'SELECT t_au.uid' . "\n";
+		$sel .= ' FROM ' . $aT . ' AS t_au';
+		$sel .= ' LEFT OUTER JOIN ' . $sT . ' AS t_as ' . "\n";
+		$sel .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
+		$sel .= ' WHERE t_au.deleted = 0 ' . "\n";
+		$sel .= ' GROUP BY t_au.uid ' . "\n";
+		$sel .= ' HAVING count(t_as.uid) = 0;' . "\n";
+
+
+		$uids = array();
+		$res = $GLOBALS['TYPO3_DB']->sql_query ( $sel );
+		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
+			$uids[] = $row['uid'];
+		}
+
+		$csv = tx_sevenpack_utility::implode_intval ( ',', $uids  );
+		//t3lib_div::debug ( $csv );
+
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery ( $aT,
+			'uid IN ( ' . $csv . ')', array ( 'deleted' => '1' ) );
 	}
 
 

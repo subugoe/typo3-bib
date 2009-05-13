@@ -884,6 +884,18 @@ class tx_sevenpack_single_view {
 
 
 	/** 
+	 * Performs actions after Database write access (save/delete)
+	 *
+	 * @return The requested dialog
+	 */
+	function post_db_write ( ) {
+		if ( $this->conf['delete_no_ref_authors'] ) {
+			$this->ra->delete_no_ref_authors();
+		}
+	}
+
+
+	/** 
 	 * This switches to the requested dialog
 	 *
 	 * @return The requested dialog
@@ -901,6 +913,7 @@ class tx_sevenpack_single_view {
 					$con .= '<p>'.$this->ra->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
+					$this->post_db_write();
 					$con .= '<p>'.$this->get_ll ( 'msg_save_success' ).'</p>';
 				}
 				break;
@@ -913,6 +926,7 @@ class tx_sevenpack_single_view {
 					$con .= '<p>'.$this->ra->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
+					$this->post_db_write();
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_success' ).'</p>';
 				}
 				break;
@@ -921,6 +935,7 @@ class tx_sevenpack_single_view {
 				if ( $this->ra->erase_publication ( $pi1->piVars['uid'] ) ) {
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_fail' ).'</p>';
 				} else {
+					$this->post_db_write();
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_success' ).'</p>';
 				}
 				break;

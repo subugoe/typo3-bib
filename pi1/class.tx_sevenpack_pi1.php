@@ -344,10 +344,37 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 		//
-		// Author navi
+		// Search navi
 		//
 		if ( $extConf['show_nav_search'] ) {
+			$extConf['search_navi'] = array();
+			$sconf =& $extConf['search_navi'];
+			$lvars =& $extConf['link_vars'];
 
+			// Search string
+			$p_val = $this->piVars['search']['text'];
+			if ( strlen ( $p_val ) > 0 ) {
+				$sconf['string'] = $p_val;
+				$lvars['search']['text'] = $p_val;
+			}
+
+			// Clear string
+			if ( isset ( $this->piVars['action']['clear_search'] ) ) {
+				$sconf['string'] = '';
+			}
+
+			// Search rule
+			$p_val = $this->piVars['search']['rule'];
+			$sconf['rule'] = 0; // OR
+			if ( strtoupper ( $p_val ) == 'AND' ) {
+				$sconf['rule'] = 1;  // AND
+				$lvars['search']['rule'] = 'AND';
+			}
+
+			// Search string separators
+			$sconf['separators'] = array( ',', ' ' );
+
+			//t3lib_div::debug ( $sconf );
 		}
 
 
@@ -368,6 +395,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			$lvars['author'] = '';
 			$p_val = $this->piVars['author'];
+			$aconf['sel_author'] = '0';
 			if ( strlen ( $p_val ) > 0 ) {
 				$aconf['sel_author'] = $p_val;
 				$lvars['author'] = $p_val;
@@ -559,10 +587,37 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
+
+		//
+		// Search navigation setup
+		//
+		if ( $extConf['show_nav_search'] ) {
+			$sconf =& $extConf['search_navi'];
+			if ( strlen ( $sconf['string'] ) > 0 ) {
+				$pats = array();
+				$strings = tx_sevenpack_utility::multi_explode_trim (
+					$sconf['separators'], $sconf['string'], TRUE );
+				foreach ( $strings as $txt ) {
+					$spec = htmlentities ( $txt, ENT_QUOTES, 'UTF-8' );
+					$pats[] = $txt;
+					if ( $spec != $txt ) 
+						$pats[] = $spec;
+				}
+
+				//t3lib_div::debug ( $pats );
+				$ff =& $extConf['filters'];
+				$ff['search'] = array();
+				$ff['search']['all'] = array();
+				$ff['search']['all']['words'] = $pats;
+				$ff['search']['all']['rule'] = $sconf['rule'];
+			}
+		}
+
 		//
 		// Fetch publication statistics
 		//
 		$this->stat = array();
+		//t3lib_div::debug ( $extConf['filters'] );
 		$this->ra->set_filters ( $extConf['filters'] );
 
 		//
@@ -576,27 +631,60 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$filter = array ( );
 
 			$astat['surnames'] = $this->ra->fetch_author_surnames();
+
+			// Filter for selected author letter
 			$astat['sel_surnames'] = array();
 			if ( strlen ( $aconf['sel_letter'] ) > 0 ) {
-				$char = $aconf['sel_letter'];
-				$char2 = htmlentities ( $char, ENT_QUOTES, 'UTF-8' );
-				$pats = array ( $char . '%' );
-				if ( $char2 != $char )
-					$pats[] = $char2 . '%';
+				$filters = $extConf['filters'];
 
-				// Fetch surnames
-				$astat['sel_surnames'] = $this->ra->fetch_author_surnames ( $pats );
+				$txt = $aconf['sel_letter'];
+				$spec = htmlentities ( $txt, ENT_QUOTES, 'UTF-8' );
+				$pats = array ( $txt . '%' );
+				if ( $spec != $txt ) 
+					$pats[] = $spec . '%';
 
 				// Setup filter
 				foreach ( $pats as $pat )
 					$filter[] = array ( 'surname' => $pat );
+
+				$filters['temp'] = array();
+				$filters['temp']['author'] = array();
+				$filters['temp']['author']['authors'] = $filter;
+
+				// Fetch surnames
+				$this->ra->set_filters ( $filters );
+				$astat['sel_surnames'] = $this->ra->fetch_author_surnames ( );
+				//t3lib_div::debug ( $astat['sel_surnames'] );
+
+				// Treat selection
+				$lst = array();
+				$txt = FALSE;
+				foreach ( $astat['sel_surnames'] as $name ) {
+					if ( !( strpos ( $name, '&' ) === FALSE ) ) {
+						$name = html_entity_decode ( $name, ENT_COMPAT, 'UTF-8' );
+						$txt = TRUE;
+					}
+					if ( !in_array ( $name, $lst ) ) {
+						$lst[] = $name;
+					}
+				}
+				if ( $txt ) {
+					usort ( $lst, 'strcoll' );
+					$astat['sel_surnames'] = $lst;
+					//t3lib_div::debug ( $lst );
+				}
+
+				// Restore filter
+				$this->ra->set_filters ( $extConf['filters'] );
 			}
 
-			if ( strlen ( $aconf['sel_author'] ) > 0 ) {
-				$name = $aconf['sel_author'];
-				$name2 = htmlentities ( $name, ENT_QUOTES, 'UTF-8' );
-				$pats = array ( $name );
-				if ( $name2 != $name ) $pats[] = $name2;
+			// Filter for selected author
+			if ( $aconf['sel_author'] != '0' ) {
+				$txt = $aconf['sel_author'];
+				$spec = htmlentities ( $txt, ENT_QUOTES, 'UTF-8' );
+				$pats = array ( $txt );
+				if ( $spec != $txt ) 
+					$pats[] = $spec;
 
 				// Setup filter
 				$filter = array ( );
@@ -611,10 +699,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$ff['author']['author'] = array();
 				$ff['author']['author']['authors'] = $filter;
 			}
-		}
 
-		//t3lib_div::debug ( $extConf['filters'] );
-		$this->ra->set_filters ( $extConf['filters'] );
+			//t3lib_div::debug ( $extConf['filters'] );
+			$this->ra->set_filters ( $extConf['filters'] );
+		}
 
 		$hist = $this->ra->fetch_histogram ( 'year' );
 		$this->stat['year_hist'] = $hist;

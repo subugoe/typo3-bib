@@ -123,9 +123,9 @@ class tx_sevenpack_utility {
 	 *
 	 * @return The string filtered for html output
 	 */
-	function filter_pub_html ( $str, $hsc = FALSE ) {
+	function filter_pub_html ( $str, $hsc = FALSE, $charset = 'UTF-8' ) {
 		if ( $hsc ) 
-			$str = htmlspecialchars ( $str, ENT_QUOTES, strtoupper ( $be_charset ) );
+			$str = htmlspecialchars ( $str, ENT_QUOTES, $charset );
 
 		// Character conversion
 		//$be_charset = strtolower ( $this->extConf['be_charset'] );

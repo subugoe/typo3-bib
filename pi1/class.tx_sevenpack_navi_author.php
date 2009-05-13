@@ -22,7 +22,9 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		if ( is_array ( $pi1->conf['authorNav.'] ) )
 			$this->conf =& $pi1->conf['authorNav.'];
 
-		$this->extConf =& $pi1->extConf['author_navi'];
+		$this->extConf = array();
+		if ( is_array ( $pi1->extConf['author_navi'] ) )
+			$this->extConf =& $pi1->extConf['author_navi'];
 
 		$this->pref = 'AUTHOR_NAVI';
 		$this->load_template ( '###AUTHOR_NAVI_BLOCK###' );
@@ -34,7 +36,9 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	 * Creates a text for a given index
 	 */
 	function sel_get_text ( $ii ) {
-		return strval ( $this->pi1->stat['authors']['sel_surnames'][$ii] );
+		$txt = strval ( $this->pi1->stat['authors']['sel_surnames'][$ii] );
+		t3lib_div::debug ( $txt );
+		return $txt;
 	}
 
 	/*
@@ -67,10 +71,13 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		//t3lib_div::debug ( array ( 
 		//	'sel1' => $sel1, 'sel2' => $sel2,  'sel3' => $sel3, 'all' => $sns ) );
 
-		$idx = array_search ( $sel1, $sns );
-		if ( $idx === FALSE ) $idx = array_search ( $sel2, $sns );
-		if ( $idx === FALSE ) $idx = array_search ( $sel3, $sns );
-		if ( $idx === FALSE ) $idx = -1;
+		$idx = -1;
+		if ( $this->extConf['sel_author'] != '0' ) {
+			$idx = array_search ( $sel1, $sns );
+			if ( $idx === FALSE ) $idx = array_search ( $sel2, $sns );
+			if ( $idx === FALSE ) $idx = array_search ( $sel3, $sns );
+			if ( $idx === FALSE ) $idx = -1;
+		}
 		$this->sel_name_idx = $idx;
 
 		// The label
@@ -121,7 +128,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		if ( $this->sel_name_idx < 0 ) {
 			$txt = $cObj->stdWrap ( $txt, $cfgSel['current.'] );
 		} else {
-			$txt = $this->pi1->get_link ( $txt, array ( 'author' => '' ) );
+			$txt = $this->pi1->get_link ( $txt, array ( 'author' => '0' ) );
 		}
 
 
@@ -229,6 +236,8 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 					$ll = FALSE;
 				}
 			}
+			$up = mb_strtoupper ( $ll, 'UTF-8' );
+			if ( $up != $ll ) $ll = $up;
 			if ( $ll && !in_array ( $ll, $letters ) )
 				$letters[] = $ll;
 		}
@@ -247,6 +256,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$title_tmpl = $this->pi1->get_ll ( 'authorNav_LetterLinkTitle', '%l', TRUE );
 
 		// Iterate through letters
+		$let_sel = array();
 		foreach ( $letters as $ll ) {
 			$txt = $ll;
 			if ( $ll == $extConf['sel_letter'] ) {
@@ -259,7 +269,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 			}
 			$let_sel[] = $txt;
 		}
-		$lst = implode ( $let_sep, $let_sel);
+		$lst = implode ( $let_sep, $let_sel );
 
 		//
 		// All link
