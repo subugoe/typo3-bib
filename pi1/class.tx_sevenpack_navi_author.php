@@ -37,20 +37,22 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	 */
 	function sel_get_text ( $ii ) {
 		$txt = strval ( $this->pi1->stat['authors']['sel_surnames'][$ii] );
-		t3lib_div::debug ( $txt );
+		$txt = htmlspecialchars ( $txt, ENT_QUOTES, $this->pi1->extConf['charset']['upper'] );
+		//t3lib_div::debug ( $txt );
 		return $txt;
 	}
+
 
 	/*
 	 * Creates a link for the selection
 	 */
 	function sel_get_link ( $text, $ii ) {
+		$arg = strval ( $this->pi1->stat['authors']['sel_surnames'][$ii] );
 		$title = str_replace ( '%a', $text, $this->sel_link_title );
-		$lnk = $this->pi1->get_link ( $text, array ( 'author' => $text ), TRUE, 
+		$lnk = $this->pi1->get_link ( $text, array ( 'author' => $arg ), TRUE, 
 			array ( 'title' => $title ) );
 		return $lnk;
 	}
-
 
 
 	/*
@@ -59,24 +61,27 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	function get ( ) {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
+		$charset = $this->pi1->extConf['charset']['upper'];
 		$con = '';
 
 		// find the index of the selected name
 		$sns =& $this->pi1->stat['authors']['sel_surnames'];
 
 		$sel1 = $this->extConf['sel_author'];
-		$sel2 = html_entity_decode ( $sel1, ENT_QUOTES, 'UTF-8' );
-		$sel3 = htmlentities ( $sel1, ENT_QUOTES, 'UTF-8' );
+		$sel2 = htmlentities ( $sel1, ENT_QUOTES, $charset );
+		$sel3 = html_entity_decode ( $sel1, ENT_QUOTES, $charset );
 
 		//t3lib_div::debug ( array ( 
 		//	'sel1' => $sel1, 'sel2' => $sel2,  'sel3' => $sel3, 'all' => $sns ) );
 
 		$idx = -1;
 		if ( $this->extConf['sel_author'] != '0' ) {
+			//t3lib_div::debug ( array ( 'sns' => $sns ) );
 			$idx = array_search ( $sel1, $sns );
 			if ( $idx === FALSE ) $idx = array_search ( $sel2, $sns );
 			if ( $idx === FALSE ) $idx = array_search ( $sel3, $sns );
 			if ( $idx === FALSE ) $idx = -1;
+			//t3lib_div::debug ( array ( 'idx' => $idx ) );
 		}
 		$this->sel_name_idx = $idx;
 
@@ -151,6 +156,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	function get_html_select ( ) {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
+		$charset = $this->pi1->extConf['charset']['upper'];
 
 		$con = '';
 		$con .= '<form name="'.$this->pi1->prefix_pi1.'-author_select_form" ';
@@ -162,20 +168,26 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		// The raw data
 		$names = $this->pi1->stat['authors']['sel_surnames'];
 		$sel_name = '';
-		if ( $this->sel_name_idx >= 0 )
+		if ( $this->sel_name_idx >= 0 ) {
 			$sel_name = $names[$this->sel_name_idx];
+			$sel_name = htmlspecialchars ( $sel_name, ENT_QUOTES, $charset );
+		}
 
 		// The 'All with %l' select option
 		$all = $this->pi1->get_ll ( 'authorNav_select_all', 'All authors', TRUE );
 		$rep = '?';
-		if ( strlen ( $this->extConf['sel_letter'] ) > 0 )
-			$rep =  htmlentities( $this->extConf['sel_letter'], ENT_QUOTES, 'UTF-8' );
+		if ( strlen ( $this->extConf['sel_letter'] ) > 0 ) {
+			$rep = htmlspecialchars ( $this->extConf['sel_letter'], ENT_QUOTES, $charset );
+		}
 		$all = str_replace ( '%l', $rep, $all );
 
 		// The processed data pairs
 		$pairs = array ( '' => $all );
-		foreach ( $names as $name )
+		foreach ( $names as $name ) {
+			$name = htmlspecialchars ( $name, ENT_QUOTES, $charset );
+			//t3lib_div::debug ( array ( 'select' => $name ) );
 			$pairs[$name] = $name;
+		}
 		$attribs = array (
 			'name'     => $this->pi1->prefix_pi1.'[author]',
 			'onchange' => 'this.form.submit()'
@@ -201,9 +213,9 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		// End of form
 		$con .= '</form>';
 
-		// Finalise
+		// Finalize
 		if ( sizeof ( $pairs ) == 1 ) {
-			$con = '&nbsp';
+			$con = '&nbsp;';
 		}
 
 		$con = $cObj->stdWrap ( $con, $cfg['form.'] );
@@ -219,6 +231,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
 		$extConf =& $this->extConf;
+		$charset = $this->pi1->extConf['charset']['upper'];
 		$cfgLSel = is_array ( $cfg['letters.'] ) ? $cfg['letters.'] : array();
 
 		//
@@ -227,16 +240,16 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$letters = array();
 		$sns =& $this->pi1->stat['authors']['surnames'];
 		foreach ( $sns as $name ) {
-			$ll = mb_substr ( $name, 0, 1, 'UTF-8' );
+			$ll = mb_substr ( $name, 0, 1, $charset );
 			if ( $ll == '&' ) {
 				$match = preg_match ( '/^(&[^;]{1,7};)/', $name, $grp );
 				if ( $match ) {
-					$ll = html_entity_decode ( $grp[1], ENT_QUOTES, 'UTF-8' );
+					$ll = html_entity_decode ( $grp[1], ENT_QUOTES, $charset );
 				} else {
 					$ll = FALSE;
 				}
 			}
-			$up = mb_strtoupper ( $ll, 'UTF-8' );
+			$up = mb_strtoupper ( $ll, $charset );
 			if ( $up != $ll ) $ll = $up;
 			if ( $ll && !in_array ( $ll, $letters ) )
 				$letters[] = $ll;
@@ -258,12 +271,12 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		// Iterate through letters
 		$let_sel = array();
 		foreach ( $letters as $ll ) {
-			$txt = $ll;
+			$txt = htmlspecialchars ( $ll, ENT_QUOTES, $charset );
 			if ( $ll == $extConf['sel_letter'] ) {
 				$txt = $cObj->stdWrap ( $txt, $cfgLSel['current.'] );
 			} else {
-				$title = str_replace ( '%l', $ll, $title_tmpl );
-				$txt = $this->pi1->get_link ( $txt, 
+				$title = str_replace ( '%l', $txt, $title_tmpl );
+				$txt = $this->pi1->get_link ( $txt,
 					array ( 'author_letter' => $ll, 'author' => '' ), 
 					TRUE, array ( 'title' => $title ) );
 			}

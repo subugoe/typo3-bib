@@ -119,68 +119,6 @@ class tx_sevenpack_utility {
 
 
 	/**
-	 * This function prepares database content fot HTML output
-	 *
-	 * @return The string filtered for html output
-	 */
-	function filter_pub_html ( $str, $hsc = FALSE, $charset = 'UTF-8' ) {
-		if ( $hsc ) 
-			$str = htmlspecialchars ( $str, ENT_QUOTES, $charset );
-
-		// Character conversion
-		//$be_charset = strtolower ( $this->extConf['be_charset'] );
-		//$fe_charset = strtolower ( $this->extConf['page_charset'] );
-		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
-		//	$cs =& $GLOBALS['TSFE']->csConvObj;
-		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
-		//}
-		return $str;
-	}
-
-
-	/**
-	 * This replaces unneccessary tags and prepares the argument string
-	 * for html output
-	 *
-	 * @return The string filtered for html output
-	 */
-	function filter_pub_html_display ( $str, $hsc = FALSE ) {
-		$rand .= strval ( rand() ) . strval ( rand() );
-		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
-
-		// Remove not allowed tags
-		// Keep the following tags
-		$tags =& $this->ra->allowed_tags;
-
-		$LE = '#LE'.$rand.'LE#';
-		$GE = '#GE'.$rand.'GE#';
-
-		foreach ( $tags as $tag ) {
-			$str = str_replace( '<'.$tag.'>',  $LE.    $tag.$GE, $str );
-			$str = str_replace( '</'.$tag.'>', $LE.'/'.$tag.$GE, $str );
-		}
-
-		$str = str_replace( '<', '&lt;', $str );
-		$str = str_replace( '>', '&gt;', $str );
-
-		$str = str_replace( $LE, '<', $str );
-		$str = str_replace( $GE, '>', $str );
-
-		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
-
-		// End of remove not allowed tags
-
-		// Typo3 seems to handle illegal ampersands
-		//if ( !( strpos ( $str, '&' ) === FALSE ) ) {
-		//	$str = tx_sevenpack_utility::fix_html_ampersand ( $str );
-		//}
-
-		$str = tx_sevenpack_utility::filter_pub_html ( $str, $hsc );
-		return $str;
-	}
-
-
-	/**
 	 * Check if the frontend user is in a usergroup
 	 *
 	 * @return TRUE if the user is in a given group FALSE otherwise

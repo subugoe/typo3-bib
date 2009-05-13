@@ -3,6 +3,9 @@ plugin.tx_sevenpack_pi1 {
 	pid_list = {$plugin.tx_sevenpack_pi1.pid_list}
 	debug = {$plugin.tx_sevenpack_pi1.debug}
 
+	# Character set used by some functions
+	charset = UTF-8
+
 	# Links link to the content element (e.g. http://bla.html#c1234)
 	ce_links = 1
 

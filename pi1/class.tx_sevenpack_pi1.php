@@ -219,6 +219,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( array_key_exists ( 'export_mode', $this->conf ) )
 			$extConf['export_mode'] = $this->conf['export_mode'];
 
+		// Character set
+		$extConf['charset'] = array ( 'upper' => 'UTF-8', 'lower' => 'utf-8' );
+		if ( strlen ( $this->conv['charset'] ) > 0 ) {
+			$extConf['charset']['upper'] = strtoupper ( $this->conv['charset'] );
+			$extConf['charset']['lower'] = strtolower ( $this->conv['charset'] );
+		}
 
 		// Activate export modes
 		$extConf['enable_export'] = 0;
@@ -305,7 +311,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
 		}
 
+		//
 		// Adjustments
+		//
 		switch ( $extConf['d_mode'] ) {
 			case $this->D_SIMPLE:
 			case $this->D_Y_SPLIT:
@@ -351,16 +359,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$sconf =& $extConf['search_navi'];
 			$lvars =& $extConf['link_vars'];
 
-			// Search string
-			$p_val = $this->piVars['search']['text'];
-			if ( strlen ( $p_val ) > 0 ) {
-				$sconf['string'] = $p_val;
-				$lvars['search']['text'] = $p_val;
-			}
-
 			// Clear string
 			if ( isset ( $this->piVars['action']['clear_search'] ) ) {
-				$sconf['string'] = '';
+				$clear = TRUE;
+			}
+
+			// Search string
+			$p_val = $this->piVars['search']['text'];
+			if ( ( strlen ( $p_val ) > 0 ) && !$clear ) {
+				$sconf['string'] = $p_val;
+				$lvars['search']['text'] = $p_val;
 			}
 
 			// Search rule
@@ -598,7 +606,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$strings = tx_sevenpack_utility::multi_explode_trim (
 					$sconf['separators'], $sconf['string'], TRUE );
 				foreach ( $strings as $txt ) {
-					$spec = htmlentities ( $txt, ENT_QUOTES, 'UTF-8' );
+					$spec = htmlentities ( $txt, ENT_QUOTES, $extConf['charset']['upper'] );
 					$pats[] = $txt;
 					if ( $spec != $txt ) 
 						$pats[] = $spec;
@@ -638,7 +646,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$filters = $extConf['filters'];
 
 				$txt = $aconf['sel_letter'];
-				$spec = htmlentities ( $txt, ENT_QUOTES, 'UTF-8' );
+				$spec = htmlentities ( $txt, ENT_QUOTES, $extConf['charset']['upper'] );
 				$pats = array ( $txt . '%' );
 				if ( $spec != $txt ) 
 					$pats[] = $spec . '%';
@@ -661,8 +669,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$txt = FALSE;
 				foreach ( $astat['sel_surnames'] as $name ) {
 					if ( !( strpos ( $name, '&' ) === FALSE ) ) {
-						$name = html_entity_decode ( $name, ENT_COMPAT, 'UTF-8' );
+						//$name = str_replace ( '&amp;', '&amp;amp;', $name );
+						$name = html_entity_decode ( $name, ENT_COMPAT, $extConf['charset']['upper'] );
 						$txt = TRUE;
+						//t3lib_div::debug ( array ( 'sur' => $name ) );
 					}
 					if ( !in_array ( $name, $lst ) ) {
 						$lst[] = $name;
@@ -680,16 +690,24 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Filter for selected author
 			if ( $aconf['sel_author'] != '0' ) {
-				$txt = $aconf['sel_author'];
-				$spec = htmlentities ( $txt, ENT_QUOTES, 'UTF-8' );
-				$pats = array ( $txt );
-				if ( $spec != $txt ) 
-					$pats[] = $spec;
 
-				// Setup filter
-				$filter = array ( );
-				foreach ( $pats as $pat )
-					$filter[] = array ( 'surname' => $pat );
+				$sel = strval ( $aconf['sel_author'] );
+				$spec = htmlentities ( $sel, ENT_QUOTES, $extConf['charset']['upper'] );
+
+				if ( in_array ( $sel, $astat['sel_surnames'] ) || 
+					in_array ( $spec, $astat['sel_surnames'] ) ) {
+					$pats = array ( $sel );
+					if ( $spec != $sel )
+						$pats[] = $spec;
+
+					//t3lib_div::debug ( array ( 'pats' => $pats ) );
+					// Setup filter
+					$filter = array ( );
+					foreach ( $pats as $pat )
+						$filter[] = array ( 'surname' => $pat );
+				} else {
+					$aconf['sel_author'] = '0';
+				}
 			}
 
 			// Append filter
@@ -1425,6 +1443,69 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/**
+	 * This function prepares database content fot HTML output
+	 *
+	 * @return The string filtered for html output
+	 */
+	function filter_pub_html ( $str, $hsc = FALSE ) {
+		$charset = $this->extConf['charset']['upper'];
+		if ( $hsc ) 
+			$str = htmlspecialchars ( $str, ENT_QUOTES, $charset );
+
+		// Character conversion
+		//$be_charset = strtolower ( $this->extConf['be_charset'] );
+		//$fe_charset = strtolower ( $this->extConf['page_charset'] );
+		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
+		//	$cs =& $GLOBALS['TSFE']->csConvObj;
+		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
+		//}
+		return $str;
+	}
+
+
+	/**
+	 * This replaces unneccessary tags and prepares the argument string
+	 * for html output
+	 *
+	 * @return The string filtered for html output
+	 */
+	function filter_pub_html_display ( $str, $hsc = FALSE ) {
+		$rand .= strval ( rand() ) . strval ( rand() );
+		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
+
+		// Remove not allowed tags
+		// Keep the following tags
+		$tags =& $this->ra->allowed_tags;
+
+		$LE = '#LE'.$rand.'LE#';
+		$GE = '#GE'.$rand.'GE#';
+
+		foreach ( $tags as $tag ) {
+			$str = str_replace( '<'.$tag.'>',  $LE.    $tag.$GE, $str );
+			$str = str_replace( '</'.$tag.'>', $LE.'/'.$tag.$GE, $str );
+		}
+
+		$str = str_replace( '<', '&lt;', $str );
+		$str = str_replace( '>', '&gt;', $str );
+
+		$str = str_replace( $LE, '<', $str );
+		$str = str_replace( $GE, '>', $str );
+
+		$str = str_replace( array ( '<prt>', '</prt>' ), '', $str );
+
+		// End of remove not allowed tags
+
+		// Handle illegal ampersands
+		if ( !( strpos ( $str, '&' ) === FALSE ) ) {
+			$str = tx_sevenpack_utility::fix_html_ampersand ( $str );
+		}
+
+		$str = $this->filter_pub_html ( $str, $hsc );
+		return $str;
+	}
+
+
+	/**
 	 * This function composes the html-view of a set of publications
 	 *
 	 * @return The list view
@@ -1773,7 +1854,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Prepare processed row data
 		$pdata = $pub;
 		foreach ( $this->ra->refFields as $f ) {
-			$pdata[$f] = tx_sevenpack_utility::filter_pub_html_display ( $pdata[$f] );
+			$pdata[$f] = $this->filter_pub_html_display ( $pdata[$f] );
 		}
 
 		// Preformat some data
@@ -1987,14 +2068,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// The forename
 			$a_fn = trim ( $a['forename'] );
 			if ( strlen ( $a_fn ) > 0 ) {
-				$a_fn = tx_sevenpack_utility::filter_pub_html_display ( $a_fn );
+				$a_fn = $this->filter_pub_html_display ( $a_fn );
 				$a_fn = $this->cObj->stdWrap ( $a_fn, $this->conf['authors.']['forename.'] );
 			}
 
 			// The surname
 			$a_sn = trim ( $a['surname'] );
 			if ( strlen ( $a_sn ) > 0 ) {
-				$a_sn = tx_sevenpack_utility::filter_pub_html_display ( $a_sn );
+				$a_sn = $this->filter_pub_html_display ( $a_sn );
 				$a_sn = $this->cObj->stdWrap ( $a_sn, $this->conf['authors.']['surname.'] );
 			}
 
@@ -2433,7 +2514,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( !$rest ) {
 					if ( $field == 'DOI' ) {
 						$url = 'http://dx.doi.org/' .
-							tx_sevenpack_utility::filter_pub_html_display ( $data );
+							$this->filter_pub_html_display ( $data );
 					} else {
 						$url = $data;
 					}

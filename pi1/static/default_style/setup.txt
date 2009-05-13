@@ -10,7 +10,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	div.tx_sevenpack-navi_year,
-	div.tx_sevenpack-navi_page.
+	div.tx_sevenpack-navi_page,
 	div.tx_sevenpack-navi_pref,
 	div.tx_sevenpack-navi_author,
 	div.tx_sevenpack-navi_search {

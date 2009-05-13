@@ -147,6 +147,8 @@ class tx_sevenpack_importer {
 	 *
 	 */
 	function import_stat_str ( $stat ) {
+		$charset = $this->pi1->extConf['charset']['upper'];
+
 		$con = '';
 		$con .= '<strong>Import statistics</strong>: ';
 		$con .= '<table>';
@@ -154,7 +156,7 @@ class tx_sevenpack_importer {
 
 		$con .= '<tr>' . "\n";
 		$con .= '<th>Import file:</th>' . "\n";
-		$con .= '<td>' . htmlspecialchars ( $stat['file_name'], ENT_QUOTES, 'UTF-8' );
+		$con .= '<td>' . htmlspecialchars ( $stat['file_name'], ENT_QUOTES, $charset );
 		$con .= ' (' . strval ( $stat['file_size'] ) . ' Bytes)';
 		$con .= '</td>' . "\n";
 		$con .= '</tr>' . "\n";

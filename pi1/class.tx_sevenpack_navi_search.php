@@ -37,6 +37,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$cfg =& $this->conf;
 
 		// The data
+		$charset = $this->pi1->extConf['charset']['upper'];
 
 		// The label
 		$label = $this->pi1->get_ll ( 'searchNav_label' );
@@ -58,7 +59,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$attribs = array ( 'size' => 42, 'maxlength' => 1024 );
 		$value = '';
 		if ( strlen ( $this->extConf['string'] ) > 0 )
-			$value = htmlspecialchars ( $this->extConf['string'], ENT_QUOTES, 'UTF-8' );
+			$value = htmlspecialchars ( $this->extConf['string'], ENT_QUOTES, $charset );
 		$sea .= tx_sevenpack_utility::html_text_input (
 			$this->pi1->prefix_pi1.'[search][text]', $value, $attribs
 		);
