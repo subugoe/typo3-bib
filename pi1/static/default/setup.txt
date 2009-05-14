@@ -79,19 +79,12 @@ plugin.tx_sevenpack_pi1 {
 
 	# Field wraps
 	field {
-		abstract.noTrimWrap = |<p class="tx_sevenpack-abstract_block">###LABEL_ABSTRACT### |</p>|
-
 		# Address
 		address.wrap = |<br/>
-
-		annotation.noTrimWrap = |<p class="tx_sevenpack-annotation_block">###LABEL_ANNOTATION### |</p>|
 
 		# Author
 		author.typolink.parameter.field = url
 		author.wrap = <span class="tx_sevenpack-author">|</span>
-
-		# Authors
-		authors.wrap = <div class="tx_sevenpack-authors">|</div>
 
 		# Booktitle
 		booktitle.noTrimWrap = |||
@@ -113,17 +106,11 @@ plugin.tx_sevenpack_pi1 {
 
 		howpublished.wrap = |,
 		institution.wrap = |,
-		ISBN.noTrimWrap = |###LABEL_ISBN### ||
 		journal.wrap = |,
-		keywords.noTrimWrap = |<p class="tx_sevenpack-keywords_block">###LABEL_KEYWORDS### |</p>|
-		tags.noTrimWrap = |<p class="tx_sevenpack-tags_block">###LABEL_TAGS### |</p>|
 		misc.wrap = |.
 
 		# Month
 		month.strftime = %B
-
-		# Note
-		note.noTrimWrap = |<p class="tx_sevenpack-note_block">###LABEL_NOTE### |</p>|
 
 		# Number
 		number.wrap = (|)
@@ -145,15 +132,11 @@ plugin.tx_sevenpack_pi1 {
 		# Series
 		series.wrap = ###LABEL_OF### <span class="tx_sevenpack-series">|</span>
 
-		# State
-		state.wrap = <span class="tx_sevenpack-state">|</span>
-
 		# School
 		school.wrap = |,
 
 		# Title
 		title.typolink.parameter.field = auto_url
-		title.wrap = <div class="tx_sevenpack-title">|</div>
 
 		# Type
 		type.wrap = <span class="tx_sevenpack-type">|</span>
@@ -166,7 +149,7 @@ plugin.tx_sevenpack_pi1 {
 		inbook.volume.noTrimWrap = | ###LABEL_VOLUME### ||
 		proceedings.volume.noTrimWrap = | ###LABEL_VOLUME### ||
 
-		# File URL
+		# Web URL
 		web_url.typolink.parameter.field = web_url
 
 		# Year
