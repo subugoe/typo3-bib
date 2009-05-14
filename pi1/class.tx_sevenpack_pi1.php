@@ -2661,19 +2661,25 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		if ( $mode > 0 ) {
 			$exp = FALSE;
+			$label = '';
+			$eclass = '';
 			switch ( $mode ) {
 				case $this->EXP_BIBTEX:
-					require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-						'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_exporter_bibtex.php' ) );
-					$exp = t3lib_div::makeInstance ( 'tx_sevenpack_exporter_bibtex' );
-					$label = $this->get_ll ( 'export_bibtex' );
+					$eclass = 'tx_sevenpack_exporter_bibtex';
+					$label = 'export_bibtex';
 					break;
 				case $this->EXP_XML:
-					require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-						'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_exporter_xml.php' ) );
-					$exp = t3lib_div::makeInstance ( 'tx_sevenpack_exporter_xml' );
-					$label = $this->get_ll ( 'export_xml' );
+					$eclass = 'tx_sevenpack_exporter_xml';
+					$label = 'export_xml';
 					break;
+			}
+
+			if ( strlen ( $eclass ) > 0 ) {
+				// Create instance
+				require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+					'EXT:'.$this->extKey.'/pi1/class.' . $eclass . '.php' ) );
+				$exp = t3lib_div::makeInstance ( $eclass );
+				$label = $this->get_ll ( $label, $label, TRUE );
 			}
 			
 			if ( is_object ( $exp ) ) {

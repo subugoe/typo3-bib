@@ -18,6 +18,8 @@ class tx_sevenpack_exporter {
 	public $file_name;
 	public $file_new;
 
+	public $file_res;
+
 	public $info;
 	public $error;
 
@@ -101,51 +103,51 @@ class tx_sevenpack_exporter {
 	 * @return TRUE ond error, FALSE otherwise
 	 */
 	function export ( ) {
-		$ret = TRUE; // Means an error occurred
 		$this->file_new = FALSE;
-		$infoArr = array();
 
-		$file_abs = $this->get_file_abs ( );
+		// Initialize sink
+		$ret = $this->sink_init ( );
+		
+		if ( $ret == 1 ) {
+			return TRUE; // Error
+		} else if ( $ret == -1 ) {
+			return FALSE; // Up to date
+		} else if ( $ret == 0 ) {
 
-		if ( $this->file_is_newer ( $file_abs ) && !$this->pi1->extConf['debug'] ) {
-			//t3lib_div::debug ( 'File exists '.$file_abs );
-			return FALSE;
-		} else {
-			//t3lib_div::debug ( 'Writing file '.$file_abs );
-		}
-
-		$file_res = fopen ( $file_abs, 'w' );
-
-		if ( $file_res )	{
-
-			// Initialize fetching
+			// Initialize db access
 			$this->ra->set_filters ( $this->filters );
 			$this->ra->mFetch_initialize ();
 
 			// Setup info array
+			$infoArr = array();
 			$infoArr['pubNum'] = $this->ra->mFetch_num();
 			$infoArr['index'] = -1;
 
-			// --- write file
-			fwrite ( $file_res, $this->file_intro ( $infoArr ) );
+			// Write pre data
+			$data = $this->file_intro ( $infoArr );
+			$this->sink_write ( $data );
+
+			// Write publications
 			while ( $pub =  $this->ra->mFetch() )  {
 				$infoArr['index']++;
-				fwrite ( $file_res, $this->export_format_publication ( $pub, $infoArr ) );
+				$data = $this->export_format_publication ( $pub, $infoArr );
+				$this->sink_write ( $data );
 			}
-			fwrite ( $file_res, $this->file_outtro ( $infoArr ) );
 
-			// --- clean up
+			// Write post data
+			$data = $this->file_outtro ( $infoArr );
+			$this->sink_write ( $data );
+
+			// Clean up db access
 			$this->ra->mFetch_finish();
-			fclose ( $file_res );
 
 			$this->info = $infoArr;
-			$ret = FALSE; // All good
-			$this->file_new = TRUE;
-		} else {
-			$this->error = $this->pi1->extKey.' error: Could not open file for writing.';
 		}
 
-		return $ret;
+		// Clean up sink
+		$this->sink_finish ( );
+
+		return FALSE;
 	}
 
 
@@ -209,6 +211,53 @@ class tx_sevenpack_exporter {
 		}
 
 		return $str;
+	}
+
+
+	/*
+	 * Return codes
+	 *  0 - Sink ready
+	 *  1 - Sink failed
+	 * -1 - Sink is up to date
+	 */
+	function sink_init ( ) {
+
+		// Open file
+		$file_abs = $this->get_file_abs ( );
+
+		if ( $this->file_is_newer ( $file_abs ) 
+			&& !$this->pi1->extConf['debug'] ) 
+		{
+			//t3lib_div::debug ( 'File exists '.$file_abs );
+			return -1;
+		} else {
+			//t3lib_div::debug ( 'Opening file '.$file_abs );
+		}
+
+		$this->file_res = FALSE;
+		$this->file_res = fopen ( $file_abs, 'w' );
+
+		if ( $this->file_res ) {
+			$this->file_new = TRUE;
+			return 0;
+		} else {
+			$this->error = $this->pi1->extKey.' error: Could not open file for writing.';
+		}
+
+		return 1;
+	}
+
+
+	function sink_write ( $data ) {
+		fwrite ( $this->file_res, $data );
+	}
+
+
+	function sink_finish() {
+		if ( $this->file_res ) {
+			fclose ( $this->file_res );
+			$this->file_res = FALSE;
+		}
 	}
 
 }

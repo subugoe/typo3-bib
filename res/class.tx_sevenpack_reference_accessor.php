@@ -166,27 +166,29 @@ class tx_sevenpack_reference_accessor {
 	function clear_page_cache ( ) {
 		if ( $this->clear_cache ) {
 			//t3lib_div::debug ( 'Clearing cache' );
-			$be_user = $GLOBALS['BE_USER'];
-			if ( !is_object ( $be_user ) || !is_array ( $be_user->user ) ) {
-				//t3lib_div::debug( 'No BE user' );
-				$be_user = t3lib_div::makeInstance ( 't3lib_tsfeBeUserAuth' );
-				$be_user->user = array( 'admin' => 1 );
-			}
-
 			$tce = t3lib_div::makeInstance ( 't3lib_TCEmain' );
-			$tce->start ( array(), array(), $be_user );
+			$clear_cache = array();
 
-			// Find storage cache clear requests
-			foreach ( $this->pid_list as $pid ) {
-				$tsc = $tce->getTCEMAIN_TSconfig ( $pid );
-				if ( isset ( $tsc['clearCacheCmd'] ) ) {
-					//t3lib_div::debug ( array ( 'clearCacheCmd' => $tsc ) );
-					$tce->clear_cacheCmd ( $tsc['clearCacheCmd'] );
+			$be_user = $GLOBALS['BE_USER'];
+			if ( is_object ( $be_user ) || is_array ( $be_user->user ) ) {
+				$tce->start ( array(), array(), $be_user );
+				// Find storage cache clear requests
+				foreach ( $this->pid_list as $pid ) {
+					$tsc = $tce->getTCEMAIN_TSconfig ( $pid );
+					if ( is_array ( $tsc ) && isset ( $tsc['clearCacheCmd'] ) ) {
+						$clear_cache[] = $tsc['clearCacheCmd'];
+					}
 				}
+			} else {
+				$tce->admin = 1;
 			}
 
 			// Clear this page cache
-			$tce->clear_cacheCmd ( strval ( $GLOBALS['TSFE']->id ) );
+			$clear_cache[] = strval ( $GLOBALS['TSFE']->id );
+
+			foreach ( $clear_cache as $cache ) {
+				$tce->clear_cacheCmd ( $cache );
+			}
 		} else {
 			//t3lib_div::debug ( 'Not clearing cache' );
 		}
@@ -1312,9 +1314,17 @@ class tx_sevenpack_reference_accessor {
 			}
 		} else {
 			$new = TRUE;
-			// t3lib_div::debug ( array ('saving'=>$refRow ));
+			// t3lib_div::debug ( array ( 'saving' => $refRow ) );
+
+			// Creation user id if available
+			$cruser_id = 0;
+			$be_user = $GLOBALS['BE_USER'];
+			if ( is_object ( $be_user ) && is_array ( $be_user->user ) ) {
+				$cruser_id = intval ( $be_user->user['uid'] );
+			}
+
 			$refRow['crdate']    = $refRow['tstamp'];
-			$refRow['cruser_id'] = $GLOBALS['BE_USER']->user['uid'];
+			$refRow['cruser_id'] = $cruser_id;
 			$db->exec_INSERTquery ( $rT, $refRow );
 			$uid = $db->sql_insert_id ( );
 			if ( $uid > 0 ) {
@@ -1442,9 +1452,16 @@ class tx_sevenpack_reference_accessor {
 		$ia['url']      = $author['url'];
 		$ia['pid']      = intval ( $author['pid'] );
 
+		// Creation user id if available
+		$cruser_id = 0;
+		$be_user = $GLOBALS['BE_USER'];
+		if ( is_object ( $be_user ) && is_array ( $be_user->user ) ) {
+			$cruser_id = intval ( $be_user->user['uid'] );
+		}
+
 		$ia['tstamp'] = time();
 		$ia['crdate'] = time();
-		$ia['cruser_id'] = $GLOBALS['BE_USER']->user['uid'];
+		$ia['cruser_id'] = $cruser_id;
 
 		//t3lib_div::debug( array ( 'insert author ' => $ia ) );
 
@@ -1636,7 +1653,10 @@ class tx_sevenpack_reference_accessor {
 	 * @return void
 	 */
 	function log ( $message, $error = 0 ) {
-		$GLOBALS['BE_USER']->simplelog ( $message, 'sevenpack', $error );
+		$be_user = $GLOBALS['BE_USER'];
+		if ( is_object ( $be_user ) ) {
+			$be_user->simplelog ( $message, 'sevenpack', $error );
+		}
 	}
 
 

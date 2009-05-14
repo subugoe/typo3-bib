@@ -102,7 +102,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	div.tx_sevenpack-navi_author_row {
-		margin-top: 1ex;
+		padding-top: 1ex;
 	}
 
 	/*
