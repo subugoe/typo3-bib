@@ -355,6 +355,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Search navi
 		//
 		if ( $extConf['show_nav_search'] ) {
+			$extConf['dynamic'] = TRUE;
 			$extConf['search_navi'] = array();
 			$sconf =& $extConf['search_navi'];
 			$lvars =& $extConf['link_vars'];
@@ -390,6 +391,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Author navi
 		//
 		if ( $extConf['show_nav_author'] ) {
+			$extConf['dynamic'] = TRUE;
 			$extConf['author_navi'] = array();
 			$aconf =& $extConf['author_navi'];
 			$lvars =& $extConf['link_vars'];
@@ -2684,17 +2686,34 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			
 			if ( is_object ( $exp ) ) {
 				$exp->initialize ( $this );
+
+				$dynamic = $this->conf['export.']['dynamic'] ? TRUE : FALSE;
+				if ( $this->extConf['dynamic'] )
+					$dynamic = TRUE;
+				$exp->dynamic = $dynamic;
+
 				if ( $exp->export () ) {
 					$con .= $this->error_msg ( $exp->error );
 				} else {
-					$link = $this->cObj->getTypoLink ( $exp->file_name,
-						$exp->get_file_rel() );
-					$con .= '<ul><li><div>';
-					$con .= $link;
-					if ( $exp->file_new )
-						$con .= ' (' . $this->get_ll ( 'export_file_new' ) . ')';
-					$con .= '</div></li>';
-					$con .= '</ul>' . "\n";
+					if ( $dynamic ) {
+						// Dump the export data and exit
+						$exp_file = $exp->file_name;
+						header ( 'Content-Type: text/plain' );
+						header ( 'Content-Disposition: attachment; filename="' . $exp_file . '"');
+						header ( 'Cache-Control: no-cache, must-revalidate' );
+						echo $exp->data;
+						exit ( );
+					} else {
+						// Create link to file
+						$link = $this->cObj->getTypoLink ( $exp->file_name,
+							$exp->get_file_rel() );
+						$con .= '<ul><li><div>';
+						$con .= $link;
+						if ( $exp->file_new )
+							$con .= ' (' . $this->get_ll ( 'export_file_new' ) . ')';
+						$con .= '</div></li>';
+						$con .= '</ul>' . "\n";
+					}
 				}
 			}
 		} else {

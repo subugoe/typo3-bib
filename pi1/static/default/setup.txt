@@ -459,6 +459,9 @@ plugin.tx_sevenpack_pi1 {
 		label = export_label
 		label.wrap = <span class="tx_sevenpack-export_label">|:</span>
 
+		# Dynamic - Export will be generated on the fly
+		dynamic = 1
+
 		# The export path
 		path = uploads/tx_sevenpack
 

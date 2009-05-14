@@ -19,6 +19,8 @@ class tx_sevenpack_exporter {
 	public $file_new;
 
 	public $file_res;
+	public $dynamic;
+	public $data;
 
 	public $info;
 	public $error;
@@ -37,8 +39,10 @@ class tx_sevenpack_exporter {
 		// Setup filters
 		$this->filters = $this->pi1->extConf['filters'];
 		unset ( $this->filters['browse'] );
+
+		// The filter key is used for the filename
 		//$this->filter_key = t3lib_div::shortMD5 ( serialize ( $this->filters ) );
-		$this->filter_key = 'page'.strval ( $GLOBALS['TSFE']->id );
+		$this->filter_key = 'export' . strval ( $GLOBALS['TSFE']->id );
 
 		// Setup export file path and name
 		$this->file_path = $this->pi1->conf['export.']['path'];
@@ -47,6 +51,10 @@ class tx_sevenpack_exporter {
 
 		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.dat';
 		$this->file_new = FALSE;
+
+		// Disable dynamic
+		$this->dynamic = FALSE;
+		$this->data = '';
 
 		$_EXTKEY = $this->pi1->extKey;
 		include ( $GLOBALS['TSFE']->tmpl->getFileName ( 'EXT:sevenpack/ext_emconf.php' ) );
@@ -221,42 +229,52 @@ class tx_sevenpack_exporter {
 	 * -1 - Sink is up to date
 	 */
 	function sink_init ( ) {
-
-		// Open file
-		$file_abs = $this->get_file_abs ( );
-
-		if ( $this->file_is_newer ( $file_abs ) 
-			&& !$this->pi1->extConf['debug'] ) 
-		{
-			//t3lib_div::debug ( 'File exists '.$file_abs );
-			return -1;
+		if ( $this->dynamic ) {
+			$this->data = '';
 		} else {
-			//t3lib_div::debug ( 'Opening file '.$file_abs );
+			// Open file
+			$file_abs = $this->get_file_abs ( );
+	
+			if ( $this->file_is_newer ( $file_abs ) 
+				&& !$this->pi1->extConf['debug'] ) 
+			{
+				//t3lib_div::debug ( 'File exists '.$file_abs );
+				return -1;
+			} else {
+				//t3lib_div::debug ( 'Opening file '.$file_abs );
+			}
+	
+			$this->file_res = fopen ( $file_abs, 'w' );
+	
+			if ( $this->file_res ) {
+				$this->file_new = TRUE;
+			} else {
+				$this->error = $this->pi1->extKey.' error: Could not open file for writing.';
+				return 1;
+			}
 		}
 
-		$this->file_res = FALSE;
-		$this->file_res = fopen ( $file_abs, 'w' );
-
-		if ( $this->file_res ) {
-			$this->file_new = TRUE;
-			return 0;
-		} else {
-			$this->error = $this->pi1->extKey.' error: Could not open file for writing.';
-		}
-
-		return 1;
+		return 0;
 	}
 
 
 	function sink_write ( $data ) {
-		fwrite ( $this->file_res, $data );
+		if ( $this->dynamic ) {
+			$this->data .= $data;
+		} else {
+			fwrite ( $this->file_res, $data );
+		}
 	}
 
 
 	function sink_finish() {
-		if ( $this->file_res ) {
-			fclose ( $this->file_res );
-			$this->file_res = FALSE;
+		if ( $this->dynamic ) {
+			// Nothing
+		} else {
+			if ( $this->file_res ) {
+				fclose ( $this->file_res );
+				$this->file_res = FALSE;
+			}
 		}
 	}
 
