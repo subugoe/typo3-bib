@@ -508,11 +508,8 @@ class tx_sevenpack_single_view {
 			if ( is_array ( $cfg_arr ) ) {
 				foreach ( $all_types as $type ) {
 					$cfg_fields[$group][$type] = array();
-					// Clean string and explode with SPACE as separator
-					$ff = str_replace ( ',', ' ', $cfg_arr[$type] );
-					$ff = trim ( $ff );
-					$ff = preg_replace ( '/\s+/', ' ', $ff );
-					$cfg_fields[$group][$type] = explode ( ' ', $ff );
+					$ff = tx_sevenpack_utility::explode_trim ( ',', $cfg_arr[$type], TRUE );
+					$cfg_fields[$group][$type] = $ff;
 				}
 			}
 		}

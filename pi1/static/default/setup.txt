@@ -545,17 +545,17 @@ plugin.tx_sevenpack_pi1 {
 		groups {
 			all {
 				required = state
-				optional = abstract,affiliation,keywords,tags,file_url,web_url,DOI
+				optional = abstract,keywords,tags,file_url,web_url,affiliation
 				library = extern,reviewed,in_library,borrowed_by
 			}
 
 			article {
 				required = citeid,authors,title,journal,year
-				optional = volume,number,pages,month,note,abstract
+				optional = volume,number,pages,month,note,abstract,ISSN,DOI
 			}
 			book {
 				required = citeid,authors,title,publisher,year
-				optional = volume,series,address,edition,editor,month,note
+				optional = volume,series,address,edition,editor,month,note,ISBN
 			}
 			inbook {
 				required = citeid,authors,title,chapter,pages,publisher,year
