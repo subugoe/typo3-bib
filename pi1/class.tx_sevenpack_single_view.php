@@ -276,8 +276,8 @@ class tx_sevenpack_single_view {
 			if ( sizeof ( $d_err ) > 0 ) {
 				$dataValid = FALSE;
 				$cfg =& $this->conf['warn_box.'];
-				$title = $this->get_ll ( $this->LLPrefix.'error_title');
-				$box = $pi1->cObj->stdWrap ( $title, $cfg['title.'] ) . "\n";
+				$txt = $this->get_ll ( $this->LLPrefix.'error_title');
+				$box = $pi1->cObj->stdWrap ( $txt, $cfg['title.'] ) . "\n";
 				$box .= $this->validation_error_string ( $d_err );
 				$box .= $btn_edit;
 				$box = $pi1->cObj->stdWrap ( $box, $cfg['all_wrap.'] ) . "\n";

@@ -1378,7 +1378,12 @@ class tx_sevenpack_reference_accessor {
 			if ( $pub['mod_key'] == $pub_db['mod_key'] ) {
 				// t3lib_div::debug ( array ('updating'=>$refRow ));
 				$WC = 'uid=' . intval ( $uid );
-				$db->exec_UPDATEquery ( $rT, $WC, $refRow );
+				$ret = $db->exec_UPDATEquery ( $rT, $WC, $refRow );
+				if ( $ret == FALSE ) {
+					$this->error = 'A publication reference could not be updated uid='.strval ( $uid );
+					$this->log ( $this->error, 2 );
+					return TRUE;
+				}
 			} else {
 				$this->error = 'The publication reference could not be updated' .
 					' because the modification key does not match.' . "\n";
@@ -1496,7 +1501,12 @@ class tx_sevenpack_reference_accessor {
 				if ( $ii < $as_present ) {
 					// There are present authorships - Update authorship
 					$as_uid = $db_aships[$ii]['uid'];
-					$db->exec_UPDATEquery ( $this->aShipTable, 'uid='.intval($as_uid), $as );
+					$ret = $db->exec_UPDATEquery ( $this->aShipTable, 'uid='.intval($as_uid), $as );
+					if ( $ret == FALSE ) {
+						$this->error = 'An authorship could not be updated uid='.strval( $as_uid );
+						$this->log ( $this->error, 1 );
+						return TRUE;
+					}
 				} else {
 					// No more present authorships - Insert authorship
 					$as_uid = $db->exec_INSERTquery ( $this->aShipTable, $as );
