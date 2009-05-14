@@ -34,6 +34,7 @@
 			<label index="tx_sevenpack_references_bibtype_I_14">Miscellaneous</label>
 			<label index="tx_sevenpack_references_bibtype_I_15">String</label>
 			<label index="tx_sevenpack_references_bibtype_I_16">Poster</label>
+			<label index="tx_sevenpack_references_bibtype_I_17">Thesis</label>
 			<label index="tx_sevenpack_references_bibtype_I_2">Book</label>
 			<label index="tx_sevenpack_references_bibtype_I_3">Contribution to book</label>
 			<label index="tx_sevenpack_references_bibtype_I_4">Booklet</label>
@@ -109,6 +110,7 @@
 			<label index="tx_sevenpack_references_bibtype_I_14">Verschiedenes</label>
 			<label index="tx_sevenpack_references_bibtype_I_15">Zeichenkette</label>
 			<label index="tx_sevenpack_references_bibtype_I_16">Poster</label>
+			<label index="tx_sevenpack_references_bibtype_I_17">These</label>
 			<label index="tx_sevenpack_references_bibtype_I_2">Buch</label>
 			<label index="tx_sevenpack_references_bibtype_I_3">Beitrag zu Buch</label>
 			<label index="tx_sevenpack_references_bibtype_I_4">Broschüre</label>

@@ -2599,8 +2599,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$img .= '/>';
 			$res .= $img;
 
-			if ( $cr_link )
+			if ( $cr_link ) {
 				$res = $this->cObj->getTypoLink ( $res, $url );
+			}
 
 			$res = $this->cObj->stdWrap ( $res, $this->conf['enum.']['file_icon_image.'] );
 		} else {

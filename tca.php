@@ -39,6 +39,7 @@ $TCA['tx_sevenpack_references'] = array (
 					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_14', '14'),
 					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_15', '15'),
 					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_16', '16'),
+					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_17', '17'),
 				),
 				'size' => 1,
 				'maxitems' => 1,

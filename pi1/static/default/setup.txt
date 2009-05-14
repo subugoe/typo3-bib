@@ -545,7 +545,7 @@ plugin.tx_sevenpack_pi1 {
 		groups {
 			all {
 				required = state
-				optional = affiliation,keywords,tags,file_url,web_url,DOI
+				optional = abstract,affiliation,keywords,tags,file_url,web_url,DOI
 				library = extern,reviewed,in_library,borrowed_by
 			}
 
@@ -612,6 +612,10 @@ plugin.tx_sevenpack_pi1 {
 			poster {
 				required = citeid,authors
 				optional = title,editor,organization,publisher,address,year,month,day,note
+			}
+			thesis {
+				required = citeid,authors,title,school,year
+				optional = type,address,month,note
 			}
 		}
 

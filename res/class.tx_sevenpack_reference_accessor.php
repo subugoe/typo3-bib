@@ -86,7 +86,8 @@ class tx_sevenpack_reference_accessor {
 		13 => 'unpublished',
 		14 => 'miscellaneous',
 		15 => 'string',
-		16 => 'poster'
+		16 => 'poster',
+		17 => 'thesis'
 	);
 
 
