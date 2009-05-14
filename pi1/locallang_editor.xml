@@ -15,8 +15,9 @@
 			<label index="editor_btn_syntax_help">Syntax help</label>
 			<label index="editor_btn_update_form">Update form</label>
 			<label index="editor_error_empty_fields">The following required fields are not set</label>
+			<label index="editor_error_file_nexist">The local file %f does not exist</label>
 			<label index="editor_error_id_exists">The cite id allready exists</label>
-			<label index="editor_error_title">The data validation failed</label>
+			<label index="editor_error_title">Warning</label>
 			<label index="editor_fields_library">Library fields</label>
 			<label index="editor_fields_optional">Optional fields</label>
 			<label index="editor_fields_other">Other fields</label>
@@ -45,8 +46,9 @@
 			<label index="editor_btn_syntax_help">Syntax Hilfe</label>
 			<label index="editor_btn_update_form">Maske erneuern</label>
 			<label index="editor_error_empty_fields">Die folgenden benötigten Felder sind nicht ausgefüllt</label>
+			<label index="editor_error_file_nexist">Die lokale Datei %f existiert nicht</label>
 			<label index="editor_error_id_exists">Die Zitations Id existiert bereits</label>
-			<label index="editor_error_title">Beim überprüfen der Daten sind Fehler aufgetaucht</label>
+			<label index="editor_error_title">Warnung</label>
 			<label index="editor_fields_library">Bibliotheks Felder</label>
 			<label index="editor_fields_optional">Optionale Felder</label>
 			<label index="editor_fields_other">Weitere Felder</label>

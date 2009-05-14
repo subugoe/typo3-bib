@@ -462,6 +462,27 @@ class tx_sevenpack_utility {
 		return tx_sevenpack_utility::explode_trim ( $sep, $str, $noEmpty );
 	}
 
+
+	/**
+	 * Checks if a local file exists
+	 *
+	 * @return FALSE or the error message array
+	 */
+	function check_file_nexist ( $type, $file, $msg ) {
+		if ( ( strlen ( $file ) > 0 )
+			&& ( substr ( $file, 0, 10 ) == 'fileadmin/' ) )
+		{
+			if ( !file_exists ( $file ) ) {
+				$err = array (
+					'type' => $type,
+					'msg' => str_replace ( '%f', $file, $msg )
+				);
+				return $err;
+			}
+		}
+		return FALSE;
+	}
+
 }
 
 

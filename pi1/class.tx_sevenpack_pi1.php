@@ -517,6 +517,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Disable caching in edit mode
 			$GLOBALS['TSFE']->set_no_cache();
 
+			// Load edit labels
+			$this->extend_ll ( 'EXT:'.$this->extKey.'/pi1/locallang_editor.xml' );
+
 			// Do an action type evaluation
 			if ( is_array ( $this->piVars['action'] ) ) {
 				$act_str = implode('', array_keys ( $this->piVars['action'] ) );
@@ -1851,7 +1854,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return The procesed publication data array
 	 */
-	function prepare_pub_display( $pub, &$warnings = array() ) {
+	function prepare_pub_display ( $pub, &$warnings = array() ) {
+
+		$d_err = array();
 
 		// Prepare processed row data
 		$pdata = $pub;
@@ -1902,20 +1907,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Format the author string
 		$pdata['authors'] = $this->get_item_authors_html ( $pub['authors'] );
 
-		// Look for missing citeid
-		if ( ( strlen ( $pub['citeid'] ) == 0 ) && $this->extConf['edit_mode']
-		     && ($this->conf['editor.']['warnings.']['m_citeid'] > 0) ) {
-			$warnings[] = 'Citeid missing';
-		}
-
-		// Prepare the translator
-		// Remove empty field marker from the template
+		// Copy fields
 		foreach ( $this->ra->pubFields as $f ) {
+			// Trim string
 			$val = trim ( strval ( $pdata[$f] ) );
 
 			if ( strlen ( $val ) > 0 )  {
-				// Do some special treatment for certain fields
-				$charset = strtoupper ( $this->extConf['be_charset'] );
+				// Treat some fields
 				switch ( $f ) {
 					case 'file_url':
 					case 'web_url':
@@ -1926,7 +1924,30 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 						$pdata[$f] = $val;
 				}
 			}
+
 		}
+
+
+		// Do data checks
+		if ( $this->extConf['edit_mode'] ) {
+
+			$w_cfg =& $this->conf['editor.']['list.']['warnings.'];
+
+			//
+			// Local file does not exist
+			//
+			$type = 'file_nexist';
+			if ( $w_cfg[$type] ) {
+				$msg = $this->get_ll ( 'editor_error_file_nexist' );
+				$err = tx_sevenpack_utility::check_file_nexist ( $type, $pub['file_url'], $msg );
+				if ( is_array ( $err ) )
+					$d_err[] = $err;
+			}
+
+		}
+
+		$warnings = $d_err;
+		//t3lib_div::debug ( $warnings );
 
 		return $pdata;
 	}
@@ -2158,7 +2179,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function setup_items ()
 	{
-		$items = '';
+		$items = array();
 		$hasStr = '';
 
 		// Aliases
@@ -2200,6 +2221,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$lt['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ), $conf['label.']['publisher.'] );
 		$lt['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),    $conf['label.']['volume.']    );
 
+		// block templates
+		$year_block = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
+		$bib_block = $this->enum_condition_block ( $this->template['BIBTYPE_BLOCK'] );
+
 		// Initialize the enumeration template
 		$eid = 'page';
 		switch ( intval ( $this->extConf['enum_style'] ) ) {
@@ -2215,6 +2240,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$enum_base = strval ( $conf['enum.'][$eid] );
 		$enum_wrap = $conf['enum.'][$eid.'.'];
 
+		// Warning cfg
+		$w_cfg =& $this->conf['editor.']['list.']['warn_box.'];
+		$ed_mode = $this->extConf['edit_mode'];
 
 		// Database accessor initialization
 		$ra->mFetch_initialize();
@@ -2308,7 +2336,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$manip_hide = '';
 			$manip_all = array();
 			$subst_sub = '';
-			if ( $this->extConf['edit_mode'] )  {
+			if ( $ed_mode )  {
 				$subst_sub = array ( '', '' );
 				$manip_all[] = $this->get_edit_manipulator ( $pub );
 				$manip_all[] = $this->get_hide_manipulator ( $pub );
@@ -2324,8 +2352,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Year separator label
 			if ( ($this->extConf['d_mode'] == $this->D_Y_SPLIT) && ( $pub['year'] != $prevYear ) )  {
 				$yearStr = $cObj->stdWrap ( strval ( $pub['year'] ), $conf['label.']['year.'] );
-				$t_str = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
-				$items .= $cObj->substituteMarker ( $t_str, '###YEAR###', $yearStr );
+				$items[] = $cObj->substituteMarker ( $year_block, '###YEAR###', $yearStr );
 				$prevBibType = -1;
 			}
 
@@ -2335,15 +2362,26 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$this->get_ll ( 'bibtype_plural_'.$pub['bibtype'], $pub['bibtype'], TRUE ),
 					$conf['label.']['bibtype.']
 				);
-				$t_str = $this->enum_condition_block ( $this->template['BIBTYPE_BLOCK'] );
-				$items .= $cObj->substituteMarker ( $t_str, '###BIBTYPE###', $bibStr );
+				$items[] = $cObj->substituteMarker ( $bib_block, '###BIBTYPE###', $bibStr );
 			}
+
+			$append = '';
+			if ( ( sizeof ( $warnings ) > 0 ) && $ed_mode ) {
+				foreach ( $warnings as $err ) {
+					$append .= $cObj->stdWrap ( $err['msg'],
+						$w_cfg['msg.'] );
+				}
+				$append = $cObj->stdWrap ( $append,
+						$w_cfg['all_wrap.'] );
+			}
+			$translator['###ITEM_APPEND###'] = $append;
+
 
 			// Apply translator
 			$templ = $cObj->substituteMarkerArrayCached ( $templ, $translator, array() );
 
 			// Pass to item processor
-			$items .= $this->get_item_html ( $pdata, $templ );
+			$items[] = $this->get_item_html ( $pdata, $templ );
 
 			// Update counters
 			$i_page += $i_page_delta;
@@ -2360,7 +2398,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Restore cObj data
 		$cObj->data = $cObj_restore;
 
-		if ( strlen ( $items ) )
+		$items = implode ( '', $items );
+		if ( strlen ( $items ) > 0 )
 			$hasStr = array ( '', '' );
 
 		$tmpl =& $this->template['LIST_VIEW'];

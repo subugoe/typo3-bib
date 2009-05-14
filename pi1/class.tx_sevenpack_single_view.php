@@ -275,13 +275,13 @@ class tx_sevenpack_single_view {
 
 			if ( sizeof ( $d_err ) > 0 ) {
 				$dataValid = FALSE;
-				$preCon .= '<div class="'.$preSh.'-warning_box">' . "\n";
-				$preCon .= '<h3>';
-				$preCon .= $this->get_ll ( $this->LLPrefix.'error_title') . "\n";
-				$preCon .= '</h3>'."\n";
-				$preCon .= $this->validation_error_string ( $d_err );
-				$preCon .= $btn_edit;
-				$preCon .= '</div>' . "\n";
+				$cfg =& $this->conf['warn_box.'];
+				$title = $this->get_ll ( $this->LLPrefix.'error_title');
+				$box = $pi1->cObj->stdWrap ( $title, $cfg['title.'] ) . "\n";
+				$box .= $this->validation_error_string ( $d_err );
+				$box .= $btn_edit;
+				$box = $pi1->cObj->stdWrap ( $box, $cfg['all_wrap.'] ) . "\n";
+				$preCon .= $box;
 			}
 		}
 
@@ -311,7 +311,7 @@ class tx_sevenpack_single_view {
 
 		// Save button
 		$btn_save = '';
-		if ( $dataValid ) {
+		//if ( $dataValid ) {
 			if ( $w_mode == $pi1->W_EDIT )
 				$btn_save = '[action][confirm_save]';
 			if ( $single_mode == $pi1->SINGLE_CONFIRM_SAVE )
@@ -321,7 +321,7 @@ class tx_sevenpack_single_view {
 					'value="'.$this->get_ll($this->LLPrefix.'btn_save').
 					'" class="'.$btn_class.'"/>';
 			}
-		}
+		//}
 
 		// Delete button
 		$btn_delete = '';
@@ -958,40 +958,65 @@ class tx_sevenpack_single_view {
 		$d_err = array();
 		$title = $this->get_ll ( $this->LLPrefix.'title_confirm_save' );
 
+		$warn =& $this->conf['warnings.'];
+		t3lib_div::debug ( $warn );
+
+		//
 		// Find empty required fields
-		$empty = array();
-		foreach ( $fields['required'] as $field ) {
-			switch ( $field ) {
-				case 'authors':
-					if ( !is_array ( $pub[$field] ) || ( sizeof ( $pub[$field] ) == 0 ) )
-						$empty[] = $field;
-					break;
-				default:
-					if ( strlen ( trim ( $pub[$field] ) ) == 0) 
-						$empty[] = $field;
-			}
-		}
-		if ( sizeof ( $empty ) ) {
-			$err = array();
-			$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_empty_fields');
-			$err['list'] = array();
-			foreach ( $empty as $field ) {
+		//
+		$type = 'empty_fields';
+		if ( $warn[$type] ) {
+			$empty = array();
+			foreach ( $fields['required'] as $field ) {
 				switch ( $field ) {
 					case 'authors':
-						$str = $this->get_ll ( $this->ra->authorTable.'_'.$field );
+						if ( !is_array ( $pub[$field] ) || ( sizeof ( $pub[$field] ) == 0 ) )
+							$empty[] = $field;
 						break;
 					default:
-						$str = $this->get_ll ( $this->ra->refTable.'_'.$field );
+						if ( strlen ( trim ( $pub[$field] ) ) == 0) 
+							$empty[] = $field;
 				}
-				$err['list'][] = array ( 'msg' => $str );
 			}
-			$d_err[] = $err;
+			if ( sizeof ( $empty ) ) {
+				$err = array ( 'type' => $type );
+				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_empty_fields');
+				$err['list'] = array();
+				foreach ( $empty as $field ) {
+					switch ( $field ) {
+						case 'authors':
+							$str = $this->get_ll ( $this->ra->authorTable.'_'.$field );
+							break;
+						default:
+							$str = $this->get_ll ( $this->ra->refTable.'_'.$field );
+					}
+					$err['list'][] = array ( 'msg' => $str );
+				}
+				$d_err[] = $err;
+			}
 		}
 
+		//
+		// Local file does not exist
+		//
+		$type = 'file_nexist';
+		if ( $warn[$type] ) {
+			$msg = $this->get_ll ( 'editor_error_file_nexist' );
+			$err = tx_sevenpack_utility::check_file_nexist ( $type, $pub['file_url'], $msg );
+			if ( is_array ( $err ) )
+				$d_err[] = $err;
+		}
+
+		//
 		// Cite id doubles
-		if ( $this->ra->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {
-			$d_err[] = array ( 
-				'msg' => $this->get_ll ( $this->LLPrefix.'error_id_exists') );
+		//
+		$type = 'double_citeid';
+		if ( $warn[$type] ) {
+			if ( $this->ra->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {
+				$err = array ( 'type' => $type );
+				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_id_exists');
+				$d_err[] = $err; 
+			}
 		}
 
 		return $d_err;
@@ -1004,24 +1029,34 @@ class tx_sevenpack_single_view {
 	 *
 	 * @return An array with error messages
 	 */
-	function validation_error_string ( $errors )
+	function validation_error_string ( $errors, $level = 0 )
 	{
 		if ( !is_array ( $errors ) || ( sizeof ( $errors ) == 0 ) )
 			return '';
 
-		$res = '<ul>' . "\n";
+		//t3lib_div::debug ( array ( 's_errors' => $errors ) );
+
+		$res = '<ul>';
 		foreach ( $errors as $err ) {
-			$res .= '<li>';
-			$res .= $err['msg'] . "\n";
-			if ( is_array ( $err['list'] ) ) {
-				$res .= $this->validation_error_string ( $err['list'] );
+			$tmp = '<li>';
+			$tmp .= $this->pi1->cObj->stdWrap ( $err['msg'], 
+				$this->conf['warn_box.']['msg.'] ) . "\n";
+
+			$lst =& $err['list'];
+			if ( is_array ( $lst ) && ( sizeof ( $lst ) > 0 ) ) {
+				$tmp .= '<ul>';
+				$tmp .= $this->validation_error_string ( $lst, $level + 1 );
+				$tmp .= '</ul>'.  "\n";
 			}
-			$res .= '</li>' . "\n";
+
+			$tmp .= '</li>';
+			$res .= $tmp;
 		}
-		$res .= '</ul>' . "\n";
+		$res .= '</ul>';
 
 		return $res;
 	}
+
 
 }
 

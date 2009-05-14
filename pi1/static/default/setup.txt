@@ -512,9 +512,34 @@ plugin.tx_sevenpack_pi1 {
 		# Deletes authors that have no publications on save/delete
 		delete_no_ref_authors = 1
 
+		# Warnings during list view
+		list {
+			warnings {
+				file_nexist = 1
+			}
+
+			warn_box {
+				msg.wrap = <p>|</p>
+				all_wrap.wrap = <div class="tx_sevenpack-warning_box">|</div>
+			}
+		}
+
+		# Warnings in editor (single) view
 		warnings {
-			# Missing citeid
-			m_citeid = 1;
+			# Required fields missing
+			empty_fields = 1
+
+			# Double citeid
+			double_citeid = 1
+
+			# Local file does not exist
+			file_nexist = 1
+		}
+
+		warn_box {
+			title.wrap = <h3 class="tx_sevenpack-warning_title">|</h3>
+			msg.wrap = <p>|</p>
+			all_wrap.wrap = <div class="tx_sevenpack-warning_box">|</div>
 		}
 
 		groups {
