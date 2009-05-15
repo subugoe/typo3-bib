@@ -50,10 +50,12 @@
 			<label index="label_and">and</label>
 			<label index="label_annotation">Annotation</label>
 			<label index="label_chapter">Chapter</label>
+			<label index="label_doi">DOI</label>
 			<label index="label_edition">edition</label>
 			<label index="label_editor">editor</label>
 			<label index="label_et_al">et al.</label>
 			<label index="label_isbn">ISBN</label>
+			<label index="label_issn">ISSN</label>
 			<label index="label_keywords">Keywords</label>
 			<label index="label_note">Note</label>
 			<label index="label_tags">Tags</label>
@@ -140,10 +142,12 @@
 			<label index="label_and">und</label>
 			<label index="label_annotation">Anmerkung</label>
 			<label index="label_chapter">Kapitel</label>
+			<label index="label_doi">DOI</label>
 			<label index="label_edition">Edition</label>
 			<label index="label_editor">Editor</label>
 			<label index="label_et_al">et al.</label>
 			<label index="label_isbn">ISBN</label>
+			<label index="label_issn">ISSN</label>
 			<label index="label_keywords">Schlüsselwörter</label>
 			<label index="label_note">Bemerkung</label>
 			<label index="label_tags">Tags</label>

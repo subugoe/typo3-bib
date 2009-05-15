@@ -11,7 +11,7 @@ plugin.tx_sevenpack_pi1 {
 
 	# url related values
 	auto_url_order = file_url,web_url,DOI
-	max_url_string_length = 60
+	max_url_string_length = 50
 
 	# The list display mode (simple)
 	display_mode = 0
@@ -95,6 +95,9 @@ plugin.tx_sevenpack_pi1 {
 		# Day
 		day.wrap = |.
 
+		# DOI
+		DOI.typolink.parameter.field = DOI_url
+
 		# Edition
 		edition.noTrimWrap = || ###LABEL_EDITION###,|
 
@@ -103,6 +106,7 @@ plugin.tx_sevenpack_pi1 {
 
 		# File URL
 		file_url.typolink.parameter.field = file_url
+		file_url_short.typolink.parameter.field = file_url
 
 		howpublished.wrap = |,
 		institution.wrap = |,
@@ -136,7 +140,7 @@ plugin.tx_sevenpack_pi1 {
 		school.wrap = |,
 
 		# Title
-		title.typolink.parameter.field = auto_url
+		#title.typolink.parameter.field = auto_url
 
 		# Type
 		type.wrap = <span class="tx_sevenpack-type">|</span>
@@ -151,9 +155,7 @@ plugin.tx_sevenpack_pi1 {
 
 		# Web URL
 		web_url.typolink.parameter.field = web_url
-
-		# Year
-		year.wrap = |.
+		web_url_short.typolink.parameter.field = web_url
 	}
 
 
@@ -510,10 +512,10 @@ plugin.tx_sevenpack_pi1 {
 		# Warnings in editor (single) view
 		warnings {
 			# Required fields missing
-			empty_fields = 1
+			#empty_fields = 1
 
 			# Double citeid
-			double_citeid = 1
+			#double_citeid = 1
 
 			# Local file does not exist
 			file_nexist = 1

@@ -523,6 +523,7 @@ class tx_sevenpack_single_view {
 				$fields[$type] = $cfg_fields[$type_str][$type];
 			if ( is_array ( $cfg_fields['all'][$type] ) )
 				$fields[$type] = array_merge ( $fields[$type], $cfg_fields['all'][$type] );
+			$fields[$type] = array_unique ( $fields[$type] );
 			$fields[$type] = array_intersect ( $fields[$type], $pubFields );
 			$pubFields = array_diff ( $pubFields, $fields[$type] );
 		}
@@ -956,7 +957,7 @@ class tx_sevenpack_single_view {
 		$title = $this->get_ll ( $this->LLPrefix.'title_confirm_save' );
 
 		$warn =& $this->conf['warnings.'];
-		t3lib_div::debug ( $warn );
+		//t3lib_div::debug ( $warn );
 
 		//
 		// Find empty required fields
@@ -999,7 +1000,9 @@ class tx_sevenpack_single_view {
 		$type = 'file_nexist';
 		if ( $warn[$type] ) {
 			$msg = $this->get_ll ( 'editor_error_file_nexist' );
-			$err = tx_sevenpack_utility::check_file_nexist ( $type, $pub['file_url'], $msg );
+			$file = $_SERVER['DOCUMENT_ROOT'];
+			$file .= $pub['file_url'];
+			$err = tx_sevenpack_utility::check_file_nexist ( $type, $file, $msg );
 			if ( is_array ( $err ) )
 				$d_err[] = $err;
 		}

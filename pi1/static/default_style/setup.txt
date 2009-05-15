@@ -2,11 +2,21 @@
 plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-top_navigation {
+		clear: both;
 		padding: 1ex 0px;
-		padding-bottom: 0ex;
+		padding-bottom: 0.5ex;
 		margin: 1ex 0px;
+		margin-bottom: 1.5ex;
 		border-width: 0px; 
 		border-bottom: 1px solid black; 
+	}
+
+	div.tx_sevenpack-bottom_navigation {
+		clear: both;
+		padding: 1ex 0px;
+		padding-top: 0.5ex;
+		margin: 1ex 0px;
+		border-width: 0px; 
 	}
 
 	div.tx_sevenpack-navi_year,
@@ -168,9 +178,16 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 
+	div.tx_sevenpack-list_container {
+		float: left;
+		margin: 0px; 
+		padding:0px; 
+		margin-left: 12em;
+	}
 
 	table.tx_sevenpack-list {
-		margin: 0.5em 0px;
+		margin: 0px;
+		padding: 0px;
 		width: 100%;
 		border-collapse: collapse;
 	}
@@ -197,7 +214,8 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	td.tx_sevenpack-item_even,
 	td.tx_sevenpack-item_odd {
-		padding: 1ex 0.3em;
+		padding: 0ex 0.3em;
+		padding-bottom: 1.5ex;
 		vertical-align: top;
 	}
 	td.tx_sevenpack-item_even {
@@ -265,6 +283,11 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	.tx_sevenpack-keywords_block,
 	.tx_sevenpack-tags_block {
 		margin: 1ex 0px;
+		padding: 0px;
+	}
+
+	.tx_sevenpack-url_block {
+		margin: 0.5ex 0px;
 	}
 
 	div.tx_sevenpack-missing_data  { 

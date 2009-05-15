@@ -1889,10 +1889,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pdata['month'] = '';
 		}
 
-		// Automatic url
-		$order = tx_sevenpack_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
-		$pdata['auto_url'] = $this->get_auto_url ( $pdata, $order );
-
 		// State
 		switch ( $pdata['state'] ) {
 			case 0 :  
@@ -1908,6 +1904,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$pdata['authors'] = $this->get_item_authors_html ( $pub['authors'] );
 
 		// Copy fields
+		$charset = $this->extConf['charset']['upper'];
+		$url_max = 40;
+		if ( strlen ( $this->conf['max_url_string_length'] ) > 0 )
+			$url_max = intval ( $this->conf['max_url_string_length'] );
 		foreach ( $this->ra->pubFields as $f ) {
 			// Trim string
 			$val = trim ( strval ( $pdata[$f] ) );
@@ -1919,13 +1919,23 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					case 'web_url':
 						$val = tx_sevenpack_utility::fix_html_ampersand ( $val );
 						$pdata[$f] = $val;
+						$pdata[$f.'_short'] = tx_sevenpack_utility::crop_middle ( 
+							$val, $url_max, $charset );
 						break;
+					case 'DOI':
+						$pdata[$f] = $val;
+						$pdata['DOI_url'] = 'http://dx.doi.org/' . $val;
 					default:
 						$pdata[$f] = $val;
 				}
 			}
-
 		}
+
+		// Automatic url
+		$order = tx_sevenpack_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
+		$pdata['auto_url'] = $this->get_auto_url ( $pdata, $order );
+		$pdata['auto_url_short'] = tx_sevenpack_utility::crop_middle (
+			$pdata['auto_url'], $url_max, $charset );
 
 
 		// Do data checks
@@ -1939,7 +1949,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$type = 'file_nexist';
 			if ( $w_cfg[$type] ) {
 				$msg = $this->get_ll ( 'editor_error_file_nexist' );
-				$err = tx_sevenpack_utility::check_file_nexist ( $type, $pub['file_url'], $msg );
+				$file = $_SERVER['DOCUMENT_ROOT'];
+				$file .= $pub['file_url'];
+				//$file = $GLOBALS['TSFE']->tmpl->getFileName ( $file );
+				//t3lib_div::debug ( $file );
+				$err = tx_sevenpack_utility::check_file_nexist ( $type, $file, $msg );
 				if ( is_array ( $err ) )
 					$d_err[] = $err;
 			}
@@ -1973,7 +1987,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Prepare the translator
 		// Remove empty field marker from the template
-		foreach ( $this->ra->pubFields as $f ) {
+		$fields = $this->ra->pubFields;
+		$fields[] = 'file_url_short';
+		$fields[] = 'web_url_short';
+		$fields[] = 'auto_url_short';
+		foreach ( $fields as $f ) {
 			$upStr = strtoupper ( $f );
 			$tkey = '###'.$upStr.'###';
 			$hasStr = '';
@@ -2208,18 +2226,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Initialize the label translator
 		$this->label_translator = array();
 		$lt =& $this->label_translator;
-		$lt['###LABEL_ABSTRACT###']   = $cObj->stdWrap ( $this->get_ll ( 'label_abstract' ),  $conf['label.']['abstract.']  );
+		$lt['###LABEL_ABSTRACT###']   = $cObj->stdWrap ( $this->get_ll ( 'label_abstract' ),   $conf['label.']['abstract.']  );
 		$lt['###LABEL_ANNOTATION###'] = $cObj->stdWrap ( $this->get_ll ( 'label_annotation' ), $conf['label.']['annotation.'] );
-		$lt['###LABEL_EDITION###']    = $cObj->stdWrap ( $this->get_ll ( 'label_edition' ),   $conf['label.']['edition.']   );
-		$lt['###LABEL_EDITOR###']     = $cObj->stdWrap ( $this->get_ll ( 'label_editor' ),    $conf['label.']['editor.']    );
-		$lt['###LABEL_ISBN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_isbn' ),      $conf['label.']['ISBN.']      );
-		$lt['###LABEL_KEYWORDS###']   = $cObj->stdWrap ( $this->get_ll ( 'label_keywords' ),  $conf['label.']['keywords.']  );
-		$lt['###LABEL_TAGS###']       = $cObj->stdWrap ( $this->get_ll ( 'label_tags' ),      $conf['label.']['tags.']      );
-		$lt['###LABEL_NOTE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_note' ),      $conf['label.']['note.']      );
-		$lt['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),        $conf['label.']['of.']        );
-		$lt['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),      $conf['label.']['page.']      );
-		$lt['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ), $conf['label.']['publisher.'] );
-		$lt['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),    $conf['label.']['volume.']    );
+		$lt['###LABEL_DOI###']        = $cObj->stdWrap ( $this->get_ll ( 'label_doi' ),        $conf['label.']['doi.']       );
+		$lt['###LABEL_EDITION###']    = $cObj->stdWrap ( $this->get_ll ( 'label_edition' ),    $conf['label.']['edition.']   );
+		$lt['###LABEL_EDITOR###']     = $cObj->stdWrap ( $this->get_ll ( 'label_editor' ),     $conf['label.']['editor.']    );
+		$lt['###LABEL_ISBN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_isbn' ),       $conf['label.']['ISBN.']      );
+		$lt['###LABEL_ISSN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_issn' ),       $conf['label.']['ISSN.']      );
+		$lt['###LABEL_KEYWORDS###']   = $cObj->stdWrap ( $this->get_ll ( 'label_keywords' ),   $conf['label.']['keywords.']  );
+		$lt['###LABEL_TAGS###']       = $cObj->stdWrap ( $this->get_ll ( 'label_tags' ),       $conf['label.']['tags.']      );
+		$lt['###LABEL_NOTE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_note' ),       $conf['label.']['note.']      );
+		$lt['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),         $conf['label.']['of.']        );
+		$lt['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),       $conf['label.']['page.']      );
+		$lt['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ),  $conf['label.']['publisher.'] );
+		$lt['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),     $conf['label.']['volume.']    );
 
 		// block templates
 		$year_block = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
@@ -2283,6 +2303,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Needed since stdWrap/Typolink applies htmlspecialchars to url data
 			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
 			$cObj->data['web_url'] = htmlspecialchars_decode ( $pdata['web_url'], ENT_QUOTES );
+			$cObj->data['DOI_url'] = htmlspecialchars_decode ( $pdata['DOI_url'], ENT_QUOTES );
 			$cObj->data['auto_url'] = htmlspecialchars_decode ( $pdata['auto_url'], ENT_QUOTES );
 
 			// All publications counter
@@ -2553,11 +2574,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( strlen ( $data ) > 0 ) {
 				$rest = $this->check_field_restriction ( $field, $data );
 				if ( !$rest ) {
+					$url = $data;
 					if ( $field == 'DOI' ) {
-						$url = 'http://dx.doi.org/' .
-							$this->filter_pub_html_display ( $data );
-					} else {
-						$url = $data;
+						$url = $pdata['DOI_url'];
 					}
 				}
 			}

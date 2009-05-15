@@ -261,7 +261,6 @@ class tx_sevenpack_importer {
 			//t3lib_div::debug( $trans_tbl );
 
 			$cs =& $GLOBALS['TSFE']->csConvObj;
-			$charset = strtoupper ( $this->pi1->extConf['be_charset'] );
 
 			foreach ( $trans_tbl as $key => $val ) {
 				$trans_tbl[$key] = $cs->conv ( $val, 'iso-8859-1', 'utf-8' );
@@ -276,10 +275,10 @@ class tx_sevenpack_importer {
 	 * Takes an utf-8 string and changes the character set on demand
 	 */
 	function import_utf8_string ( $str, $charset = NULL ) {
-		if ( ! is_string ( $charset ) )
-			$charset = $this->pi1->extConf['be_charset'];
+		if ( ! is_string ( $charset ) ) {
+			$charset = $this->pi1->extConf['charset']['lower'];
+		}
 
-		$charset = strtolower ( $charset );
 		if ( $charset != 'utf-8' ) {
 			$cs =& $GLOBALS['TSFE']->csConvObj;
 			$str = $cs->utf8_decode ( $str, $charset, TRUE );
