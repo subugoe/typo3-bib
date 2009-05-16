@@ -42,14 +42,14 @@ class tx_sevenpack_citeid_generator {
 	function generateBasicId ( $row ) {
 		$authors = $row['authors'];
 
-		$id = sizeof ( $authors ) ? $authors[0]['sn'] : '';
-		for ( $i=1; $i<sizeof($authors); $i++ ) {
+		$id = sizeof ( $authors ) ? $authors[0]['surname'] : '';
+		for ( $i=1; $i < sizeof ( $authors ); $i++ ) {
 			$a_str = '';
-			if ( strlen($authors[$i]['sn']) )
-				$a_str = $authors[$i]['sn'];
-			else if ( strlen($authors[$i]['fn']) )
-				$a_str = $authors[$i]['fn'];
-			$charset = strtoupper ( $this->pi1->extConf['be_charset'] );
+			if ( strlen ( $authors[$i]['surname'] ) > 0 )
+				$a_str = $authors[$i]['surname'];
+			else if ( strlen($authors[$i]['forename']) )
+				$a_str = $authors[$i]['forename'];
+			$charset = $this->pi1->extConf['charset']['upper'];
 			$id .= mb_substr ( $this->simplified_string ( $a_str ), 0, 1, $charset );
 		}
 		if ( !strlen ( $id ) ) {
@@ -70,11 +70,11 @@ class tx_sevenpack_citeid_generator {
 	 */
 	function simplified_string ( $id ) {
 		// Replace some special characters with ASCII characters
-		$charset = strtoupper ( $this->pi1->extConf['be_charset'] );
+		$charset = $this->pi1->extConf['charset']['upper'];
 		$id = htmlentities ( $id, ENT_QUOTES, $charset );
 		$id = str_replace ( '&amp;', '&', $id );
 		$id = preg_replace ( '/&(\w)\w{1,7};/', '$1', $id );
-		//t3lib_div::debug ($id);
+		//t3lib_div::debug ( $id );
 
 		// Replace remaining special characters with ASCII characters
 		$tmpId = '';
