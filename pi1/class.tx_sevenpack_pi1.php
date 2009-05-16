@@ -2239,6 +2239,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$lt['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),         $conf['label.']['of.']        );
 		$lt['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),       $conf['label.']['page.']      );
 		$lt['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ),  $conf['label.']['publisher.'] );
+		$lt['###LABEL_REFERENCES###'] = $cObj->stdWrap ( $this->get_ll ( 'label_references' ), $conf['label.']['references.'] );
 		$lt['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),     $conf['label.']['volume.']    );
 
 		// block templates
@@ -2326,10 +2327,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( strlen ( $data_block ) == 0 )
 				$data_block = $this->template['DEFAULT_DATA'];
 
-			$templ = $cObj->substituteMarker ( $item_block,
+			$tmpl = $cObj->substituteMarker ( $item_block,
 				'###ITEM_DATA###', $data_block );
 
-			$templ = $this->enum_condition_block ( $templ );
+			$tmpl = $this->enum_condition_block ( $tmpl );
 
 			// Initialize the translator
 			$translator = array();
@@ -2368,7 +2369,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				);
 			}
 
-			$templ = $cObj->substituteSubpart ( $templ, '###HAS_MANIPULATORS###', $subst_sub );
+			$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_MANIPULATORS###', $subst_sub );
 
 			// Year separator label
 			if ( ($this->extConf['d_mode'] == $this->D_Y_SPLIT) && ( $pub['year'] != $prevYear ) )  {
@@ -2386,6 +2387,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$items[] = $cObj->substituteMarker ( $bib_block, '###BIBTYPE###', $bibStr );
 			}
 
+			// Append string for item data
 			$append = '';
 			if ( ( sizeof ( $warnings ) > 0 ) && $ed_mode ) {
 				foreach ( $warnings as $err ) {
@@ -2399,10 +2401,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 			// Apply translator
-			$templ = $cObj->substituteMarkerArrayCached ( $templ, $translator, array() );
+			$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $translator );
 
 			// Pass to item processor
-			$items[] = $this->get_item_html ( $pdata, $templ );
+			$items[] = $this->get_item_html ( $pdata, $tmpl );
 
 			// Update counters
 			$i_page += $i_page_delta;
@@ -2425,6 +2427,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_ITEMS###', $hasStr );
+		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $this->label_translator );
 		$tmpl = $cObj->substituteMarker ( $tmpl, '###ITEMS###', $items );
 	}
 
@@ -2638,14 +2641,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function enum_condition_block ( $templ ) {
-		if ( $this->extConf['has_enum'] ) {
-			$templ = $this->cObj->substituteSubpart ( $templ,
-				'###HAS_ENUM###', array ( '', '' ) );
-		} else {
-			$templ = $this->cObj->substituteSubpart ( $templ,
-				'###HAS_ENUM###', '' );
-		}
+	function enum_condition_block ( $templ ) 
+	{
+		$sub = $this->extConf['has_enum'] ? array() : '';
+		$templ = $this->cObj->substituteSubpart ( 
+			$templ, '###HAS_ENUM###', $sub );
 		return $templ;
 	}
 

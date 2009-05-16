@@ -62,6 +62,7 @@
 			<label index="label_of">of</label>
 			<label index="label_page">page</label>
 			<label index="label_publisher">Publisher</label>
+			<label index="label_references">References</label>
 			<label index="label_volume">volume</label>
 			<label index="link_back_to_list">Back to the list view</label>
 			<label index="manipulators_delete">Delete this record</label>
@@ -154,6 +155,7 @@
 			<label index="label_of">aus</label>
 			<label index="label_page">Seite</label>
 			<label index="label_publisher">Herausgeber</label>
+			<label index="label_references">Publikationen</label>
 			<label index="label_volume">Band</label>
 			<label index="link_back_to_list">Zurück zur Listen Ansicht</label>
 			<label index="manipulators_delete">Diesen Eintrag löschen</label>
