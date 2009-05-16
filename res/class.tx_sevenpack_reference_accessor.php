@@ -728,14 +728,16 @@ class tx_sevenpack_reference_accessor {
 		// General keyword search
 		if ( is_array ( $filter['all'] ) && ( sizeof ( $filter['all'] ) > 0 ) ) {
 			$f =& $filter['all'];
+			//t3lib_div::debug ( $f );
 			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
 				$wca = array();
-				$words =& $f['words']; // OR
-				if ( $f['rule'] == 0 ) {
-					$wca[] = $this->get_filter_search_all_clause ( $words );
-				} else {
+				$words =& $f['words'];
+				$exclude = is_array ( $f['exclude'] ) ? $f['exclude'] : array();
+				if ( $f['rule'] == 0 ) { // OR
+					$wca[] = $this->get_filter_search_all_clause ( $words, $exclude );
+				} else { // AND
 					foreach ( $words as $word ) {
-						$wca[] = $this->get_filter_search_all_clause ( array ( $word ) );
+						$wca[] = $this->get_filter_search_all_clause ( array ( $word ), $exclude );
 					}
 				}
 
@@ -759,7 +761,7 @@ class tx_sevenpack_reference_accessor {
 	 * @param $words An array or words
 	 * @return The ORDER clause string
 	 */
-	function get_filter_search_all_clause ( $words ) {
+	function get_filter_search_all_clause ( $words, $exclude = array() ) {
 		$rT  =& $this->refTable;
 		$rta =& $this->refTableAlias;
 		$res = '';
@@ -775,20 +777,24 @@ class tx_sevenpack_reference_accessor {
 
 		// Fields
 		foreach ( $this->refFields as $field ) {
-			foreach ( $wwords as $word ) {
-				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
-				$wca[] = $rta.'.'.$field.' LIKE '.$word;
+			if ( !in_array ( $field, $exclude ) ) {
+				foreach ( $wwords as $word ) {
+					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
+					$wca[] = $rta.'.'.$field.' LIKE '.$word;
+				}
 			}
 		}
 
 		// Authors
-		$a_ships = $this->search_author_authorships ( $wwords, $this->pid_list );
-		if ( sizeof ( $a_ships ) > 0 ) {
-			$uids = array();
-			foreach ( $a_ships as $as ) {
-				$uids[] = intval ( $as['pub_id'] );
+		if ( !in_array ( 'authors', $exclude ) ) {
+			$a_ships = $this->search_author_authorships ( $wwords, $this->pid_list );
+			if ( sizeof ( $a_ships ) > 0 ) {
+				$uids = array();
+				foreach ( $a_ships as $as ) {
+					$uids[] = intval ( $as['pub_id'] );
+				}
+				$wca[] = $rta.'.uid IN (' . implode ( ',', $uids ) . ')';
 			}
-			$wca[] = $rta.'.uid IN (' . implode ( ',', $uids ) . ')';
 		}
 
 		if ( sizeof ( $wca ) > 0 )

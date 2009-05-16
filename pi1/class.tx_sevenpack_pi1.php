@@ -371,32 +371,57 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Search rule
-			$p_val = $pivars['rule'];
 			$sconf['rule'] = 0; // OR
-			if ( strtoupper ( $p_val ) == 'AND' ) {
+			if ( strtoupper ( $pivars['rule'] ) == 'AND' ) {
 				$sconf['rule'] = 1;  // AND
 				$lvars['search']['rule'] = 'AND';
 			}
 
-			// Show extra
-			$p_val = $pivars['extra'];
-			$sconf['extra'] = TRUE; 
-			if ( !$pivars['extra'] ) {
-				if ( $pivars['extra_b'] ) {
-					$sconf['extra'] = FALSE;
-				} else {
-					$sconf['extra'] = $cfg['extra_def'] ? TRUE : FALSE;
-				}
-			}
-			if ( $sconf['extra'] ) {
-				$lvars['search']['extra'] = 1;
-			}
+			// extra_b indicates that the page has been visited 'b'efore
+			// So that the default values should not be applied
 			if ( $pivars['extra_b'] ) {
 				$lvars['search']['extra_b'] = 1;
 			}
+			// Show extra
+			$sconf['extra'] = TRUE; 
+			if ( !$pivars['extra'] ) {
+				$sconf['extra'] = FALSE;
+				if ( !$pivars['extra_b'] ) {
+					$sconf['extra'] = $cfg['extra.']['def'] ? TRUE : FALSE;
+				}
+			}
+			if ( $sconf['extra'] ) $lvars['search']['extra'] = 1;
 
-			// Search string separators
-			$sconf['separators'] = array( ',', ' ' );
+			// Show abstracts
+			$sconf['abstracts'] = TRUE; 
+			if ( !$pivars['abstracts'] ) {
+				$sconf['abstracts'] = FALSE;
+				if ( !$pivars['extra_b'] ) {
+					$sconf['abstracts'] = $cfg['abstracts.']['def'] ? TRUE : FALSE;
+				}
+			}
+			if ( $sconf['abstracts'] ) $lvars['search']['abstracts'] = 1;
+
+			// Separator selection
+			$sconf['separator'] = ''; // Default
+			if ( strlen ( $pivars['sep'] ) > 0 ) {
+				$s_str = ''; $s_id = '';
+				switch ( $pivars['sep'] ) {
+					case 'space':
+						$s_str = ' ';
+						$s_id = 'space'; break;
+					case 'semi': 
+						$s_str = ';';
+						$s_id = 'semi'; break;
+					case 'pipe':
+						$s_str = '|';
+						$s_id = 'pipe'; break;
+				}
+				if ( strlen ( $s_str ) > 0 ) {
+					$sconf['separator'] = $s_str;
+					$lvars['search']['sep'] = $s_id;
+				}
+			}
 
 			//t3lib_div::debug ( $sconf );
 		}
@@ -621,11 +646,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		if ( $extConf['show_nav_search'] ) {
 			$sconf =& $extConf['search_navi'];
+			$strings = array ( );
 			if ( strlen ( $sconf['string'] ) > 0 ) {
 				// Explode search string
-				$strings = tx_sevenpack_utility::multi_explode_trim (
-					$sconf['separators'], $sconf['string'], TRUE );
-
+				if ( strlen ( $sconf['separator'] ) > 0 ) {
+					$strings = tx_sevenpack_utility::explode_trim (
+						$sconf['separator'], $sconf['string'], TRUE );
+				} else {
+					$strings[] = $sconf['string'];
+				}
+			}
+			if ( sizeof ( $strings ) > 0 ) {
 				// Setup search patterns
 				$pats = array();
 				foreach ( $strings as $txt ) {
@@ -635,12 +666,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 						$pats[] = $spec;
 				}
 
+				$exclude = array ( );
+				if ( !$sconf['abstracts'] ) $exclude[] = 'abstract';
+
 				//t3lib_div::debug ( $pats );
 				$ff =& $extConf['filters'];
 				$ff['search'] = array();
 				$ff['search']['all'] = array();
-				$ff['search']['all']['words'] = $pats;
-				$ff['search']['all']['rule'] = $sconf['rule'];
+				$ff =& $ff['search']['all'];
+				$ff['words'] = $pats;
+				$ff['rule'] = $sconf['rule'];
+				$ff['exclude'] = $exclude;
 			}
 		}
 

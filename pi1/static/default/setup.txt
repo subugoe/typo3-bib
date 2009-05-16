@@ -175,21 +175,52 @@ plugin.tx_sevenpack_pi1 {
 
 		# Classes or the year selection form
 		form_class = tx_sevenpack-search_form
-		search_btn_class = tx_sevenpack-button
-		clear_btn_class = tx_sevenpack-button
-		extra_btn_class = tx_sevenpack-button
 
 		#form.wrap = |
-		search_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-		search_input.wrap = |&nbsp;
-		#search_btn.wrap = |
-		#clear_btn.wrap = |
+		search {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			input.wrap = |&nbsp;
+			search_btn_class = tx_sevenpack-button
+			#search_btn.wrap = |
+			clear_btn_class = tx_sevenpack-button
+			#clear_btn.wrap = |
+		}
 
 		# Show details default
-		extra_def = 0
-		extra_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-		extra_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
-		extra_btn.wrap = |
+		extra {
+			def = 0
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-button
+			btn.wrap = |
+		}
+
+		# Show abstracts
+		abstracts {
+			def = 0
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-button
+			btn.wrap = |
+		}
+
+		# Separator selection
+		separator {
+			def = space
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			#select_class = 
+			select.wrap = |
+		}
+
+		# Rule selection
+		rule {
+			def = OR
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			#select_class = 
+			select.wrap = |
+		}
 
 		top_disable = 0
 		bottom_disable = 1

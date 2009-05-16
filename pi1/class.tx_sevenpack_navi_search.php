@@ -49,7 +49,9 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$label = $cObj->stdWrap ( $label, $cfg['label.'] );
 
 		// Form start
-		$attribs = array ( 'search' => '' );
+		$attribs = array ( 
+			'search' => ''
+		);
 		if ( $this->pi1->extConf['show_nav_author'] ) {
 			$attribs['author'] = '';
 			$attribs['author_letter'] = '';
@@ -65,60 +67,69 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		//
 		// The search bar
 		//
+		$lcfg =& $cfg['search.'];
 		$attribs = array ( 'size' => 42, 'maxlength' => 1024 );
+
 		$value = '';
 		if ( strlen ( $this->extConf['string'] ) > 0 ) {
-			$value = htmlspecialchars ( $this->extConf['string'], ENT_QUOTES, $charset );
+			$value = htmlspecialchars ( $extConf['string'], ENT_QUOTES, $charset );
 		}
 		$btn = tx_sevenpack_utility::html_text_input (
 			$this->pi1->prefix_pi1.'[search][text]', $value, $attribs
 		);
-		$btn = $cObj->stdWrap ( $btn, $cfg['search_input.'] );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['input.'] );
 		$sea = $btn;
 
 		// The search button
+		$txt = $this->pi1->get_ll ( 'searchNav_search' );
+
 		$attribs = array ();
-		if ( strlen ( $cfg['search_btn_class'] ) > 0 )
-			$attribs['class'] =  $cfg['search_btn_class'];
+		if ( strlen ( $lcfg['search_btn_class'] ) > 0 )
+			$attribs['class'] = $lcfg['search_btn_class'];
 		$btn = tx_sevenpack_utility::html_submit_input ( 
-			$this->pi1->prefix_pi1.'[action][search]',
-			$this->pi1->get_ll ( 'button_search' ), $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['search_btn.'] );
+			$this->pi1->prefix_pi1.'[action][search]', $txt, $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['search_btn.'] );
 		$sea .= $btn;
 
+
 		// The clear button
+		$txt = $this->pi1->get_ll ( 'searchNav_clear' );
+
 		$attribs = array ();
-		if ( strlen ( $cfg['clear_btn_class'] ) > 0 )
-			$attribs['class'] =  $cfg['clear_btn_class'];
+		if ( strlen ( $lcfg['clear_btn_class'] ) > 0 )
+			$attribs['class'] = $lcfg['clear_btn_class'];
 		$btn = tx_sevenpack_utility::html_submit_input ( 
-			$this->pi1->prefix_pi1.'[action][clear_search]',
-			$this->pi1->get_ll ( 'button_clear' ), $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['clear_btn.'] );
+			$this->pi1->prefix_pi1.'[action][clear_search]', $txt, $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['clear_btn.'] );
 		$sea .= $btn;
-		$sea = $cObj->stdWrap ( $sea, $cfg['search_widget.'] );
+
+		// Search widget wrap
+		$sea = $cObj->stdWrap ( $sea, $lcfg['widget.'] );
 
 
 		//
 		// The extra check
 		//
-		$txt = $this->pi1->get_ll ( 'button_search_ex' );
-		$txt = $cObj->stdWrap ( $txt, $cfg['extra_label.'] );
+		$lcfg =& $cfg['extra.'];
+		$txt = $this->pi1->get_ll ( 'searchNav_extra' );
+		$txt = $cObj->stdWrap ( $txt, $lcfg['label.'] );
 
 		$attribs = array (
 			'onchange' => 'this.form.submit()'
 		);
-		if ( strlen ( $cfg['extra_btn_class'] ) > 0 )
-			$attribs['class'] =  $cfg['extra_btn_class'];
+		if ( strlen ( $lcfg['btn_class'] ) > 0 )
+			$attribs['class'] = $lcfg['btn_class'];
 		$btn = tx_sevenpack_utility::html_check_input ( 
 			$this->pi1->prefix_pi1.'[search][extra]', '1', $extConf['extra'], $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['extra_btn.'] );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
 
-		$extra = $cObj->stdWrap ( $txt . $btn, $cfg['extra_widget.'] );
+		$extra = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
 
 		// Append hidden input
-		$this->hidden_input[] = tx_sevenpack_utility::html_hidden_input (
-			$this->pi1->prefix_pi1.'[search][extra_b]', '1' );
-
+		$this->append_hidden( 'extra_b', TRUE );
+		if ( !$extConf['extra'] ) {
+			$this->append_hidden( 'abstracts', $extConf['abstracts'] );
+		}
 
 		// End of form
 		$form_end = implode ( "\n", $this->hidden_input );
@@ -128,9 +139,12 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$trans = array();
 		$trans['###NAVI_LABEL###'] = $label;
 		$trans['###FORM_START###'] = $form_start;
-		$trans['###FORM_END###'] = $form_end;
 		$trans['###SEARCH_BAR###'] = $sea;
 		$trans['###EXTRA_BTN###'] = $extra;
+		$trans['###FORM_END###'] = $form_end;
+		if ( $extConf['extra'] ) {
+			$this->get_extra ( $trans );
+		}
 
 		$has_extra = $extConf['extra'] ? array ( '', '' ) : '';
 
@@ -139,6 +153,108 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
 		return $con;
+	}
+
+
+	function get_extra ( &$trans ) {
+		$cObj =& $this->pi1->cObj;
+		$cfg =& $this->conf;
+		$extConf =& $this->extConf;
+
+		//
+		// The abstract button
+		//
+		$lcfg =& $cfg['abstracts.'];
+		$txt = $this->pi1->get_ll ( 'searchNav_abstract' );
+		$txt = $cObj->stdWrap ( $txt, $lcfg['label.'] );
+
+		$attribs = array (
+			'onchange' => 'this.form.submit()'
+		);
+		if ( strlen ( $cfg['abstracts_btn_class'] ) > 0 )
+			$attribs['class'] =  $lcfg['btn_class'];
+		$btn = tx_sevenpack_utility::html_check_input ( 
+			$this->pi1->prefix_pi1.'[search][abstracts]', '1', 
+			$extConf['abstracts'], $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
+
+		$abstr = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
+
+
+		//
+		// The separator selection
+		//
+		$lcfg =& $cfg['separator.'];
+		$txt = $this->pi1->get_ll ( 'searchNav_separator' );
+		$txt = $cObj->stdWrap ( $txt, $lcfg['label.'] );
+
+		$types = array ( 'space', 'semi', 'pipe' );
+		$pairs = array (
+			'none' => $this->pi1->get_ll ( 'searchNav_sep_none' . $type ),
+			'space' => '&nbsp;', 'semi' => ';', 'pipe' => '|'
+		);
+		foreach ( $types as $type ) {
+			$pairs[$type] .= ' (' . 
+				$this->pi1->get_ll ( 'searchNav_sep_' . $type ) . ')';
+		}
+
+		$val = 'none';
+		switch ( $extConf['separator'] ) {
+			case ' ': $val = 'space'; break;
+			case ';': $val = 'semi'; break;
+			case '|': $val = 'pipe'; break;
+		}
+
+		$attribs = array (
+			'name'     => $this->pi1->prefix_pi1.'[search][sep]',
+			'onchange' => 'this.form.submit()'
+		);
+		if ( strlen ( $lcfg['select_class'] ) > 0 )
+			$attribs['class'] = $lcfg['select_class'];
+		$btn = tx_sevenpack_utility::html_select_input ( 
+			$pairs, $val, $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['select.'] );
+
+		$sep = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
+
+
+		//
+		// The rule selection
+		//
+		$lcfg =& $cfg['rule.'];
+		$txt = $this->pi1->get_ll ( 'searchNav_rule' );
+		$txt = $cObj->stdWrap ( $txt, $lcfg['label.'] );
+
+		$pairs = array (
+			'OR' => $this->pi1->get_ll ( 'searchNav_OR' ),
+			'AND' => $this->pi1->get_ll ( 'searchNav_AND' ),
+		);
+
+		$val = $extConf['rule'] ? 'AND' : 'OR';
+
+		$attribs = array (
+			'name'     => $this->pi1->prefix_pi1.'[search][rule]',
+			'onchange' => 'this.form.submit()'
+		);
+		if ( strlen ( $lcfg['select_class'] ) > 0 )
+			$attribs['class'] = $lcfg['select_class'];
+		$btn = tx_sevenpack_utility::html_select_input ( 
+			$pairs, $val, $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['select.'] );
+
+		$rule = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
+
+		// Setup the translator
+		$trans['###ABSTRACTS_BTN###'] = $abstr;
+		$trans['###SEPARATOR_SEL###'] = $sep;
+		$trans['###RULE_SEL###'] = $rule;
+	}
+
+
+	function append_hidden ( $key, $val, $bool = TRUE ) {
+		if ( $bool ) $val = $val ? '1' : '0';
+		$this->hidden_input[] = tx_sevenpack_utility::html_hidden_input (
+			$this->pi1->prefix_pi1.'[search]['.$key.']', $val );
 	}
 
 }

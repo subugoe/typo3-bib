@@ -77,6 +77,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		display: inline;
 		padding: 0px;
 		margin: 0px;
+		border-width: 0px;
 	}
 
 	.tx_sevenpack-navi_search_details,
@@ -109,6 +110,10 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	/*
 	 * Search navigation
 	 */
+	form.tx_sevenpack-search_form {
+		display: block;
+	}
+
 	.tx_sevenpack-navi_search_details {
 		margin-left: 12em;
 	}
