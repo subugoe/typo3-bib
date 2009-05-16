@@ -1016,7 +1016,7 @@ class tx_sevenpack_single_view {
 		// Cite id doubles
 		//
 		$type = 'double_citeid';
-		if ( $warn[$type] ) {
+		if ( $warn[$type] && !$this->conf['no_edit.']['citeid'] ) {
 			if ( $this->ra->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {
 				$err = array ( 'type' => $type );
 				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_id_exists');
