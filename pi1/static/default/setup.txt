@@ -503,9 +503,6 @@ plugin.tx_sevenpack_pi1 {
 		field_labels.wrap = |:
 		field_widgets.wrap = |
 
-		# Deletes authors that have no publications on save/delete
-		delete_no_ref_authors = 1
-
 		# Warnings during list view
 		list {
 			warnings {
@@ -534,6 +531,14 @@ plugin.tx_sevenpack_pi1 {
 			title.wrap = <h3 class="tx_sevenpack-warning_title">|</h3>
 			msg.wrap = <p>|</p>
 			all_wrap.wrap = <div class="tx_sevenpack-warning_box">|</div>
+		}
+
+		# Deletes authors that have no publications on save/delete
+		delete_no_ref_authors = 1
+
+		# Fields that are not allowed to be edited
+		no_edit {
+			citeid = 0
 		}
 
 		groups {

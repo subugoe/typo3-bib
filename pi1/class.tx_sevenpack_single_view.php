@@ -186,9 +186,10 @@ class tx_sevenpack_single_view {
 				default: break;
 			}
 		} else {
-			if ( $genIDRequest &&
-			     ( $edExtConf['citeid_gen_old'] == $pi1->AUTOID_HALF ) )
+			if ( $genIDRequest 
+				&& ( $edExtConf['citeid_gen_old'] == $pi1->AUTOID_HALF ) ) {
 				$genID = TRUE;
+			}
 		}
 
 		if ( $genID ) {
@@ -275,7 +276,7 @@ class tx_sevenpack_single_view {
 
 			if ( sizeof ( $d_err ) > 0 ) {
 				$dataValid = FALSE;
-				$cfg =& $this->conf['warn_box.'];
+				$cfg =& $edConf['warn_box.'];
 				$txt = $this->get_ll ( $this->LLPrefix.'error_title');
 				$box = $pi1->cObj->stdWrap ( $txt, $cfg['title.'] ) . "\n";
 				$box .= $this->validation_error_string ( $d_err );
@@ -415,15 +416,21 @@ class tx_sevenpack_single_view {
 							$label = $this->get_ll ( $this->ra->refTable . '_' . $f );
 					}
 
+					// Disable editing on demand
+					$wm = $w_mode;
+					if ( ( $wm == $pi1->W_EDIT ) && $edConf['no_edit.'][$f] ) {
+						$wm = $pi1->W_SILENT;
+					}
+					//t3lib_div::debug ( array ( $f, $edConf['no_edit.'][$f] ) );
+
 					// Field value widget
 					$widget = '';
 					switch ( $f ) {
 						case 'citeid':
-							if ( $edExtConf['citeid_gen_new'] ==  $pi1->AUTOID_FULL ) {
-								$widget .= $this->get_widget ( $f, $pub[$f],
-									( $w_mode == $pi1->W_EDIT ) ? $pi1->W_SILENT : $w_mode );
+							if ( $edExtConf['citeid_gen_new'] == $pi1->AUTOID_FULL ) {
+								$widget .= $this->get_widget ( $f, $pub[$f], $wm );
 							} else {
-								$widget .= $this->get_widget ( $f, $pub[$f], $w_mode );
+								$widget .= $this->get_widget ( $f, $pub[$f], $wm );
 							}
 							// Add the id generation button
 							if ( $this->is_new ) {
@@ -435,27 +442,25 @@ class tx_sevenpack_single_view {
 							}
 							break;
 						case 'year':
-							$widget .= $this->get_widget ( 'year',  $pub['year'],  $w_mode );
+							$widget .= $this->get_widget ( 'year',  $pub['year'],  $wm );
 							$widget .= ' - ';
-							$widget .= $this->get_widget ( 'month', $pub['month'], $w_mode );
+							$widget .= $this->get_widget ( 'month', $pub['month'], $wm );
 							$widget .= ' - ';
-							$widget .= $this->get_widget ( 'day',   $pub['day'],   $w_mode );
+							$widget .= $this->get_widget ( 'day',   $pub['day'],   $wm );
 							break;
 						case 'month':
 						case 'day':
 							break;
 						default:
-							$widget .= $this->get_widget ( $f, $pub[$f], $w_mode );
+							$widget .= $this->get_widget ( $f, $pub[$f], $wm );
 					}
 					if ( $f == 'bibtype' ) {
 						$widget .= $btn_update;
 					}
 
 					if ( ( strlen ( $label ) + strlen ( $widget ) ) > 0 ) {
-						if ( is_array ( $edConf['field_labels.'] ) )
-							$label = $pi1->cObj->stdWrap ( $label, $edConf['field_labels.'] );
-						if ( is_array ( $edConf['field_widgets.'] ) )
-							$widget = $pi1->cObj->stdWrap ( $widget, $edConf['field_widgets.'] );
+						$label  = $pi1->cObj->stdWrap ( $label, $edConf['field_labels.'] );
+						$widget = $pi1->cObj->stdWrap ( $widget, $edConf['field_widgets.'] );
 						$con .= '<tr>';
 						$con .= '<th' . $class_str . '>' . $label  . '</th>' . "\n";
 						$con .= '<td' . $class_str . '>' . $widget . '</td>' . "\n";
