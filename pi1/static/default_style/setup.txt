@@ -181,6 +181,10 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin-right: 1em;
 	}
 
+	.tx_sevenpack-hidden {
+		display: none;
+	}
+
 
 	div.tx_sevenpack-list_container {
 		float: left;

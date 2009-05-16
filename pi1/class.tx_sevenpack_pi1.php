@@ -388,6 +388,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$sconf['extra'] = $cfg['extra_def'] ? TRUE : FALSE;
 				}
 			}
+			if ( $sconf['extra'] ) {
+				$lvars['search']['extra'] = 1;
+			}
+			if ( $pivars['extra_b'] ) {
+				$lvars['search']['extra_b'] = 1;
+			}
 
 			// Search string separators
 			$sconf['separators'] = array( ',', ' ' );

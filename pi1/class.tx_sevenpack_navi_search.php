@@ -115,6 +115,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 
 		$extra = $cObj->stdWrap ( $txt . $btn, $cfg['extra_widget.'] );
 
+		// Append hidden input
 		$this->hidden_input[] = tx_sevenpack_utility::html_hidden_input (
 			$this->pi1->prefix_pi1.'[search][extra_b]', '1' );
 
@@ -131,7 +132,10 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$trans['###SEARCH_BAR###'] = $sea;
 		$trans['###EXTRA_BTN###'] = $extra;
 
+		$has_extra = $extConf['extra'] ? array ( '', '' ) : '';
+
 		$tmpl = $this->pi1->enum_condition_block ( $this->template );
+		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_EXTRA###', $has_extra );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
 		return $con;
