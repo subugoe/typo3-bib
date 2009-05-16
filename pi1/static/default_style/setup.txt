@@ -79,6 +79,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin: 0px;
 	}
 
+	.tx_sevenpack-navi_search_details,
 	.tx_sevenpack-navi_year_selection,
 	.tx_sevenpack-navi_author_letters,
 	.tx_sevenpack-navi_author_selection,
@@ -100,6 +101,18 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		float: right;
 	}
 
+	div.tx_sevenpack-navi_extra_row {
+		padding-top: 1ex;
+	}
+
+
+	/*
+	 * Search navigation
+	 */
+	.tx_sevenpack-navi_search_details {
+		margin-left: 12em;
+	}
+
 	/*
 	 * Author navigation
 	 */
@@ -111,10 +124,6 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		float: right;
 	}
 
-	div.tx_sevenpack-navi_author_row {
-		padding-top: 1ex;
-	}
-
 	/*
 	 * Preferences navigation
 	 */
@@ -123,28 +132,23 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		float: left;
 	}
 
-	.tx_sevenpack-navi_pref_label {
-		padding: 0px;
-		padding-right: 0.33em;
-	}
-
-	.tx_sevenpack-navi_pref_widget {
-		padding: 0px;
-		padding-right: 1em;
-	}
-
-
 	span.tx_sevenpack-navi_current {
 		font-size: larger;
 		font-weight: bold;
 	}
 
-	.tx_sevenpack-navi_label,
-	.tx_sevenpack-navi_main_label {
-		font-weight: bold;
+	.tx_sevenpack-navi_widget {
+		padding: 0px;
+		padding-right: 1em;
+	}
+
+	.tx_sevenpack-navi_label {
+		padding: 0px;
+		padding-right: 0.33em;
 	}
 
 	div.tx_sevenpack-navi_main_label {
+		font-weight: bold;
 		width: 12em;
 		padding: 0px;
 		margin: 0px;

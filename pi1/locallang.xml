@@ -32,6 +32,7 @@
 			<label index="button_go">Go</label>
 			<label index="button_clear">Clear</label>
 			<label index="button_search">Search</label>
+			<label index="button_search_ex">Show details</label>
 			<label index="export_bibtex">BibTeX</label>
 			<label index="export_bibtexLinkTitle">Export as BibTeX</label>
 			<label index="export_file_new">Newly generated</label>
@@ -125,6 +126,7 @@
 			<label index="button_go">Los</label>
 			<label index="button_clear">Zurücksetzen</label>
 			<label index="button_search">Suche</label>
+			<label index="button_search_ex">Zeige Details</label>
 			<label index="export_bibtex">BibTeX</label>
 			<label index="export_bibtexLinkTitle">Exportiere als BibTeX</label>
 			<label index="export_file_new">Neu generiert</label>

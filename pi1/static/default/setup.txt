@@ -177,10 +177,19 @@ plugin.tx_sevenpack_pi1 {
 		form_class = tx_sevenpack-search_form
 		search_btn_class = tx_sevenpack-button
 		clear_btn_class = tx_sevenpack-button
+		extra_btn_class = tx_sevenpack-button
 
 		#form.wrap = |
-		search_btn.wrap = |
-		clear_btn.wrap = |
+		search_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+		search_input.wrap = |&nbsp;
+		#search_btn.wrap = |
+		#clear_btn.wrap = |
+
+		# Show details default
+		extra_def = 0
+		extra_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+		extra_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+		extra_btn.wrap = |
 
 		top_disable = 0
 		bottom_disable = 1
@@ -315,16 +324,16 @@ plugin.tx_sevenpack_pi1 {
 		# Page label and wrap
 		label.wrap = |:
 
-		ipp_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
-		ipp_label.wrap = <span class="tx_sevenpack-navi_pref_label">|</span>
+		ipp_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+		ipp_label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 		#ipp_select.wrap = |
 
-		abstract_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
-		abstract_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
+		abstract_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+		abstract_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
 		#abstract_btn.wrap = |
 		
-		keywords_widget.wrap = <span class="tx_sevenpack-navi_pref_widget">|</span>
-		keywords_label.wrap =  <span class="tx_sevenpack-navi_pref_label">|</span>
+		keywords_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+		keywords_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
 		#keywords_btn.wrap = |
 
 		# Classes or the ipp selection form
@@ -515,7 +524,7 @@ plugin.tx_sevenpack_pi1 {
 			#empty_fields = 1
 
 			# Double citeid
-			#double_citeid = 1
+			double_citeid = 1
 
 			# Local file does not exist
 			file_nexist = 1

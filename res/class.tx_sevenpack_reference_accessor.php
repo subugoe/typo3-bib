@@ -916,23 +916,28 @@ class tx_sevenpack_reference_accessor {
 	 * @return TRUE on existance FALSE otherwise
 	 */
 	function citeid_exists ( $citeid, $uid = -1 ) {
+		if ( strlen ( $citeid ) == 0 ) return FALSE;
 		$num = 0;
-		$WC  = 'citeid='.$GLOBALS['TYPO3_DB']->fullQuoteStr ( $citeid, $this->refTable );
-		$WC .= $this->enable_fields ( $this->refTable, '', $this->show_hidden );
+		$db =& $GLOBALS['TYPO3_DB'];
+		$WC = array();
+		$WC[] = 'citeid='.$db->fullQuoteStr ( $citeid, $this->refTable );
 		if ( is_numeric ( $uid ) && ( $uid >= 0 ) ) {
-			$WC .= ' AND uid!='."'".intval($uid)."'";
+			$WC[] = 'uid!='."'".intval($uid)."'";
 		}
 		if ( sizeof ( $this->pid_list ) > 0 ) {
 			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
-			$WC .= ' AND pid IN ('.$csv.')';
+			$WC[] = 'pid IN ('.$csv.')';
+		}
+		$WC = implode ( ' AND ', $WC );
+		$WC .= $this->enable_fields ( $this->refTable, '', $this->show_hidden );
+
+		$res = $db->exec_SELECTquery ( 'count(uid)', $this->refTable, $WC );
+		$row = $db->sql_fetch_assoc ( $res );
+		if ( is_array ( $row ) ) {
+			$num = intval ( $row['count(uid)'] );
 		}
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'count(uid)', $this->refTable, $WC );
-		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res );
-		if ( is_array ( $row ) )
-			$num = intval ( $row['count(uid)'] );
-
-		return ($num > 0) ? TRUE : FALSE;
+		return ($num > 0);
 	}
 
 

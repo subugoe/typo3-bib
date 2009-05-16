@@ -221,9 +221,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Character set
 		$extConf['charset'] = array ( 'upper' => 'UTF-8', 'lower' => 'utf-8' );
-		if ( strlen ( $this->conv['charset'] ) > 0 ) {
-			$extConf['charset']['upper'] = strtoupper ( $this->conv['charset'] );
-			$extConf['charset']['lower'] = strtolower ( $this->conv['charset'] );
+		if ( strlen ( $this->conf['charset'] ) > 0 ) {
+			$extConf['charset']['upper'] = strtoupper ( $this->conf['charset'] );
+			$extConf['charset']['lower'] = strtolower ( $this->conf['charset'] );
 		}
 
 		// Activate export modes
@@ -355,10 +355,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Search navi
 		//
 		if ( $extConf['show_nav_search'] ) {
+			$cfg =& $this->conf['searchNav.'];
 			$extConf['dynamic'] = TRUE;
 			$extConf['search_navi'] = array();
 			$sconf =& $extConf['search_navi'];
 			$lvars =& $extConf['link_vars'];
+			$pivars =& $this->piVars['search'];
 
 			// Clear string
 			if ( isset ( $this->piVars['action']['clear_search'] ) ) {
@@ -366,18 +368,29 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Search string
-			$p_val = $this->piVars['search']['text'];
+			$p_val = $pivars['text'];
 			if ( ( strlen ( $p_val ) > 0 ) && !$clear ) {
 				$sconf['string'] = $p_val;
 				$lvars['search']['text'] = $p_val;
 			}
 
 			// Search rule
-			$p_val = $this->piVars['search']['rule'];
+			$p_val = $pivars['rule'];
 			$sconf['rule'] = 0; // OR
 			if ( strtoupper ( $p_val ) == 'AND' ) {
 				$sconf['rule'] = 1;  // AND
 				$lvars['search']['rule'] = 'AND';
+			}
+
+			// Show extra
+			$p_val = $pivars['extra'];
+			$sconf['extra'] = TRUE; 
+			if ( !$pivars['extra'] ) {
+				if ( $pivars['extra_b'] ) {
+					$sconf['extra'] = FALSE;
+				} else {
+					$sconf['extra'] = $cfg['extra_def'] ? TRUE : FALSE;
+				}
 			}
 
 			// Search string separators
@@ -607,9 +620,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $extConf['show_nav_search'] ) {
 			$sconf =& $extConf['search_navi'];
 			if ( strlen ( $sconf['string'] ) > 0 ) {
-				$pats = array();
+				// Explode search string
 				$strings = tx_sevenpack_utility::multi_explode_trim (
 					$sconf['separators'], $sconf['string'], TRUE );
+
+				// Setup search patterns
+				$pats = array();
 				foreach ( $strings as $txt ) {
 					$spec = htmlentities ( $txt, ENT_QUOTES, $extConf['charset']['upper'] );
 					$pats[] = $txt;
