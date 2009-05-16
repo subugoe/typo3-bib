@@ -41,7 +41,7 @@ class tx_sevenpack_importer {
 		$title = FALSE;
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'title', 'pages', 'uid='.intval( $uid ) );
 		$p_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res );
-		$charset = strtoupper ( tx_sevenpack_utility::accquire_be_charset() );
+		$charset = $pi1->extConf['charset']['upper'];
 		if ( is_array ( $p_row ) ) {
 			$title = htmlspecialchars ( $p_row['title'], ENT_NOQUOTES, $charset );
 			$title .= ' (' . strval ( $uid ) . ')';
@@ -236,7 +236,8 @@ class tx_sevenpack_importer {
 
 
 	function message_times_str ( $msg, $count ) {
-		$res = htmlspecialchars ( $msg, ENT_QUOTES, strtoupper ( $this->pi1->extConf['be_charset'] ) );
+		$charset = $pi1->extConf['charset']['upper'];
+		$res = htmlspecialchars ( $msg, ENT_QUOTES, $charset ) );
 		if ( $count > 1 ) {
 			$res .= ' (' . strval ( $count );
 			$res .= ' times)';

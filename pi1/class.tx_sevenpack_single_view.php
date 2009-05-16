@@ -845,7 +845,7 @@ class tx_sevenpack_single_view {
 	 */
 	function get_http_ref ( $hsc = FALSE ) {
 		$pub = array();
-		$charset = strtoupper ( $this->pi1->extConf['be_charset'] );
+		$charset = $this->pi1->extConf['charset']['upper'];
 		$fields = $this->ra->pubFields;
 		$fields[] = 'uid';
 		$fields[] = 'pid';

@@ -37,8 +37,9 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 
 		$pi1 =& $this->pi1;
 
-		if ( strtolower ( $pi1->extConf['be_charset'] ) != 'utf-8' ) {
-			$charset = $pi1->extConf['be_charset'];
+		$charset = $pi1->extConf['charset']['lower'];
+		//t3lib_div::debug ( $charset );
+		if ( $charset != 'utf-8' ) {
 			$pub = $pi1->ra->change_pub_charset ( $pub, $charset, 'utf-8' );
 		}
 

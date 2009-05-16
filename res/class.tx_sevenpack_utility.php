@@ -11,38 +11,6 @@ class tx_sevenpack_utility {
 
 
 	/**
-	 * Returns the page character set
-	 *
-	 * @return The lowercase character set string
-	 */
-	function accquire_page_charset () {
-		// Determine page charset
-		$charset = 'iso-8859-1';
-		if ( isset($GLOBALS['TSFE']->config['config']['renderCharset']) )
-			$charset = strtolower ( $GLOBALS['TSFE']->config['config']['renderCharset'] );
-		if ( isset($GLOBALS['TSFE']->config['config']['metaCharset']) )
-			$charset = strtolower ( $GLOBALS['TSFE']->config['config']['metaCharset'] );
-
-		return $charset;
-	}
-
-
-	/**
-	 * Returns the backend character set
-	 *
-	 * @return The lowercase character set string
-	 */
-	function accquire_be_charset () {
-		// Determine backend charset
-		$charset = 'iso-8859-1';
-		if ( strlen ( $GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'] ) )
-			$charset = strtolower ( $GLOBALS['TYPO3_CONF_VARS']['BE']['forceCharset'] );
-
-		return $charset;
-	}
-
-
-	/**
 	 * Returns the processed title of a page
 	 *
 	 * @return The title string or FALSE

@@ -201,7 +201,7 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 	function bibtex_format_string ( $value ) {
 
 		// Convert characters to html sequences
-		$charset = strtoupper ( $this->pi1->extConf['be_charset'] );
+		$charset = $this->pi1->extConf['charset']['upper'];
 		// Replace illegal html ampersands with &amp;
 		$value = tx_sevenpack_utility::fix_html_ampersand ( $value );
 		// Replaces &amp; with &amp;amp;

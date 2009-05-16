@@ -153,10 +153,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$extConf['link_vars'] = array();
 		$extConf['sub_page'] = array();
 
-		// Determine charsets
-		$extConf['page_charset'] = tx_sevenpack_utility::accquire_page_charset();
-		$extConf['be_charset'] = tx_sevenpack_utility::accquire_be_charset();
-
 		$extConf['view_mode'] = $this->VIEW_LIST;
 		$extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
 		$extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
@@ -1473,13 +1469,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $hsc ) 
 			$str = htmlspecialchars ( $str, ENT_QUOTES, $charset );
 
-		// Character conversion
-		//$be_charset = strtolower ( $this->extConf['be_charset'] );
-		//$fe_charset = strtolower ( $this->extConf['page_charset'] );
-		//if ( strcmp ( $be_charset, $fe_charset ) != 0 ) {
-		//	$cs =& $GLOBALS['TSFE']->csConvObj;
-		//	$str = $cs->conv ( $str, $be_charset, $fe_charset );
-		//}
 		return $str;
 	}
 
