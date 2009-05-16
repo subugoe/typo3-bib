@@ -406,7 +406,6 @@ plugin.tx_sevenpack_pi1 {
 
 	# Statistic
 	statNav {
-
 		template = EXT:sevenpack/res/templates/navi_stat.html
 
 		mode = 0
@@ -518,7 +517,7 @@ plugin.tx_sevenpack_pi1 {
 		# Warnings in editor (single) view
 		warnings {
 			# Required fields missing
-			#empty_fields = 1
+			empty_fields = 1
 
 			# Double citeid
 			double_citeid = 1
