@@ -73,6 +73,7 @@ plugin.tx_sevenpack_pi1 {
 		ISBN.wrap = |:
 		keywords.wrap = <strong>|:</strong>
 		tags.wrap = <strong>|:</strong>
+		no_items.wrap = <h3>|.</h3>
 		note.wrap = <strong>|:</strong>
 		publisher.wrap = |:
 	}

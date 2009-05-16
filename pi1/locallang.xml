@@ -55,6 +55,7 @@
 			<label index="label_isbn">ISBN</label>
 			<label index="label_issn">ISSN</label>
 			<label index="label_keywords">Keywords</label>
+			<label index="label_no_items">No references have been found</label>
 			<label index="label_note">Note</label>
 			<label index="label_tags">Tags</label>
 			<label index="label_of">of</label>
@@ -158,6 +159,7 @@
 			<label index="label_isbn">ISBN</label>
 			<label index="label_issn">ISSN</label>
 			<label index="label_keywords">Schlüsselwörter</label>
+			<label index="label_no_items">Es wurden keine Referenzen gefunden</label>
 			<label index="label_note">Bemerkung</label>
 			<label index="label_tags">Tags</label>
 			<label index="label_of">aus</label>

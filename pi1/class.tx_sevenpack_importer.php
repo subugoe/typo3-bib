@@ -237,7 +237,7 @@ class tx_sevenpack_importer {
 
 	function message_times_str ( $msg, $count ) {
 		$charset = $pi1->extConf['charset']['upper'];
-		$res = htmlspecialchars ( $msg, ENT_QUOTES, $charset ) );
+		$res = htmlspecialchars ( $msg, ENT_QUOTES, $charset );
 		if ( $count > 1 ) {
 			$res .= ' (' . strval ( $count );
 			$res .= ' times)';

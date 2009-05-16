@@ -2245,7 +2245,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function setup_items ()
 	{
 		$items = array();
-		$hasStr = '';
 
 		// Aliases
 		$ra =& $this->ra;
@@ -2469,12 +2468,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj->data = $cObj_restore;
 
 		$items = implode ( '', $items );
-		if ( strlen ( $items ) > 0 )
+
+		$hasStr = '';
+		$post = '';
+		if ( strlen ( $items ) > 0 ) {
 			$hasStr = array ( '', '' );
+		} else {
+			$post = $this->get_ll ( 'label_no_items' );
+			$post = $cObj->stdWrap ( $post, $conf['label.']['no_items.'] );
+		}
 
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_ITEMS###', $hasStr );
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $this->label_translator );
+		$tmpl = $cObj->substituteMarker ( $tmpl, '###POST_ITEMS###', $post );
 		$tmpl = $cObj->substituteMarker ( $tmpl, '###ITEMS###', $items );
 	}
 
