@@ -128,7 +128,9 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		// Append hidden input
 		$this->append_hidden( 'extra_b', TRUE );
 		if ( !$extConf['extra'] ) {
+			$this->append_hidden( 'rule', $extConf['rule'] );
 			$this->append_hidden( 'abstracts', $extConf['abstracts'] );
+			$this->append_hidden( 'full_text', $extConf['full_text'] );
 		}
 
 		// End of form
@@ -218,13 +220,6 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 				$this->pi1->get_ll ( 'searchNav_sep_' . $type ) . ')';
 		}
 
-		$val = 'none';
-		switch ( $extConf['separator'] ) {
-			case ' ': $val = 'space'; break;
-			case ';': $val = 'semi'; break;
-			case '|': $val = 'pipe'; break;
-		}
-
 		$attribs = array (
 			'name'     => $this->pi1->prefix_pi1.'[search][sep]',
 			'onchange' => 'this.form.submit()'
@@ -232,7 +227,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		if ( strlen ( $lcfg['select_class'] ) > 0 )
 			$attribs['class'] = $lcfg['select_class'];
 		$btn = tx_sevenpack_utility::html_select_input ( 
-			$pairs, $val, $attribs );
+			$pairs, $extConf['sep'], $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['select.'] );
 
 		$sep = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
@@ -256,7 +251,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		// OR
 		$lbl = $this->pi1->get_ll ( 'searchNav_OR' );
 		$lbl = $cObj->stdWrap ( $lbl, $lcfg['btn_label.'] );
-		$checked = ($extConf['rule'] == 0 );
+		$checked = ( $extConf['rule'] == 'OR' );
 		$btn = tx_sevenpack_utility::html_radio_input ( 
 			$name, 'OR', $checked, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
@@ -265,7 +260,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		// AND
 		$lbl = $this->pi1->get_ll ( 'searchNav_AND' );
 		$lbl = $cObj->stdWrap ( $lbl, $lcfg['btn_label.'] );
-		$checked = ($extConf['rule'] == 1 );
+		$checked = ($extConf['rule'] == 'AND' );
 		$btn = tx_sevenpack_utility::html_radio_input ( 
 			$name, 'AND', $checked, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
@@ -284,8 +279,8 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 	}
 
 
-	function append_hidden ( $key, $val, $bool = TRUE ) {
-		if ( $bool ) $val = $val ? '1' : '0';
+	function append_hidden ( $key, $val ) {
+		if ( is_bool ( $val ) ) $val = $val ? '1' : '0';
 		$this->hidden_input[] = tx_sevenpack_utility::html_hidden_input (
 			$this->pi1->prefix_pi1.'[search]['.$key.']', $val );
 	}

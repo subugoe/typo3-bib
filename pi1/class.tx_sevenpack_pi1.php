@@ -335,11 +335,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Search rule
-			$sconf['rule'] = 0; // OR
-			if ( strtoupper ( $pivars['rule'] ) == 'AND' ) {
-				$sconf['rule'] = 1;  // AND
-				$lvars['search']['rule'] = 'AND';
-			}
+			$rule = 'AND';
+			$rules = array ( 'OR', 'AND' );
+			$pvar = strtoupper ( $cfg['full_text.']['def'] );
+			if ( in_array ( $pvar, $rules ) )
+				$rule = $pvar;
+			$pvar = strtoupper ( $pivars['rule'] );
+			if ( in_array ( $pvar, $rules ) )
+				$rule = $pvar; 
+			$sconf['rule'] = $rule;
+			$lvars['search']['rule'] = $rule;
 
 			// extra_b indicates that the page has been visited 'b'efore
 			// So that the default values should not be applied
@@ -356,7 +361,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			if ( $sconf['extra'] ) $lvars['search']['extra'] = 1;
 
-			// Search in  abstracts
+			// Search in abstracts
 			$sconf['abstracts'] = TRUE; 
 			if ( !$pivars['abstracts'] ) {
 				$sconf['abstracts'] = FALSE;
@@ -366,7 +371,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			if ( $sconf['abstracts'] ) $lvars['search']['abstracts'] = 1;
 
-			// Search in  abstracts
+			// Search in full text
 			$sconf['full_text'] = TRUE; 
 			if ( !$pivars['full_text'] ) {
 				$sconf['full_text'] = FALSE;
@@ -377,25 +382,23 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( $sconf['full_text'] ) $lvars['search']['full_text'] = 1;
 
 			// Separator selection
-			$sconf['separator'] = ''; // Default
+			$sconf['all_sep'] = array ( 
+				'none'  => '',
+				'space' => ' ',
+				'semi'  => ';',
+				'pipe'  => '|'
+			);
+
+			$sep_id = 'space';
+			if ( is_string ( $cfg['separator.']['def'] ) )
+				$sep_id = $cfg['separator.']['def'];
 			if ( strlen ( $pivars['sep'] ) > 0 ) {
-				$s_str = ''; $s_id = '';
-				switch ( $pivars['sep'] ) {
-					case 'space':
-						$s_str = ' ';
-						$s_id = 'space'; break;
-					case 'semi': 
-						$s_str = ';';
-						$s_id = 'semi'; break;
-					case 'pipe':
-						$s_str = '|';
-						$s_id = 'pipe'; break;
-				}
-				if ( strlen ( $s_str ) > 0 ) {
-					$sconf['separator'] = $s_str;
-					$lvars['search']['sep'] = $s_id;
+				if ( array_key_exists ( $pivars['sep'], $sconf['all_sep'] ) ) {
+					$sep_id = $pivars['sep'];
 				}
 			}
+			$sconf['sep'] = $sep_id;
+			$lvars['search']['sep'] = $sep_id;
 
 			//t3lib_div::debug ( $sconf );
 		}
@@ -662,12 +665,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$sconf =& $extConf['search_navi'];
 			$strings = array ( );
 			if ( strlen ( $sconf['string'] ) > 0 ) {
-				// Explode search string
-				if ( strlen ( $sconf['separator'] ) > 0 ) {
-					$strings = tx_sevenpack_utility::explode_trim (
-						$sconf['separator'], $sconf['string'], TRUE );
-				} else {
+				$sep = $sconf['sep'];
+				if ( $sep == 'none' ) {
 					$strings[] = $sconf['string'];
+				} else {
+					// Explode search string
+					$sep = $sconf['all_sep'][$sep];
+					$strings = tx_sevenpack_utility::explode_trim (
+						$sep, $sconf['string'], TRUE );
 				}
 			}
 			$filter = array();
@@ -689,7 +694,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 				$all = array();
 				$all['words'] = $pats;
-				$all['rule'] = $sconf['rule'];
+				$all['rule'] = $sconf['rule'] == 'AND' ? 1 : 0;
 				$all['exclude'] = $exclude;
 				$filter['all'] = $all;
 			} else {

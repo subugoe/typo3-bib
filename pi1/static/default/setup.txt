@@ -94,6 +94,16 @@ plugin.tx_sevenpack_pi1 {
 		}
 		author.wrap = <span class="tx_sevenpack-author">|</span>
 
+		auto_url.typolink {
+			parameter.field = auto_url
+			extTarget = _blank
+		}
+
+		auto_url_short.typolink {
+			parameter.field = auto_url
+			extTarget = _blank
+		}
+
 		# Booktitle
 		booktitle.noTrimWrap = |||
 
@@ -157,7 +167,10 @@ plugin.tx_sevenpack_pi1 {
 		school.wrap = |,
 
 		# Title
-		#title.typolink.parameter.field = auto_url
+		#title.typolink {
+		#	parameter.field = auto_url
+		#	extTarget = _blank
+		#}
 
 		# Type
 		type.wrap = <span class="tx_sevenpack-type">|</span>
@@ -249,7 +262,7 @@ plugin.tx_sevenpack_pi1 {
 
 		# Rule selection
 		rule {
-			def = OR
+			def = AND
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 			btn_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
