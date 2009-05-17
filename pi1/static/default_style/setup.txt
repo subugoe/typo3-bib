@@ -99,6 +99,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin-left: 12em;
 	}
 
+
 	/*
 	 * Author navigation
 	 */
@@ -110,13 +111,14 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		float: right;
 	}
 
+
 	/*
 	 * Preferences navigation
 	 */
-	.tx_sevenpack-navi_pref_selection {
+	form.tx_sevenpack-navi_pref_form {
 		display: block;
-		float: left;
 	}
+
 
 	span.tx_sevenpack-navi_current {
 		font-size: larger;
@@ -130,7 +132,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	.tx_sevenpack-navi_label {
 		padding: 0px;
-		padding-right: 0.33em;
+		margin-right: 0.5em;
 	}
 
 	div.tx_sevenpack-navi_main_label {
@@ -167,10 +169,6 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		margin-right: 1em;
 	}
 
-	.tx_sevenpack-hidden {
-		display: none;
-	}
-
 
 	div.tx_sevenpack-list_container {
 		margin: 0px; 
@@ -184,6 +182,11 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		padding: 0px;
 		width: 100%;
 		border-collapse: collapse;
+	}
+
+	table.tx_sevenpack-list th,
+	table.tx_sevenpack-list td, {
+		border-width: 0px;
 	}
 
 	.tx_sevenpack-year_row {
@@ -233,14 +236,24 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	.tx_sevenpack-button {
-		margin: 0em 0.5em;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
 	}
+	.tx_sevenpack-check {
+	}
+	.tx_sevenpack-select {
+	}
+
 	.tx_sevenpack-italic {
 		font-style: italic;
 	}
 	.tx_sevenpack-bold {
 		font-weight: bold;
 	}
+	.tx_sevenpack-hidden {
+		display: none;
+	}
+
 	.tx_sevenpack-block {
 		display: block;
 		padding: 0px;
@@ -319,6 +332,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		border-width: 0px;
 		padding: 0.25em 0.25em;
 	}
+
 
 	table.tx_sevenpack-layout {
 		border-collapse: collapse;

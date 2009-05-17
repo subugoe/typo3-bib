@@ -101,7 +101,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 				// check if first letter matches
 				$ll = mb_substr ( $name, 0, 1, $charset );
 				if ( ( $ll != $sel_up ) && ( $ll != $sel_low ) ) {
-					t3lib_div::debug ( array ( 'sel' => $sel_letter, 'll' => $ll ) );
+					//t3lib_div::debug ( array ( 'sel' => $sel_letter, 'll' => $ll ) );
 					continue;
 				}
 				if ( !in_array ( $name, $lst ) ) {

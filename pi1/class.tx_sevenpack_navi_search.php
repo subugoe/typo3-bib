@@ -64,7 +64,11 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		// The search bar
 		//
 		$lcfg =& $cfg['search.'];
-		$attribs = array ( 'size' => 42, 'maxlength' => 1024 );
+		$size = intval ( $lcfg['input_size'] );
+		$length = intval ( $lcfg['input_maxlength'] );
+		if ( $size == 0 ) $size = 24;
+		if ( $length == 0 ) $size = 512;
+		$attribs = array ( 'size' => $size, 'maxlength' => $length );
 
 		$value = '';
 		if ( strlen ( $this->extConf['string'] ) > 0 ) {
@@ -238,29 +242,41 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		// The rule selection
 		//
 		$lcfg =& $cfg['rule.'];
+		$rule = '';
 		$txt = $this->pi1->get_ll ( 'searchNav_rule' );
 		$txt = $cObj->stdWrap ( $txt, $lcfg['label.'] );
-
-		$pairs = array (
-			'OR' => $this->pi1->get_ll ( 'searchNav_OR' ),
-			'AND' => $this->pi1->get_ll ( 'searchNav_AND' ),
-		);
-
-		$val = $extConf['rule'] ? 'AND' : 'OR';
+		$name = $this->pi1->prefix_pi1.'[search][rule]';
 
 		$attribs = array (
-			'name'     => $this->pi1->prefix_pi1.'[search][rule]',
 			'onchange' => 'this.form.submit()'
 		);
-		if ( strlen ( $lcfg['select_class'] ) > 0 )
-			$attribs['class'] = $lcfg['select_class'];
-		$btn = tx_sevenpack_utility::html_select_input ( 
-			$pairs, $val, $attribs );
-		$btn = $cObj->stdWrap ( $btn, $lcfg['select.'] );
+		if ( strlen ( $lcfg['btn_class'] ) > 0 )
+			$attribs['class'] = $lcfg['btn_class'];
 
-		$rule = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
+		// OR
+		$lbl = $this->pi1->get_ll ( 'searchNav_OR' );
+		$lbl = $cObj->stdWrap ( $lbl, $lcfg['btn_label.'] );
+		$checked = ($extConf['rule'] == 0 );
+		$btn = tx_sevenpack_utility::html_radio_input ( 
+			$name, 'OR', $checked, $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
+		$rule .= $lbl . $btn;
 
+		// AND
+		$lbl = $this->pi1->get_ll ( 'searchNav_AND' );
+		$lbl = $cObj->stdWrap ( $lbl, $lcfg['btn_label.'] );
+		$checked = ($extConf['rule'] == 1 );
+		$btn = tx_sevenpack_utility::html_radio_input ( 
+			$name, 'AND', $checked, $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
+
+		$rule .= $lbl . $btn;
+
+		$rule = $cObj->stdWrap ( $txt . $rule, $lcfg['widget.'] );
+
+		//
 		// Setup the translator
+		//
 		$trans['###ABSTRACTS_BTN###'] = $abstr;
 		$trans['###FULL_TEXT_BTN###'] = $full_txt;
 		$trans['###SEPARATOR_SEL###'] = $sep;

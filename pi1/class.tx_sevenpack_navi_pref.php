@@ -33,8 +33,8 @@ class tx_sevenpack_navi_pref extends tx_sevenpack_navi  {
 		$cfg =& $this->conf;
 
 		// The label
-		$nlabel = $cObj->stdWrap ( $this->pi1->get_ll ( 'prefNav_label' ), 
-			$cfg['label.'] );
+		$label = $this->pi1->get_ll ( 'prefNav_label' );
+		$label = $cObj->stdWrap ( $label, $cfg['label.'] );
 
 		//
 		// Form start and end
@@ -51,63 +51,78 @@ class tx_sevenpack_navi_pref extends tx_sevenpack_navi  {
 		$fo_end = '</form>';
 
 		//
-		// Selection
+		// Item per page selection
 		//
-		$con = '';
-		// ipp selection
-		$label = $this->pi1->get_ll ( 'prefNav_ipp_sel' );
+		$lcfg =& $cfg['ipp.'];
+		$lbl = $this->pi1->get_ll ( 'prefNav_ipp_sel' );
+		$lbl = $cObj->stdWrap ( $lbl, $lcfg['label.'] );
 		$pairs = array();
-		foreach ( $this->pi1->extConf['pref_ipps'] as $y )
-			$pairs[$y] = '&nbsp;' . $y . '&nbsp;';
+		foreach ( $this->pi1->extConf['pref_ipps'] as $ii ) {
+			$pairs[$ii] = '&nbsp;' . $ii . '&nbsp;';
+		}
 		$attribs = array (
 			'name'     => $this->pi1->prefix_pi1.'[items_per_page]',
 			'onchange' => 'this.form.submit()'
 		);
-		if ( strlen ( $cfg['select_class'] ) > 0 )
-			$attribs['class'] = $cfg['select_class'];
+		if ( strlen ( $lcfg['select_class'] ) > 0 )
+			$attribs['class'] = $lcfg['select_class'];
 		$btn = tx_sevenpack_utility::html_select_input ( 
 			$pairs, $this->pi1->extConf['sub_page']['ipp'], $attribs );
-		$widget = $cObj->stdWrap ( $label, $cfg['ipp_label.'] );
-		$widget .= $cObj->stdWrap ( $btn, $cfg['ipp_select.'] );
-		$widget = $cObj->stdWrap ( $widget, $cfg['ipp_widget.'] );
-		$con .= $widget;
+		$btn = $cObj->stdWrap ( $btn, $lcfg['select.'] );
+		$ipp_sel = $cObj->stdWrap ( $lbl . $btn, $lcfg['widget.'] );
 
+		//
 		// show abstracts
+		//
+		$lcfg =& $cfg['abstract.'];
 		$attribs = array ( 'onchange' => 'this.form.submit()' );
-		$label = $this->pi1->get_ll ( 'prefNav_show_abstracts' );
+		if ( strlen ( $lcfg['btn_class'] ) > 0 )
+			$attribs['class'] = $lcfg['btn_class'];
+
+		$lbl = $this->pi1->get_ll ( 'prefNav_show_abstracts' );
+		$lbl = $cObj->stdWrap ( $lbl, $lcfg['label.'] );
 		$check = $this->pi1->extConf['hide_fields']['abstract'] ? FALSE : TRUE;
 		$btn = tx_sevenpack_utility::html_check_input ( 
 			$this->pi1->prefix_pi1.'[show_abstracts]', '1' , $check, $attribs );
-		$widget = $cObj->stdWrap ( $label, $cfg['abstract_label.'] );
-		$widget .= $cObj->stdWrap ( $btn, $cfg['abstract_btn.'] );
-		$widget = $cObj->stdWrap ( $widget, $cfg['abstract_widget.'] );
-		$con .= $widget;
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
+		$chk_abstr = $cObj->stdWrap ( $lbl . $btn, $lcfg['widget.'] );
 
+		//
 		// show keywords
-		$label = $this->pi1->get_ll ( 'prefNav_show_keywords' );
+		//
+		$lcfg =& $cfg['keywords.'];
+		$attribs = array ( 'onchange' => 'this.form.submit()' );
+		if ( strlen ( $lcfg['btn_class'] ) > 0 )
+			$attribs['class'] = $lcfg['btn_class'];
+
+		$lbl = $this->pi1->get_ll ( 'prefNav_show_keywords' );
+		$lbl = $cObj->stdWrap ( $lbl, $lcfg['label.'] );
 		$check = $this->pi1->extConf['hide_fields']['keywords'] ? FALSE : TRUE;
 		$btn = tx_sevenpack_utility::html_check_input ( 
 			$this->pi1->prefix_pi1.'[show_keywords]', '1', $check, $attribs );
-		$widget  = $cObj->stdWrap ( $label, $cfg['keywords_label.'] );
-		$widget .= $cObj->stdWrap ( $btn, $cfg['keywords_btn.'] );
-		$widget = $cObj->stdWrap ( $widget, $cfg['keywords_widget.'] );
-		$con .= $widget;
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
+		$chk_keys = $cObj->stdWrap ( $lbl . $btn, $lcfg['widget.'] );
 
+		//
 		// Go button
+		//
 		$attribs = array ();
 		if ( strlen ( $cfg['go_btn_class'] ) > 0 )
 			$attribs['class'] =  $cfg['go_btn_class'];
 		$widget = tx_sevenpack_utility::html_submit_input ( 
 			$this->pi1->prefix_pi1.'[action][eval_pref]',
 			$this->pi1->get_ll ( 'button_go' ), $attribs );
-		$widget = $cObj->stdWrap ( $widget, $cfg['go_btn.'] );
-		$con .= $widget;
+		$go_btn = $cObj->stdWrap ( $widget, $cfg['go_btn.'] );
+
 
 		// Translator
 		$trans = array();
-		$trans['###NAVI_LABEL###'] = $nlabel;
+		$trans['###NAVI_LABEL###'] = $label;
 		$trans['###FORM_START###'] = $fo_sta;
-		$trans['###SELECTION###'] = $con;
+		$trans['###IPP_SEL###'] = $ipp_sel;
+		$trans['###SHOW_ABSTRACTS###'] = $chk_abstr;
+		$trans['###SHOW_KEYS###'] = $chk_keys;
+		$trans['###GO###'] = $go_btn;
 		$trans['###FORM_END###'] = $fo_end;
 
 		$tmpl = $this->pi1->enum_condition_block ( $this->template );

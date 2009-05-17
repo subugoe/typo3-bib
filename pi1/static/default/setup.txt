@@ -181,6 +181,8 @@ plugin.tx_sevenpack_pi1 {
 		search {
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			input.wrap = |&nbsp;
+			input_size = 42
+			input_maxlength = 2048
 			search_btn_class = tx_sevenpack-button
 			#search_btn.wrap = |
 			clear_btn_class = tx_sevenpack-button
@@ -192,7 +194,7 @@ plugin.tx_sevenpack_pi1 {
 			def = 0
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
-			btn_class = tx_sevenpack-button
+			btn_class = tx_sevenpack-check
 			btn.wrap = |
 		}
 
@@ -201,7 +203,7 @@ plugin.tx_sevenpack_pi1 {
 			def = 0
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
-			btn_class = tx_sevenpack-button
+			btn_class = tx_sevenpack-check
 			btn.wrap = |
 		}
 
@@ -210,7 +212,7 @@ plugin.tx_sevenpack_pi1 {
 			def = 0
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
-			btn_class = tx_sevenpack-button
+			btn_class = tx_sevenpack-check
 			btn.wrap = |
 		}
 
@@ -219,7 +221,7 @@ plugin.tx_sevenpack_pi1 {
 			def = space
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
-			#select_class = 
+			select_class = tx_sevenpack-select
 			select.wrap = |
 		}
 
@@ -228,8 +230,9 @@ plugin.tx_sevenpack_pi1 {
 			def = OR
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
-			#select_class = 
-			select.wrap = |
+			btn_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			btn.wrap = |
 		}
 
 		# Clear results if no string is given
@@ -253,7 +256,7 @@ plugin.tx_sevenpack_pi1 {
 		# Classes or the year selection form
 		form_class = tx_sevenpack-year_select_form
 		go_btn_class = tx_sevenpack-button
-		select_class =
+		select_class = tx_sevenpack-select
 
 		#form.wrap = |
 		#select.wrap = |
@@ -295,13 +298,13 @@ plugin.tx_sevenpack_pi1 {
 	# Preferences Navigation
 	authorNav {
 		# Page label and wrap
-		label.wrap = <span class="tx_sevenpack-navi_main_label">|:</span>
+		label.wrap = |:
 
 		template = EXT:sevenpack/res/templates/navi_author.html
 
 		# Classes or the year selection form
 		form_class = tx_sevenpack-author_select_form
-		select_class =
+		select_class = tx_sevenpack-select
 		go_btn_class = tx_sevenpack-button
 
 		#form.wrap = |
@@ -368,25 +371,32 @@ plugin.tx_sevenpack_pi1 {
 		# Page label and wrap
 		label.wrap = |:
 
-		ipp_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-		ipp_label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
-		#ipp_select.wrap = |
+		ipp {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+			select_class = tx_sevenpack-select
+			#select.wrap = |
+		}
 
-		abstract_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-		abstract_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
-		#abstract_btn.wrap = |
-		
-		keywords_widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-		keywords_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
-		#keywords_btn.wrap = |
+		abstract {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			#btn.wrap = |
+		}
+
+		keywords {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			#btn.wrap = |
+		}
 
 		# Classes or the ipp selection form
-		form_class = tx_sevenpack-inline_form tx_sevenpack-navi_pref_selection
-		select_class =
+		form_class = tx_sevenpack-navi_pref_form
 		go_btn_class = tx_sevenpack-button
 
 		#go_btn.wrap = |
-		#select.wrap = |
 
 		# Item per page values
 		ipp_values  = 5,10,20,30,40,50
