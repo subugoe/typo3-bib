@@ -158,7 +158,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$extConf =& $this->extConf;
 
 		//
-		// The abstract button
+		// The abstract check
 		//
 		$lcfg =& $cfg['abstracts.'];
 		$txt = $this->pi1->get_ll ( 'searchNav_abstract' );
@@ -167,7 +167,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$attribs = array (
 			'onchange' => 'this.form.submit()'
 		);
-		if ( strlen ( $cfg['abstracts_btn_class'] ) > 0 )
+		if ( strlen ( $lcfg['btn_class'] ) > 0 )
 			$attribs['class'] =  $lcfg['btn_class'];
 		$btn = tx_sevenpack_utility::html_check_input ( 
 			$this->pi1->prefix_pi1.'[search][abstracts]', '1', 
@@ -175,6 +175,26 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
 
 		$abstr = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
+
+
+		//
+		// The full text check
+		//
+		$lcfg =& $cfg['full_text.'];
+		$txt = $this->pi1->get_ll ( 'searchNav_full_text' );
+		$txt = $cObj->stdWrap ( $txt, $lcfg['label.'] );
+
+		$attribs = array (
+			'onchange' => 'this.form.submit()'
+		);
+		if ( strlen ( $lcfg['btn_class'] ) > 0 )
+			$attribs['class'] =  $lcfg['btn_class'];
+		$btn = tx_sevenpack_utility::html_check_input ( 
+			$this->pi1->prefix_pi1.'[search][full_text]', '1', 
+			$extConf['full_text'], $attribs );
+		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
+
+		$full_txt = $cObj->stdWrap ( $txt . $btn, $lcfg['widget.'] );
 
 
 		//
@@ -242,6 +262,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 
 		// Setup the translator
 		$trans['###ABSTRACTS_BTN###'] = $abstr;
+		$trans['###FULL_TEXT_BTN###'] = $full_txt;
 		$trans['###SEPARATOR_SEL###'] = $sep;
 		$trans['###RULE_SEL###'] = $rule;
 	}

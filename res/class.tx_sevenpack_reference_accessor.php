@@ -782,6 +782,8 @@ class tx_sevenpack_reference_accessor {
 		}
 
 		// Fields
+		$fields = $this->refFields;
+		$fields[] = 'full_text';
 		foreach ( $this->refFields as $field ) {
 			if ( !in_array ( $field, $exclude ) ) {
 				foreach ( $wwords as $word ) {

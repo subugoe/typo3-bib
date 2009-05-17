@@ -356,7 +356,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			if ( $sconf['extra'] ) $lvars['search']['extra'] = 1;
 
-			// Show abstracts
+			// Search in  abstracts
 			$sconf['abstracts'] = TRUE; 
 			if ( !$pivars['abstracts'] ) {
 				$sconf['abstracts'] = FALSE;
@@ -365,6 +365,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				}
 			}
 			if ( $sconf['abstracts'] ) $lvars['search']['abstracts'] = 1;
+
+			// Search in  abstracts
+			$sconf['full_text'] = TRUE; 
+			if ( !$pivars['full_text'] ) {
+				$sconf['full_text'] = FALSE;
+				if ( !$pivars['extra_b'] ) {
+					$sconf['full_text'] = $cfg['full_text.']['def'] ? TRUE : FALSE;
+				}
+			}
+			if ( $sconf['full_text'] ) $lvars['search']['full_text'] = 1;
 
 			// Separator selection
 			$sconf['separator'] = ''; // Default
@@ -673,6 +683,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 				$exclude = array ( );
 				if ( !$sconf['abstracts'] ) $exclude[] = 'abstract';
+				if ( !$sconf['full_text'] ) $exclude[] = 'full_text';
 
 				//t3lib_div::debug ( $pats );
 
@@ -1931,9 +1942,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$type = 'file_nexist';
 			if ( $w_cfg[$type] ) {
 				$msg = $this->get_ll ( 'editor_error_file_nexist' );
-				$file = $_SERVER['DOCUMENT_ROOT'];
-				$file .= $pub['file_url'];
-				//$file = $GLOBALS['TSFE']->tmpl->getFileName ( $file );
+				$file = $pub['file_url'];
 				//t3lib_div::debug ( $file );
 				$err = tx_sevenpack_utility::check_file_nexist ( $type, $file, $msg );
 				if ( is_array ( $err ) )

@@ -196,8 +196,17 @@ plugin.tx_sevenpack_pi1 {
 			btn.wrap = |
 		}
 
-		# Show abstracts
+		# Search in abstracts
 		abstracts {
+			def = 0
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-button
+			btn.wrap = |
+		}
+
+		# Search in full_text
+		full_text {
 			def = 0
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
 			label.wrap = <span class="tx_sevenpack-navi_label">|</span>

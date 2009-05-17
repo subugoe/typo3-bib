@@ -440,6 +440,7 @@ class tx_sevenpack_utility {
 		if ( ( strlen ( $file ) > 0 )
 			&& ( substr ( $file, 0, 10 ) == 'fileadmin/' ) )
 		{
+			$file = $_SERVER['DOCUMENT_ROOT'] . $file;
 			if ( !file_exists ( $file ) ) {
 				$err = array (
 					'type' => $type,

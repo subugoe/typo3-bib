@@ -95,6 +95,7 @@
 			<label index="searchNav_abstract">Search in abstract</label>
 			<label index="searchNav_clear">Clear</label>
 			<label index="searchNav_extra">Show details</label>
+			<label index="searchNav_full_text">Search in full text</label>
 			<label index="searchNav_insert_request">Please insert a search request</label>
 			<label index="searchNav_label">Search</label>
 			<label index="searchNav_rule">Match rule</label>
@@ -200,6 +201,7 @@
 			<label index="searchNav_abstract">Suche in Zusammenfassung</label>
 			<label index="searchNav_clear">Zurücksetzen</label>
 			<label index="searchNav_extra">Zeige Details</label>
+			<label index="searchNav_full_text">Suche im Volltext</label>
 			<label index="searchNav_insert_request">Bitte geben Sie einen Suchtext ein</label>
 			<label index="searchNav_label">Suche</label>
 			<label index="searchNav_rule">Übereinstimmung</label>
