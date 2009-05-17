@@ -1849,6 +1849,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function prepare_pub_display ( $pub, &$warnings = array() ) {
 
+		// The error list
 		$d_err = array();
 
 		// Prepare processed row data
@@ -1896,7 +1897,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Format the author string
 		$pdata['authors'] = $this->get_item_authors_html ( $pub['authors'] );
 
-		// Copy fields
+		//
+		// Copy field values
+		//
 		$charset = $this->extConf['charset']['upper'];
 		$url_max = 40;
 		if ( strlen ( $this->conf['max_url_string_length'] ) > 0 )
@@ -1905,8 +1908,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Trim string
 			$val = trim ( strval ( $pdata[$f] ) );
 
+			// Check restrictions
 			if ( strlen ( $val ) > 0 )  {
-				// Treat some fields
+				if ( $this->check_field_restriction ( $f, $val ) ) {
+					$val = '';
+					$pdata[$f] = $val;
+				}
+			}
+
+			// Treat some fields
+			if ( strlen ( $val ) > 0 )  {
 				switch ( $f ) {
 					case 'file_url':
 					case 'web_url':
@@ -1931,7 +1942,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pdata['auto_url'], $url_max, $charset );
 
 
+		//
 		// Do data checks
+		//
 		if ( $this->extConf['edit_mode'] ) {
 
 			$w_cfg =& $this->conf['editor.']['list.']['warnings.'];
@@ -1944,7 +1957,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$msg = $this->get_ll ( 'editor_error_file_nexist' );
 				$file = $pub['file_url'];
 				//t3lib_div::debug ( $file );
-				$err = tx_sevenpack_utility::check_file_nexist ( $type, $file, $msg );
+				$err = tx_sevenpack_utility::check_file_nexist ( $file, $type, $msg );
 				if ( is_array ( $err ) )
 					$d_err[] = $err;
 			}
@@ -1989,11 +2002,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$translator[$tkey] = '';
 
 			$val = strval ( $pdata[$f] );
-
-			if ( strlen ( $val ) > 0 )  {
-				if ( $this->check_field_restriction ( $f, $val ) )
-					$val = '';
-			}
 
 			if ( strlen ( $val ) > 0 )  {
 				// Wrap default or by bibtype
@@ -2287,10 +2295,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		while ( $pub = $ra->mFetch ( ) )  {
 			// Get prepared publication data
 			$warnings = array();
-			$pdata = $this->prepare_pub_display( $pub, $warnings );
+			$pdata = $this->prepare_pub_display ( $pub, $warnings );
 
 			// Item data
-			$cObj->data = $pub;
+			$cObj->data = $pdata;
 			// Needed since stdWrap/Typolink applies htmlspecialchars to url data
 			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
 			$cObj->data['web_url'] = htmlspecialchars_decode ( $pdata['web_url'], ENT_QUOTES );
@@ -2329,7 +2337,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$enum = str_replace ( '###I_ALL###', strval ( $i_all ), $enum );
 			$enum = str_replace ( '###I_PAGE###', strval ( $i_page ), $enum );
 			if ( !( strpos( $enum, '###FILE_URL_ICON###' ) === FALSE ) ) {
-				$repl = $this->get_file_url_icon ( $pdata['file_url'] );
+				$repl = $this->get_file_url_icon ( $pub['file_url'] );
 				$enum = str_replace ( '###FILE_URL_ICON###', $repl, $enum );
 			}
 			$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( $enum, $enum_wrap );
@@ -2514,6 +2522,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( !is_array ( $restric ) )
 			return FALSE;
 
+		if ( $field == 'file_url' ) {
+			$err = tx_sevenpack_utility::check_file_nexist ( $value );
+			if ( is_array ( $err ) ) {
+				return TRUE;
+			}
+		}
+
 		if ( $field == 'file_url' && is_array ( $restric['file_url'] ) ) {
 			$rest =& $restric['file_url'];
 
@@ -2577,7 +2592,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$data = trim ( strval ( $pdata[$field] ) );
 			if ( strlen ( $data ) > 0 ) {
 				$rest = $this->check_field_restriction ( $field, $data );
-				if ( !$rest ) {
+				if ( !is_array ( $rest ) ) {
 					$url = $data;
 					if ( $field == 'DOI' ) {
 						$url = $pdata['DOI_url'];
@@ -2593,7 +2608,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	/**
 	 * Returns the file url icon
 	 */
-	function get_file_url_icon( $url ) {
+	function get_file_url_icon ( $url ) {
 		$res = '';
 
 		if ( strlen ( $url ) > 0 ) {
@@ -2601,17 +2616,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$src = $sources['.default'];
 			$cr_link = TRUE;
 
-			if ( $cr_link ) {
-				$rest = $this->check_field_restriction ( 'file_url', $url );
-				if ( $rest ) { 
-					$cr_link = FALSE;
-				}
-			}
-
 			foreach ( $sources as $ext => $file  ) {
 				$len = strlen( $ext );
 				if ( strlen ( $url ) >= $len ) {
-					$sub = strtolower( substr ( $url, -$len ) );
+					$sub = strtolower ( substr ( $url, -$len ) );
 					if ( $sub == $ext ) {
 						$src = $file;
 						break;
@@ -2620,13 +2628,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			$img = '<img src="' . $src . '"';
 			$img .= '/>';
+
+			$wrap = $this->conf['enum.']['file_icon_image.'];
+			$img = $this->cObj->stdWrap ( $img, $wrap );
+			//t3lib_div::debug ( array ( 'wrap' => $wrap ) );
 			$res .= $img;
-
-			if ( $cr_link ) {
-				$res = $this->cObj->getTypoLink ( $res, $url );
-			}
-
-			$res = $this->cObj->stdWrap ( $res, $this->conf['enum.']['file_icon_image.'] );
 		} else {
 			$res = '&nbsp;';
 		}

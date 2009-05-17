@@ -58,7 +58,11 @@ plugin.tx_sevenpack_pi1 {
 		file_icon.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
 
 		# These are wraps for special items
-		file_icon_image.wrap = |
+		file_icon_image.typolink {
+			parameter.field = file_url
+			target = _blank
+			extTarget = _blank
+		}
 	}
 
 	# Label wraps
@@ -84,7 +88,10 @@ plugin.tx_sevenpack_pi1 {
 		address.wrap = |<br/>
 
 		# Author
-		author.typolink.parameter.field = url
+		author.typolink {
+			parameter.field = url
+			extTarget = _blank
+		}
 		author.wrap = <span class="tx_sevenpack-author">|</span>
 
 		# Booktitle
@@ -97,7 +104,10 @@ plugin.tx_sevenpack_pi1 {
 		day.wrap = |.
 
 		# DOI
-		DOI.typolink.parameter.field = DOI_url
+		DOI.typolink {
+			parameter.field = DOI_url
+			extTarget = _blank
+		}
 
 		# Edition
 		edition.noTrimWrap = || ###LABEL_EDITION###,|
@@ -106,8 +116,14 @@ plugin.tx_sevenpack_pi1 {
 		editor.noTrimWrap = |In |, ###LABEL_EDITOR###,|
 
 		# File URL
-		file_url.typolink.parameter.field = file_url
-		file_url_short.typolink.parameter.field = file_url
+		file_url.typolink {
+			parameter.field = file_url
+			extTarget = _blank
+		}
+		file_url_short.typolink {
+			parameter.field = file_url
+			extTarget = _blank
+		}
 
 		howpublished.wrap = |,
 		institution.wrap = |,
@@ -155,8 +171,14 @@ plugin.tx_sevenpack_pi1 {
 		proceedings.volume.noTrimWrap = | ###LABEL_VOLUME### ||
 
 		# Web URL
-		web_url.typolink.parameter.field = web_url
-		web_url_short.typolink.parameter.field = web_url
+		web_url.typolink {
+			parameter.field = web_url
+			extTarget = _blank
+		}
+		web_url_short.typolink {
+			parameter.field = web_url
+			extTarget = _blank
+		}
 	}
 
 

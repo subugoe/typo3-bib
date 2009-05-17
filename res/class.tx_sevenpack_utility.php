@@ -448,12 +448,13 @@ class tx_sevenpack_utility {
 	 *
 	 * @return FALSE or the error message array
 	 */
-	function check_file_nexist ( $type, $file, $msg ) {
+	function check_file_nexist ( $file, $type = '', $msg = '' ) {
 		if ( ( strlen ( $file ) > 0 )
 			&& ( substr ( $file, 0, 10 ) == 'fileadmin/' ) )
 		{
 			$file = $_SERVER['DOCUMENT_ROOT'] . $file;
 			if ( !file_exists ( $file ) ) {
+				//t3lib_div::debug ( array ( 'nexist' => $file ) );
 				$err = array (
 					'type' => $type,
 					'msg' => str_replace ( '%f', $file, $msg )

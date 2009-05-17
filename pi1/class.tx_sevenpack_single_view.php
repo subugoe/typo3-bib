@@ -1006,7 +1006,7 @@ class tx_sevenpack_single_view {
 		if ( $warn[$type] ) {
 			$msg = $this->get_ll ( 'editor_error_file_nexist' );
 			$file = $pub['file_url'];
-			$err = tx_sevenpack_utility::check_file_nexist ( $type, $file, $msg );
+			$err = tx_sevenpack_utility::check_file_nexist ( $file, $type, $msg );
 			if ( is_array ( $err ) )
 				$d_err[] = $err;
 		}

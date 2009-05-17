@@ -90,8 +90,8 @@
 			<label index="prefNav_ipp_sel">References per page</label>
 			<label index="prefNav_show_abstracts">Show abstracts</label>
 			<label index="prefNav_show_keywords">Show keywords</label>
-			<label index="searchNav_AND">AND</label>
-			<label index="searchNav_OR">OR</label>
+			<label index="searchNav_AND">And</label>
+			<label index="searchNav_OR">Or</label>
 			<label index="searchNav_abstract">Search in abstract</label>
 			<label index="searchNav_clear">Clear</label>
 			<label index="searchNav_extra">Details</label>
@@ -196,9 +196,9 @@
 			<label index="prefNav_ipp_sel">Referenzen pro Seite</label>
 			<label index="prefNav_show_abstracts">Zeige Zusammenfassung</label>
 			<label index="prefNav_show_keywords">Zeige Schlüsselwörter</label>
-			<label index="searchNav_AND">UND</label>
-			<label index="searchNav_OR">ODER</label>
-			<label index="searchNav_abstract">Suche in Zusammenfassung</label>
+			<label index="searchNav_AND">Und</label>
+			<label index="searchNav_OR">Oder</label>
+			<label index="searchNav_abstract">Suche in Kurzfassung</label>
 			<label index="searchNav_clear">Zurücksetzen</label>
 			<label index="searchNav_extra">Details</label>
 			<label index="searchNav_full_text">Suche im Volltext</label>
