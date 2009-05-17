@@ -528,6 +528,12 @@ class tx_sevenpack_reference_accessor {
 		$WC = array();
 
 		// Filter by UID
+		if ( isset ( $filter['FALSE'] ) ) {
+			$WC[] = 'FALSE';
+			return $WC;
+		}
+
+		// Filter by UID
 		if ( is_array ( $filter['uid'] ) && ( sizeof ( $filter['uid'] ) > 0 ) ) {
 			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['uid'] );
 			$WC[] = $rta.'.uid IN ('.$csv.')';

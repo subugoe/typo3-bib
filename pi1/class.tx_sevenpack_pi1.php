@@ -657,6 +657,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$strings[] = $sconf['string'];
 				}
 			}
+			$filter = array();
 			if ( sizeof ( $strings ) > 0 ) {
 				// Setup search patterns
 				$pats = array();
@@ -671,13 +672,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( !$sconf['abstracts'] ) $exclude[] = 'abstract';
 
 				//t3lib_div::debug ( $pats );
-				$ff =& $extConf['filters'];
-				$ff['search'] = array();
-				$ff['search']['all'] = array();
-				$ff =& $ff['search']['all'];
-				$ff['words'] = $pats;
-				$ff['rule'] = $sconf['rule'];
-				$ff['exclude'] = $exclude;
+
+				$all = array();
+				$all['words'] = $pats;
+				$all['rule'] = $sconf['rule'];
+				$all['exclude'] = $exclude;
+				$filter['all'] = $all;
+			} else {
+				$this->extConf['post_items'] = $this->get_ll ( 
+					'searchNav_insert_request' );
+				$filter['FALSE'] = TRUE;
+			}
+
+			if ( sizeof ( $filter ) > 0 ) {
+				$extConf['filters']['search'] = $filter;
 			}
 		}
 
@@ -2481,18 +2489,21 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$items = implode ( '', $items );
 
 		$hasStr = '';
-		$post = '';
+		$no_items = '';
 		if ( strlen ( $items ) > 0 ) {
 			$hasStr = array ( '', '' );
 		} else {
-			$post = $this->get_ll ( 'label_no_items' );
-			$post = $cObj->stdWrap ( $post, $conf['label.']['no_items.'] );
+			$no_items = strval ( $this->extConf['post_items'] );
+			if ( strlen ( $no_items ) == 0 ) {
+				$no_items = $this->get_ll ( 'label_no_items' );
+			}
+			$no_items = $cObj->stdWrap ( $no_items, $conf['label.']['no_items.'] );
 		}
 
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_ITEMS###', $hasStr );
 		$tmpl = $cObj->substituteMarkerArrayCached ( $tmpl, $this->label_translator );
-		$tmpl = $cObj->substituteMarker ( $tmpl, '###POST_ITEMS###', $post );
+		$tmpl = $cObj->substituteMarker ( $tmpl, '###NO_ITEMS###', $no_items );
 		$tmpl = $cObj->substituteMarker ( $tmpl, '###ITEMS###', $items );
 	}
 

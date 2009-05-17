@@ -247,6 +247,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	div.tx_sevenpack-file_url_icon {
 		padding: 0px;
 		margin: 0px;
+		padding-top: 0.25ex;
 		width: 32px;
 	}
 
