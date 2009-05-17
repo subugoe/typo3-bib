@@ -11,7 +11,6 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 	public $extConf;
-	public $sel_name_idx;
 
 
 	/*
@@ -29,6 +28,134 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$this->pref = 'AUTHOR_NAVI';
 		$this->load_template ( '###AUTHOR_NAVI_BLOCK###' );
 		$this->sel_link_title = $pi1->get_ll ( 'authorNav_authorLinkTitle', '%a', TRUE );
+	}
+
+
+	/*
+	 * Hook in in pi1
+	 */
+	function hook_filter ( ) {
+		$extConf =& $this->extConf;
+		$charset = $this->pi1->extConf['charset']['upper'];
+		$ra =& $this->pi1->ra;
+
+		// Init statistics
+		$this->pi1->stat['authors'] = array();
+		$astat =& $this->pi1->stat['authors'];
+
+		$filter = array ( );
+
+		//
+		// Fetch all surnames and initialize letters
+		//
+		$astat['surnames'] = $ra->fetch_author_surnames();
+		$astat['sel_surnames'] = array();
+		$this->init_letters ( $astat['surnames'] );
+
+		// aliases
+		$surnames =& $astat['surnames'];
+		$sel_author =& $extConf['sel_author'];
+		$sel_letter =& $extConf['sel_letter'];
+		$sel_surnames =& $astat['sel_surnames'];
+
+		// Filter for selected author letter
+		// with a temporary filter
+		if ( strlen ( $sel_letter ) > 0 ) {
+			$filters = $this->pi1->extConf['filters'];
+
+			$txt = $sel_letter;
+			$spec = htmlentities ( $txt, ENT_QUOTES, $charset );
+			$pats = array ( $txt . '%' );
+			if ( $spec != $txt ) 
+				$pats[] = $spec . '%';
+
+			// Append surname letter to filter
+			foreach ( $pats as $pat ) {
+				$filter[] = array ( 'surname' => $pat );
+			}
+
+			$filters['temp'] = array();
+			$filters['temp']['author'] = array();
+			$filters['temp']['author']['authors'] = $filter;
+
+			//
+			// Fetch selected surnames
+			//
+			$ra->set_filters ( $filters );
+			$sel_surnames = $ra->fetch_author_surnames ( );
+			//t3lib_div::debug ( $sel_surnames );
+
+			//
+			// Remove ampersand strings from surname list
+			//
+			$lst = array();
+			$spec = FALSE;
+			$sel_up = mb_strtoupper ( $sel_letter, $charset);
+			$sel_low = mb_strtolower ( $sel_letter, $charset);
+			foreach ( $sel_surnames as $name ) {
+				if ( !( strpos ( $name, '&' ) === FALSE ) ) {
+					$name = html_entity_decode ( $name, ENT_COMPAT, $charset );
+					$spec = TRUE;
+					//t3lib_div::debug ( array ( 'sur' => $name ) );
+				}
+				// check if first letter matches
+				$ll = mb_substr ( $name, 0, 1, $charset );
+				if ( ( $ll != $sel_up ) && ( $ll != $sel_low ) ) {
+					t3lib_div::debug ( array ( 'sel' => $sel_letter, 'll' => $ll ) );
+					continue;
+				}
+				if ( !in_array ( $name, $lst ) ) {
+					$lst[] = $name;
+				}
+			}
+			if ( $spec ) {
+				usort ( $lst, 'strcoll' );
+			}
+			$sel_surnames = $lst;
+			//t3lib_div::debug ( $sel_surnames );
+
+			//
+			// Restore filter
+			//
+			$ra->set_filters ( $this->pi1->extConf['filters'] );
+		}
+
+		//
+		// Setup filter for selected author
+		//
+		//t3lib_div::debug ( array ( 'sel_author' => $sel_author ) );
+		if ( $sel_author != '0' ) {
+			$spec = htmlentities ( $sel_author, ENT_QUOTES, $charset );
+
+			// Check if the selected author is available
+			if ( in_array ( $sel_author, $sel_surnames )
+				|| in_array ( $spec, $sel_surnames ) )
+			{
+				$pats = array ( $sel_author );
+				if ( $spec != $sel_author )
+					$pats[] = $spec;
+
+				//t3lib_div::debug ( array ( 'pats' => $pats ) );
+				// Reset filter with the surname only
+				$filter = array ( );
+				foreach ( $pats as $pat ) {
+					$filter[] = array ( 'surname' => $pat );
+				}
+			} else {
+				$sel_author = '0';
+			}
+		}
+
+		// Append filter
+		if ( sizeof ( $filter ) > 0 )  {
+			$ff =& $this->pi1->extConf['filters'];
+			$ff['author'] = array();
+			$ff['author']['author'] = array();
+			$ff['author']['author']['authors'] = $filter;
+
+			//t3lib_div::debug ( $extConf['filters'] );
+			$ra->set_filters ( $ff );
+		}
 	}
 
 
@@ -56,34 +183,100 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 
 	/*
+	 * Initialize letters
+	 */
+	function init_letters ( $names ) {
+		$cObj =& $this->pi1->cObj;
+		$cfg =& $this->conf;
+		$extConf =& $this->extConf;
+		$charset = $this->pi1->extConf['charset']['upper'];
+
+		// Acquire letter
+		$letters = $this->first_letters ( $names, $charset );
+
+		// Acquire selected letter
+		$sel = strval ( $extConf['sel_letter'] );
+		$idx = $this->string_index ( $sel, $letters, '', $charset );
+		if ( $idx < 0 ) $sel = '';
+		else $sel = $letters[$idx];
+
+		$extConf['letters'] = $letters;
+		$extConf['sel_letter'] = $sel;
+	}
+
+
+	/*
+	 * Returns the first letters of all strings in a list
+	 */
+	function first_letters ( $names, $charset ) {
+		//
+		// Acquire letters
+		//
+		$letters = array();
+		foreach ( $names as $name ) {
+			$ll = mb_substr ( $name, 0, 1, $charset );
+			if ( $ll == '&' ) {
+				$match = preg_match ( '/^(&[^;]{1,7};)/', $name, $grp );
+				if ( $match ) {
+					$ll = html_entity_decode ( $grp[1], ENT_QUOTES, $charset );
+				} else {
+					$ll = FALSE;
+				}
+			}
+			$up = mb_strtoupper ( $ll, $charset );
+			if ( $up != $ll ) $ll = $up;
+			if ( $ll && !in_array ( $ll, $letters ) )
+				$letters[] = $ll;
+		}
+		usort ( $letters, 'strcoll' );
+		//t3lib_div::debug ( $letters );
+
+		return $letters;
+	}
+
+
+	/*
+	 * Returns the position of a string in a list
+	 */
+	function string_index ( $string, $list, $null, $charset ) {
+		$sel1 = $string;
+		$sel2 = htmlentities ( $sel1, ENT_QUOTES, $charset );
+		$sel3 = html_entity_decode ( $sel1, ENT_QUOTES, $charset );
+
+		//t3lib_div::debug ( array ( 
+		//	'sel1' => $sel1, 'sel2' => $sel2, 
+		// 'sel3' => $sel3, 'all' => $list ) );
+
+		$idx = -1;
+		if ( $sel1 != $null ) {
+			//t3lib_div::debug ( array ( 'sns' => $sns ) );
+			$idx = array_search ( $sel1, $list );
+			if ( $idx === FALSE ) $idx = array_search ( $sel2, $list );
+			if ( $idx === FALSE ) $idx = array_search ( $sel3, $list );
+			if ( $idx === FALSE ) $idx = -1;
+			//t3lib_div::debug ( array ( 'idx' => $idx ) );
+		}
+		return $idx;
+	}
+
+
+	/*
 	 * Returns content
 	 */
 	function get ( ) {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
+		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
 		$con = '';
 
 		// find the index of the selected name
 		$sns =& $this->pi1->stat['authors']['sel_surnames'];
+		$sel = $this->extConf['sel_author'];
 
-		$sel1 = $this->extConf['sel_author'];
-		$sel2 = htmlentities ( $sel1, ENT_QUOTES, $charset );
-		$sel3 = html_entity_decode ( $sel1, ENT_QUOTES, $charset );
-
-		//t3lib_div::debug ( array ( 
-		//	'sel1' => $sel1, 'sel2' => $sel2,  'sel3' => $sel3, 'all' => $sns ) );
-
-		$idx = -1;
-		if ( $this->extConf['sel_author'] != '0' ) {
-			//t3lib_div::debug ( array ( 'sns' => $sns ) );
-			$idx = array_search ( $sel1, $sns );
-			if ( $idx === FALSE ) $idx = array_search ( $sel2, $sns );
-			if ( $idx === FALSE ) $idx = array_search ( $sel3, $sns );
-			if ( $idx === FALSE ) $idx = -1;
-			//t3lib_div::debug ( array ( 'idx' => $idx ) );
-		}
-		$this->sel_name_idx = $idx;
+		$extConf['sel_name_idx'] = 
+			$this->string_index ( $sel, $sns, '0', $charset );
+		//t3lib_div::debug( $extConf );
 
 		// The label
 		$nlabel = $cObj->stdWrap ( 
@@ -94,7 +287,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$trans['###NAVI_LABEL###'] = $nlabel;
 		$trans['###LETTER_SELECTION###'] = $this->get_letter_selection();
 
-		$trans['###SELECTION###'] = $this->get_selection();
+		$trans['###SELECTION###'] = $this->get_author_selection();
 		$trans['###SURNAME_SELECT###'] = $this->get_html_select();
 
 		$tmpl = $this->pi1->enum_condition_block ( $this->template );
@@ -107,15 +300,18 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	/*
 	 * The author surname select
 	 */
-	function get_selection ( ) {
+	function get_author_selection ( ) {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
 		$cfgSel = is_array ( $cfg['selection.'] ) ? $cfg['selection.'] : array();
 
 		// Selection
 		$sns =& $this->pi1->stat['authors']['sel_surnames'];
+		$cur = $this->extConf['sel_name_idx'];
+		$max = sizeof ( $sns ) - 1;
 
-		$indices = array ( 0, $this->sel_name_idx, sizeof ( $sns ) - 1 );
+		$indices = array ( 0, $cur, $max );
+		//t3lib_div::debug( $indices );
 
 		$numSel = 3;
 		if ( array_key_exists ( 'authors', $cfgSel ) )
@@ -130,7 +326,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$sep = $cObj->stdWrap ( $sep, $cfgSel['all_sep.'] );
 
 		$txt = $this->pi1->get_ll ( 'authorNav_all_authors', 'All', TRUE );
-		if ( $this->sel_name_idx < 0 ) {
+		if ( $cur < 0 ) {
 			$txt = $cObj->stdWrap ( $txt, $cfgSel['current.'] );
 		} else {
 			$txt = $this->pi1->get_link ( $txt, array ( 'author' => '0' ) );
@@ -168,8 +364,9 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		// The raw data
 		$names = $this->pi1->stat['authors']['sel_surnames'];
 		$sel_name = '';
-		if ( $this->sel_name_idx >= 0 ) {
-			$sel_name = $names[$this->sel_name_idx];
+		$sel_idx = $this->extConf['sel_name_idx'];
+		if ( $sel_idx >= 0 ) {
+			$sel_name = $names[$sel_idx];
 			$sel_name = htmlspecialchars ( $sel_name, ENT_QUOTES, $charset );
 		}
 
@@ -232,48 +429,29 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$cfg =& $this->conf;
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$cfgLSel = is_array ( $cfg['letters.'] ) ? $cfg['letters.'] : array();
+		$lcfg = is_array ( $cfg['letters.'] ) ? $cfg['letters.'] : array();
 
-		//
-		// Acquire letters
-		//
-		$letters = array();
-		$sns =& $this->pi1->stat['authors']['surnames'];
-		foreach ( $sns as $name ) {
-			$ll = mb_substr ( $name, 0, 1, $charset );
-			if ( $ll == '&' ) {
-				$match = preg_match ( '/^(&[^;]{1,7};)/', $name, $grp );
-				if ( $match ) {
-					$ll = html_entity_decode ( $grp[1], ENT_QUOTES, $charset );
-				} else {
-					$ll = FALSE;
-				}
-			}
-			$up = mb_strtoupper ( $ll, $charset );
-			if ( $up != $ll ) $ll = $up;
-			if ( $ll && !in_array ( $ll, $letters ) )
-				$letters[] = $ll;
+		if ( sizeof ( $extConf['letters'] ) == 0 ) {
+			return '';
 		}
-		usort ( $letters, 'strcoll' );
-		//t3lib_div::debug ( $letters );
 
 		//
 		// Create list
 		//
 		// The letter separator
 		$let_sep = ', ';
-		if ( isset ( $cfgLSel['separator'] ) )
-			$let_sep = $cfgLSel['separator'];
-		$let_sep = $cObj->stdWrap ( $let_sep, $cfgLSel['separator.'] );
+		if ( isset ( $lcfg['separator'] ) )
+			$let_sep = $lcfg['separator'];
+		$let_sep = $cObj->stdWrap ( $let_sep, $lcfg['separator.'] );
 
 		$title_tmpl = $this->pi1->get_ll ( 'authorNav_LetterLinkTitle', '%l', TRUE );
 
 		// Iterate through letters
 		$let_sel = array();
-		foreach ( $letters as $ll ) {
+		foreach ( $extConf['letters'] as $ll ) {
 			$txt = htmlspecialchars ( $ll, ENT_QUOTES, $charset );
 			if ( $ll == $extConf['sel_letter'] ) {
-				$txt = $cObj->stdWrap ( $txt, $cfgLSel['current.'] );
+				$txt = $cObj->stdWrap ( $txt, $lcfg['current.'] );
 			} else {
 				$title = str_replace ( '%l', $txt, $title_tmpl );
 				$txt = $this->pi1->get_link ( $txt,
@@ -284,17 +462,19 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		}
 		$lst = implode ( $let_sep, $let_sel );
 
+
 		//
 		// All link
 		//
 		$sep = '-';
-		if ( isset ( $cfgLSel['all_sep'] ) )
-			$sep = $cfgLSel['all_sep'];
-		$sep = $cObj->stdWrap ( $sep, $cfgLSel['all_sep.'] );
+		if ( isset ( $lcfg['all_sep'] ) )
+			$sep = $lcfg['all_sep'];
+		$sep = $cObj->stdWrap ( $sep, $lcfg['all_sep.'] );
+
 
 		$txt = $this->pi1->get_ll ( 'authorNav_all_letters', 'All', TRUE );
 		if ( strlen ( $extConf['sel_letter'] ) == 0 ) {
-			$txt = $cObj->stdWrap ( $txt, $cfgLSel['current.'] );
+			$txt = $cObj->stdWrap ( $txt, $lcfg['current.'] );
 		} else {
 			$txt = $this->pi1->get_link ( $txt, array ( 'author_letter' => '', 'author' => '' ) );
 		}
@@ -302,12 +482,11 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		//
 		// Compose
 		//
-		$con = $txt . $sep . $lst;
-		$con = $cObj->stdWrap ( $con, $cfgLSel['all_wrap.'] );
+		$txt = $txt . $sep . $lst;
+		$txt = $cObj->stdWrap ( $txt, $lcfg['all_wrap.'] );
 
-		return $con;
+		return $txt;
 	}
-
 
 }
 

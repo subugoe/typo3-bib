@@ -209,7 +209,7 @@ plugin.tx_sevenpack_pi1 {
 		separator {
 			def = space
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 			#select_class = 
 			select.wrap = |
 		}
@@ -218,10 +218,13 @@ plugin.tx_sevenpack_pi1 {
 		rule {
 			def = OR
 			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
-			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
 			#select_class = 
 			select.wrap = |
 		}
+
+		# Clear results if no string is given
+		clear_start = 1
 
 		top_disable = 0
 		bottom_disable = 1

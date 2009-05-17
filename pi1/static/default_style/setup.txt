@@ -3,8 +3,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	div.tx_sevenpack-top_navigation {
 		clear: both;
-		padding: 1ex 0px;
-		padding-bottom: 0.5ex;
+		padding: 0px;
 		margin: 1ex 0px;
 		margin-bottom: 1.5ex;
 		border-width: 0px; 
@@ -29,46 +28,28 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		border-width: 0px;
 	}
 
+	div.tx_sevenpack-navi_search_top,
+	div.tx_sevenpack-navi_author_top,
 	div.tx_sevenpack-navi_year_top,
-	div.tx_sevenpack-navi_year_bottom {
+	div.tx_sevenpack-navi_page_top,
+	div.tx_sevenpack-navi_pref_top {
 		clear: both;
 		padding: 0px;
-		margin: 1ex 0em;
+		margin: 1.5ex 0em;
 		border-width: 0px;
 	}
 
-	div.tx_sevenpack-navi_page_top, 
-	div.tx_sevenpack-navi_page_bottom {
-		clear: both;
-		padding: 0px;
-		margin: 1ex 0em;
-		border-width: 0px;
-	}
-
-	div.tx_sevenpack-navi_pref_top, 
+	div.tx_sevenpack-navi_search_bottom,
+	div.tx_sevenpack-navi_author_bottom,
+	div.tx_sevenpack-navi_year_bottom,
+	div.tx_sevenpack-navi_page_bottom,
 	div.tx_sevenpack-navi_pref_bottom {
 		clear: both;
 		padding: 0px;
-		margin: 1ex 0em;
+		margin: 1.5ex 0em;
 		border-width: 0px;
 	}
 
-	div.tx_sevenpack-navi_author_top, 
-	div.tx_sevenpack-navi_author_bottom {
-		clear: both;
-		padding: 0px;
-		margin: 1ex 0em;
-		margin-bottom: 1.5ex;
-		border-width: 0px;
-	}
-
-	div.tx_sevenpack-navi_search_top,
-	div.tx_sevenpack-navi_search_bottom {
-		clear: both;
-		padding: 0px;
-		margin: 1ex 0em;
-		border-width: 0px;
-	}
 
 	.tx_sevenpack-inline_form,
 	.tx_sevenpack-year_select_form,
@@ -103,7 +84,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	div.tx_sevenpack-navi_extra_row {
-		padding-top: 1ex;
+		padding-top: 1.5ex;
 	}
 
 

@@ -64,60 +64,68 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		// The year select for
 		//
 		$sel = '';
-		$sel .= '<form name="'.$this->pi1->prefix_pi1.'-year_select_form" ';
-		$sel .= 'action="'.$this->pi1->get_link_url ( array ( 'year' => '' ), FALSE ).'"';
-		$sel .= ' method="post"';
-		$sel .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
-		$sel .= '>' . "\n";
-		
-		$pairs = array();
 		if ( sizeof ( $years ) > 0 ) {
-			foreach ( array_reverse( $years ) as $y )
-				$pairs[$y] = $y;
-		} else {
-			$year = strval ( intval ( date ( 'Y' ) ) );
-			$pairs = array ( $year => $year );
+			$name = $this->pi1->prefix_pi1.'-year_select_form';
+			$action = $this->pi1->get_link_url ( array ( 'year' => '' ), FALSE );
+			$sel .= '<form name="' . $name . '" ';
+			$sel .= 'action="'.$action.'"';
+			$sel .= ' method="post"';
+			$sel .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
+			$sel .= '>' . "\n";
+			
+			$pairs = array();
+			if ( sizeof ( $years ) > 0 ) {
+				foreach ( array_reverse( $years ) as $y )
+					$pairs[$y] = $y;
+			} else {
+				$year = strval ( intval ( date ( 'Y' ) ) );
+				$pairs = array ( $year => $year );
+			}
+	
+			$attribs = array (
+				'name'     => $this->pi1->prefix_pi1.'[year]',
+				'onchange' => 'this.form.submit()'
+			);
+			if ( strlen ( $cfg['select_class'] ) > 0 )
+				$attribs['class'] = $cfg['select_class'];
+			$btn = tx_sevenpack_utility::html_select_input ( 
+				$pairs, $year, $attribs );
+			$btn = $cObj->stdWrap ( $btn, $cfg['select.'] );
+			$sel .= $btn;
+	
+			$attribs = array ();
+			if ( strlen ( $cfg['go_btn_class'] ) > 0 )
+				$attribs['class'] =  $cfg['go_btn_class'];
+			$btn = tx_sevenpack_utility::html_submit_input ( 
+				$this->pi1->prefix_pi1.'[action][select_year]',
+				$this->pi1->get_ll ( 'button_go' ), $attribs );
+			$btn = $cObj->stdWrap ( $btn, $cfg['go_btn.'] );
+			$sel .= $btn;
+	
+			// End of form
+			$sel .= '</form>';
+			$sel = $cObj->stdWrap ( $sel, $cfg['form.'] );
 		}
-
-		$attribs = array (
-			'name'     => $this->pi1->prefix_pi1.'[year]',
-			'onchange' => 'this.form.submit()'
-		);
-		if ( strlen ( $cfg['select_class'] ) > 0 )
-			$attribs['class'] = $cfg['select_class'];
-		$btn = tx_sevenpack_utility::html_select_input ( 
-			$pairs, $year, $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['select.'] );
-		$sel .= $btn;
-
-		$attribs = array ();
-		if ( strlen ( $cfg['go_btn_class'] ) > 0 )
-			$attribs['class'] =  $cfg['go_btn_class'];
-		$btn = tx_sevenpack_utility::html_submit_input ( 
-			$this->pi1->prefix_pi1.'[action][select_year]',
-			$this->pi1->get_ll ( 'button_go' ), $attribs );
-		$btn = $cObj->stdWrap ( $btn, $cfg['go_btn.'] );
-		$sel .= $btn;
-
-		// End of form
-		$sel .= '</form>';
-		$sel = $cObj->stdWrap ( $sel, $cfg['form.'] );
 
 
 		//
 		// The year selection
 		//
-		$indices = array ( 0,
-			intval ( array_search ( $year, $years ) ),
-			sizeof ( $years ) - 1
-		);
-		
-		$numSel = 3;
-		if ( array_key_exists ( 'years', $cfgSel ) )
-			$numSel = abs ( intval ( $cfgSel['years'] ) );
+		$selection = '';
+		if ( sizeof ( $years ) > 0 ) {
+			$indices = array ( 0,
+				intval ( array_search ( $year, $years ) ),
+				sizeof ( $years ) - 1
+			);
+			
+			$numSel = 3;
+			if ( array_key_exists ( 'years', $cfgSel ) ) {
+				$numSel = abs ( intval ( $cfgSel['years'] ) );
+			}
 
-		$selection = $this->selection ( $cfgSel, $indices, $numSel );
-		$selection = $cObj->stdWrap ( $selection, $cfgSel['all_wrap.'] );
+			$selection = $this->selection ( $cfgSel, $indices, $numSel );
+			$selection = $cObj->stdWrap ( $selection, $cfgSel['all_wrap.'] );
+		}
 
 		$trans = array();
 		$trans['###NAVI_LABEL###'] = $label;

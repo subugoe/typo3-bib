@@ -400,6 +400,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$aconf =& $extConf['author_navi'];
 			$lvars =& $extConf['link_vars'];
 
+			$aconf['obj'] =& $this->get_navi_instance ( 
+				'tx_sevenpack_navi_author' );
+
 			$lvars['author_letter'] = '';
 			$pvar = $this->piVars['author_letter'];
 			if ( strlen ( $pvar ) > 0 ) {
@@ -681,7 +684,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			} else {
 				$this->extConf['post_items'] = $this->get_ll ( 
 					'searchNav_insert_request' );
-				$filter['FALSE'] = TRUE;
+				if ( $this->conf['searchNav.']['clear_start'] ) {
+					$filter['FALSE'] = TRUE;
+				}
 			}
 
 			if ( sizeof ( $filter ) > 0 ) {
@@ -697,97 +702,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->ra->set_filters ( $extConf['filters'] );
 
 		//
-		// Author navigation setup
+		// Author navigation hook
 		//
 		if ( $extConf['show_nav_author'] ) {
-			$aconf =& $extConf['author_navi'];
-			$this->stat['authors'] = array();
-			$astat =& $this->stat['authors'];
-
-			$filter = array ( );
-
-			$astat['surnames'] = $this->ra->fetch_author_surnames();
-
-			// Filter for selected author letter
-			$astat['sel_surnames'] = array();
-			if ( strlen ( $aconf['sel_letter'] ) > 0 ) {
-				$filters = $extConf['filters'];
-
-				$txt = $aconf['sel_letter'];
-				$spec = htmlentities ( $txt, ENT_QUOTES, $extConf['charset']['upper'] );
-				$pats = array ( $txt . '%' );
-				if ( $spec != $txt ) 
-					$pats[] = $spec . '%';
-
-				// Setup filter
-				foreach ( $pats as $pat )
-					$filter[] = array ( 'surname' => $pat );
-
-				$filters['temp'] = array();
-				$filters['temp']['author'] = array();
-				$filters['temp']['author']['authors'] = $filter;
-
-				// Fetch surnames
-				$this->ra->set_filters ( $filters );
-				$astat['sel_surnames'] = $this->ra->fetch_author_surnames ( );
-				//t3lib_div::debug ( $astat['sel_surnames'] );
-
-				// Treat selection
-				$lst = array();
-				$txt = FALSE;
-				foreach ( $astat['sel_surnames'] as $name ) {
-					if ( !( strpos ( $name, '&' ) === FALSE ) ) {
-						//$name = str_replace ( '&amp;', '&amp;amp;', $name );
-						$name = html_entity_decode ( $name, ENT_COMPAT, $extConf['charset']['upper'] );
-						$txt = TRUE;
-						//t3lib_div::debug ( array ( 'sur' => $name ) );
-					}
-					if ( !in_array ( $name, $lst ) ) {
-						$lst[] = $name;
-					}
-				}
-				if ( $txt ) {
-					usort ( $lst, 'strcoll' );
-					$astat['sel_surnames'] = $lst;
-					//t3lib_div::debug ( $lst );
-				}
-
-				// Restore filter
-				$this->ra->set_filters ( $extConf['filters'] );
-			}
-
-			// Filter for selected author
-			if ( $aconf['sel_author'] != '0' ) {
-
-				$sel = strval ( $aconf['sel_author'] );
-				$spec = htmlentities ( $sel, ENT_QUOTES, $extConf['charset']['upper'] );
-
-				if ( in_array ( $sel, $astat['sel_surnames'] ) || 
-					in_array ( $spec, $astat['sel_surnames'] ) ) {
-					$pats = array ( $sel );
-					if ( $spec != $sel )
-						$pats[] = $spec;
-
-					//t3lib_div::debug ( array ( 'pats' => $pats ) );
-					// Setup filter
-					$filter = array ( );
-					foreach ( $pats as $pat )
-						$filter[] = array ( 'surname' => $pat );
-				} else {
-					$aconf['sel_author'] = '0';
-				}
-			}
-
-			// Append filter
-			if ( sizeof ( $filter ) > 0 )  {
-				$ff =& $extConf['filters'];
-				$ff['author'] = array();
-				$ff['author']['author'] = array();
-				$ff['author']['author']['authors'] = $filter;
-			}
-
-			//t3lib_div::debug ( $extConf['filters'] );
-			$this->ra->set_filters ( $extConf['filters'] );
+			$aconf['obj']->hook_filter();
 		}
 
 		$hist = $this->ra->fetch_histogram ( 'year' );
@@ -1668,9 +1586,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_author'] ) {
-			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_author' );
-
-			$trans = $obj->translator();
+			$trans = $this->extConf['author_navi']['obj']->translator();
 			$hasStr = array ( '', '' );
 
 			if ( strlen ( $trans['###AUTHOR_NAVI_TOP###'] ) > 0 )

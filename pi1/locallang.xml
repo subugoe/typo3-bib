@@ -186,7 +186,7 @@
 			<label index="pageNav_label">Seite</label>
 			<label index="pageNav_last">Ende</label>
 			<label index="pageNav_lastLinkTitle">Letzte Seite</label>
-			<label index="pageNav_next">Vorwärts</label>
+			<label index="pageNav_next">Weiter</label>
 			<label index="pageNav_nextLinkTitle">Nächste Seite</label>
 			<label index="pageNav_pageLinkTitle">Seite %p</label>
 			<label index="pageNav_previous">Zurück</label>

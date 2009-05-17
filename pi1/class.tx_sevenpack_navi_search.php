@@ -52,10 +52,6 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$attribs = array ( 
 			'search' => ''
 		);
-		if ( $this->pi1->extConf['show_nav_author'] ) {
-			$attribs['author'] = '';
-			$attribs['author_letter'] = '';
-		}
 		$txt = '';
 		$txt .= '<form name="'.$this->pi1->prefix_pi1.'-search_form" ';
 		$txt .= 'action="'.$this->pi1->get_link_url ( $attribs, FALSE ).'"';
