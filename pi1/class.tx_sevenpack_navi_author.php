@@ -32,7 +32,34 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 
 	/*
-	 * Hook in in pi1
+	 * Hook in to pi1 at init stage
+	 */
+	function hook_init ( ) {
+		$extConf =& $this->pi1->extConf;
+		$aconf =& $extConf['author_navi'];
+		$lvars =& $extConf['link_vars'];
+
+		$lvars['author_letter'] = '';
+		$pvar = $this->pi1->piVars['author_letter'];
+		if ( strlen ( $pvar ) > 0 ) {
+			$aconf['sel_letter'] = $pvar;
+			$lvars['author_letter'] = $pvar;
+		}
+
+		$lvars['author'] = '';
+		$pvar = $this->pi1->piVars['author'];
+		$aconf['sel_author'] = '0';
+		if ( strlen ( $pvar ) > 0 ) {
+			$aconf['sel_author'] = $pvar;
+			$lvars['author'] = $pvar;
+		}
+
+	}
+
+
+
+	/*
+	 * Hook in to pi1 at filter stage
 	 */
 	function hook_filter ( ) {
 		$extConf =& $this->extConf;

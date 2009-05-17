@@ -642,11 +642,11 @@ plugin.tx_sevenpack_pi1 {
 			}
 			book {
 				required = citeid,authors,title,publisher,year
-				optional = volume,series,address,edition,editor,month,note,ISBN
+				optional = volume,series,edition,editor,address,where_published,month,ISBN,note
 			}
 			inbook {
 				required = citeid,authors,title,chapter,pages,publisher,year
-				optional = volume,series,type,address,edition,editor,month,note
+				optional = volume,series,edition,editor,address,where_published,month,type,note
 			}
 			booklet {
 				required = citeid,title
@@ -654,7 +654,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			conference {
 				required = citeid,authors,title,booktitle,year
-				optional = editor,volume,series,pages,address,month,organization,publisher,note
+				optional = event_name,event_place,event_date,editor,publisher,where_published,ISBN,pages,volume,series,address,month,organization,note
 			}
 			incollection {
 				required = citeid,authors,title,booktitle,year
@@ -702,7 +702,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			thesis {
 				required = citeid,authors,title,school,year
-				optional = type,address,month,note
+				optional = type,institute,address,month,note
 			}
 		}
 

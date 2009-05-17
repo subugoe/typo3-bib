@@ -32,6 +32,149 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 
 
 	/*
+	 * Hook in to pi1 at init stage
+	 */
+	function hook_init ( ) {
+		$cfg =& $this->pi1->conf['searchNav.'];
+		$extConf =& $this->pi1->extConf;
+		$sconf =& $extConf['search_navi'];
+		$lvars =& $extConf['link_vars'];
+		$pivars =& $this->pi1->piVars['search'];
+
+		// Clear string
+		if ( isset ( $this->pi1->piVars['action']['clear_search'] ) ) {
+			$clear = TRUE;
+		}
+
+		// Search string
+		$p_val = $pivars['text'];
+		if ( ( strlen ( $p_val ) > 0 ) && !$clear ) {
+			$sconf['string'] = $p_val;
+			$lvars['search']['text'] = $p_val;
+		}
+
+		// Search rule
+		$rule = 'AND';
+		$rules = array ( 'OR', 'AND' );
+		$pvar = strtoupper ( $cfg['full_text.']['def'] );
+		if ( in_array ( $pvar, $rules ) )
+			$rule = $pvar;
+		$pvar = strtoupper ( $pivars['rule'] );
+		if ( in_array ( $pvar, $rules ) )
+			$rule = $pvar; 
+		$sconf['rule'] = $rule;
+		$lvars['search']['rule'] = $rule;
+
+		// extra_b indicates that the page has been visited 'b'efore
+		// So that the default values should not be applied
+		if ( $pivars['extra_b'] ) {
+			$lvars['search']['extra_b'] = 1;
+		}
+		// Show extra
+		$sconf['extra'] = TRUE; 
+		if ( !$pivars['extra'] ) {
+			$sconf['extra'] = FALSE;
+			if ( !$pivars['extra_b'] ) {
+				$sconf['extra'] = $cfg['extra.']['def'] ? TRUE : FALSE;
+			}
+		}
+		if ( $sconf['extra'] ) $lvars['search']['extra'] = 1;
+
+		// Search in abstracts
+		$sconf['abstracts'] = TRUE; 
+		if ( !$pivars['abstracts'] ) {
+			$sconf['abstracts'] = FALSE;
+			if ( !$pivars['extra_b'] ) {
+				$sconf['abstracts'] = $cfg['abstracts.']['def'] ? TRUE : FALSE;
+			}
+		}
+		if ( $sconf['abstracts'] ) $lvars['search']['abstracts'] = 1;
+
+		// Search in full text
+		$sconf['full_text'] = TRUE; 
+		if ( !$pivars['full_text'] ) {
+			$sconf['full_text'] = FALSE;
+			if ( !$pivars['extra_b'] ) {
+				$sconf['full_text'] = $cfg['full_text.']['def'] ? TRUE : FALSE;
+			}
+		}
+		if ( $sconf['full_text'] ) $lvars['search']['full_text'] = 1;
+
+		// Separator selection
+		$sconf['all_sep'] = array ( 
+			'none'  => '',
+			'space' => ' ',
+			'semi'  => ';',
+			'pipe'  => '|'
+		);
+
+		$sep_id = 'space';
+		if ( is_string ( $cfg['separator.']['def'] ) )
+			$sep_id = $cfg['separator.']['def'];
+		if ( strlen ( $pivars['sep'] ) > 0 ) {
+			if ( array_key_exists ( $pivars['sep'], $sconf['all_sep'] ) ) {
+				$sep_id = $pivars['sep'];
+			}
+		}
+		$sconf['sep'] = $sep_id;
+		$lvars['search']['sep'] = $sep_id;
+
+		//t3lib_div::debug ( $sconf );
+	}
+
+
+	function hook_filter ( ) {
+		$extConf =& $this->pi1->extConf;
+		$sconf =& $extConf['search_navi'];
+
+		$strings = array ( );
+		if ( strlen ( $sconf['string'] ) > 0 ) {
+			$sep = $sconf['sep'];
+			if ( $sep == 'none' ) {
+				$strings[] = $sconf['string'];
+			} else {
+				// Explode search string
+				$sep = $sconf['all_sep'][$sep];
+				$strings = tx_sevenpack_utility::explode_trim (
+					$sep, $sconf['string'], TRUE );
+			}
+		}
+		$filter = array();
+		if ( sizeof ( $strings ) > 0 ) {
+			// Setup search patterns
+			$pats = array();
+			foreach ( $strings as $txt ) {
+				$spec = htmlentities ( $txt, ENT_QUOTES, $extConf['charset']['upper'] );
+				$pats[] = $txt;
+				if ( $spec != $txt ) 
+					$pats[] = $spec;
+			}
+
+			$exclude = array ( );
+			if ( !$sconf['abstracts'] ) $exclude[] = 'abstract';
+			if ( !$sconf['full_text'] ) $exclude[] = 'full_text';
+
+			//t3lib_div::debug ( $pats );
+
+			$all = array();
+			$all['words'] = $pats;
+			$all['rule'] = $sconf['rule'] == 'AND' ? 1 : 0;
+			$all['exclude'] = $exclude;
+			$filter['all'] = $all;
+		} else {
+			$extConf['post_items'] = $this->pi1->get_ll ( 
+				'searchNav_insert_request' );
+			if ( $this->conf['clear_start'] ) {
+				$filter['FALSE'] = TRUE;
+			}
+		}
+
+		if ( sizeof ( $filter ) > 0 ) {
+			$extConf['filters']['search'] = $filter;
+		}
+	}
+
+	/*
 	 * Returns content
 	 */
 	function get ( ) {

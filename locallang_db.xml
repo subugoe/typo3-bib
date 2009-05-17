@@ -81,7 +81,7 @@
 			<label index="tx_sevenpack_references_state_I_4">in preparation</label>
 			<label index="tx_sevenpack_references_tags">Tags</label>
 			<label index="tx_sevenpack_references_title">Title</label>
-			<label index="tx_sevenpack_references_type">Type</label>
+			<label index="tx_sevenpack_references_type">Work type</label>
 			<label index="tx_sevenpack_references_volume">Volume</label>
 			<label index="tx_sevenpack_references_web_url">Web URL</label>
 			<label index="tx_sevenpack_references_where_published">Where published</label>

@@ -88,9 +88,8 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 
-	/*
-	 * Search navigation
-	 */
+
+
 	form.tx_sevenpack-search_form {
 		display: block;
 	}
@@ -100,9 +99,8 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 
-	/*
-	 * Author navigation
-	 */
+
+
 	.tx_sevenpack-navi_author_selection {
 		margin-left: 12em;
 	}
@@ -112,9 +110,8 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 
-	/*
-	 * Preferences navigation
-	 */
+
+
 	form.tx_sevenpack-navi_pref_form {
 		display: block;
 	}
@@ -185,7 +182,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 
 	table.tx_sevenpack-list th,
-	table.tx_sevenpack-list td, {
+	table.tx_sevenpack-list td {
 		border-width: 0px;
 	}
 
@@ -363,6 +360,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 	table.tx_sevenpack-editor_fields th,
 	table.tx_sevenpack-editor_fields td {
+		border-width: 0px;
 		padding: 0.5ex 0.5em;
 		vertical-align: top;
 		text-align: left;
@@ -401,6 +399,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 	table.tx_sevenpack-editor_author th,
 	table.tx_sevenpack-editor_author td {
+		border-width: 0px;
 		min-width: 0px;
 		font-size: small;
 	}
@@ -411,6 +410,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		text-align: right;
 		vertical-align: middle;
 	}
+
 	.tx_sevenpack-editor_hidden {
 		text-decoration: line-through;
 	}
