@@ -192,13 +192,13 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 
 
 	div.tx_sevenpack-list_container {
-		float: left;
 		margin: 0px; 
 		padding:0px; 
 		margin-left: 12em;
 	}
 
 	table.tx_sevenpack-list {
+		float: left;
 		margin: 0px;
 		padding: 0px;
 		width: 100%;
@@ -239,6 +239,7 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 	td.tx_sevenpack-enum {
 		text-align: right;
+		padding-left: 0px;
 		padding-right: 0.5em;
 		max-width: 4em;
 	}

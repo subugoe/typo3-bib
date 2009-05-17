@@ -88,10 +88,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $W_SILENT = 2;
 	public $W_HIDDEN = 3;
 
-	// Export modes
-	public $EXP_BIBTEX = 1;
-	public $EXP_XML    = 2;
-
 	// Import modes
 	public $IMP_BIBTEX = 1;
 	public $IMP_XML    = 2;
@@ -141,7 +137,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->pi_initPIflexForm ();
 
 		// Create some configuration shortcuts
-		$this->extConf = array ( );
 		$extConf =& $this->extConf;
 		$this->ra = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
 		$this->ra->set_cObj ( $this->cObj );
@@ -172,7 +167,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$extConf['max_authors']     = $this->pi_getFFvalue ( $ff, 'max_authors',    $fSheet );
 		$extConf['split_bibtypes']  = $this->pi_getFFvalue ( $ff, 'split_bibtypes', $fSheet );
 		$extConf['stat_mode']       = $this->pi_getFFvalue ( $ff, 'stat_mode',      $fSheet );
-		$extConf['export_mode']     = $this->pi_getFFvalue ( $ff, 'export_mode',    $fSheet );
+		$extConf['show_nav_export'] = $this->pi_getFFvalue ( $ff, 'export_mode',    $fSheet );
 		$extConf['date_sorting']    = $this->pi_getFFvalue ( $ff, 'date_sorting',   $fSheet );
 
 		$show_fields = $this->pi_getFFvalue ( $ff, 'show_textfields', $fSheet);
@@ -209,43 +204,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['max_authors'] = intval ( $this->conf['max_authors'] );
 		}
 
-		// Override some values from typoscript
-		if ( array_key_exists ( 'split_bibtypes', $this->conf ) )
-			$extConf['split_bibtypes'] = $this->conf['split_bibtypes'] ? TRUE : FALSE;
-		if ( array_key_exists ( 'export_mode', $this->conf ) )
-			$extConf['export_mode'] = $this->conf['export_mode'];
-
 		// Character set
 		$extConf['charset'] = array ( 'upper' => 'UTF-8', 'lower' => 'utf-8' );
 		if ( strlen ( $this->conf['charset'] ) > 0 ) {
 			$extConf['charset']['upper'] = strtoupper ( $this->conf['charset'] );
 			$extConf['charset']['lower'] = strtolower ( $this->conf['charset'] );
 		}
-
-		// Activate export modes
-		$extConf['enable_export'] = 0;
-		if ( intval ( $extConf['export_mode'] ) > 0 ) {
-			$eex = $this->conf['export.']['enable_export'];
-			if ( strlen ( $eex ) > 0 )
-				$eex = tx_sevenpack_utility::explode_trim_lower ( ',', $eex, TRUE );
-
-			// Check restrictions
-			$grp = $this->conf['export.']['FE_groups_only'];
-			if ( strlen ( $grp ) > 0 )
-				$grp = tx_sevenpack_utility::check_fe_user_groups ( $grp );
-			else
-				$grp = TRUE;
-	
-			// Add export modes
-			if ( is_array ( $eex ) && $grp ) {
-				$ec_ee =& $extConf['enable_export'];
-				if ( in_array ( 'bibtex', $eex ) )
-					$ec_ee = $ec_ee | $this->EXP_BIBTEX;
-				if ( in_array ( 'xml', $eex ) )
-					$ec_ee = $ec_ee | $this->EXP_XML;
-			}
-		}
-
 
 		//
 		// Frontend editor configuration
@@ -437,18 +401,18 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$lvars =& $extConf['link_vars'];
 
 			$lvars['author_letter'] = '';
-			$p_val = $this->piVars['author_letter'];
-			if ( strlen ( $p_val ) > 0 ) {
-				$aconf['sel_letter'] = $p_val;
-				$lvars['author_letter'] = $p_val;
+			$pvar = $this->piVars['author_letter'];
+			if ( strlen ( $pvar ) > 0 ) {
+				$aconf['sel_letter'] = $pvar;
+				$lvars['author_letter'] = $pvar;
 			}
 
 			$lvars['author'] = '';
-			$p_val = $this->piVars['author'];
+			$pvar = $this->piVars['author'];
 			$aconf['sel_author'] = '0';
-			if ( strlen ( $p_val ) > 0 ) {
-				$aconf['sel_author'] = $p_val;
-				$lvars['author'] = $p_val;
+			if ( strlen ( $pvar ) > 0 ) {
+				$aconf['sel_author'] = $pvar;
+				$lvars['author'] = $pvar;
 			}
 		}
 
@@ -503,6 +467,46 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['show_nav_stat'] = TRUE;
 		}
 
+
+		//
+		// Export navi
+		//
+		if ( $extConf['show_nav_export'] ) {
+			$extConf['export_navi'] = array();
+			$econf =& $extConf['export_navi'];
+
+			// Check group restrictions
+			$groups = $this->conf['export.']['FE_groups_only'];
+			$fe_ok = TRUE;
+			if ( strlen ( $groups ) > 0 ) {
+				$fe_ok = tx_sevenpack_utility::check_fe_user_groups ( $groups );
+			}
+			//t3lib_div::debug ( array ( $groups, $fe_ok ) );
+
+			// Acquire export modes
+			$modes = $this->conf['export.']['enable_export'];
+			if ( strlen ( $modes ) > 0 ) {
+				$modes = tx_sevenpack_utility::explode_trim_lower ( 
+					',', $modes, TRUE );
+			}
+
+			// Add export modes
+			$econf['modes'] = array();
+			$mm =& $econf['modes'];
+			if ( is_array ( $modes ) && $fe_ok ) {
+				$mod_all = array ( 'bibtex', 'xml' );
+				$mm = array_intersect ( $mod_all, $modes );
+			}
+
+			if ( sizeof ( $mm ) == 0 ) {
+				$extConf['show_nav_export'] = FALSE;
+			} else {
+				$pvar = trim ( $this->piVars['export'] );
+				if ( ( strlen ( $pvar ) > 0 ) && in_array ( $pvar, $mm ) ) {
+					$econf['do'] = $pvar;
+				}
+			}
+		}
 
 		//
 		// Enable Enable the edit mode
@@ -632,12 +636,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Switch to an export view on demand
-		$piv_exp = intval ( $this->piVars['export'] );
-		if ( intval ( $extConf['export_mode'] ) != 0 ) {
-			if ( ( $piv_exp & $extConf['enable_export'] ) != 0 ) {
-				$extConf['view_mode']   = $this->VIEW_DIALOG;
-				$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
-			}
+		if ( is_string ( $extConf['export_navi']['do'] ) ) {
+			$extConf['view_mode']   = $this->VIEW_DIALOG;
+			$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
 		}
 
 
@@ -828,12 +829,18 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		//
-		// Enable page and year navigation
+		// Enable/disable navigations
 		//
 		if ( $extConf['d_mode'] == $this->D_Y_NAV )
 			$extConf['show_nav_year'] = TRUE;
 		if ( ( $iPP > 0 ) && ( $this->stat['num_page'] > $iPP ) )
 			$extConf['show_nav_page'] = TRUE;
+
+		// Disable navigations
+		if ( $this->stat['num_all'] == 0 )
+			$extConf['show_nav_export'] = FALSE;
+		if ( $this->stat['num_page'] == 0 )
+			$extConf['show_nav_stat'] = FALSE;
 
 		//
 		// Setup the browse filter
@@ -1783,48 +1790,52 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$str = '';
 		$hasStr = '';
 
-		if ( ( $this->extConf['enable_export'] != 0 ) && ( $this->stat['num_all'] > 0) )  {
+		if ( $this->extConf['show_nav_export'] )  {
 
 			$cfg = array();
 			if ( is_array ( $this->conf['export.'] ) )
 				$cfg =& $this->conf['export.'];
+			$extConf =& $this->extConf['export_navi'];
 
-			$str = $this->enum_condition_block ( $this->template['EXPORT_NAVI_BLOCK'] );
-			$translator = array();
 			$exports = array();
 
-			// Export bibtex
-			if ( $this->extConf['enable_export'] & $this->EXP_BIBTEX ) {
-				$title = $this->get_ll ( 'export_bibtexLinkTitle', 'bibtex', TRUE );
-				$link = $this->get_link ( $this->get_ll ( 'export_bibtex' ), array ( 'export'=>$this->EXP_BIBTEX ), 
-						FALSE, array ( 'title' => $title ) );
-				$exports[] = $this->cObj->stdWrap ( $link, $cfg['bibtex.'] );
-			}
+			// Export label
+			$label = $this->get_ll ( $cfg['label'] );
+			$label = $this->cObj->stdWrap ( $label, $cfg['label.'] );
 
-			// Export xml
-			if ( $this->extConf['enable_export'] & $this->EXP_XML ) {
-				$title = $this->get_ll ( 'export_xmlLinkTitle', 'xml' ,TRUE );
-				$link = $this->get_link ( $this->get_ll ( 'export_xml' ), array('export'=>$this->EXP_XML), 
+			$mod_all = array ( 'bibtex', 'xml' );
+
+			foreach ( $mod_all as $mod ) {
+				if ( in_array ( $mod, $extConf['modes'] ) ) {
+					$title = $this->get_ll ( 'export_' . $mod . 'LinkTitle', $mod, TRUE );
+					$txt = $this->get_ll ( 'export_' . $mod );
+					$link = $this->get_link ( $txt, array ( 'export' => $mod ), 
 						FALSE, array ( 'title' => $title ) );
-				$exports[] = $this->cObj->stdWrap ( $link, $cfg['xml.'] );
+					$link = $this->cObj->stdWrap ( $link, $cfg[$mod . '.'] );
+					$exports[] = $link;
+				}
 			}
 
 			$sep = '&nbsp;';
 			if ( array_key_exists ( 'separator', $cfg ) )
 				$sep = $this->cObj->stdWrap ( $cfg['separator'], $cfg['separator.'] );
 
-			// Export label
-			$translator['###LABEL###'] = $this->cObj->stdWrap ( 
-				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
-			$translator['###EXPORTS###'] = implode ( $sep, $exports );
+			// Export string
+			$exports = implode ( $sep, $exports );
+
+			// The translator
+			$trans = array();
+			$trans['###LABEL###'] = $label;
+			$trans['###EXPORTS###'] = $exports;
  
-			$str = $this->cObj->substituteMarkerArrayCached ( $str, $translator, array() );
+			$block = $this->enum_condition_block ( $this->template['EXPORT_NAVI_BLOCK'] );
+			$block = $this->cObj->substituteMarkerArrayCached ( $block, $trans, array() );
 			$hasStr = array ( '','' );
 		}
 
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $this->cObj->substituteSubpart ( $tmpl, '###HAS_EXPORT###', $hasStr );
-		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###EXPORT###', $str );
+		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###EXPORT###', $block );
 	}
 
 
@@ -2769,68 +2780,65 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function export_dialog ( )
 	{
 		$con = '';
+		$mode = $this->extConf['export_navi']['do'];
 		$title = $this->get_ll ( 'export_title' );
 		$con .= '<h2>'.$title.'</h2>'."\n";
-		$mode = $this->piVars['export'];
-		$label = 'export';
 
-		if ( $mode > 0 ) {
-			$exp = FALSE;
-			$label = '';
-			$eclass = '';
-			switch ( $mode ) {
-				case $this->EXP_BIBTEX:
-					$eclass = 'tx_sevenpack_exporter_bibtex';
-					$label = 'export_bibtex';
-					break;
-				case $this->EXP_XML:
-					$eclass = 'tx_sevenpack_exporter_xml';
-					$label = 'export_xml';
-					break;
-			}
+		$exp = FALSE;
+		$label = '';
+		$eclass = '';
+		switch ( $mode ) {
+			case 'bibtex':
+				$eclass = 'tx_sevenpack_exporter_bibtex';
+				$label = 'export_bibtex';
+				break;
+			case 'xml':
+				$eclass = 'tx_sevenpack_exporter_xml';
+				$label = 'export_xml';
+				break;
+			default:
+				return $this->error_msg ( 'Unknown export mode' );
+		}
 
-			if ( strlen ( $eclass ) > 0 ) {
-				// Create instance
-				require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-					'EXT:'.$this->extKey.'/pi1/class.' . $eclass . '.php' ) );
-				$exp = t3lib_div::makeInstance ( $eclass );
-				$label = $this->get_ll ( $label, $label, TRUE );
-			}
-			
-			if ( is_object ( $exp ) ) {
-				$exp->initialize ( $this );
+		// Create instance
+		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+			'EXT:'.$this->extKey.'/pi1/class.' . $eclass . '.php' ) );
+		$exp = t3lib_div::makeInstance ( $eclass );
+		$label = $this->get_ll ( $label, $label, TRUE );
 
-				$dynamic = $this->conf['export.']['dynamic'] ? TRUE : FALSE;
-				if ( $this->extConf['dynamic'] )
-					$dynamic = TRUE;
-				$exp->dynamic = $dynamic;
+		if ( is_object ( $exp ) ) {
+			$exp->initialize ( $this );
 
-				if ( $exp->export () ) {
-					$con .= $this->error_msg ( $exp->error );
+			$dynamic = $this->conf['export.']['dynamic'] ? TRUE : FALSE;
+			if ( $this->extConf['dynamic'] )
+				$dynamic = TRUE;
+			$exp->dynamic = $dynamic;
+
+			if ( $exp->export () ) {
+				$con .= $this->error_msg ( $exp->error );
+			} else {
+				if ( $dynamic ) {
+
+					// Dump the export data and exit
+					$exp_file = $exp->file_name;
+					header ( 'Content-Type: text/plain' );
+					header ( 'Content-Disposition: attachment; filename="' . $exp_file . '"');
+					header ( 'Cache-Control: no-cache, must-revalidate' );
+					echo $exp->data;
+					exit ( );
+
 				} else {
-					if ( $dynamic ) {
-						// Dump the export data and exit
-						$exp_file = $exp->file_name;
-						header ( 'Content-Type: text/plain' );
-						header ( 'Content-Disposition: attachment; filename="' . $exp_file . '"');
-						header ( 'Cache-Control: no-cache, must-revalidate' );
-						echo $exp->data;
-						exit ( );
-					} else {
-						// Create link to file
-						$link = $this->cObj->getTypoLink ( $exp->file_name,
-							$exp->get_file_rel() );
-						$con .= '<ul><li><div>';
-						$con .= $link;
-						if ( $exp->file_new )
-							$con .= ' (' . $this->get_ll ( 'export_file_new' ) . ')';
-						$con .= '</div></li>';
-						$con .= '</ul>' . "\n";
-					}
+					// Create link to file
+					$link = $this->cObj->getTypoLink ( $exp->file_name,
+						$exp->get_file_rel() );
+					$con .= '<ul><li><div>';
+					$con .= $link;
+					if ( $exp->file_new )
+						$con .= ' (' . $this->get_ll ( 'export_file_new' ) . ')';
+					$con .= '</div></li>';
+					$con .= '</ul>' . "\n";
 				}
 			}
-		} else {
-			$con .= $this->error_msg ( 'Unknown export mode' );
 		}
 
 		return $con;
