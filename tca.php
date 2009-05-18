@@ -331,16 +331,6 @@ $TCA['tx_sevenpack_references'] = array (
 				'eval' => 'trim',
 			)
 		),
-		'where_published' => Array (
-#			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_where_published',
-			'config' => Array (
-				'type' => 'input',
-				'size' => '48',
-				'max' => '255',
-				'eval' => 'trim',
-			)
-		),
 		'series' => Array (
 #			'exclude' => 1,
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_series',
@@ -543,7 +533,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, misc, editor, publisher, address, howpublished, where_published, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, ISBN, ISSN, extern, reviewed, in_library, borrowed_by' )
+		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, misc, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, ISBN, ISSN, extern, reviewed, in_library, borrowed_by' )
 	),
 );
 

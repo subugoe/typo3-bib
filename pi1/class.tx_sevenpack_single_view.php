@@ -388,6 +388,8 @@ class tx_sevenpack_single_view {
 		$fieldTypes = array ( 'required', 'optional', 'other', 'library', 'typo3' );
 		array_unshift ( $fields['required'], 'bibtype' );
 
+		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
+
 		foreach ( $fieldTypes as $ft ) {
 			$class_str = ' class="'.$preSh.'-editor_'.$ft.'"';
 
@@ -400,21 +402,8 @@ class tx_sevenpack_single_view {
 				$con .= '<tbody>' . "\n";
 				foreach ( $fields[$ft] as $f ) {
 
-					// Field name
-					$label = '';
-					switch ( $f ) {
-						case 'authors':
-							$label = $this->get_ll ( $this->ra->authorTable . '_' . $f );
-							break;
-						case 'year':
-							$label = $this->get_ll ( 'editor_year_month_day' );
-							break;
-						case 'month':
-						case 'day':
-							break;
-						default:
-							$label = $this->get_ll ( $this->ra->refTable . '_' . $f );
-					}
+					// Field label
+					$label = $this->field_label ( $f, $bib_str );
 
 					// Disable editing on demand
 					$wm = $w_mode;
@@ -495,6 +484,46 @@ class tx_sevenpack_single_view {
 	 *
 	 * @return An array with subarrays with field lists for
 	 */
+	function field_label ( $field, $bib_str ) {
+		$label = $this->ra->refTable . '_' . $field;
+
+		switch ( $field ) {
+			case 'authors':
+				$label = $this->ra->authorTable . '_' . $field;
+				break;
+			case 'year':
+				$label = 'olabel_year_month_day';
+				break;
+			case 'month':
+			case 'day':
+				$label = '';
+				break;
+		}
+
+		$over = array (
+			$this->conf['olabel.']['all.'][$field],
+			$this->conf['olabel.'][$bib_str . '.'][$field]
+		);
+
+		foreach ( $over as $lvar ) {
+			if ( is_string ( $lvar ) ) $label = $lvar;
+		}
+
+		$label = trim ( $label );
+		if ( strlen ( $label ) > 0 ) {
+			$label = $this->get_ll ( $label, $label, TRUE );
+		}
+		return $label;
+	}
+
+
+
+	/** 
+	 * Depending on the bibliography type this function returns what fields 
+	 * are required and what are optional according to BibTeX
+	 *
+	 * @return An array with subarrays with field lists for
+	 */
 	function get_edit_fields ( $bibType )
 	{
 		$fields = array ();
@@ -524,13 +553,18 @@ class tx_sevenpack_single_view {
 		unset ( $pubFields[array_search ( 'bibtype',$pubFields)] );
 		foreach ( $all_types as $type ) {
 			$fields[$type] = array();
+			$cur =& $fields[$type];
 			if ( is_array ( $cfg_fields[$type_str][$type] ) )
-				$fields[$type] = $cfg_fields[$type_str][$type];
-			if ( is_array ( $cfg_fields['all'][$type] ) )
-				$fields[$type] = array_merge ( $fields[$type], $cfg_fields['all'][$type] );
-			$fields[$type] = array_unique ( $fields[$type] );
-			$fields[$type] = array_intersect ( $fields[$type], $pubFields );
-			$pubFields = array_diff ( $pubFields, $fields[$type] );
+				$cur = $cfg_fields[$type_str][$type];
+			if ( is_array ( $cfg_fields['all'][$type] ) ) {
+				foreach ( $cfg_fields['all'][$type] as $field ) {
+					$cur[] = $field;
+				}
+			}
+			$cur = array_unique ( $cur );
+			//t3lib_div::debug ( array( 'After' => $cur ) );
+			$cur = array_intersect ( $cur, $pubFields );
+			$pubFields = array_diff ( $pubFields, $cur );
 		}
 
 		// Calculate the remaining 'other' fields

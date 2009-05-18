@@ -22,7 +22,7 @@
 			<label index="tx_sevenpack_references_ISBN">ISBN</label>
 			<label index="tx_sevenpack_references_ISSN">ISSN</label>
 			<label index="tx_sevenpack_references_abstract">Abstract</label>
-			<label index="tx_sevenpack_references_address">Address</label>
+			<label index="tx_sevenpack_references_address">Publisher address</label>
 			<label index="tx_sevenpack_references_affiliation">Affiliation</label>
 			<label index="tx_sevenpack_references_annotation">Annotation</label>
 			<label index="tx_sevenpack_references_bibtype">Bibliography type</label>
@@ -52,9 +52,9 @@
 			<label index="tx_sevenpack_references_DOI">DOI</label>
 			<label index="tx_sevenpack_references_edition">Edition</label>
 			<label index="tx_sevenpack_references_editor">Editor</label>
-			<label index="tx_sevenpack_references_event_date">Conference date</label>
-			<label index="tx_sevenpack_references_event_name">Conference name</label>
-			<label index="tx_sevenpack_references_event_place">Conference place</label>
+			<label index="tx_sevenpack_references_event_date">Event date</label>
+			<label index="tx_sevenpack_references_event_name">Event name</label>
+			<label index="tx_sevenpack_references_event_place">Event place</label>
 			<label index="tx_sevenpack_references_extern">External</label>
 			<label index="tx_sevenpack_references_file_url">File URL</label>
 			<label index="tx_sevenpack_references_howpublished">How published</label>
@@ -84,7 +84,6 @@
 			<label index="tx_sevenpack_references_type">Work type</label>
 			<label index="tx_sevenpack_references_volume">Volume</label>
 			<label index="tx_sevenpack_references_web_url">Web URL</label>
-			<label index="tx_sevenpack_references_where_published">Where published</label>
 			<label index="tx_sevenpack_references_year">Year</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -104,7 +103,7 @@
 			<label index="tx_sevenpack_references_ISBN">ISBN</label>
 			<label index="tx_sevenpack_references_ISSN">ISSN</label>
 			<label index="tx_sevenpack_references_abstract">Zusammenfassung</label>
-			<label index="tx_sevenpack_references_address">Adresse</label>
+			<label index="tx_sevenpack_references_address">Verlagsort</label>
 			<label index="tx_sevenpack_references_affiliation">Zugehörigkeit</label>
 			<label index="tx_sevenpack_references_annotation">Anmerkung</label>
 			<label index="tx_sevenpack_references_bibtype">Bibliographie-Typ</label>
@@ -134,9 +133,9 @@
 			<label index="tx_sevenpack_references_DOI">DOI</label>
 			<label index="tx_sevenpack_references_edition">Edition</label>
 			<label index="tx_sevenpack_references_editor">Editor</label>
-			<label index="tx_sevenpack_references_event_date">Konferenz-Datum</label>
-			<label index="tx_sevenpack_references_event_name">Konferenz-Name</label>
-			<label index="tx_sevenpack_references_event_place">Konferenz-Ort</label>
+			<label index="tx_sevenpack_references_event_date">Veranstaltungs Datum</label>
+			<label index="tx_sevenpack_references_event_name">Veranstaltungs Name</label>
+			<label index="tx_sevenpack_references_event_place">Veranstaltungs Ort</label>
 			<label index="tx_sevenpack_references_extern">Extern</label>
 			<label index="tx_sevenpack_references_file_url">Datei / URL</label>
 			<label index="tx_sevenpack_references_howpublished">Wie publiziert</label>
@@ -166,7 +165,6 @@
 			<label index="tx_sevenpack_references_type">Typ</label>
 			<label index="tx_sevenpack_references_volume">Band</label>
 			<label index="tx_sevenpack_references_web_url">Web URL</label>
-			<label index="tx_sevenpack_references_where_published">Verlagsort</label>
 			<label index="tx_sevenpack_references_year">Jahr</label>
 		</languageKey>
 		<languageKey index="it" type="array">

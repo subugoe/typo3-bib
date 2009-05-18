@@ -34,7 +34,6 @@ CREATE TABLE tx_sevenpack_references (
 	editor tinytext NOT NULL,
 	publisher tinytext NOT NULL,
 	howpublished tinytext NOT NULL,
-	where_published tinytext NOT NULL,
 	address tinytext NOT NULL,
 	series tinytext NOT NULL,
 	edition tinytext NOT NULL,

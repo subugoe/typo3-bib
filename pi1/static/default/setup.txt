@@ -629,6 +629,22 @@ plugin.tx_sevenpack_pi1 {
 			citeid = 0
 		}
 
+		# Overwrite labels
+		olabel {
+			article {
+				number = olabel_issue
+			}
+			thesis {
+				school = olabel_university
+				type = olabel_thesis_type
+			}
+			conference {
+				event_name = olabel_conference_name
+				event_place = olabel_conference_place
+				event_date = olabel_conference_date
+			}
+		}
+
 		groups {
 			all {
 				required = state
@@ -638,15 +654,15 @@ plugin.tx_sevenpack_pi1 {
 
 			article {
 				required = citeid,authors,title,journal,year
-				optional = volume,number,pages,month,note,abstract,ISSN,DOI
+				optional = volume,number,pages,month,abstract,ISSN,DOI,note
 			}
 			book {
 				required = citeid,authors,title,publisher,year
-				optional = volume,series,edition,editor,address,where_published,month,ISBN,note
+				optional = volume,series,edition,editor,abstract,where_published,address,month,ISBN,note
 			}
 			inbook {
 				required = citeid,authors,title,chapter,pages,publisher,year
-				optional = volume,series,edition,editor,address,where_published,month,type,note
+				optional = volume,series,edition,editor,abstract,where_published,address,month,type,note
 			}
 			booklet {
 				required = citeid,title
@@ -658,7 +674,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			incollection {
 				required = citeid,authors,title,booktitle,year
-				optional = editor,volume,series,type,chapter,pages,address,edition,month,note,organization,publisher
+				optional = editor,volume,series,type,chapter,pages,address,edition,month,organization,publisher,note
 			}
 			proceedings {
 				required = citeid,title,year
