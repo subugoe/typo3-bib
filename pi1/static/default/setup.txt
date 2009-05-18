@@ -123,7 +123,7 @@ plugin.tx_sevenpack_pi1 {
 		edition.noTrimWrap = || ###LABEL_EDITION###,|
 
 		# Editor
-		editor.noTrimWrap = |In |, ###LABEL_EDITOR###,|
+		editor_each.wrap = <span class="tx_sevenpack-author">|</span>
 
 		# File URL
 		file_url.typolink {

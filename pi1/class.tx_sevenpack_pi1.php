@@ -1758,6 +1758,27 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Format the author string
 		$pdata['authors'] = $this->get_item_authors_html ( $pub['authors'] );
 
+		// Editors
+		if ( strlen ( $pdata['editor'] ) > 0 ) {
+			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
+			$editors = '';
+			$lst = tx_sevenpack_utility::explode_trim ( ' and ', $pdata['editor'], TRUE );
+			$size = sizeof ( $lst );
+			for ( $ii = 0; $ii < $size; $ii++ ) {
+				$name = $lst[$ii];
+				$name = tx_sevenpack_utility::explode_trim ( ',', $name, TRUE );
+				$ed = '';
+				if ( strlen ( $name[1] ) > 0 ) $ed .= $name[1] . ' ';
+				if ( strlen ( $name[0] ) > 0 ) $ed .= $name[0];
+				$ed = $this->cObj->stdWrap ( $ed, $this->conf['field.']['editor_each.'] );
+				$editors .= $ed;
+				if ( $ii < ( $size - 2 ) ) $editors .= ', ';
+				else if ( $ii < ( $size - 1 ) ) $editors .= $and;
+			}
+			$pdata['editor'] = $editors;
+			t3lib_div::debug ( $pdata['editor'] );
+		}
+
 		//
 		// Copy field values
 		//
