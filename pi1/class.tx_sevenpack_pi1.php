@@ -829,16 +829,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$ffStr = $this->pi_getFFvalue ( $ff, 'years', $fSheet );
 			$arr = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ffStr, TRUE );
 			foreach ( $arr as $y ) {
-				$match = array();
-				if ( preg_match ( '/^\d+$/', $y, $match ) ) {
-					$f['years'][] = intval ( $match[0] );
-				} else if ( preg_match ( '/^(\d*)\s*-\s*(\d*)$/', $y, $match ) ) {
+				if ( strpos ( $y, '-' ) === FALSE ) {
+					if ( is_numeric ( $y ) )
+						$f['years'][] = intval ( $y );
+				} else {
 					$range = array();
-					if ( intval ( $match[1] ) )
-						$range['from'] = intval ( $match[1] );
-					if ( intval ( $match[2] ) )
-						$range['to'] = intval ( $match[2] );
-					if ( sizeof ( $range ) )
+					$elms = tx_sevenpack_utility::explode_trim ( '-', $y, FALSE );
+					if ( is_numeric ( $elms[0] ) )
+						$range['from'] = intval ( $elms[0] );
+					if ( is_numeric ( $elms[1] ) )
+						$range['to'] = intval ( $elms[1] );
+					if ( sizeof ( $range ) > 0 )
 						$f['ranges'][] = $range;
 				}
 			}
