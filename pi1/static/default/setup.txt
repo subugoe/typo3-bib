@@ -578,7 +578,10 @@ plugin.tx_sevenpack_pi1 {
 		numAuthors = 5
 
 		input_size = 60;
-		author_input_size = 25;
+		input_size {
+			author = 24
+			citeid = 30
+		}
 
 		manipulators {
 			all.wrap  = <div class="tx_sevenpack-manipulator_block">|</div>
@@ -648,65 +651,65 @@ plugin.tx_sevenpack_pi1 {
 		groups {
 			all {
 				required = state
-				optional = abstract,keywords,tags,file_url,web_url,affiliation
+				optional = abstract,keywords,tags,file_url,web_url,affiliation,note
 				library = extern,reviewed,in_library,borrowed_by
 			}
 
 			article {
 				required = citeid,authors,title,journal,year
-				optional = volume,number,pages,month,abstract,ISSN,DOI,note
+				optional = volume,number,pages,month,abstract,ISSN,DOI
 			}
 			book {
 				required = citeid,authors,title,publisher,year
-				optional = volume,series,edition,editor,abstract,where_published,address,month,ISBN,note
+				optional = volume,series,edition,editor,abstract,address,month,ISBN
 			}
 			inbook {
 				required = citeid,authors,title,chapter,pages,publisher,year
-				optional = volume,series,edition,editor,abstract,where_published,address,month,type,note
+				optional = volume,series,edition,editor,abstract,address,month,type
 			}
 			booklet {
 				required = citeid,title
-				optional = authors,howpublished,address,month,year,note
+				optional = authors,howpublished,address,month,year
 			}
 			conference {
 				required = citeid,authors,title,booktitle,year
-				optional = event_name,event_place,event_date,editor,publisher,where_published,ISBN,pages,volume,series,address,month,organization,note
+				optional = event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
 			}
 			incollection {
 				required = citeid,authors,title,booktitle,year
-				optional = editor,volume,series,type,chapter,pages,address,edition,month,organization,publisher,note
+				optional = editor,volume,series,type,chapter,pages,address,edition,month,organization,publisher
 			}
 			proceedings {
 				required = citeid,title,year
-				optional = editor,volume,series,address,month,organization,publisher,note
+				optional = editor,volume,series,address,month,organization,publisher
 			}
 			inproceedings {
 				required = citeid,authors,title,booktitle,year
-				optional = editor,volume,series,pages,address,month,organization,publisher,note
+				optional = editor,volume,series,pages,address,month,organization,publisher
 			}
 			manual {
 				required = citeid,title
-				optional = authors,organization,address,edition,editor,month,year,note
+				optional = authors,organization,address,edition,editor,month,year
 			}
 			mastersthesis {
 				required = citeid,authors,title,school,year
-				optional = type,address,month,note
+				optional = type,address,month
 			}
 			phdthesis {
 				required = citeid,authors,title,school,year
-				optional = type,address,month,note
+				optional = type,address,month
 			}
 			techreport {
 				required = citeid,authors,title,institution,year
-				optional = type,number,address,month,note
+				optional = type,number,address,month
 			}
 			unpublished {
-				required = citeid,authors,title,note
+				required = citeid,authors,title
 				optional = month,year
 			}
 			miscellaneous {
 				required = citeid
-				optional = authors,title,howpublished,month,year,note
+				optional = authors,title,howpublished,month,year
 			}
 			string {
 				required = citeid,misc
@@ -714,11 +717,11 @@ plugin.tx_sevenpack_pi1 {
 			}
 			poster {
 				required = citeid,authors
-				optional = title,editor,organization,publisher,address,year,month,day,note
+				optional = title,editor,organization,publisher,address,year,month,day
 			}
 			thesis {
 				required = citeid,authors,title,school,year
-				optional = type,institute,address,month,note
+				optional = type,institute,abstract,address,month
 			}
 		}
 

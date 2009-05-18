@@ -47,7 +47,7 @@
 			<label index="tx_sevenpack_references_booktitle">Book title</label>
 			<label index="tx_sevenpack_references_borrowed_by">Borrowed by</label>
 			<label index="tx_sevenpack_references_chapter">Chapter</label>
-			<label index="tx_sevenpack_references_citeid">Citation ID (BibTeX)</label>
+			<label index="tx_sevenpack_references_citeid">Citation ID</label>
 			<label index="tx_sevenpack_references_day">Day</label>
 			<label index="tx_sevenpack_references_DOI">DOI</label>
 			<label index="tx_sevenpack_references_edition">Edition</label>
@@ -128,7 +128,7 @@
 			<label index="tx_sevenpack_references_booktitle">Buchtitel</label>
 			<label index="tx_sevenpack_references_borrowed_by">Ausgeliehen von</label>
 			<label index="tx_sevenpack_references_chapter">Kapitel</label>
-			<label index="tx_sevenpack_references_citeid">Zitations-ID (BibTeX)</label>
+			<label index="tx_sevenpack_references_citeid">Zitations-ID</label>
 			<label index="tx_sevenpack_references_day">Tag</label>
 			<label index="tx_sevenpack_references_DOI">DOI</label>
 			<label index="tx_sevenpack_references_edition">Edition</label>
@@ -202,7 +202,7 @@
 			<label index="tx_sevenpack_references_bibtype_I_9">Manuale</label>
 			<label index="tx_sevenpack_references_booktitle">Titolo del libro</label>
 			<label index="tx_sevenpack_references_chapter">Capitolo</label>
-			<label index="tx_sevenpack_references_citeid">ID citazine (BibTeX)</label>
+			<label index="tx_sevenpack_references_citeid">ID citazine</label>
 			<label index="tx_sevenpack_references_day">Giorno</label>
 			<label index="tx_sevenpack_references_edition">Edizione</label>
 			<label index="tx_sevenpack_references_editor">Curatore</label>

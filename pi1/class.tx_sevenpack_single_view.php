@@ -617,8 +617,14 @@ class tx_sevenpack_single_view {
 		$Iclass = ' class="'.$cclass.'"';
 		$pi1 =& $this->pi1;
 
-		$isize = intval ( $this->conf['input_size'] );
-		if ( $isize == 0 ) $isize = 60;
+		$isize = 60;
+		$all_size = array (  
+			$this->conf['input_size'],
+			$this->conf['input_size.'][$field]
+		);
+		foreach ( $all_size as $ivar) {
+			if ( is_numeric ( $ivar ) ) $isize = intval ( $ivar );
+		}
 
 		// Default widget
 		$widgetType = $cfg['type'];
@@ -727,8 +733,9 @@ class tx_sevenpack_single_view {
 		$cclass = $this->pi1->prefixShort.'-editor_input';
 		$pi1 =& $this->pi1;
 
-		$isize = intval ( $this->conf['author_input_size'] );
-		if ( $isize == 0 ) $isize = 30;
+		$isize = 25;
+		$ivar = $this->conf['input_size.']['author'];
+		if ( is_numeric ( $ivar ) ) $isize = intval ( $ivar );
 
 		$key_action = $pi1->prefix_pi1.'[action]';
 		$key_data = $pi1->prefix_pi1.'[DATA][pub][authors]';
