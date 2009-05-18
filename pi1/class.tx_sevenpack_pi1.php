@@ -1776,7 +1776,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				else if ( $ii < ( $size - 1 ) ) $editors .= $and;
 			}
 			$pdata['editor'] = $editors;
-			t3lib_div::debug ( $pdata['editor'] );
+			//t3lib_div::debug ( $pdata['editor'] );
 		}
 
 		//
