@@ -108,6 +108,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 	// Database table for publications
 	public $template; // HTML templates
+	public $item_tmpl; // HTML templates
 
 	// These are derived/extra configuration values
 	public $extConf;
@@ -1047,6 +1048,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( isset ( $this->template['LIST_VIEW'] ) )
 			return $err;
 
+		$this->template = array();
+		$this->item_tmpl = array();
+
 		// List blocks
 		$list_blocks = array (
 			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK' 
@@ -1107,14 +1111,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			foreach ( $val['parts'] as $part ) {
 				$ptag = '###' . $part . '###';
 				$pstr = $this->cObj->getSubpart ( $tmpl, $ptag );
+				// Error message
 				if ( ( strlen ( $pstr ) == 0 ) && !$val['no_warn'] ) {
-					 $err[] = 'The subpart \'' . $ptag . '\' in the HTML template file \'' . $val['file'] . '\' is empty';
+					 $err[] = 'The subpart \'' . $ptag . '\' in the HTML template file \''
+						 . $val['file'] . '\' is empty';
 				}
 				$this->template[$part] = $pstr;
 			}
 		}
 
-		//t3lib_div::debug( $this->template );
+		//t3lib_div::debug( array ( $this->template ) );
 
 		return $err;
 	}
@@ -1864,7 +1870,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	{
 		//t3lib_div::debug ( array ( 'get_item_html($pdata)' => $pdata ) );
 		$translator = array();
-		$now = time();
 		$cObj =& $this->cObj;
 		$conf =& $this->conf;
 
@@ -2082,7 +2087,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$items = array();
 
 		// Time measurment
-		$t_start = microtime();
+		$t_start = microtime( TRUE );
 
 		// Aliases
 		$ra =& $this->ra;
@@ -2135,6 +2140,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// block templates
+		$item_tmpl = array();
+		$item_block = $this->enum_condition_block ( $this->template['ITEM_BLOCK'] );
 		$year_block = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
 		$bib_block = $this->enum_condition_block ( $this->template['BIBTYPE_BLOCK'] );
 
@@ -2212,17 +2219,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Setup the item template
-			$data_block = strtoupper ( $pdata['bibtype_short'] ) . '_DATA';
-			$data_block = $this->template[$data_block];
-			$item_block = $this->template['ITEM_BLOCK'];
-
-			if ( strlen ( $data_block ) == 0 )
-				$data_block = $this->template['DEFAULT_DATA'];
-
-			$tmpl = $cObj->substituteMarker ( $item_block,
-				'###ITEM_DATA###', $data_block );
-
-			$tmpl = $this->enum_condition_block ( $tmpl );
+			$tmpl = $item_tmpl[$pdata['bibtype']];
+			if ( strlen ( $tmpl ) == 0 ) {
+				$key = strtoupper ( $pdata['bibtype_short'] ) . '_DATA';
+				$tmpl = $this->template[$key];
+				if ( strlen ( $tmpl ) == 0 )
+					$data_block = $this->template['DEFAULT_DATA'];
+				$tmpl = $cObj->substituteMarker ( $item_block,
+					'###ITEM_DATA###', $tmpl );
+				$item_tmpl[$pdata['bibtype']] = $tmpl;
+			}
 
 			// Initialize the translator
 			$translator = array();
@@ -2328,7 +2334,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Time measurment
-		$t_end = microtime();
+		$t_end = microtime(TRUE);
 		$t_diff = $t_end - $t_start;
 		$items = '<h3>'.$t_diff.'</h3>'.$items;
 
