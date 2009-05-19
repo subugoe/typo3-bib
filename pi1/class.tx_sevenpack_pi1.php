@@ -2081,6 +2081,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	{
 		$items = array();
 
+		// Time measurment
+		$t_start = microtime();
+
 		// Aliases
 		$ra =& $this->ra;
 		$cObj =& $this->cObj;
@@ -2107,21 +2110,29 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Initialize the label translator
 		$this->label_translator = array();
 		$lt =& $this->label_translator;
-		$lt['###LABEL_ABSTRACT###']   = $cObj->stdWrap ( $this->get_ll ( 'label_abstract' ),   $conf['label.']['abstract.']  );
-		$lt['###LABEL_ANNOTATION###'] = $cObj->stdWrap ( $this->get_ll ( 'label_annotation' ), $conf['label.']['annotation.'] );
-		$lt['###LABEL_DOI###']        = $cObj->stdWrap ( $this->get_ll ( 'label_doi' ),        $conf['label.']['doi.']       );
-		$lt['###LABEL_EDITION###']    = $cObj->stdWrap ( $this->get_ll ( 'label_edition' ),    $conf['label.']['edition.']   );
-		$lt['###LABEL_EDITOR###']     = $cObj->stdWrap ( $this->get_ll ( 'label_editor' ),     $conf['label.']['editor.']    );
-		$lt['###LABEL_ISBN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_isbn' ),       $conf['label.']['ISBN.']      );
-		$lt['###LABEL_ISSN###']       = $cObj->stdWrap ( $this->get_ll ( 'label_issn' ),       $conf['label.']['ISSN.']      );
-		$lt['###LABEL_KEYWORDS###']   = $cObj->stdWrap ( $this->get_ll ( 'label_keywords' ),   $conf['label.']['keywords.']  );
-		$lt['###LABEL_TAGS###']       = $cObj->stdWrap ( $this->get_ll ( 'label_tags' ),       $conf['label.']['tags.']      );
-		$lt['###LABEL_NOTE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_note' ),       $conf['label.']['note.']      );
-		$lt['###LABEL_OF###']         = $cObj->stdWrap ( $this->get_ll ( 'label_of' ),         $conf['label.']['of.']        );
-		$lt['###LABEL_PAGE###']       = $cObj->stdWrap ( $this->get_ll ( 'label_page' ),       $conf['label.']['page.']      );
-		$lt['###LABEL_PUBLISHER###']  = $cObj->stdWrap ( $this->get_ll ( 'label_publisher' ),  $conf['label.']['publisher.'] );
-		$lt['###LABEL_REFERENCES###'] = $cObj->stdWrap ( $this->get_ll ( 'label_references' ), $conf['label.']['references.'] );
-		$lt['###LABEL_VOLUME###']     = $cObj->stdWrap ( $this->get_ll ( 'label_volume' ),     $conf['label.']['volume.']    );
+		$labels = array (
+			'abstract',
+			'annotation',
+			'doi',
+			'edition',
+			'editor',
+			'ISBN',
+			'ISSN',
+			'keywords',
+			'tags',
+			'note',
+			'of',
+			'page',
+			'publisher',
+			'references',
+			'volume',
+		);
+		foreach ( $labels as $label ) {
+			$up = strtoupper ( $label );
+			$val = $this->get_ll ( 'label_'.$label );
+			$val = $cObj->stdWrap ( $val, $conf['label.'][$label.'.'] );
+			$lt['###LABEL_'.$up.'###'] = $val;
+		}
 
 		// block templates
 		$year_block = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
@@ -2315,6 +2326,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			$no_items = $cObj->stdWrap ( $no_items, $conf['label.']['no_items.'] );
 		}
+
+		// Time measurment
+		$t_end = microtime();
+		$t_diff = $t_end - $t_start;
+		$items = '<h3>'.$t_diff.'</h3>'.$items;
 
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_ITEMS###', $hasStr );
