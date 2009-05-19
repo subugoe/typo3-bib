@@ -1767,10 +1767,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Editors
 		if ( strlen ( $pdata['editor'] ) > 0 ) {
+			$res = array();
 			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
-			$editors = '';
-			$lst = tx_sevenpack_utility::explode_trim ( ' and ', $pdata['editor'], TRUE );
+			$lst = tx_sevenpack_utility::explode_trim ( ' and ', $editors, TRUE );
 			$size = sizeof ( $lst );
+			$c_idx = $size - 2;
+			$a_idx = $size - 1;
 			for ( $ii = 0; $ii < $size; $ii++ ) {
 				$name = $lst[$ii];
 				$name = tx_sevenpack_utility::explode_trim ( ',', $name, TRUE );
@@ -1778,12 +1780,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( strlen ( $name[1] ) > 0 ) $ed .= $name[1] . ' ';
 				if ( strlen ( $name[0] ) > 0 ) $ed .= $name[0];
 				$ed = $this->cObj->stdWrap ( $ed, $this->conf['field.']['editor_each.'] );
-				$editors .= $ed;
-				if ( $ii < ( $size - 2 ) ) $editors .= ', ';
-				else if ( $ii < ( $size - 1 ) ) $editors .= $and;
+				$res[] = $ed;
+				if ( $ii < $c_idx ) $res[] = ', ';
+				else if ( $ii < $a_idx ) $res[] = $and;
 			}
-			$pdata['editor'] = $editors;
-			//t3lib_div::debug ( $pdata['editor'] );
+			$pdata['editor'] = $res;
 		}
 
 		//
@@ -1835,9 +1836,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Do data checks
 		//
 		if ( $this->extConf['edit_mode'] ) {
-
 			$w_cfg =& $this->conf['editor.']['list.']['warnings.'];
-
 			//
 			// Local file does not exist
 			//
@@ -1850,7 +1849,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( is_array ( $err ) )
 					$d_err[] = $err;
 			}
-
 		}
 
 		$warnings = $d_err;
@@ -2087,7 +2085,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$items = array();
 
 		// Time measurment
-		$t_start = microtime( TRUE );
+		//$t_start = microtime( TRUE );
 
 		// Aliases
 		$ra =& $this->ra;
@@ -2334,9 +2332,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Time measurment
-		$t_end = microtime(TRUE);
-		$t_diff = $t_end - $t_start;
-		$items = '<h3>'.$t_diff.'</h3>'.$items;
+		//$t_diff = microtime(TRUE) - $t_start;
+		//$items = '<h3>'.$t_diff.'</h3>'.$items;
 
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_ITEMS###', $hasStr );
