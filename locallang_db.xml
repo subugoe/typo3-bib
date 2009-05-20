@@ -36,6 +36,8 @@
 			<label index="tx_sevenpack_references_bibtype_I_15">String</label>
 			<label index="tx_sevenpack_references_bibtype_I_16">Poster</label>
 			<label index="tx_sevenpack_references_bibtype_I_17">Thesis</label>
+			<label index="tx_sevenpack_references_bibtype_I_18">Manuscript</label>
+			<label index="tx_sevenpack_references_bibtype_I_19">Report</label>
 			<label index="tx_sevenpack_references_bibtype_I_2">Book</label>
 			<label index="tx_sevenpack_references_bibtype_I_3">Contribution to book</label>
 			<label index="tx_sevenpack_references_bibtype_I_4">Booklet</label>
@@ -63,7 +65,9 @@
 			<label index="tx_sevenpack_references_institution">Institution</label>
 			<label index="tx_sevenpack_references_journal">Journal</label>
 			<label index="tx_sevenpack_references_keywords">Keywords</label>
-			<label index="tx_sevenpack_references_misc">Miscellaneous</label>
+			<label index="tx_sevenpack_references_language">Language</label>
+			<label index="tx_sevenpack_references_misc">Custom</label>
+			<label index="tx_sevenpack_references_misc2">Custom 2</label>
 			<label index="tx_sevenpack_references_month">Month</label>
 			<label index="tx_sevenpack_references_note">Note</label>
 			<label index="tx_sevenpack_references_number">Number</label>
@@ -84,6 +88,7 @@
 			<label index="tx_sevenpack_references_type">Work type</label>
 			<label index="tx_sevenpack_references_volume">Volume</label>
 			<label index="tx_sevenpack_references_web_url">Web URL</label>
+			<label index="tx_sevenpack_references_web_url2">Web URL 2</label>
 			<label index="tx_sevenpack_references_year">Year</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -117,6 +122,8 @@
 			<label index="tx_sevenpack_references_bibtype_I_15">Zeichenkette</label>
 			<label index="tx_sevenpack_references_bibtype_I_16">Poster</label>
 			<label index="tx_sevenpack_references_bibtype_I_17">These</label>
+			<label index="tx_sevenpack_references_bibtype_I_18">Manuskript</label>
+			<label index="tx_sevenpack_references_bibtype_I_19">Bericht</label>
 			<label index="tx_sevenpack_references_bibtype_I_2">Buch</label>
 			<label index="tx_sevenpack_references_bibtype_I_3">Beitrag zu Buch</label>
 			<label index="tx_sevenpack_references_bibtype_I_4">Broschüre</label>
@@ -144,7 +151,9 @@
 			<label index="tx_sevenpack_references_institution">Institution</label>
 			<label index="tx_sevenpack_references_journal">Journal</label>
 			<label index="tx_sevenpack_references_keywords">Schlüsselwörter</label>
+			<label index="tx_sevenpack_references_language">Sprache</label>
 			<label index="tx_sevenpack_references_misc">Verschiedenes</label>
+			<label index="tx_sevenpack_references_misc2">Verschiedenes 2</label>
 			<label index="tx_sevenpack_references_month">Monat</label>
 			<label index="tx_sevenpack_references_note">Bemerkung</label>
 			<label index="tx_sevenpack_references_number">Nummer</label>
@@ -165,6 +174,7 @@
 			<label index="tx_sevenpack_references_type">Typ</label>
 			<label index="tx_sevenpack_references_volume">Band</label>
 			<label index="tx_sevenpack_references_web_url">Web URL</label>
+			<label index="tx_sevenpack_references_web_url2">Web URL 2</label>
 			<label index="tx_sevenpack_references_year">Jahr</label>
 		</languageKey>
 		<languageKey index="it" type="array">

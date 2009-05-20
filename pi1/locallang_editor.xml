@@ -35,6 +35,7 @@
 			<label index="olabel_conference_name">Conference name</label>
 			<label index="olabel_conference_place">Conference place</label>
 			<label index="olabel_issue">Issue</label>
+			<label index="olabel_report_type">Report type</label>
 			<label index="olabel_thesis_type">Thesis type</label>
 			<label index="olabel_university">University</label>
 			<label index="olabel_year_month_day">Date (Y-M-D)</label>
@@ -72,7 +73,8 @@
 			<label index="olabel_conference_name">Konferenz Name</label>
 			<label index="olabel_conference_place">Konferenz Ort</label>
 			<label index="olabel_issue">Ausgabe</label>
-			<label index="olabel_thesis_type">Thesen Art</label>
+			<label index="olabel_report_type">Report Typ</label>
+			<label index="olabel_thesis_type">Thesen Typ</label>
 			<label index="olabel_university">Universität</label>
 			<label index="olabel_year_month_day">Datum (J-M-T)</label>
 			<label index="tx_sevenpack_references_hidden">Versteckt</label>

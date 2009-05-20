@@ -1784,7 +1784,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( $ii < $c_idx ) $res[] = ', ';
 				else if ( $ii < $a_idx ) $res[] = $and;
 			}
-			$pdata['editor'] = $res;
+			$pdata['editor'] = implode ( '', $res );
 		}
 
 		//
@@ -1811,6 +1811,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				switch ( $f ) {
 					case 'file_url':
 					case 'web_url':
+					case 'web_url2':
 						$val = tx_sevenpack_utility::fix_html_ampersand ( $val );
 						$pdata[$f] = $val;
 						$pdata[$f.'_short'] = tx_sevenpack_utility::crop_middle ( 
@@ -1880,6 +1881,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fields = $this->ra->pubFields;
 		$fields[] = 'file_url_short';
 		$fields[] = 'web_url_short';
+		$fields[] = 'web_url2_short';
 		$fields[] = 'auto_url_short';
 		foreach ( $fields as $f ) {
 			$upStr = strtoupper ( $f );
@@ -2124,7 +2126,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'keywords',
 			'tags',
 			'note',
-			'of',
+			'of_series',
 			'page',
 			'publisher',
 			'references',
@@ -2201,6 +2203,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Needed since stdWrap/Typolink applies htmlspecialchars to url data
 			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
 			$cObj->data['web_url'] = htmlspecialchars_decode ( $pdata['web_url'], ENT_QUOTES );
+			$cObj->data['web_url2'] = htmlspecialchars_decode ( $pdata['web_url2'], ENT_QUOTES );
 			$cObj->data['DOI_url'] = htmlspecialchars_decode ( $pdata['DOI_url'], ENT_QUOTES );
 			$cObj->data['auto_url'] = htmlspecialchars_decode ( $pdata['auto_url'], ENT_QUOTES );
 

@@ -537,6 +537,14 @@
 								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_17</numIndex>
 								<numIndex index="1">17</numIndex>
 							</numIndex>
+							<numIndex index="17" type="array">
+								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_18</numIndex>
+								<numIndex index="1">18</numIndex>
+							</numIndex>
+							<numIndex index="18" type="array">
+								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_19</numIndex>
+								<numIndex index="1">19</numIndex>
+							</numIndex>
 						</items>
 						<maxitems>20</maxitems>
 						<size>5</size>

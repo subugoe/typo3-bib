@@ -60,7 +60,9 @@ class tx_sevenpack_reference_accessor {
 		'tags',
 		'file_url', 
 		'web_url', 
+		'web_url2', 
 		'misc', 
+		'misc2', 
 		'editor', 
 		'publisher', 
 		'address', 
@@ -78,6 +80,7 @@ class tx_sevenpack_reference_accessor {
 		'event_date',
 		'state', 
 		'type', 
+		'language', 
 		'ISBN',
 		'ISSN', 
 		'DOI',
@@ -112,7 +115,9 @@ class tx_sevenpack_reference_accessor {
 		'tags',
 		'file_url', 
 		'web_url', 
+		'web_url2', 
 		'misc', 
+		'misc2', 
 		'editor', 
 		'publisher', 
 		'address', 
@@ -130,6 +135,7 @@ class tx_sevenpack_reference_accessor {
 		'event_date',
 		'state', 
 		'type', 
+		'language', 
 		'ISBN', 
 		'ISSN', 
 		'DOI',
@@ -158,7 +164,9 @@ class tx_sevenpack_reference_accessor {
 		14 => 'miscellaneous',
 		15 => 'string',
 		16 => 'poster',
-		17 => 'thesis'
+		17 => 'thesis',
+		18 => 'manuscript',
+		19 => 'report'
 	);
 
 
@@ -1432,7 +1440,7 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
-		if ( $uid > 0 ) {
+		if ( ( $uid > 0 ) && ( sizeof ( $pub['authors'] ) > 0 ) ) {
 			$ret = $this->save_publication_authors ( $uid, $pub['pid'], $pub['authors'] );
 			if ( $ret )
 				return TRUE;

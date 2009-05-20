@@ -40,6 +40,8 @@ $TCA['tx_sevenpack_references'] = array (
 					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_15', '15'),
 					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_16', '16'),
 					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_17', '17'),
+					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_18', '18'),
+					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_19', '19'),
 				),
 				'size' => 1,
 				'maxitems' => 1,
@@ -281,9 +283,39 @@ $TCA['tx_sevenpack_references'] = array (
 				),
 			)
 		),
+		'web_url2' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_web_url2',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '48',
+				'max' => '255',
+				'checkbox' => '0',
+				'wizards' => Array(
+					'_PADDING' => 2,
+					'link' => Array(
+						'type' => 'popup',
+						'title' => 'Link',
+						'icon' => 'link_popup.gif',
+						'script' => 'browse_links.php?mode=wizard',
+						'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+					),
+				),
+			)
+		),
 		'misc' => Array (
 #			'exclude' => 1,
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_misc',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '48',
+				'max' => '255',
+				'eval' => 'trim',
+			)
+		),
+		'misc2' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_misc2',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -467,6 +499,16 @@ $TCA['tx_sevenpack_references'] = array (
 				'eval' => 'trim',
 			)
 		),
+		'language' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_language',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '48',
+				'max' => '255',
+				'eval' => 'trim',
+			)
+		),
 		'ISBN' => Array (
 #			'exclude' => 1,
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_ISBN',
@@ -533,7 +575,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, misc, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, ISBN, ISSN, extern, reviewed, in_library, borrowed_by' )
+		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url2, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, ISSN, extern, reviewed, in_library, borrowed_by' )
 	),
 );
 

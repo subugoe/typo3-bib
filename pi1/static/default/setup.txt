@@ -74,7 +74,7 @@ plugin.tx_sevenpack_pi1 {
 		annotation.wrap = <strong>|:</strong>
 		chapter.wrap = |:
 		editor.wrap = |
-		ISBN.wrap = |:
+		ISBN.wrap = |
 		keywords.wrap = <strong>|:</strong>
 		tags.wrap = <strong>|:</strong>
 		no_items.wrap = <h3>|.</h3>
@@ -84,8 +84,6 @@ plugin.tx_sevenpack_pi1 {
 
 	# Field wraps
 	field {
-		# Address
-		address.wrap = |<br/>
 
 		# Author
 		author.typolink {
@@ -104,23 +102,11 @@ plugin.tx_sevenpack_pi1 {
 			extTarget = _blank
 		}
 
-		# Booktitle
-		booktitle.noTrimWrap = |||
-
-		# Chapter
-		chapter.wrap = <span class="tx_sevenpack-chapter">|</span>,
-
-		# Day
-		day.wrap = |.
-
 		# DOI
 		DOI.typolink {
 			parameter.field = DOI_url
 			extTarget = _blank
 		}
-
-		# Edition
-		edition.noTrimWrap = || ###LABEL_EDITION###,|
 
 		# Editor
 		editor_each.wrap = <span class="tx_sevenpack-author">|</span>
@@ -135,36 +121,8 @@ plugin.tx_sevenpack_pi1 {
 			extTarget = _blank
 		}
 
-		howpublished.wrap = |,
-		institution.wrap = |,
-		journal.wrap = |,
-		misc.wrap = |.
-
 		# Month
 		month.strftime = %B
-
-		# Number
-		number.wrap = (|)
-		techreport.number.wrap = |,
-
-		# Organization
-		organization.wrap = |
-		manual.organization.wrap = |,
-
-		# Pages
-		pages.noTrimWrap = |###LABEL_PAGE### |.|
-		article.pages.wrap = :|,
-		conference.pages.noTrimWrap = |, ###LABEL_PAGE### |.|
-		inproceedings.pages.noTrimWrap = |, ###LABEL_PAGE### |.|
-
-		# Publisher
-		publisher.noTrimWrap = |###LABEL_PUBLISHER### |, |
-
-		# Series
-		series.wrap = ###LABEL_OF### <span class="tx_sevenpack-series">|</span>
-
-		# School
-		school.wrap = |,
 
 		# Title
 		#title.typolink {
@@ -176,13 +134,6 @@ plugin.tx_sevenpack_pi1 {
 		type.wrap = <span class="tx_sevenpack-type">|</span>
 		incollection.type.wrap = <span class="tx_sevenpack-type">|</span>,
 
-		# Volume
-		volume.noTrimWrap = |, ###LABEL_VOLUME### ||
-		article.volume.wrap = <span class="tx_sevenpack-bold">|</span>
-		book.volume.noTrimWrap = | ###LABEL_VOLUME### ||
-		inbook.volume.noTrimWrap = | ###LABEL_VOLUME### ||
-		proceedings.volume.noTrimWrap = | ###LABEL_VOLUME### ||
-
 		# Web URL
 		web_url.typolink {
 			parameter.field = web_url
@@ -190,6 +141,15 @@ plugin.tx_sevenpack_pi1 {
 		}
 		web_url_short.typolink {
 			parameter.field = web_url
+			extTarget = _blank
+		}
+
+		web_url2.typolink {
+			parameter.field = web_url2
+			extTarget = _blank
+		}
+		web_url2_short.typolink {
+			parameter.field = web_url2
 			extTarget = _blank
 		}
 	}
@@ -271,7 +231,7 @@ plugin.tx_sevenpack_pi1 {
 		}
 
 		# Clear results if no string is given
-		clear_start = 1
+		clear_start = 0
 
 		top_disable = 0
 		bottom_disable = 1
@@ -646,12 +606,15 @@ plugin.tx_sevenpack_pi1 {
 				event_place = olabel_conference_place
 				event_date = olabel_conference_date
 			}
+			report {
+				type = olabel_report_type
+			}
 		}
 
 		groups {
 			all {
 				required = state
-				optional = abstract,keywords,tags,file_url,web_url,affiliation,note
+				optional = abstract,keywords,tags,file_url,web_url,web_url2,language,affiliation,note,misc,misc2
 				library = extern,reviewed,in_library,borrowed_by
 			}
 
@@ -665,11 +628,11 @@ plugin.tx_sevenpack_pi1 {
 			}
 			inbook {
 				required = citeid,authors,title,chapter,pages,publisher,year
-				optional = volume,series,edition,editor,abstract,address,month,type
+				optional = volume,series,edition,editor,abstract,address,month,ISBN,type
 			}
 			booklet {
 				required = citeid,title
-				optional = authors,howpublished,address,month,year
+				optional = authors,howpublished,address,month,year,ISBN
 			}
 			conference {
 				required = citeid,authors,title,booktitle,year
@@ -681,7 +644,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			proceedings {
 				required = citeid,title,year
-				optional = editor,volume,series,address,month,organization,publisher
+				optional = event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
 			}
 			inproceedings {
 				required = citeid,authors,title,booktitle,year
@@ -720,8 +683,16 @@ plugin.tx_sevenpack_pi1 {
 				optional = title,editor,organization,publisher,address,year,month,day
 			}
 			thesis {
-				required = citeid,authors,title,school,year
-				optional = type,institute,abstract,address,month
+				required = citeid,authors,title,type,school,year
+				optional = institute,abstract,address,month
+			}
+			manuscript {
+				required = citeid,title,authors,year
+				optional = type,abstract
+			}
+			report {
+				required = citeid,title,authors,type,year
+				optional = type,abstract
 			}
 		}
 

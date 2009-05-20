@@ -81,6 +81,12 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 
 		//t3lib_div::debug ( $tags );
 
+		$refFields = array();
+		foreach ( $this->ra->refFields as $field ) {
+			$refFields[] = strtolower ( $field );
+		}
+		//t3lib_div::debug ( $refFields );
+
 		$pubs = array ( );
 		$startlevel = 0;
 		$in_sevenpack = FALSE;
@@ -88,7 +94,9 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 		$in_authors   = FALSE;
 		$in_person    = FALSE;
 		foreach ( $tags as $cTag ) {
-			$tag   =& $cTag['tag'];
+			$tag     =& $cTag['tag'];
+			$tag_low = strtolower ( $tag );
+			$tag_up = strtoupper ( $tag );
 			$type  =& $cTag['type'];
 			$level =& $cTag['level'];
 			$value =  $this->import_utf8_string ( $cTag['value'] );
@@ -117,33 +125,49 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 							$in_authors = TRUE;
 							$pub['authors'] = array ( );
 						} else
-						if ( in_array ( $tag, $this->ra->refFields ) && ( $type == 'complete' ) ) {
-							switch ( $tag ) {
-								case 'bibtype':
-									foreach ( $this->ra->allBibTypes as $ii => $bib ) {
-										if ( strtolower ( $value ) == $bib ) {
-											$value = $ii;
-											break;
+						if ( in_array ( $tag_low, $refFields ) ) {
+							if ( $type == 'complete' ) {
+								switch ( $tag_low ) {
+									case 'bibtype':
+										foreach ( $this->ra->allBibTypes as $ii => $bib ) {
+											if ( strtolower ( $value ) == $bib ) {
+												$value = $ii;
+												break;
+											}
 										}
-									}
-									break;
-								case 'state':
-									foreach ( $this->ra->allStates as $ii => $state ) {
-										if ( strtolower ( $value ) == $state ) {
-											$value = $ii;
-											break;
+										break;
+									case 'state':
+										foreach ( $this->ra->allStates as $ii => $state ) {
+											if ( strtolower ( $value ) == $state ) {
+												$value = $ii;
+												break;
+											}
 										}
+										break;
+									default:
+								}
+								// Apply value
+								if ( in_array ( $tag_low, $this->ra->refFields ) ) {
+									$pub[$tag_low] = $value;
+								} else {
+									if ( in_array ( $tag_up, $this->ra->refFields ) ) {
+										$pub[$tag_up] = $value;
+									} else {
+										$pub[$tag] = $value;	
 									}
-									break;
-								default:
+								}
+							} else {
+								// Unknown field
+								$this->stat['warnings'][] = 'Ignored field: ' . $tag;
 							}
-							// Read value
-							$pub[$tag] = $value;
 						} else
 						if ( ( $tag == 'reference' ) && ( $type == 'close' ) ) {
 							// Leave reference
 							$in_ref = FALSE;
 							$pubs[] = $pub;
+						} else {
+							// Unknown field
+							$this->stat['warnings'][] = 'Ignored field: ' . $tag;
 						}
 					} else {
 						// In authors
@@ -178,6 +202,7 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 
 			}
 		}
+
 		return $pubs;
 	}
 

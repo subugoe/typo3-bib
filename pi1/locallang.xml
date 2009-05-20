@@ -21,6 +21,9 @@
 			<label index="bibtype_plural_14">Miscellany</label>
 			<label index="bibtype_plural_15">Strings</label>
 			<label index="bibtype_plural_16">Posters</label>
+			<label index="bibtype_plural_17">Theses</label>
+			<label index="bibtype_plural_18">Manuscripts</label>
+			<label index="bibtype_plural_19">Reports</label>
 			<label index="bibtype_plural_2">Books</label>
 			<label index="bibtype_plural_3">Contributions to books</label>
 			<label index="bibtype_plural_4">Booklets</label>
@@ -58,11 +61,11 @@
 			<label index="label_no_items">No references have been found</label>
 			<label index="label_note">Note</label>
 			<label index="label_tags">Tags</label>
-			<label index="label_of">of</label>
+			<label index="label_of_series">of</label>
 			<label index="label_page">page</label>
 			<label index="label_publisher">Publisher</label>
 			<label index="label_references">References</label>
-			<label index="label_volume">volume</label>
+			<label index="label_volume">Volume</label>
 			<label index="link_back_to_list">Back to the list view</label>
 			<label index="manipulators_delete">Delete this record</label>
 			<label index="manipulators_edit">Edit this record</label>
@@ -127,6 +130,9 @@
 			<label index="bibtype_plural_14">Verschiedenes</label>
 			<label index="bibtype_plural_15">Zeichenketten</label>
 			<label index="bibtype_plural_16">Poster</label>
+			<label index="bibtype_plural_17">Thesen</label>
+			<label index="bibtype_plural_18">Manuskripte</label>
+			<label index="bibtype_plural_19">Berichte</label>
 			<label index="bibtype_plural_2">Bücher</label>
 			<label index="bibtype_plural_3">Beiträge zu Büchern</label>
 			<label index="bibtype_plural_4">Broschüren</label>
@@ -164,7 +170,7 @@
 			<label index="label_no_items">Es wurden keine Referenzen gefunden</label>
 			<label index="label_note">Bemerkung</label>
 			<label index="label_tags">Tags</label>
-			<label index="label_of">aus</label>
+			<label index="label_of_series">aus</label>
 			<label index="label_page">Seite</label>
 			<label index="label_publisher">Herausgeber</label>
 			<label index="label_references">Referenzen</label>
@@ -260,7 +266,7 @@
 			<label index="label_isbn">ISBN</label>
 			<label index="label_keywords">XXX-TRANSLATE: Keywords</label>
 			<label index="label_note">XXX-TRANSLATE: Note</label>
-			<label index="label_of">di</label>
+			<label index="label_of_series">di</label>
 			<label index="label_page">pagina</label>
 			<label index="label_publisher">Editore</label>
 			<label index="label_volume">volume</label>

@@ -1026,13 +1026,14 @@ class tx_sevenpack_single_view {
 				$err = array ( 'type' => $type );
 				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_empty_fields');
 				$err['list'] = array();
+				$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
 				foreach ( $empty as $field ) {
 					switch ( $field ) {
 						case 'authors':
-							$str = $this->get_ll ( $this->ra->authorTable.'_'.$field );
+							$str = $this->field_label ( $field, $bib_str );
 							break;
 						default:
-							$str = $this->get_ll ( $this->ra->refTable.'_'.$field );
+							$str = $this->field_label ( $field, $bib_str );
 					}
 					$err['list'][] = array ( 'msg' => $str );
 				}
