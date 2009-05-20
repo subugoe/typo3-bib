@@ -444,6 +444,49 @@ class tx_sevenpack_utility {
 
 
 	/**
+	 * Explodes an ' and ' separated author string
+	 *
+	 * @return FALSE or the error message array
+	 */
+	function explode_author_str ( $str ) {
+		$res = array();
+		$lst = explode ( ' and ', $str );
+		foreach ( $lst as $a_str ) {
+			$name = array();
+			$parts = tx_sevenpack_utility::explode_trim ( ',', $a_str, TRUE );
+			if ( sizeof ( $parts ) > 1 ) {
+				$name['forename'] = $parts[1];
+			}
+			if ( sizeof ( $parts ) > 0 ) {
+				$name['surname'] = $parts[0];
+				$res[] = $name;
+			}
+		}
+		return $res;
+	}
+
+
+	/**
+	 * Implodes an array with $sep as separator
+	 * and $and as the last separator element
+	 *
+	 * @return The imploded array as a string
+	 */
+	function implode_and_last ( $arr, $sep, $and ) {
+		$res = array();
+		$size = sizeof ( $arr );
+		$c_idx = $size - 2;
+		$a_idx = $size - 1;
+		for ( $ii = 0; $ii < $size; $ii++ ) {
+			$res[] = strval ( $arr[$ii] );
+			if ( $ii < $c_idx ) $res[] = strval ( $sep );
+			else if ( $ii < $a_idx ) $res[] = strval ( $and );
+		}
+		return implode ( '', $res );
+	}
+
+
+	/**
 	 * Checks if a local file exists
 	 *
 	 * @return FALSE or the error message array

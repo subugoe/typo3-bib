@@ -1767,24 +1767,19 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Editors
 		if ( strlen ( $pdata['editor'] ) > 0 ) {
-			$res = array();
-			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
-			$lst = tx_sevenpack_utility::explode_trim ( ' and ', $editors, TRUE );
-			$size = sizeof ( $lst );
-			$c_idx = $size - 2;
-			$a_idx = $size - 1;
-			for ( $ii = 0; $ii < $size; $ii++ ) {
-				$name = $lst[$ii];
-				$name = tx_sevenpack_utility::explode_trim ( ',', $name, TRUE );
-				$ed = '';
-				if ( strlen ( $name[1] ) > 0 ) $ed .= $name[1] . ' ';
-				if ( strlen ( $name[0] ) > 0 ) $ed .= $name[0];
-				$ed = $this->cObj->stdWrap ( $ed, $this->conf['field.']['editor_each.'] );
-				$res[] = $ed;
-				if ( $ii < $c_idx ) $res[] = ', ';
-				else if ( $ii < $a_idx ) $res[] = $and;
+			$editors = tx_sevenpack_utility::explode_author_str ( $pdata['editor'] );
+			$lst = array();
+			foreach ( $editors as $ed ) {
+				$app = '';
+				if ( strlen ( $ed['forename'] ) > 0 ) $app .= $ed['forename'] . ' ';
+				if ( strlen ( $ed['surname'] ) > 0 ) $app .= $ed['surname'];
+				$app = $this->cObj->stdWrap ( $app, $this->conf['field.']['editor_each.'] );
+				$lst[] = $app;
 			}
-			$pdata['editor'] = implode ( '', $res );
+
+			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
+			$pdata['editor'] = tx_sevenpack_utility::implode_and_last (
+				$lst, ', ', $and );
 		}
 
 		//

@@ -186,8 +186,10 @@ class tx_sevenpack_single_view {
 				default: break;
 			}
 		} else {
-			if ( $genIDRequest 
-				&& ( $edExtConf['citeid_gen_old'] == $pi1->AUTOID_HALF ) ) {
+			$auto_id = $edExtConf['citeid_gen_old'];
+			if ( ( $genIDRequest && ( $auto_id == $pi1->AUTOID_HALF ) )
+				|| ( strlen ( $pub['citeid'] ) == 0 ) )
+			{
 				$genID = TRUE;
 			}
 		}
@@ -271,7 +273,7 @@ class tx_sevenpack_single_view {
 
 		// Data validation
 		if ( $single_mode == $pi1->SINGLE_CONFIRM_SAVE ) {
-			$d_err = $this->validate_data ( $pub, $fields );
+			$d_err = $this->validate_data ( $pub );
 			$title = $this->get_ll ( $this->LLPrefix.'title_confirm_save' );
 
 			if ( sizeof ( $d_err ) > 0 ) {
@@ -527,11 +529,12 @@ class tx_sevenpack_single_view {
 	function get_edit_fields ( $bibType )
 	{
 		$fields = array ();
-		$type_str = $bibType;
-		if ( is_numeric ( $bibType ) )
-			$type_str = $this->ra->allBibTypes[$bibType];
+		$bib_str = $bibType;
+		if ( is_numeric ( $bib_str ) ) {
+			$bib_str = $this->ra->allBibTypes[$bibType];
+		}
 
-		$all_groups = array ( 'all', $type_str );
+		$all_groups = array ( 'all', $bib_str );
 		$all_types = array ( 'required', 'optional', 'library' );
 
 		// Read field list from TS configuration
@@ -542,7 +545,9 @@ class tx_sevenpack_single_view {
 			if ( is_array ( $cfg_arr ) ) {
 				foreach ( $all_types as $type ) {
 					$cfg_fields[$group][$type] = array();
-					$ff = tx_sevenpack_utility::explode_trim ( ',', $cfg_arr[$type], TRUE );
+					$ff = tx_sevenpack_utility::multi_explode_trim (
+						array ( ',', '|' ), $cfg_arr[$type], TRUE );
+					//t3lib_div::debug ( $ff );
 					$cfg_fields[$group][$type] = $ff;
 				}
 			}
@@ -554,8 +559,8 @@ class tx_sevenpack_single_view {
 		foreach ( $all_types as $type ) {
 			$fields[$type] = array();
 			$cur =& $fields[$type];
-			if ( is_array ( $cfg_fields[$type_str][$type] ) )
-				$cur = $cfg_fields[$type_str][$type];
+			if ( is_array ( $cfg_fields[$bib_str][$type] ) )
+				$cur = $cfg_fields[$bib_str][$type];
 			if ( is_array ( $cfg_fields['all'][$type] ) ) {
 				foreach ( $cfg_fields['all'][$type] as $field ) {
 					$cur[] = $field;
@@ -997,10 +1002,23 @@ class tx_sevenpack_single_view {
 	 *
 	 * @return An array with error messages
 	 */
-	function validate_data ( $pub, $fields )
+	function validate_data ( $pub )
 	{
 		$d_err = array();
 		$title = $this->get_ll ( $this->LLPrefix.'title_confirm_save' );
+
+		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
+
+		$fields = $this->get_edit_fields ( $bib_str, TRUE );
+
+		$cond = array();
+		$parts = tx_sevenpack_utility::explode_trim ( ',', $this->conf['groups.'][$bib_str.'.']['required'] );
+		foreach ( $parts as $part ) {
+			if ( !( strpos ( $part, '|' ) === FALSE ) ) {
+				$cond[] = tx_sevenpack_utility::explode_trim ( '|', $part );
+			}
+		}
+		//t3lib_div::debug ( $cond );
 
 		$warn =& $this->conf['warnings.'];
 		//t3lib_div::debug ( $warn );
@@ -1011,6 +1029,7 @@ class tx_sevenpack_single_view {
 		$type = 'empty_fields';
 		if ( $warn[$type] ) {
 			$empty = array();
+			// Find empty fields
 			foreach ( $fields['required'] as $field ) {
 				switch ( $field ) {
 					case 'authors':
@@ -1018,10 +1037,33 @@ class tx_sevenpack_single_view {
 							$empty[] = $field;
 						break;
 					default:
-						if ( strlen ( trim ( $pub[$field] ) ) == 0) 
+						if ( strlen ( trim ( $pub[$field] ) ) == 0 ) 
 							$empty[] = $field;
-				}
+				}	
 			}
+
+			// Check conditions
+			$clear = array();
+			foreach ( $empty as $em ) {
+				$ok = FALSE;
+				foreach ( $cond as $con ) {
+					if ( in_array ( $em, $con ) ) {
+						foreach ( $con as $ff ) {
+							if ( !in_array ( $ff, $empty ) ) {
+								$ok = TRUE;
+								break;
+							}
+						}
+						if ( $ok ) break;
+					}
+				}
+				if ( $ok ) $clear[] = $em;
+			}
+
+			//t3lib_div::debug ( $empty );
+			$empty = array_diff ( $empty, $clear );
+			//t3lib_div::debug ( $empty );
+
 			if ( sizeof ( $empty ) ) {
 				$err = array ( 'type' => $type );
 				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_empty_fields');

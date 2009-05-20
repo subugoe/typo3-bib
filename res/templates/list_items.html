@@ -27,13 +27,9 @@
 
 ###ITEM_DATA###
 
-<!-- ###HAS_WEB_URL### begin -->
-<div class="tx_sevenpack-url_block">###WEB_URL_SHORT###</div>
-<!-- ###HAS_WEB_URL### end -->
-
-<!-- ###HAS_WEB_URL2### begin -->
-<div class="tx_sevenpack-url_block">###WEB_URL2_SHORT###</div>
-<!-- ###HAS_WEB_URL2### end -->
+<!-- ###HAS_DOI### begin -->
+<div class="tx_sevenpack-block">###LABEL_DOI###: ###DOI###</div>
+<!-- ###HAS_DOI### end -->
 
 <!-- ###HAS_ISBN### begin -->
 <div class="tx_sevenpack-block">###LABEL_ISBN###: ###ISBN###</div>
@@ -42,6 +38,22 @@
 <!-- ###HAS_STATE### begin -->
 <span class="tx_sevenpack-state">###STATE###</span>
 <!-- ###HAS_STATE### end -->
+
+<!-- ###HAS_WEB_URL### begin -->
+<div class="tx_sevenpack-url_block">###WEB_URL_SHORT###</div>
+<!-- ###HAS_WEB_URL### end -->
+
+<!-- ###HAS_WEB_URL2### begin -->
+<div class="tx_sevenpack-url_block">###WEB_URL2_SHORT###</div>
+<!-- ###HAS_WEB_URL2### end -->
+
+<!-- ###HAS_KEYWORDS### begin -->
+<p class="tx_sevenpack-keywords_block">###LABEL_KEYWORDS### ###KEYWORDS###</p>
+<!-- ###HAS_KEYWORDS### end -->
+
+<!-- ###HAS_TAGS### begin -->
+<p class="tx_sevenpack-tags_block">###LABEL_TAGS### ###TAGS###</p>
+<!-- ###HAS_TAGS### end -->
 
 <!-- ###HAS_ABSTRACT### begin -->
 <p class="tx_sevenpack-abstract_block">###LABEL_ABSTRACT### ###ABSTRACT###</p>
@@ -54,14 +66,6 @@
 <!-- ###HAS_NOTE### begin -->
 <p class="tx_sevenpack-note_block">###LABEL_NOTE### ###NOTE###</p>
 <!-- ###HAS_NOTE### end -->
-
-<!-- ###HAS_KEYWORDS### begin -->
-<p class="tx_sevenpack-keywords_block">###LABEL_KEYWORDS### ###KEYWORDS###</p>
-<!-- ###HAS_KEYWORDS### end -->
-
-<!-- ###HAS_TAGS### begin -->
-<p class="tx_sevenpack-tags_block">###LABEL_TAGS### ###TAGS###</p>
-<!-- ###HAS_TAGS### end -->
 
 <!-- ###REFERENCE_WRAP### end -->
 ###ITEM_APPEND###
@@ -109,42 +113,41 @@
 <!-- ###HAS_VOLUME### begin --><span class="tx_sevenpack-bold">###VOLUME###</span><!-- ###HAS_VOLUME### end --><!-- 
 ###HAS_NUMBER### begin -->(###NUMBER###)<!-- ###HAS_NUMBER### end --><!-- 
 ###HAS_PAGES### begin -->:###PAGES### <!-- ###HAS_PAGES### end -->
+
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
-<!-- ###HAS_YEAR### begin -->###YEAR###.<!-- ###HAS_YEAR### end -->
-<!-- ###HAS_DOI### begin -->
-<div class="tx_sevenpack-block">###LABEL_DOI###: ###DOI###</div>
-<!-- ###HAS_DOI### end -->
+
+<!-- ###HAS_YEAR### begin -->
+<div class="tx_sevenpack-block">
+<!-- ###HAS_MONTH### begin -->###MONTH###<!-- ###HAS_MONTH### end -->
+###YEAR###.
+</div>
+<!-- ###HAS_YEAR### end -->
+
 <!-- ###HAS_ISSN### begin -->
 <div class="tx_sevenpack-block">###LABEL_ISSN###: ###ISSN###</div>
 <!-- ###HAS_ISSN### end -->
+
 <!-- ###ARTICLE_DATA### end -->
 
 
 
 <h2>Book</h2>
 <!-- ###BOOK_DATA### begin -->
-
-<!-- ###HAS_EDITOR### begin -->
 <div class="tx_sevenpack-block">
-In ###EDITOR###, ###LABEL_EDITOR###,
-<!-- ###HAS_VOLUME### begin --> ###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
+<!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###, <!-- ###HAS_EDITOR### end -->
+<!-- ###HAS_VOLUME### begin -->###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
 <!-- ###HAS_SERIES### begin -->
 ###LABEL_OF_SERIES### <span class="tx_sevenpack-series">###SERIES###</span>
 <!-- ###HAS_SERIES### end -->
 </div>
-<!-- ###HAS_EDITOR### end -->
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -161,36 +164,31 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <h2>Inbook</h2>
 <!-- ###INBOOK_DATA### begin -->
 <div class="tx_sevenpack-block">
-<!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###<!-- ###HAS_EDITOR### end -->
-<!-- ###HAS_VOLUME### begin -->, ###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
+<!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###, <!-- ###HAS_EDITOR### end -->
+<!-- ###HAS_VOLUME### begin -->###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
 <!-- ###HAS_SERIES### begin -->
 ###LABEL_OF_SERIES### <span class="tx_sevenpack-series">###SERIES###</span>
 <!-- ###HAS_SERIES### end -->
 </div>
 
 <div class="tx_sevenpack-block">
-<!-- ###HAS_CHAPTER### begin --><span class="tx_sevenpack-chapter">###CHAPTER###</span>,<!-- ###HAS_CHAPTER### end -->
-<!-- ###HAS_PAGES### begin --> ###LABEL_PAGE### ###PAGES###.<!-- ###HAS_PAGES### end -->
+<!-- ###HAS_CHAPTER### begin --><span class="tx_sevenpack-chapter">###CHAPTER###</span>, <!-- ###HAS_CHAPTER### end -->
+<!-- ###HAS_PAGES### begin -->###LABEL_PAGE### ###PAGES###.<!-- ###HAS_PAGES### end -->
 </div>
 
-<!-- ###HAS_TYPE### begin -->
 <div class="tx_sevenpack-block">
-###TYPE###
+<!-- ###HAS_TYPE### begin -->###TYPE###<!-- ###HAS_TYPE### end -->
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
 </div>
-<!-- ###HAS_TYPE### end -->
 
-<!-- ###HAS_PUBLISHER### begin -->
+
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -199,6 +197,7 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
 <!-- ###INBOOK_DATA### end -->
 
 
@@ -206,27 +205,21 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <h2>Booklet</h2>
 <!-- ###BOOKLET_DATA### begin -->
 <div class="tx_sevenpack-block">
-<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
+<!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###, <!-- ###HAS_EDITOR### end -->
+<!-- ###HAS_VOLUME### begin -->###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
+<!-- ###HAS_SERIES### begin -->
+###LABEL_OF_SERIES### <span class="tx_sevenpack-series">###SERIES###</span>
+<!-- ###HAS_SERIES### end -->
 </div>
 
 <!-- ###HAS_HOWPUBLISHED### begin -->
-<div class="tx_sevenpack-block">
-###HOWPUBLISHED###
-</div>
+<div class="tx_sevenpack-block">###HOWPUBLISHED###</div>
 <!-- ###HAS_HOWPUBLISHED### end -->
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
-
-<!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
-<!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
@@ -234,37 +227,41 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
+<div class="tx_sevenpack-block">
+<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
+</div>
+
 <!-- ###BOOKLET_DATA### end -->
 
 
 
 <h2>Conference</h2>
 <!-- ###CONFERENCE_DATA### begin -->
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###,<!-- ###HAS_EDITOR### end -->
 <!-- ###HAS_BOOKTITLE### begin -->###BOOKTITLE###<!-- 
 	###HAS_BOOKTITLE### end --><!-- ###HAS_VOLUME### begin 
 --> ###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
+
 <!-- ###HAS_SERIES### begin -->
 ###LABEL_OF_SERIES### <span class="tx_sevenpack-series">###SERIES###</span>
 <!-- ###HAS_SERIES### end --><!-- 
 ###HAS_PAGES### begin -->, ###LABEL_PAGE### ###PAGES###.<!-- ###HAS_PAGES### end -->
 </div>
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_ORGANIZATION### begin -->###ORGANIZATION###<!-- ###HAS_ORGANIZATION### end -->
 </div>
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -273,6 +270,11 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
+<div class="tx_sevenpack-block">
+<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
+</div>
+
 <!-- ###CONFERENCE_DATA### end -->
 
 
@@ -280,7 +282,7 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <h2>Incollection</h2>
 <!-- ###INCOLLECTION_DATA### begin -->
 <div class="tx_sevenpack-block">
-<!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###,<!-- ###HAS_EDITOR### end -->
+<!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###, <!-- ###HAS_EDITOR### end -->
 <!-- ###HAS_BOOKTITLE### begin -->###BOOKTITLE###<!-- 
 	###HAS_BOOKTITLE### end --><!-- 
 	###HAS_VOLUME### begin --> ###LABEL_VOLUME### ###VOLUME###<!-- ###HAS_VOLUME### end -->
@@ -288,29 +290,28 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###LABEL_OF_SERIES### <span class="tx_sevenpack-series">###SERIES###</span>
 <!-- ###HAS_SERIES### end -->
 </div>
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_CHAPTER### begin --><span class="tx_sevenpack-chapter">###CHAPTER###</span>,<!-- ###HAS_CHAPTER### end -->
 <!-- ###HAS_PAGES### begin -->###LABEL_PAGE### ###PAGES###.<!-- ###HAS_PAGES### end -->
 </div>
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_TYPE### begin -->###TYPE###<!-- ###HAS_TYPE### end -->
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
 </div>
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_ORGANIZATION### begin -->###ORGANIZATION###<!-- ###HAS_ORGANIZATION### end -->
 </div>
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -319,6 +320,7 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
 <!-- ###INCOLLECTION_DATA### end -->
 
 
@@ -342,25 +344,17 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###HAS_EVENT_DATE### begin -->, ###EVENT_DATE###<!-- ###HAS_EVENT_DATE### end -->
 </div>
 
-<!-- ###HAS_AFFILIATION### begin -->
-<div class="tx_sevenpack-block">###AFFILIATION###</div>
-<!-- ###HAS_AFFILIATION### end -->
-
 <!-- ###HAS_ORGANIZATION### begin -->
 <div class="tx_sevenpack-block">###ORGANIZATION###</div>
 <!-- ###HAS_ORGANIZATION### end -->
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -369,12 +363,18 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
+<!-- ###HAS_AFFILIATION### begin -->
+<div class="tx_sevenpack-block">###AFFILIATION###</div>
+<!-- ###HAS_AFFILIATION### end -->
+
 <!-- ###PROCEEDINGS_DATA### end -->
 
 
 
 <h2>Inproceeding</h2>
 <!-- ###INPROCEEDINGS_DATA### begin -->
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###,<!-- ###HAS_EDITOR### end -->
 <!-- ###HAS_BOOKTITLE### begin -->###BOOKTITLE###<!-- ###HAS_BOOKTITLE### end -->
@@ -384,24 +384,18 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <!-- ###HAS_SERIES### end -->
 <!-- ###HAS_PAGES### begin -->, ###LABEL_PAGE### ###PAGES###.<!-- ###HAS_PAGES### end -->
 </div>
-<div class="tx_sevenpack-block">
-<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
-</div>
+
 <div class="tx_sevenpack-block">
 <!-- ###HAS_ORGANIZATION### begin -->###ORGANIZATION### <!-- ###HAS_ORGANIZATION### end -->
 </div>
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -410,6 +404,11 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
+<div class="tx_sevenpack-block">
+<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
+</div>
+
 <!-- ###INPROCEEDINGS_DATA### end -->
 
 
@@ -419,22 +418,14 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <div class="tx_sevenpack-block">
 <!-- ###HAS_EDITOR### begin -->In ###EDITOR###, ###LABEL_EDITOR###,<!-- ###HAS_EDITOR### end -->
 </div>
-<div class="tx_sevenpack-block">
-<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
-</div>
 
-
-<!-- ###HAS_ORGANIZATION### begin -->
 <div class="tx_sevenpack-block">
-###ORGANIZATION###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_ORGANIZATION### begin -->###ORGANIZATION###, <!-- ###HAS_ORGANIZATION### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_ORGANIZATION### end -->
 
 <!-- ###HAS_EDITION### begin -->
-<div class="tx_sevenpack-block">
-###EDITION### ###LABEL_EDITION###
-</div>
+<div class="tx_sevenpack-block">###EDITION### ###LABEL_EDITION###</div>
 <!-- ###HAS_EDITION### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -443,6 +434,10 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
+<div class="tx_sevenpack-block">
+<!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
+</div>
 
 <!-- ###MANUAL_DATA### end -->
 
@@ -455,12 +450,10 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
 </div>
 
-<!-- ###HAS_SCHOOL### begin -->
 <div class="tx_sevenpack-block">
-###SCHOOL###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_SCHOOL### begin -->###SCHOOL###, <!-- ###HAS_SCHOOL### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_SCHOOL### end -->
 
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
@@ -480,12 +473,10 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
 </div>
 
-<!-- ###HAS_SCHOOL### begin -->
 <div class="tx_sevenpack-block">
-###SCHOOL###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_SCHOOL### begin -->###SCHOOL###, <!-- ###HAS_SCHOOL### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_SCHOOL### end -->
 
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
@@ -506,12 +497,10 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
 </div>
 
-<!-- ###HAS_INSTITUTION### begin -->
 <div class="tx_sevenpack-block">
-###INSTITUTION###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_INSTITUTION### begin -->###INSTITUTION###, <!-- ###HAS_INSTITUTION### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_INSTITUTION### end -->
 
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
@@ -529,12 +518,14 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <div class="tx_sevenpack-block">
 <!-- ###HAS_AFFILIATION### begin -->###AFFILIATION###<!-- ###HAS_AFFILIATION### end -->
 </div>
+
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
 <!-- ###HAS_MONTH### begin -->###MONTH###<!-- ###HAS_MONTH### end -->
 ###YEAR###.
 </div>
 <!-- ###HAS_YEAR### end -->
+
 <!-- ###UNPUBLISHED_DATA### end -->
 
 
@@ -543,15 +534,11 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <!-- ###MISCELLANEOUS_DATA### begin -->
 
 <!-- ###HAS_AFFILIATION### begin -->
-<div class="tx_sevenpack-block">
-###AFFILIATION###
-</div>
+<div class="tx_sevenpack-block">###AFFILIATION###</div>
 <!-- ###HAS_AFFILIATION### end -->
 
 <!-- ###HAS_HOWPUBLISHED### begin -->
-<div class="tx_sevenpack-block">
-###HOWPUBLISHED###
-</div>
+<div class="tx_sevenpack-block">###HOWPUBLISHED###</div>
 <!-- ###HAS_HOWPUBLISHED### end -->
 
 <!-- ###HAS_YEAR### begin -->
@@ -573,7 +560,6 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <div class="tx_sevenpack-block">
 <!-- ###HAS_MISC### begin -->###MISC###<!-- ###HAS_MISC### end -->
 </div>
-<!-- ###FILE_URL### begin -->###FILE_URL###<!-- ###FILE_URL### end -->
 <!-- ###STRING_DATA### end -->
 
 
@@ -590,12 +576,10 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <!-- ###HAS_ORGANIZATION### begin -->###ORGANIZATION### <!-- ###HAS_ORGANIZATION### end -->
 </div>
 
-<!-- ###HAS_PUBLISHER### begin -->
 <div class="tx_sevenpack-block">
-###LABEL_PUBLISHER### ###PUBLISHER###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_PUBLISHER### end -->
 
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
@@ -619,17 +603,55 @@ In ###EDITOR###, ###LABEL_EDITOR###,
 <div class="tx_sevenpack-block">###AFFILIATION###</div>
 <!-- ###HAS_AFFILIATION### end -->
 
-<!-- ###HAS_SCHOOL### begin -->
 <div class="tx_sevenpack-block">
-###SCHOOL###<!-- 
-###HAS_ADDRESS### begin -->, ###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+<!-- ###HAS_SCHOOL### begin -->###SCHOOL###, <!-- ###HAS_SCHOOL### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
 </div>
-<!-- ###HAS_SCHOOL### end -->
+
+<!-- ###HAS_INSTITUTE### begin -->
+<div class="tx_sevenpack-block">###INSTITUTE###</div>
+<!-- ###HAS_INSTITUTE### end -->
 
 <!-- ###HAS_YEAR### begin -->
 <div class="tx_sevenpack-block">
 <!-- ###HAS_MONTH### begin -->###MONTH###<!-- ###HAS_MONTH### end -->
 ###YEAR###.
 </div>
+<!-- ###HAS_YEAR### end -->
+
 <!-- ###THESIS_DATA### end -->
 
+
+
+<h2>Report</h2>
+<!-- ###REPORT_DATA### begin -->
+
+<!-- ###HAS_TYPE### begin -->
+<div class="tx_sevenpack-block">###TYPE###</div>
+<!-- ###HAS_TYPE### end -->
+
+<!-- ###HAS_INSTITUTION### begin -->
+<div class="tx_sevenpack-block">###INSTITUTION###</div>
+<!-- ###HAS_INSTITUTION### end -->
+
+<!-- ###HAS_INSTITUTE### begin -->
+<div class="tx_sevenpack-block">###INSTITUTE###</div>
+<!-- ###HAS_INSTITUTE### end -->
+
+<div class="tx_sevenpack-block">
+<!-- ###HAS_PUBLISHER### begin -->###LABEL_PUBLISHER### ###PUBLISHER###, <!-- ###HAS_PUBLISHER### end --><!-- 
+###HAS_ADDRESS### begin -->###ADDRESS###<!-- ###HAS_ADDRESS### end -->
+</div>
+
+<!-- ###HAS_YEAR### begin -->
+<div class="tx_sevenpack-block">
+<!-- ###HAS_MONTH### begin -->###MONTH###<!-- ###HAS_MONTH### end -->
+###YEAR###.
+</div>
+<!-- ###HAS_YEAR### end -->
+
+<!-- ###HAS_AFFILIATION### begin -->
+<div class="tx_sevenpack-block">###AFFILIATION###</div>
+<!-- ###HAS_AFFILIATION### end -->
+
+<!-- ###REPORT_DATA### begin -->

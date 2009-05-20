@@ -40,19 +40,43 @@ class tx_sevenpack_citeid_generator {
 
 
 	function generateBasicId ( $row ) {
+		$charset = $this->pi1->extConf['charset']['upper'];
 		$authors = $row['authors'];
+		$editors = tx_sevenpack_utility::explode_author_str ( $row['editor'] );
 
-		$id = sizeof ( $authors ) ? $authors[0]['surname'] : '';
-		for ( $i=1; $i < sizeof ( $authors ); $i++ ) {
-			$a_str = '';
-			if ( strlen ( $authors[$i]['surname'] ) > 0 )
-				$a_str = $authors[$i]['surname'];
-			else if ( strlen($authors[$i]['forename']) )
-				$a_str = $authors[$i]['forename'];
-			$charset = $this->pi1->extConf['charset']['upper'];
-			$id .= mb_substr ( $this->simplified_string ( $a_str ), 0, 1, $charset );
+		$persons = array ( $authors, $editors );
+
+		//t3lib_div::debug ( $persons );
+
+		$id = '';
+		foreach ( $persons as $list ) {
+			if ( strlen ( $id ) == 0 ) {
+				if ( sizeof ( $list ) > 0 ) {
+					$pp =& $list[0];
+					$a_str = '';
+					if ( strlen ( $pp['surname'] ) > 0 )
+						$a_str = $pp['surname'];
+					else if ( strlen ( $pp['forename'] ) )
+						$a_str = $pp['forename'];
+					if ( strlen ( $a_str ) > 0 )
+						$id = $this->simplified_string ( $a_str );
+				}
+			}
+			for ( $i=1; $i < sizeof ( $list ); $i++ ) {
+				$pp =& $list[$i];
+				$a_str = '';
+				if ( strlen ( $pp['surname'] ) > 0 )
+					$a_str = $pp['surname'];
+				else if ( strlen ( $pp['forename'] ) )
+					$a_str = $pp['forename'];
+				if ( strlen ( $a_str ) > 0 ) {
+					$id .= mb_substr ( 
+						$this->simplified_string ( $a_str ), 0, 1, $charset );
+				}
+			}
 		}
-		if ( !strlen ( $id ) ) {
+
+		if ( strlen ( $id ) == 0 ) {
 			$id = t3lib_div::shortMD5 ( serialize ( $row ) );
 		}
 		if ( $row['year'] > 0 )

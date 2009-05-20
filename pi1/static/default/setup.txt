@@ -623,12 +623,12 @@ plugin.tx_sevenpack_pi1 {
 				optional = volume,number,pages,month,abstract,ISSN,DOI
 			}
 			book {
-				required = citeid,authors,title,publisher,year
-				optional = volume,series,edition,editor,abstract,address,month,ISBN
+				required = citeid,authors|editor,title,publisher,year
+				optional = volume,series,edition,abstract,address,month,ISBN
 			}
 			inbook {
-				required = citeid,authors,title,chapter,pages,publisher,year
-				optional = volume,series,edition,editor,abstract,address,month,ISBN,type
+				required = citeid,authors|editor,title,chapter,pages,publisher,year
+				optional = volume,series,edition,abstract,address,month,ISBN,type
 			}
 			booklet {
 				required = citeid,title
@@ -692,7 +692,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			report {
 				required = citeid,title,authors,type,year
-				optional = type,abstract
+				optional = type,institution,abstract
 			}
 		}
 
