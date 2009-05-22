@@ -97,7 +97,7 @@
 			<label index="searchNav_OR">Or</label>
 			<label index="searchNav_abstract">Search in abstract</label>
 			<label index="searchNav_clear">Clear</label>
-			<label index="searchNav_extra">Details</label>
+			<label index="searchNav_extra">Advanced search</label>
 			<label index="searchNav_full_text">Search in full text</label>
 			<label index="searchNav_insert_request">Please insert a search phrase</label>
 			<label index="searchNav_label">Search</label>
@@ -207,7 +207,7 @@
 			<label index="searchNav_OR">Oder</label>
 			<label index="searchNav_abstract">Suche in Kurzfassung</label>
 			<label index="searchNav_clear">Zurücksetzen</label>
-			<label index="searchNav_extra">Details</label>
+			<label index="searchNav_extra">Erweiterte Suche</label>
 			<label index="searchNav_full_text">Suche im Volltext</label>
 			<label index="searchNav_insert_request">Bitte geben Sie einen Suchtext ein</label>
 			<label index="searchNav_label">Suche</label>
