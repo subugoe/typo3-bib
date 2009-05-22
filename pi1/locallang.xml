@@ -111,6 +111,7 @@
 			<label index="stat_total_label">Total</label>
 			<label index="stat_year_total_label">This year / Total</label>
 			<label index="upload_file">Upload file</label>
+			<label index="yearNav_all_years">All</label>
 			<label index="yearNav_label">Year</label>
 			<label index="yearNav_yearLinkTitle">Publikations in %y</label>
 		</languageKey>
@@ -220,6 +221,7 @@
 			<label index="stat_total_label">Total</label>
 			<label index="stat_year_total_label">Dieses Jahr / Total</label>
 			<label index="upload_file">Datei hochladen</label>
+			<label index="yearNav_all_years">Alle</label>
 			<label index="yearNav_label">Jahr</label>
 			<label index="yearNav_yearLinkTitle">Publikationen im Jahr %y</label>
 		</languageKey>

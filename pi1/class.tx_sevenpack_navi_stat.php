@@ -42,6 +42,10 @@ class tx_sevenpack_navi_stat extends tx_sevenpack_navi  {
 			if ( $mode == $this->pi1->STAT_YEAR_TOTAL ) {
 				$mode = $this->pi1->STAT_TOTAL;
 			}
+		} else {
+			if ( !is_numeric ( $this->pi1->extConf['year'] ) ) {
+				$mode = $this->pi1->STAT_TOTAL;
+			}
 		}
 
 		// Setup values

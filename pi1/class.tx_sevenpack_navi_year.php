@@ -60,8 +60,10 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		$label = $this->pi1->get_ll ( 'yearNav_label' );
 		$label = $cObj->stdWrap ( $label, $cfg['label.'] );
 
+		$lbl_all = $this->pi1->get_ll ( 'yearNav_all_years', 'All', TRUE );
+
 		//
-		// The year select for
+		// The year select form
 		//
 		$sel = '';
 		if ( sizeof ( $years ) > 0 ) {
@@ -73,7 +75,7 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 			$sel .= strlen ( $cfg['form_class'] ) ? ' class="'.$cfg['form_class'].'"' : '';
 			$sel .= '>' . "\n";
 			
-			$pairs = array();
+			$pairs = array ( 'all' => $lbl_all );
 			if ( sizeof ( $years ) > 0 ) {
 				foreach ( array_reverse( $years ) as $y )
 					$pairs[$y] = $y;
@@ -113,10 +115,23 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		//
 		$selection = '';
 		if ( sizeof ( $years ) > 0 ) {
-			$indices = array ( 0,
-				intval ( array_search ( $year, $years ) ),
-				sizeof ( $years ) - 1
-			);
+
+			// The all link
+			$sep = ' - ';
+			if ( isset ( $cfgSel['all_sep'] ) )
+				$sep = $cfgSel['all_sep'];
+			$sep = $cObj->stdWrap ( $sep, $cfgSel['all_sep.'] );
+	
+			$txt = $lbl_all;
+			if ( is_numeric ( $year ) ) {
+				$txt = $this->pi1->get_link ( $txt, array ( 'year' => 'all' ) );
+			} else {
+				$txt = $cObj->stdWrap ( $txt, $cfgSel['current.'] );
+			}
+
+			$cur = array_search ( $year, $years );
+			if ( $cur === FALSE ) $cur = -1;
+			$indices = array ( 0, $cur, sizeof ( $years ) - 1 );
 			
 			$numSel = 3;
 			if ( array_key_exists ( 'years', $cfgSel ) ) {
@@ -124,7 +139,7 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 			}
 
 			$selection = $this->selection ( $cfgSel, $indices, $numSel );
-			$selection = $cObj->stdWrap ( $selection, $cfgSel['all_wrap.'] );
+			$selection = $cObj->stdWrap ( $txt . $sep . $selection, $cfgSel['all_wrap.'] );
 		}
 
 		$trans = array();

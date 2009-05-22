@@ -266,6 +266,13 @@ plugin.tx_sevenpack_pi1 {
 			separator = ,
 			separator.noTrimWrap  = || |
 
+			# Separator between ALL and list
+			all_sep = ::
+			all_sep.noTrimWrap  = | | |
+
+			# Show year split labels if 'all' is selected
+			all_year_split = 1
+
 			# Wraps for the current year and the years below and above
 			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
 			below.wrap = |

@@ -606,16 +606,26 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			//
 			// Determine the year to display
 			//
-			$extConf['year'] = intval ( date ( 'Y' ) ); // System year
+			//$extConf['year'] = intval ( date ( 'Y' ) ); // System year
+			$extConf['year'] = 'all'; // All years
 			$ecYear =& $extConf['year'];
 	
 			$pvar = strtolower ( $this->piVars['year'] );
 			if ( is_numeric ( $pvar ) ) {
 				$ecYear = intval ( $pvar );
 			} else  {
-				if ( $pvar == 'all' ) $ecYear = $pvar;
+				if ( $pvar == 'all' ) {
+					$ecYear = $pvar;
+				}
 			}
-	
+
+			if ( $ecYear == 'all' ) {
+				if ( $this->conf['yearNav.']['selection.']['all_year_split'] ) {
+					$extConf['split_years'] = TRUE;
+				}
+			}
+
+
 			// The selected year has no publications so select the closest year
 			if ( ( $this->stat['num_all'] > 0 ) && is_numeric ( $ecYear ) ) {
 				$ecYear = tx_sevenpack_utility::find_nearest_int ( 
@@ -2212,6 +2222,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$w_cfg =& $this->conf['editor.']['list.']['warn_box.'];
 		$ed_mode = $this->extConf['edit_mode'];
 
+		if ( $this->extConf['d_mode'] == $this->D_Y_SPLIT ) {
+			$this->extConf['split_years'] = TRUE;
+		}
+
 		// Database accessor initialization
 		$ra->mFetch_initialize();
 
@@ -2319,7 +2333,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_MANIPULATORS###', $subst_sub );
 
 			// Year separator label
-			if ( ($this->extConf['d_mode'] == $this->D_Y_SPLIT) && ( $pub['year'] != $prevYear ) )  {
+			if ( $this->extConf['split_years'] && ( $pub['year'] != $prevYear ) )  {
 				$yearStr = $cObj->stdWrap ( strval ( $pub['year'] ), $conf['label.']['year.'] );
 				$items[] = $cObj->substituteMarker ( $year_block, '###YEAR###', $yearStr );
 				$prevBibType = -1;
