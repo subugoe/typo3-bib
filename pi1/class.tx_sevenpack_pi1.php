@@ -767,24 +767,47 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function init_restrictions ( )
 	{
-		$this->extConf['restrict'] = FALSE;
-		$restrict = $this->conf['restrictions.'];
-		if ( is_array ( $restrict ) ) {
-			$res = $restrict['file_url.'];
-			if ( is_array ( $res ) ) {
-				$all = ( $res['hide_all'] != 0 );
+		$this->extConf['restrict'] = array();
+		$ex_res =& $this->extConf['restrict'];
+
+		if ( is_array ( $this->conf['restrictions.'] ) ) {
+			$restrict =& $this->conf['restrictions.'];
+
+			// Accuire field configurations
+			$fields = array();
+			foreach ( $restrict as $d_field => $data ) {
+				if ( is_array ( $data ) ) {
+					$field = substr ( $d_field, 0, -1 );
+					if ( in_array ( $field, $this->ra->pubFields ) ) {
+						$fields[] = $field;
+					}
+				}
+			}
+
+			// Process restriction requests
+			foreach ( $fields as $field ) {
+				$d_field = $field.'.';
+				$res = $restrict[$d_field];
+
+				// String extensions
 				$ext = tx_sevenpack_utility::explode_trim_lower ( 
 					',', $res['hide_file_ext'], TRUE );
-				$groups = strtolower ( $res['FE_user_groups'] );
-				if ( strpos ( $groups, 'all' ) === FALSE )
-					$groups = tx_sevenpack_utility::explode_intval ( ',', $groups );
-				else
-					$groups = 'all';
+
+				// FE user groups
+				$txt = strtolower ( $res['FE_user_groups'] );
+				$groups = 'all';
+				if ( strpos ( $groups, 'all' ) === FALSE ) {
+					$groups = tx_sevenpack_utility::explode_intval ( ',', $txt );
+				}
+
+				$ex_res[$field] = array (
+					'hide_all' => ( $res['hide_all'] != 0 ),
+					'hide_ext' => $ext,
+					'fe_groups' => $groups
+				);
 			}
-			$this->extConf['restrict']['file_url']['hide_all'] = $all;
-			$this->extConf['restrict']['file_url']['hide_ext'] = $ext;
-			$this->extConf['restrict']['file_url']['fe_groups'] = $groups;
 		}
+		//t3lib_div::debug ( $ex_res );
 	}
 
 
@@ -2411,17 +2434,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function check_field_restriction ( $field, $value ) {
 		$res = FALSE;
 
-		if ( strlen ( $value ) == 0 )
+		if ( strlen ( $value ) == 0 ) {
 			return FALSE;
+		}
 
+		// Field is hidden
 		if ( $this->extConf['hide_fields'][$field] ) {
 			return TRUE;
 		}
 
-		$restric =& $this->extConf['restrict'];
-		if ( !is_array ( $restric ) )
-			return FALSE;
-
+		// Check if local file does not exist
 		if ( $field == 'file_url' ) {
 			$err = tx_sevenpack_utility::check_file_nexist ( $value );
 			if ( is_array ( $err ) ) {
@@ -2429,15 +2451,25 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
-		if ( $field == 'file_url' && is_array ( $restric['file_url'] ) ) {
-			$rest =& $restric['file_url'];
+		// Are there restrictions at all?
+		$restric =& $this->extConf['restrict'];
+		if ( !is_array ( $restric ) || ( sizeof ( $restric ) == 0 ) ) {
+			return FALSE;
+		}
 
+		// Check Field restrictions
+		if ( is_array ( $restric[$field] ) ) {
+			$rest =& $restric[$field];
+
+			// Show by default
 			$show = TRUE;
-			// Disable on hide all
-			if ( $rest['hide_all'] )
-				$show = FALSE;
 
-			// Disable if file extensions matches
+			// Hide on 'hide all'
+			if ( $rest['hide_all'] ) {
+				$show = FALSE;
+			}
+
+			// Hide if any extensions matches
 			if ( $show && is_array ( $rest['hide_ext'] ) ) {
 				foreach ( $rest['hide_ext'] as $ext ) {
 					// Sanitize input
@@ -2460,19 +2492,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$show = TRUE;
 			}
 
-			// Disable if local file does not exist
-			if ( strpos ( $value, 'fileadmin/' ) === 0 ) {
-				if ( !file_exists ( $value ) ) {
-					$show = FALSE;
-					//t3lib_div::debug( array ( 'Local file does not exist: ' => $value ) );
-				}
-			}
-
-			if ( !$show )
+			// Restricted !
+			if ( !$show ) {
 				$res = TRUE;
+			}
+			//t3lib_div::debug ( array ( 'Field' => $field, 'Restricted' => $res ? 'True' : 'False' ) );
 		}
 
-		//t3lib_div::debug( array ( 'Restricted: ' => $res ? 'True' : 'False' ) );
 		return $res;
 	}
 
