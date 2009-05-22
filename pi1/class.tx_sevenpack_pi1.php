@@ -323,6 +323,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$aconf['obj']->hook_init();
 		}
 
+		//
+		// Year navi
+		//
+		if ( $extConf['d_mode'] == $this->D_Y_NAV ) {
+			$extConf['show_nav_year'] = TRUE;
+		}
 
 		//
 		// Author navi
@@ -473,6 +479,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 		$this->ra->show_hidden = $extConf['show_hidden'];
 
+
 		//
 		// Edit mode specific !!!
 		//
@@ -583,79 +590,114 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['author_navi']['obj']->hook_filter();
 		}
 
-		$hist = $this->ra->fetch_histogram ( 'year' );
-		$this->stat['year_hist'] = $hist;
-		$this->stat['years'] = array_keys ( $hist );
-		sort ( $this->stat['years'] );
-		$this->stat['num_all'] = array_sum ( $hist );
-
-		//t3lib_div::debug ( $this->stat );
-
 		//
-		// Determine the year to display
+		// Year navigation
 		//
-		$extConf['year'] = FALSE;
-		$ecYear =& $extConf['year'];
-		if ( is_numeric ( $this->piVars['year'] ) )
-			$ecYear = intval ( $this->piVars['year'] );
-		else
-			$ecYear = intval ( date ( 'Y' ) ); // System year
+		if ( $extConf['show_nav_year'] ) {
+			// Fetch a year histogram
+			$hist = $this->ra->fetch_histogram ( 'year' );
+			$this->stat['year_hist'] = $hist;
+			$this->stat['years'] = array_keys ( $hist );
+			sort ( $this->stat['years'] );
 
-		// The selected year has no publications so select the closest year
-		// Set default link variables
-		if ( $extConf['d_mode'] == $this->D_Y_NAV ) {
-			if ( $this->stat['num_all'] > 0 ) {
-				$ecYear = tx_sevenpack_utility::find_nearest_int ( $ecYear, $this->stat['years'] );
+			$this->stat['num_all'] = array_sum ( $hist );
+			$this->stat['num_page'] = $this->stat['num_all'];
+
+			//
+			// Determine the year to display
+			//
+			$extConf['year'] = intval ( date ( 'Y' ) ); // System year
+			$ecYear =& $extConf['year'];
+	
+			$pvar = strtolower ( $this->piVars['year'] );
+			if ( is_numeric ( $pvar ) ) {
+				$ecYear = intval ( $pvar );
+			} else  {
+				if ( $pvar == 'all' ) $ecYear = $pvar;
 			}
+	
+			// The selected year has no publications so select the closest year
+			if ( ( $this->stat['num_all'] > 0 ) && is_numeric ( $ecYear ) ) {
+				$ecYear = tx_sevenpack_utility::find_nearest_int ( 
+					$ecYear, $this->stat['years'] );
+			}
+			// Append default link variable
 			$extConf['link_vars']['year'] = $ecYear;
-		}
 
-		$this->stat['num_page'] = $this->stat['num_all'];
-		if ( $this->extConf['d_mode'] == $this->D_Y_NAV ) {
-			$this->stat['num_page'] = $this->stat['year_hist'][$ecYear];
+			if ( is_numeric ( $ecYear ) ) {
+				// Adjust num_page
+				$this->stat['num_page'] = $this->stat['year_hist'][$ecYear];
+
+				// Adjust year filter
+				$extConf['filters']['br_year'] = array();
+				$br_filter =& $extConf['filters']['br_year'];
+				$br_filter['year'] = array();
+				$br_filter['year']['years'] = array ( $ecYear );
+			}
+
 		}
 
 		//
-		// Determine the number of sub pages and the current sub page (zero based)
+		// Determine number of publications
+		//
+		if ( !is_numeric ( $this->stat['num_all'] ) ) {
+			$this->stat['num_all'] = $this->ra->fetch_num ( );
+			$this->stat['num_page'] = $this->stat['num_all'];
+		}
+
+		//
+		// Page navigation
 		//
 		$subPage =& $extConf['sub_page'];
+		$subPage['max']     = 0;
+		$subPage['current'] = 0;
 		$iPP = $subPage['ipp'];
+
 		if ( $iPP > 0 ) {
 			$subPage['max']     = floor ( ( $this->stat['num_page']-1 ) / $iPP );
 			$subPage['current'] = tx_sevenpack_utility::crop_to_range (
 				$this->piVars['page'], 0, $subPage['max'] );
-		} else {
-			$subPage['max']     = 0;
-			$subPage['current'] = 0;
 		}
 
-		//
-		// Enable/disable navigations
-		//
-		if ( $extConf['d_mode'] == $this->D_Y_NAV )
-			$extConf['show_nav_year'] = TRUE;
-		if ( ( $iPP > 0 ) && ( $this->stat['num_page'] > $iPP ) )
+		if ( $subPage['max'] > 0 ) {
 			$extConf['show_nav_page'] = TRUE;
 
-		// Disable navigations
-		if ( $this->stat['num_all'] == 0 )
-			$extConf['show_nav_export'] = FALSE;
-		if ( $this->stat['num_page'] == 0 )
-			$extConf['show_nav_stat'] = FALSE;
+			$extConf['filters']['br_page'] = array();
+			$br_filter =& $extConf['filters']['br_page'];
+
+			// Adjust the browse filter limit
+			$br_filter['limit'] = array();
+			$br_filter['limit']['start'] = $subPage['current']*$iPP;
+			$br_filter['limit']['num'] = $iPP;
+		}
+
 
 		//
-		// Setup the browse filter
+		// The sort filter
 		//
-		$extConf['filters']['browse'] = array();
-		$br_filter =& $extConf['filters']['browse'];
+		$extConf['filters']['sort'] = array();
+		$extConf['filters']['sort']['sorting'] = array();
+		$sort_f =& $extConf['filters']['sort']['sorting'];
 
-		// Adjust sorting
+		// Default sorting
+		$dSort = 'DESC';
+		if ( $this->extConf['date_sorting'] == $this->SORT_ASC ) {
+			$dSort = 'ASC';
+		}
+		$sort_f = array (
+			array ( 'field' => $rta.'.year',    'dir' => $dSort ),
+			array ( 'field' => $rta.'.month',   'dir' => $dSort ),
+			array ( 'field' => $rta.'.day',     'dir' => $dSort ),
+			array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
+			array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
+			array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
+			array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
+		);
+
+		// Adjust sorting for bibtype split
 		if ( $extConf['split_bibtypes'] ) {
-			$dSort = 'DESC';
-			if ( $extConf['date_sorting'] == $this->SORT_ASC )
-				$dSort = 'ASC';
 			if ( $extConf['d_mode'] == $this->D_SIMPLE ) {
-				$br_filter['sorting'] = array (
+				$sort_f = array (
 					array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
 					array ( 'field' => $rta.'.year',    'dir' => $dSort ),
 					array ( 'field' => $rta.'.month',   'dir' => $dSort ),
@@ -665,7 +707,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
 				);
 			} else {
-				$br_filter['sorting'] = array (
+				$sort_f = array (
 					array ( 'field' => $rta.'.year',    'dir' => $dSort ),
 					array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
 					array ( 'field' => $rta.'.month',   'dir' => $dSort ),
@@ -677,24 +719,21 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
-		// Adjust year filter
-		if ( ( $extConf['d_mode'] == $this->D_Y_NAV ) && is_numeric ( $ecYear ) ) {
-			$br_filter['year'] = array();
-			$br_filter['year']['years'] = array ( $ecYear );
-		}
-
-		// Adjust the browse filter limit
-		if ( $subPage['max'] > 0 ) {
-			$br_filter['limit'] = array();
-			$br_filter['limit']['start'] = $subPage['current']*$iPP;
-			$br_filter['limit']['num'] = $iPP;
-		}
-
 		// Setup reference accessor
+		//t3lib_div::debug ( $this->stat );
+		//t3lib_div::debug ( $extConf['filters'] );
 		$this->ra->set_filters ( $extConf['filters'] );
 
 		//
-		// Initialize the html template
+		// Disable navigations om demand
+		//
+		if ( $this->stat['num_all'] == 0 )
+			$extConf['show_nav_export'] = FALSE;
+		if ( $this->stat['num_page'] == 0 )
+			$extConf['show_nav_stat'] = FALSE;
+
+		//
+		// Initialize the html templates
 		//
 		$err = $this->init_template ( );
 		if ( sizeof ( $err ) > 0 ) {
@@ -972,13 +1011,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Keywords filter
-		if ( $this->pi_getFFvalue ( $ff, 'enable_keywords', $fSheet) ) {
+		if ( $this->pi_getFFvalue ( $ff, 'enable_keywords', $fSheet ) ) {
 			$f = array();
 			$f['rule'] = $this->pi_getFFvalue ( $ff, 'keywords_rule', $fSheet);
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$f['words'] = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				foreach ( $words as &$word ) {
+					$word = $this->ra->search_word ( $word, $this->extConf['charset']['upper'] );
+				}
+				$f['words'] = $words;
 				$filter['keywords'] = $f;
 			}
 		}
@@ -990,29 +1033,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'search_all', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$f['words'] = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				foreach ( $words as &$word ) {
+					$word = $this->ra->search_word ( $word, $this->extConf['charset']['upper'] );
+				}
+				$f['words'] = $words;
 				$filter['all'] = $f;
 			}
 		}
 
 		//t3lib_div::debug ( array ( 'pid list final' => $pid_list) );
-
-		//
-		// Sorting
-		//
-		$dSort = 'DESC';
-		if ( $this->extConf['date_sorting'] == $this->SORT_ASC )
-			$dSort = 'ASC';
-		$filter['sorting'] = array (
-			array ( 'field' => $rta.'.year',    'dir' => $dSort ),
-			array ( 'field' => $rta.'.month',   'dir' => $dSort ),
-			array ( 'field' => $rta.'.day',     'dir' => $dSort ),
-			array ( 'field' => $rta.'.bibtype', 'dir' => 'ASC'  ),
-			array ( 'field' => $rta.'.state',   'dir' => 'ASC'  ),
-			array ( 'field' => $rta.'.sorting', 'dir' => 'ASC'  ),
-			array ( 'field' => $rta.'.title',   'dir' => 'ASC'  )
-		);
-
 		//t3lib_div::debug ( $filter );
 
 	}
@@ -2199,7 +2229,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$prevYear = -1;
 
 		// Initialize counters
-		$limit_start = intval ( $filters['browse']['limit']['start'] );
+		$limit_start = intval ( $filters['br_page']['limit']['start'] );
 		$i_page = $this->stat['num_page'] - $limit_start;
 		$i_page_delta = -1;
 		if ( $this->extConf['date_sorting'] == $this->SORT_ASC ) {

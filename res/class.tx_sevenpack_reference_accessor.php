@@ -724,16 +724,19 @@ class tx_sevenpack_reference_accessor {
 			$f =& $filter['keywords'];
 			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
 				$wca = array();
-				$rule = ($f['rule'] == 0) ? ' OR ' : ' AND ';
-				foreach ( $f['words'] as $word ) {
-					$word = trim ( $word );
-					if ( strlen ( $word ) > 0 ) {
-						$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( '%'.$word.'%' , $rT );
-						$wca[] = $rta.'.keywords LIKE ' . $word;
+
+				if ( $f['rule'] == 0 ) { // OR
+					$wca[] = $this->get_filter_search_fields_clause ( $f['words'], array ( 'keywords' ) );
+				} else { // AND
+					foreach ( $f['words'] as $word ) {
+						$wca[] = $this->get_filter_search_fields_clause ( array ( $word ), array ( 'keywords' ) );
 					}
 				}
-				if ( sizeof ( $wca ) > 0 )
-					$WC[] = '( ' . implode ( $rule, $wca ) . ' )';
+
+				//t3lib_div::debug ( array ( 'wca' => $wca ) );
+				foreach ( $wca as $app ) {
+					if ( strlen ( $app ) > 0 ) $WC[] = $app;
+				}
 			}
 		}
 
@@ -743,20 +746,25 @@ class tx_sevenpack_reference_accessor {
 			//t3lib_div::debug ( $f );
 			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
 				$wca = array();
-				$words =& $f['words'];
-				$exclude = is_array ( $f['exclude'] ) ? $f['exclude'] : array();
+
+				$fields = $this->pubFields;
+				$fields[] = 'full_text';
+				if ( is_array ( $f['exclude'] ) ) {
+					$fields = array_diff ( $fields, $f['exclude'] );
+				}
+				//t3lib_div::debug ( $fields );
+
 				if ( $f['rule'] == 0 ) { // OR
-					$wca[] = $this->get_filter_search_all_clause ( $words, $exclude );
+					$wca[] = $this->get_filter_search_fields_clause ( $f['words'], $fields );
 				} else { // AND
-					foreach ( $words as $word ) {
-						$wca[] = $this->get_filter_search_all_clause ( array ( $word ), $exclude );
+					foreach ( $f['words'] as $word ) {
+						$wca[] = $this->get_filter_search_fields_clause ( array ( $word ), $fields );
 					}
 				}
 
 				//t3lib_div::debug ( array ( 'wca' => $wca ) );
 				foreach ( $wca as $app ) {
-					if ( strlen ( $app ) > 0 )
-						$WC[] = $app;
+					if ( strlen ( $app ) > 0 ) $WC[] = $app;
 				}
 
 			}
@@ -773,26 +781,35 @@ class tx_sevenpack_reference_accessor {
 	 * @param $words An array or words
 	 * @return The ORDER clause string
 	 */
-	function get_filter_search_all_clause ( $words, $exclude = array() ) {
+	function get_filter_search_fields_clause ( $words, $fields ) {
 		$rT  =& $this->refTable;
 		$rta =& $this->refTableAlias;
 		$res = '';
 		$wca = array();
 
+		// Flatten word array
+
 		// Wildcard words
-		$wwords = array();
+		$proc_words = array();
 		foreach ( $words as $word ) {
-			$word = trim ( strval ( $word ) );
-			if ( strlen ( $word ) > 0 )
-				$wwords[] = '%'.$word.'%';
+			if ( is_array ( $word ) ) {
+				foreach ( $word as $oword ) {
+					$oword = trim ( strval ( $oword ) );
+					if ( strlen ( $oword ) > 0 )
+						$proc_words[] = $oword;
+				}
+			} else {
+				$oword = trim ( strval ( $word ) );
+				if ( strlen ( $oword ) > 0 )
+					$proc_words[] = $oword;
+			}
 		}
+		//t3lib_div::debug ( array ( 'pro_words' => $proc_words ) );
 
 		// Fields
-		$fields = $this->refFields;
-		$fields[] = 'full_text';
-		foreach ( $this->refFields as $field ) {
-			if ( !in_array ( $field, $exclude ) ) {
-				foreach ( $wwords as $word ) {
+		foreach ( $fields as $field ) {
+			if ( in_array ( $field, $this->refFields ) ) {
+				foreach ( $proc_words as $word ) {
 					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
 					$wca[] = $rta.'.'.$field.' LIKE '.$word;
 				}
@@ -800,8 +817,8 @@ class tx_sevenpack_reference_accessor {
 		}
 
 		// Authors
-		if ( !in_array ( 'authors', $exclude ) ) {
-			$a_ships = $this->search_author_authorships ( $wwords, $this->pid_list );
+		if ( in_array ( 'authors', $fields ) ) {
+			$a_ships = $this->search_author_authorships ( $proc_words, $this->pid_list );
 			if ( sizeof ( $a_ships ) > 0 ) {
 				$uids = array();
 				foreach ( $a_ships as $as ) {
@@ -811,10 +828,36 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
-		if ( sizeof ( $wca ) > 0 )
+		if ( sizeof ( $wca ) > 0 ) {
 			$res = ' ( ' . implode ( "\n".' OR ', $wca ) . ' )';
+		}
 
 		return $res;
+	}
+
+
+	/**
+	 * Returns a serch word object as it is required by the 'all' search 
+	 * filter argument
+	 *
+	 * @return The search object (string or array)
+	 */
+	function search_word ( $word, $charset, $wrap = array ( '%', '%' ) ) {
+		$spec = htmlentities ( $word, ENT_QUOTES, $charset );
+		$words = array ( $word );
+		if ( $spec != $word ) {
+			$words[] = $spec;
+		}
+		if ( is_array ( $wrap ) && ( sizeof ( $wrap ) > 0 ) ) {
+			foreach ( $words as $key => $txt ) {
+				$words[$key] = strval ( $wrap[0] ) . strval ( $txt ) . strval ( $wrap[1] );
+			}
+		}
+		//t3lib_div::debug ( array ( 'search words' => $words ) );
+		if ( sizeof ( $words ) == 1 ) {
+			return $words[0];
+		}
+		return $words;
 	}
 
 

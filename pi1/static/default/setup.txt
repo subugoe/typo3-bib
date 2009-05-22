@@ -636,7 +636,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			conference {
 				required = citeid,authors,title,booktitle,year
-				optional = event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
+				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
 			}
 			incollection {
 				required = citeid,authors,title,booktitle,year
@@ -644,7 +644,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			proceedings {
 				required = citeid,title,year
-				optional = event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
+				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
 			}
 			inproceedings {
 				required = citeid,authors,title,booktitle,year

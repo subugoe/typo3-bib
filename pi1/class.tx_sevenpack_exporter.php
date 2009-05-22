@@ -38,7 +38,7 @@ class tx_sevenpack_exporter {
 
 		// Setup filters
 		$this->filters = $this->pi1->extConf['filters'];
-		unset ( $this->filters['browse'] );
+		unset ( $this->filters['br_page'] );
 
 		// The filter key is used for the filename
 		//$this->filter_key = t3lib_div::shortMD5 ( serialize ( $this->filters ) );

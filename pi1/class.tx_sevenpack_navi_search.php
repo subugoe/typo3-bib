@@ -125,6 +125,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 
 	function hook_filter ( ) {
 		$extConf =& $this->pi1->extConf;
+		$charset =& $extConf['charset']['upper'];
 		$sconf =& $extConf['search_navi'];
 
 		$strings = array ( );
@@ -142,22 +143,19 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 		$filter = array();
 		if ( sizeof ( $strings ) > 0 ) {
 			// Setup search patterns
-			$pats = array();
+			$words = array();
 			foreach ( $strings as $txt ) {
-				$spec = htmlentities ( $txt, ENT_QUOTES, $extConf['charset']['upper'] );
-				$pats[] = $txt;
-				if ( $spec != $txt ) 
-					$pats[] = $spec;
+				$words[] = $this->pi1->ra->search_word ( $txt, $charset );
 			}
 
 			$exclude = array ( );
 			if ( !$sconf['abstracts'] ) $exclude[] = 'abstract';
 			if ( !$sconf['full_text'] ) $exclude[] = 'full_text';
 
-			//t3lib_div::debug ( $pats );
+			//t3lib_div::debug ( $words );
 
 			$all = array();
-			$all['words'] = $pats;
+			$all['words'] = $words;
 			$all['rule'] = $sconf['rule'] == 'AND' ? 1 : 0;
 			$all['exclude'] = $exclude;
 			$filter['all'] = $all;
