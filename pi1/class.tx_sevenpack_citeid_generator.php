@@ -8,11 +8,12 @@ class tx_sevenpack_citeid_generator {
 
 	public $pi1;
 	public $ra;
+	public $charset;
 
 
 	function initialize ( $pi1 ) {
-		$this->pi1 =& $pi1;
 		$this->ra =& $pi1->ra;
+		$this->charset = $pi1->extConf['charset']['upper'];
 	}
 
 
@@ -40,7 +41,6 @@ class tx_sevenpack_citeid_generator {
 
 
 	function generateBasicId ( $row ) {
-		$charset = $this->pi1->extConf['charset']['upper'];
 		$authors = $row['authors'];
 		$editors = tx_sevenpack_utility::explode_author_str ( $row['editor'] );
 
@@ -71,7 +71,7 @@ class tx_sevenpack_citeid_generator {
 					$a_str = $pp['forename'];
 				if ( strlen ( $a_str ) > 0 ) {
 					$id .= mb_substr ( 
-						$this->simplified_string ( $a_str ), 0, 1, $charset );
+						$this->simplified_string ( $a_str ), 0, 1, $this->charset );
 				}
 			}
 		}
@@ -94,16 +94,15 @@ class tx_sevenpack_citeid_generator {
 	 */
 	function simplified_string ( $id ) {
 		// Replace some special characters with ASCII characters
-		$charset = $this->pi1->extConf['charset']['upper'];
-		$id = htmlentities ( $id, ENT_QUOTES, $charset );
+		$id = htmlentities ( $id, ENT_QUOTES, $this->charset );
 		$id = str_replace ( '&amp;', '&', $id );
 		$id = preg_replace ( '/&(\w)\w{1,7};/', '$1', $id );
 		//t3lib_div::debug ( $id );
 
 		// Replace remaining special characters with ASCII characters
 		$tmpId = '';
-		for ( $i=0; $i < mb_strlen ( $id, $charset ); $i++ ) {
-			$c = mb_substr ( $id, $i, 1, $charset );
+		for ( $i=0; $i < mb_strlen ( $id, $this->charset ); $i++ ) {
+			$c = mb_substr ( $id, $i, 1, $this->charset );
 			if ( ctype_alnum($c) || ($c == '_') ) {
 				$tmpId .= $c;
 			}

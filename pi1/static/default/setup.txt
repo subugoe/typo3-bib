@@ -548,27 +548,29 @@ plugin.tx_sevenpack_pi1 {
 
 	# Frontend editor
 	editor {
-		numAuthors = 5
 
-		input_size = 60;
-		input_size {
-			author = 24
-			citeid = 30
+		# Full text configuration
+		full_text {
+			update = 0
+			pdftotext_bin = /usr/bin/pdftotext
+			tmp_dir = /tmp
 		}
-
-		manipulators {
-			all.wrap  = <div class="tx_sevenpack-manipulator_block">|</div>
-			hide.wrap = <div class="tx_sevenpack-manip">|</div>
-			edit.wrap = <div class="tx_sevenpack-manip">|</div>
-			new.wrap  = <div class="tx_sevenpack-manip">|</div>
-		}
-		hidden.wrap = <div class="tx_sevenpack-editor_hidden">|</div>
-
-		field_labels.wrap = |:
-		field_widgets.wrap = |
 
 		# Warnings during list view
 		list {
+
+			# Manipulator configuration
+			manipulators {
+				all.wrap  = <div class="tx_sevenpack-manipulator_block">|</div>
+				hide.wrap = <div class="tx_sevenpack-manip">|</div>
+				edit.wrap = <div class="tx_sevenpack-manip">|</div>
+				new.wrap  = <div class="tx_sevenpack-manip">|</div>
+			}
+
+			# Wrap hidden references that are displayed anyway
+			hidden.wrap = <div class="tx_sevenpack-editor_hidden">|</div>
+
+			# Data checks
 			warnings {
 				file_nexist = 1
 			}
@@ -578,6 +580,19 @@ plugin.tx_sevenpack_pi1 {
 				all_wrap.wrap = <div class="tx_sevenpack-warning_box">|</div>
 			}
 		}
+
+		# Minimum number of authors to display
+		numAuthors = 5
+
+		# Minimum number of authors to display
+		input_size {
+			default = 60
+			author = 24
+			citeid = 30
+		}
+
+		field_labels.wrap = |:
+		field_widgets.wrap = |
 
 		# Warnings in editor (single) view
 		warnings {

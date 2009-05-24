@@ -624,7 +624,7 @@ class tx_sevenpack_single_view {
 
 		$isize = 60;
 		$all_size = array (  
-			$this->conf['input_size'],
+			$this->conf['input_size.']['default'],
 			$this->conf['input_size.'][$field]
 		);
 		foreach ( $all_size as $ivar) {

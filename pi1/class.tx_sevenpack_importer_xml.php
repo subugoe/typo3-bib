@@ -36,9 +36,7 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 
 		$stat['succeeded'] = 0;
 		$stat['failed']    = 0;
-		$stat['errors']    = array();
 		$stat['storage']   = $this->storage_pid;
-		$stat['warnings']  = array();
 
 		$fstr = file_get_contents ( $_FILES['ImportFile']['tmp_name'] );
 

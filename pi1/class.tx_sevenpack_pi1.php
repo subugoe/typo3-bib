@@ -141,9 +141,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$extConf =& $this->extConf;
 		$this->ra = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
 		$this->ra->set_cObj ( $this->cObj );
-		$rT = $this->ra->refTable;
-		$rta = $this->ra->refTableAlias;
-
 
 		// Initialize current configuration
 		$extConf['link_vars'] = array();
@@ -694,6 +691,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $this->extConf['date_sorting'] == $this->SORT_ASC ) {
 			$dSort = 'ASC';
 		}
+		$rta =& $this->ra->refTableAlias;
 		$sort_f = array (
 			array ( 'field' => $rta.'.year',    'dir' => $dSort ),
 			array ( 'field' => $rta.'.month',   'dir' => $dSort ),
@@ -880,9 +878,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function init_flexform_filter ( )
 	{
-		$rT =& $this->ra->refTable;
-		$rta =& $this->ra->refTableAlias;
-
 		// Create and select the flexform filter
 		$this->extConf['filters']['flexform'] = array();
 		$filter =& $this->extConf['filters']['flexform'];
@@ -1971,8 +1966,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$all_wrap = $cObj->stdWrap ( $all_wrap, $conf['reference.'] );
 
 		// Embrace hidden references with wrap
-		if ( ( $pdata['hidden'] != 0 ) && is_array ( $conf['editor.']['hidden.'] ) ) {
-			$all_wrap = $cObj->stdWrap ( $all_wrap, $conf['editor.']['hidden.'] );
+		if ( ( $pdata['hidden'] != 0 ) && is_array ( $conf['editor.']['list.']['hidden.'] ) ) {
+			$all_wrap = $cObj->stdWrap ( $all_wrap, $conf['editor.']['list.']['hidden.'] );
 		}
 
 		$templ = $cObj->substituteMarkerArrayCached ( $templ, $translator );
@@ -2327,7 +2322,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$manip_all = tx_sevenpack_utility::html_layout_table ( array ( $manip_all ) );
 
 				$translator['###MANIPULATORS###'] = $cObj->stdWrap (
-					$manip_all, $conf['editor.']['manipulators.']['all.']
+					$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
 				);
 			}
 
@@ -2419,7 +2414,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'class="'.$this->prefixShort.'-new_icon" />';
 
 		$res = $this->get_link ( $img, array('action'=>array('new'=>1)), TRUE, array('title'=>$label) );
-		$res . $this->cObj->stdWrap ( $res, $this->conf['editor.']['manipulators.']['new.'] );
+		$res . $this->cObj->stdWrap ( $res, $this->conf['editor.']['list.']['manipulators.']['new.'] );
 		return $res;
 	}
 
@@ -2438,7 +2433,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			array ( 'action'=>array('edit'=>1),'uid'=>$pub['uid'] ), 
 			TRUE, array ( 'title'=>$label ) );
 
-		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['manipulators.']['edit.'] );
+		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['list.']['manipulators.']['edit.'] );
 
 		return $res;
 	}
@@ -2464,7 +2459,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			array ( 'action'=>$action, 'uid'=>$pub['uid'] ), 
 			TRUE, array('title'=>$label) );
 
-		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['manipulators.']['hide.'] );
+		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['list.']['manipulators.']['hide.'] );
 
 		return $res;
 	}

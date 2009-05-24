@@ -2,6 +2,7 @@
 if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is not meant to be executed');
 
+
 /**
  * This class provides the reference database interface
  * and some utility methods
@@ -807,8 +808,10 @@ class tx_sevenpack_reference_accessor {
 		//t3lib_div::debug ( array ( 'pro_words' => $proc_words ) );
 
 		// Fields
+		$refFields = $this->refFields;
+		$refFields[] = 'full_text';
 		foreach ( $fields as $field ) {
-			if ( in_array ( $field, $this->refFields ) ) {
+			if ( in_array ( $field, $refFields ) ) {
 				foreach ( $proc_words as $word ) {
 					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr ( $word , $rT );
 					$wca[] = $rta.'.'.$field.' LIKE '.$word;

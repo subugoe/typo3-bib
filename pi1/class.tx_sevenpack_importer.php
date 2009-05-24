@@ -9,10 +9,18 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
 
+require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
+
+require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
+
 class tx_sevenpack_importer {
 
 	public $pi1;
 	public $ra;
+
+	public $db_utility;
 
 	public $storage_pid;
 	public $state;
@@ -22,8 +30,10 @@ class tx_sevenpack_importer {
 	// Statistics
 	public $stat;
 
-	// Utiklity
+	// Utility
 	public $code_trans_tbl;
+	public $idGenerator = FALSE;
+
 
 	/**
 	 * Initializes the import. The argument must be the plugin class
@@ -33,11 +43,38 @@ class tx_sevenpack_importer {
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
 		$this->ra  =& $pi1->ra;
+
 		$this->storage_pid = 0;
 		$this->stat = array();
+		$this->stat['warnings'] = array();
+		$this->stat['errors'] = array();
+
+		// setup db_utility
+		$this->db_utility = t3lib_div::makeInstance ( 'tx_sevenpack_db_utility' );
+		$this->db_utility->initialize ( $pi1->ra );
+		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
+		$this->db_utility->read_full_text_conf ( $pi1->conf['editor.']['full_text.'] );
+
+
+		// Create an instance of the citeid generator
+		if ( isset ( $this->conf['citeid_generator_file'] ) ) {
+			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName ( $this->conf['citeid_generator_file'] );
+			if ( file_exists ( $ext_file ) ) {
+				require_once ( $ext_file );
+				$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator_ext' );
+			}
+		} else {
+			$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator' );
+		}
+		$this->idGenerator->initialize ( $pi1 );
 	}
 
 
+	/**
+	 * Returns a page title
+	 *
+	 * @return void
+	 */
 	function get_page_title ( $uid ) {
 		$title = FALSE;
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'title', 'pages', 'uid='.intval( $uid ) );
@@ -69,7 +106,6 @@ class tx_sevenpack_importer {
 			// Fetch page titles
 			$pages = tx_sevenpack_utility::get_page_titles ( $pids ); 
 			$pages = array_reverse ( $pages, TRUE ); // Due to how recursive prepends the folders
-
 
 			$val = $this->pi1->get_ll ( 'import_storage_info', 'import_storage_info', TRUE );
 			$con .= '<p>' . $val . '</p>' . "\n";
@@ -113,30 +149,40 @@ class tx_sevenpack_importer {
 
 		// Data checks
 		$s_ok = TRUE;
-		$pub['pid'] = $this->storage_pid;
 		if ( !array_key_exists ( 'bibtype', $pub ) ) {
 			$stat['failed']++;
 			$stat['errors'][] = 'Missing bibtype';
 			$s_ok = FALSE;
 		}
 
+		// Data adjustments
+		$pub['pid'] = $this->storage_pid;
+		if ( strlen ( $pub['citeid'] ) == 0 ) {
+			$pub['citeid'] = $this->idGenerator->generateId ( $pub );
+		}
+
 		// Save publications
 		if ( $s_ok ) {
 			//t3lib_div::debug ( $pub );
-			$s_ret = $this->ra->save_publication ( $pub );
-	
-			if ( $s_ret ) {
+			$s_fail = $this->ra->save_publication ( $pub );
+
+			if ( $s_fail ) {
 				$stat['failed']++;
-				$stat['errors'][] = $this->ra->error_message ( );
+				$stat['errors'][] = $this->ra->error_message();
 			} else {
 				$stat['succeeded']++;
 			}
+
 		}
 
 		return $res;
 	}
 
 
+	/**
+	 * The main function
+	 *
+	 */
 	function import ( ) {
 		$this->state = 1;
 		if ( intval ( $_FILES['ImportFile']['size'] ) > 0 ) {
@@ -151,6 +197,7 @@ class tx_sevenpack_importer {
 			case 2:
 				$this->acquire_storage_pid();
 				$con = $this->import_state_2();
+				$con .= $this->post_import();
 				$con .= $this->import_stat_str();
 				break;
 			default:
@@ -200,72 +247,104 @@ class tx_sevenpack_importer {
 	 * Returns an import statistics string
 	 *
 	 */
+	function post_import ( ) {
+		if ( $this->stat['succeeded'] > 0 ) {
+
+			//
+			// Update full texts
+			//
+			if ( $this->pi1->conf['editor.']['full_text.']['update'] ) {
+				$ret = $this->db_utility->update_full_text_all();
+				if ( sizeof ( $ret['errors'] ) > 0 ) {
+					foreach ( $ret['errors'] as $err ) {
+						$this->stat['errors'][] = $err[1]['msg'];
+					}
+				}
+				$this->stat['full_text'] = sizeof ( $ret['updated'] );
+			}
+
+		}
+	}
+
+
+	/**
+	 * Returns a html table row str
+	 *
+	 */
+	function table_row_str ( $th, $td ) {
+		$con  = '<tr>' . "\n";
+		$con .= '<th>' . strval ( $th ) . '</th>' . "\n";
+		$con .= '<td>' . strval ( $td ) . '</td>' . "\n";
+		$con .= '</tr>' . "\n";
+		return $con;
+	}
+
+
+	/**
+	 * Returns an import statistics string
+	 *
+	 */
 	function import_stat_str ( ) {
 		$stat =& $this->stat;
 		$charset = $this->pi1->extConf['charset']['upper'];
 
 		$con = '';
 		$con .= '<strong>Import statistics</strong>: ';
-		$con .= '<table>';
+		$con .= '<table class="tx_sevenpack-editor_fields">';
 		$con .= '<tbody>';
 
-		$con .= '<tr>' . "\n";
-		$con .= '<th>Import file:</th>' . "\n";
-		$con .= '<td>' . htmlspecialchars ( $stat['file_name'], ENT_QUOTES, $charset );
-		$con .= ' (' . strval ( $stat['file_size'] ) . ' Bytes)';
-		$con .= '</td>' . "\n";
-		$con .= '</tr>' . "\n";
+		$con .= $this->table_row_str ( 
+			'Import file:',
+			htmlspecialchars ( $stat['file_name'], ENT_QUOTES, $charset ).
+			' (' . strval ( $stat['file_size'] ) . ' Bytes)'
+		);
 
-		$con .= '<tr>' . "\n";
-		$con .= '<th>Storage folder:</th>' . "\n";
-		$con .= '<td>' . strval ( $this->get_page_title ( $stat['storage'] ) );
-		$con .= '</td>' . "\n";
-		$con .= '</tr>' . "\n";
+		$con .= $this->table_row_str ( 
+			'Storage folder:',
+			$this->get_page_title ( $stat['storage'] )
+		);
+
 
 		if ( isset ( $stat['succeeded'] ) ) {
-			$con .= '<tr>' . "\n";
-			$con .= '<th>Successful imports:</th>' . "\n";
-			$con .= '<td>' . strval ( $stat['succeeded'] ) . '</td>' . "\n";
-			$con .= '</tr>' . "\n";
+			$con .= $this->table_row_str ( 
+				'Successful imports:', 
+				intval ( $stat['succeeded'] ) );
 		}
 
 		if ( isset ( $stat['failed'] ) && ( $stat['failed'] > 0 ) ) {
-			$con .= '<tr>' . "\n";
-			$con .= '<th>Failed imports:</th>' . "\n";
-			$con .= '<td>' . strval ( $stat['failed'] ) . '</td>' . "\n";
-			$con .= '</tr>' . "\n";
+			$con .= $this->table_row_str ( 
+				'Failed imports:', 
+				intval ( $stat['failed'] ) );
+		}
+
+		if ( isset ( $stat['full_text'] ) ) {
+			$con .= $this->table_row_str ( 
+				'Updated full texts:', 
+				intval ( $stat['full_text'] ) );
 		}
 
 		if ( is_array ( $stat['warnings'] ) && ( count ( $stat['warnings'] ) > 0 ) ) {
-			$con .= '<tr>' . "\n";
-			$con .= '<th>Warnings:</th>' . "\n";
-			$con .= '<td>' . "\n";
-			$con .= '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
+			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
 			$messages = $this->message_counter ( $stat['warnings'] );
 			foreach ( $messages as $msg => $count ) {
-				$con .= '<li>';
-				$con .= $this->message_times_str ( $msg, $count );
-				$con .= '</li>' . "\n";
+				$str = $this->message_times_str ( $msg, $count );
+				$val .= '<li>' . $str . '</li>' . "\n";
 			}
-			$con .= '</ul>' . "\n";
-			$con .= '</td>' . "\n";
-			$con .= '</tr>' . "\n";
+			$val .= '</ul>' . "\n";
+
+			$con .= $this->table_row_str ( 'Warnings:', $val );
 		}
 
 		if ( is_array ( $stat['errors'] ) && ( count ( $stat['errors'] ) > 0 ) ) {
-			$con .= '<tr>' . "\n";
-			$con .= '<th>Errors:</th>' . "\n";
-			$con .= '<td>' . "\n";
-			$con .= '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
+			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
 			$messages = $this->message_counter ( $stat['errors'] );
 			foreach ( $messages as $msg => $count ) {
-				$con .= '<li>';
-				$con .= $this->message_times_str ( $msg, $count );
-				$con .= '</li>' . "\n";
+				$str = $this->message_times_str ( $msg, $count );
+				$val .= '<li>' . $str . '</li>' . "\n";
 			}
-			$con .= '</ul>' . "\n";
-			$con .= '</td>' . "\n";
-			$con .= '</tr>' . "\n";
+			$val .= '</ul>' . "\n";
+
+			$con .= $this->table_row_str ( 'Errors:', $val );
 		}
 
 		$con .= '</tbody>';
@@ -285,7 +364,7 @@ class tx_sevenpack_importer {
 				$res[$msg] = 1;
 			}
 		}
-		arsort( $res );
+		arsort ( $res );
 		return $res;
 	}
 
