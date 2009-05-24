@@ -6,17 +6,27 @@ if ( !isset($GLOBALS['TSFE']) )
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
 
+require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
+
 class tx_sevenpack_single_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
 	public $ra;  // Reference accessor
+	public $db_utility;  // Reference accessor
 	public $LLPrefix = 'editor_';
 	public $idGenerator = FALSE;
 
 	public $is_new = FALSE;
 	public $is_new_first = FALSE;
 
+
+	/** 
+	 * Initializes this class
+	 *
+	 * @return Not defined
+	 */
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['editor.'];
@@ -24,6 +34,14 @@ class tx_sevenpack_single_view {
 		$this->ra->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
 		// Load editor language data
 		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/pi1/locallang_editor.xml' );
+
+
+		// setup db_utility
+		$this->db_utility = t3lib_div::makeInstance ( 'tx_sevenpack_db_utility' );
+		$this->db_utility->initialize ( $pi1->ra );
+		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
+		$this->db_utility->read_full_text_conf ( $this->conf['full_text.'] );
+
 
 		// Create an instance of the citeid generator
 		if ( isset ( $this->conf['citeid_generator_file'] ) ) {
@@ -938,9 +956,31 @@ class tx_sevenpack_single_view {
 	 * @return The requested dialog
 	 */
 	function post_db_write ( ) {
+		$mess = array();
 		if ( $this->conf['delete_no_ref_authors'] ) {
-			$this->ra->delete_no_ref_authors();
+			$count = $this->db_utility->delete_no_ref_authors();
+			if ( $count > 0 ) {
+				$msg = $this->get_ll ( 'msg_deleted_authors' );
+				$msg = str_replace ( '%d', strval ( $count ), $msg );
+				$mess[] = $msg;
+			}
 		}
+		if ( $this->conf['full_text.']['update'] ) {
+			$arr = $this->db_utility->update_full_text_all();
+			$count = sizeof ( $arr['updated'] );
+			if ( $count > 0 ) {
+				$msg = $this->get_ll ( 'msg_updated_full_text' );
+				$msg = str_replace ( '%d', strval ( $count ), $msg );
+				$mess[] = $msg;
+			}
+			if ( sizeof ( $arr['errors'] ) > 0 ) {
+				foreach ( $arr['errors'] as $err ) {
+					$msg = $err[1]['msg'];
+					$mess[] = $msg;
+				}
+			}
+		}
+		return $mess;
 	}
 
 
@@ -962,8 +1002,16 @@ class tx_sevenpack_single_view {
 					$con .= '<p>'.$this->ra->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
-					$this->post_db_write();
 					$con .= '<p>'.$this->get_ll ( 'msg_save_success' ).'</p>';
+					$arr = $this->post_db_write();
+					if ( sizeof ( $arr ) > 0 ) {
+						$con .= '<ul>' . "\n";
+						foreach ( $arr as $msg ) {
+							$msg = htmlspecialchars ( $msg, ENT_QUOTES, $pi1->extConf['charset']['upper'] );
+							$con .= '<li>' . $msg . '</li>' . "\n";
+						}
+						$con .= '</ul>' . "\n";
+					}
 				}
 				break;
 

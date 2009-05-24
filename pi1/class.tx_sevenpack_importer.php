@@ -254,9 +254,9 @@ class tx_sevenpack_importer {
 			// Update full texts
 			//
 			if ( $this->pi1->conf['editor.']['full_text.']['update'] ) {
-				$ret = $this->db_utility->update_full_text_all();
-				if ( sizeof ( $ret['errors'] ) > 0 ) {
-					foreach ( $ret['errors'] as $err ) {
+				$arr = $this->db_utility->update_full_text_all();
+				if ( sizeof ( $arr['errors'] ) > 0 ) {
+					foreach ( $arr['errors'] as $err ) {
 						$this->stat['errors'][] = $err[1]['msg'];
 					}
 				}

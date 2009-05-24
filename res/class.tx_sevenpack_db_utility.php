@@ -43,6 +43,11 @@ class tx_sevenpack_db_utility {
 	}
 
 
+	/**
+	 * Reads the full text generation configuration
+	 *
+	 * @return void
+	 */
 	function read_full_text_conf ( $cfg ) {
 		//t3lib_div::debug ( $cfg );
 		if ( is_array ( $cfg ) ) {
@@ -53,6 +58,42 @@ class tx_sevenpack_db_utility {
 				$this->tmp_dir = trim ( $cfg['tmp_dir'] );
 			}
 		}
+	}
+
+
+	/**
+	 * Deletes authors that have no publications
+	 *
+	 * @return The number of deleted authors
+	 */
+	function delete_no_ref_authors ( ) {
+		$aT =& $this->ra->authorTable;
+		$sT =& $this->ra->aShipTable;
+		$count = 0;
+
+		$sel = 'SELECT t_au.uid' . "\n";
+		$sel .= ' FROM ' . $aT . ' AS t_au';
+		$sel .= ' LEFT OUTER JOIN ' . $sT . ' AS t_as ' . "\n";
+		$sel .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
+		$sel .= ' WHERE t_au.deleted = 0 ' . "\n";
+		$sel .= ' GROUP BY t_au.uid ' . "\n";
+		$sel .= ' HAVING count(t_as.uid) = 0;' . "\n";
+
+		$uids = array();
+		$res = $GLOBALS['TYPO3_DB']->sql_query ( $sel );
+		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
+			$uids[] = $row['uid'];
+		}
+
+		$count = sizeof ( $uids );
+		if ( $count > 0 ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $uids  );
+			//t3lib_div::debug ( $csv );
+	
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery ( $aT,
+				'uid IN ( ' . $csv . ')', array ( 'deleted' => '1' ) );
+		}
+		return $count;
 	}
 
 

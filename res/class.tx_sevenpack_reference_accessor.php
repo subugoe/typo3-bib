@@ -1443,6 +1443,7 @@ class tx_sevenpack_reference_accessor {
 		$refRow['pid']    = intval ( $pub['pid'] );
 		$refRow['tstamp'] = time();
 		$refRow['hidden'] = intval ( $pub['hidden'] );
+		$refRow['full_text_tstamp'] = 0;
 
 		$query = '';
 		if ( $uid >= 0 ) {
@@ -1682,38 +1683,6 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 		return $ret;
-	}
-
-
-	/**
-	 * Deletes authors that have no publications
-	 *
-	 * @return void
-	 */
-	function delete_no_ref_authors ( ) {
-		$aT =& $this->authorTable;
-		$sT =& $this->aShipTable;
-
-		$sel = 'SELECT t_au.uid' . "\n";
-		$sel .= ' FROM ' . $aT . ' AS t_au';
-		$sel .= ' LEFT OUTER JOIN ' . $sT . ' AS t_as ' . "\n";
-		$sel .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
-		$sel .= ' WHERE t_au.deleted = 0 ' . "\n";
-		$sel .= ' GROUP BY t_au.uid ' . "\n";
-		$sel .= ' HAVING count(t_as.uid) = 0;' . "\n";
-
-
-		$uids = array();
-		$res = $GLOBALS['TYPO3_DB']->sql_query ( $sel );
-		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
-			$uids[] = $row['uid'];
-		}
-
-		$csv = tx_sevenpack_utility::implode_intval ( ',', $uids  );
-		//t3lib_div::debug ( $csv );
-
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery ( $aT,
-			'uid IN ( ' . $csv . ')', array ( 'deleted' => '1' ) );
 	}
 
 
