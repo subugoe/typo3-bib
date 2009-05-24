@@ -34,6 +34,7 @@ class tx_sevenpack_importer {
 		$this->pi1 =& $pi1;
 		$this->ra  =& $pi1->ra;
 		$this->storage_pid = 0;
+		$this->stat = array();
 	}
 
 
@@ -68,18 +69,16 @@ class tx_sevenpack_importer {
 			// Fetch page titles
 			$pages = tx_sevenpack_utility::get_page_titles ( $pids ); 
 			$pages = array_reverse ( $pages, TRUE ); // Due to how recursive prepends the folders
-	
-			$con .= '<p>';
-			$con .= 'All publication references will be stored in the following folder';
-			$con .= '</p>' . "\n";
-			$con .= '<p>' . "\n";
 
-			$con .= tx_sevenpack_utility::html_select_input (
+
+			$val = $this->pi1->get_ll ( 'import_storage_info', 'import_storage_info', TRUE );
+			$con .= '<p>' . $val . '</p>' . "\n";
+
+			$val = tx_sevenpack_utility::html_select_input (
 				$pages, $default_pid,
 				array ( 'name' => $this->pi1->prefixId . '[import_pid]' )
 			);
-	
-			$con .= '</p>' . "\n";
+			$con .= '<p>' . "\n" . $val . '</p>' . "\n";
 		}
 
 		return $con;
@@ -103,41 +102,96 @@ class tx_sevenpack_importer {
 	}
 
 
+	/**
+	 * Saves a publication
+	 *
+	 * @return void
+	 */
+	function save_publication ( $pub ) {
+		$stat =& $this->stat;
+		$res = FALSE;
+
+		// Data checks
+		$s_ok = TRUE;
+		$pub['pid'] = $this->storage_pid;
+		if ( !array_key_exists ( 'bibtype', $pub ) ) {
+			$stat['failed']++;
+			$stat['errors'][] = 'Missing bibtype';
+			$s_ok = FALSE;
+		}
+
+		// Save publications
+		if ( $s_ok ) {
+			//t3lib_div::debug ( $pub );
+			$s_ret = $this->ra->save_publication ( $pub );
+	
+			if ( $s_ret ) {
+				$stat['failed']++;
+				$stat['errors'][] = $this->ra->error_message ( );
+			} else {
+				$stat['succeeded']++;
+			}
+		}
+
+		return $res;
+	}
+
+
 	function import ( ) {
 		$this->state = 1;
 		if ( intval ( $_FILES['ImportFile']['size'] ) > 0 ) {
 			$this->state = 2;
 		}
 
+		$con = '';
 		switch ( $this->state ) {
 			case 1:
-				return $this->import_state_1();
+				$con = $this->import_state_1();
+				break;
 			case 2:
 				$this->acquire_storage_pid();
-				return $this->import_state_2();
+				$con = $this->import_state_2();
+				$con .= $this->import_stat_str();
+				break;
 			default:
-				return $this->pi1->error_msg ( "Bad import state" );
+				$con = $this->pi1->error_msg ( 'Bad import state' );
 		}
 
+		return $con;
 	}
 
 
+	/**
+	 * file selection state
+	 *
+	 */
 	function import_state_1 ( ) {
-		$action = $this->pi1->get_link_url ( array ( 'import' => $this->import_type ) );
+		$btn_attribs = array ( 'class' => 'tx_sevenpack-button' );
 		$con = '';
+
+		// Pre import information
 		$con .= $this->import_pre_info();
-		$con .= '<form action="' . $action . '" method="post" enctype="multipart/form-data">';
+
+		$action = $this->pi1->get_link_url ( array ( 'import' => $this->import_type ) );
+		$con .= '<form action="' . $action . '" method="post" enctype="multipart/form-data" >';
+
+		// The storage selector
 		$con .= $this->storage_selector();
-		$con .= '<p>';
-		$con .= 'Please select an import file';
-		$con .= '</p>';
-		$con .= '<p>';
-		$con .= '<input name="ImportFile" type="file" size="50" accept="text/*" />';
-		$con .= '</p>';
-		$con .= '<p>';
-		$con .= '<input type="submit" value="' . $this->pi1->get_ll ( 'import_file' ) . '" />';
-		$con .= '</p>';
+
+		// The file selection
+		$val = $this->pi1->get_ll ( 'import_select_file', 'import_select_file', TRUE );
+		$con .= '<p>' . $val . '</p>' . "\n";
+
+		$val = '<input name="ImportFile" type="file" size="50" accept="text/*" />';
+		$con .= '<p>' . $val . '</p>' . "\n";
+
+		// The submit button
+		$val = $this->pi1->get_ll ( 'import_file', 'import_file', TRUE );
+		$btn = tx_sevenpack_utility::html_submit_input ( 'submit', $val, $btn_attribs );
+		$con .= '<p>' . $btn . '</p>' . "\n";
+
 		$con .= '</form>';
+
 		return $con;
 	}
 
@@ -146,7 +200,8 @@ class tx_sevenpack_importer {
 	 * Returns an import statistics string
 	 *
 	 */
-	function import_stat_str ( $stat ) {
+	function import_stat_str ( ) {
+		$stat =& $this->stat;
 		$charset = $this->pi1->extConf['charset']['upper'];
 
 		$con = '';

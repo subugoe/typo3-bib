@@ -120,9 +120,13 @@ class tx_sevenpack_utility {
 	 * @return The hidden input element
 	 */
 	function html_input ( $type, $name, $value, $attribs = array() ) {
-		$con = '<input type="' . strval ( $type ) . '"' .
-			' name="' . strval ( $name ) . '"' .
-			' value="' . strval ( $value ) . '"';
+		$con = '<input type="' . strval ( $type ) . '"';
+		if ( strlen ( $name ) > 0 ) {
+			$con .= ' name="' . strval ( $name ) . '"';
+		}
+		if ( strlen ( $value ) > 0 ) {
+			$con .= ' value="' . strval ( $value ) . '"';
+		}
 		foreach ( $attribs as $a_key => $a_value ) {
 			if ( !( $a_value === FALSE ) )
 				$con .= ' '.strval($a_key).'="'.strval($a_value).'"';

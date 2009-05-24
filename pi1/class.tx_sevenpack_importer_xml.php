@@ -16,15 +16,17 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 	}
 
 	function import_pre_info ( ) {
-		$res  = '<p>';
-		$res .= 'This will import publication references from a XML file';
-		$res .= '</p>' . "\n";
+		$res = '';
+
+		$val = $this->pi1->get_ll ( 'import_xml_title', 'import_xml_title', TRUE );
+		$res .= '<p>' . $val . '</p>' . "\n";
+
 		return $res;
 	}
 
 
 	function import_state_2 ( ) {
-		$stat = array();
+		$stat =& $this->stat;
 		$action = $this->pi1->get_link_url ( array ( 'import_state'=>2 ) );
 		$con = '';
 
@@ -49,21 +51,9 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 			//t3lib_div::debug ( $parsed );
 
 			foreach ( $parsed as $pub ) {
-				if ( array_key_exists ( 'bibtype', $pub ) ) {
-					$pub['pid'] = $this->storage_pid;
-					if ( $this->ra->save_publication ( $pub ) ) {
-						$stat['failed']++;
-						$stat['errors'][] = $this->ra->error_message ( );
-					} else {
-						$stat['succeeded']++;
-					}
-				} else {
-					$stat['failed']++;
-					$stat['errors'][] = 'Missing bibtype';
-				}
+				$this->save_publication ( $pub );
 			}
 		}
-		$con .= $this->import_stat_str ( $stat );
 		return $con;
 	}
 

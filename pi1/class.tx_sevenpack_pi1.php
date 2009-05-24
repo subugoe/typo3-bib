@@ -1218,8 +1218,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$list = array ( 
 			'default' => 'EXT:cms/tslib/media/fileicons/default.gif' );
 		$more = $this->conf['file_icons.'];
-		if ( is_array ( $more ) )
+		if ( is_array ( $more ) ) {
 			$list = array_merge ( $list, $more );
+		}
 
 		$tmpl =& $GLOBALS['TSFE']->tmpl;
 		$this->icon_src['files'] = array();
@@ -2581,10 +2582,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function get_file_url_icon ( $url ) {
 		$res = '';
 
+		$def = FALSE;
+		$sources =& $this->icon_src['files'];
+
+		$src = strval ( $sources['.empty_default'] );
 		if ( strlen ( $url ) > 0 ) {
-			$sources =& $this->icon_src['files'];
 			$src = $sources['.default'];
-			$cr_link = TRUE;
 
 			foreach ( $sources as $ext => $file  ) {
 				$len = strlen( $ext );
@@ -2596,16 +2599,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					}
 				}
 			}
+
+		} else {
+
+		}
+
+		if ( strlen ( $src ) > 0 ) {
 			$img = '<img src="' . $src . '"';
 			$img .= '/>';
-
-			$wrap = $this->conf['enum.']['file_icon_image.'];
-			$img = $this->cObj->stdWrap ( $img, $wrap );
-			//t3lib_div::debug ( array ( 'wrap' => $wrap ) );
-			$res .= $img;
 		} else {
-			$res = '&nbsp;';
+			$img = '&nbsp;';
 		}
+
+		$wrap = $this->conf['enum.']['file_icon_image.'];
+		$img = $this->cObj->stdWrap ( $img, $wrap );
+		//t3lib_div::debug ( array ( 'wrap' => $wrap ) );
+		$res .= $img;
 
 		//t3lib_div::debug ( array ( 'image: ' => $res ) );
 		return $res;

@@ -254,14 +254,15 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 
 	function import_pre_info ( ) {
-		$res  = '<p>';
-		$res .= 'This will import publication references from a BibTeX file, ';
-		$res .= 'though there are some limitations';
-		$res .= '</p>' . "\n";
+		$res = '';
+
+		$val = $this->pi1->get_ll ( 'import_bibtex_title', 'import_bibtex_title', TRUE );
+		$res .= '<p>' . $val . '</p>' . "\n";
+
 		$res .= '<ul>' . "\n";
 		$res .= '<li>';
-		$res .= 'The BibTeX format is not strictly defined anywhere.';
-		$res .= 'Therefore this parser merely tries to get the best out of it.<br/>';
+		$res .= 'The BibTeX format is not strictly defined anywhere. ';
+		$res .= 'Therefore this parser merely tries to get the best out of it. <br/>';
 		$res .= 'If in doubt try it on an empty storage folder first.';
 		$res .= '</li>' . "\n";
 		$res .= '<li>';
@@ -277,7 +278,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 
 	function import_state_2 ( ) {
-		$stat = array();
+		$stat =& $this->stat;
 		$action = $this->pi1->get_link_url ( array ( 'import_state'=>2 ) );
 		$buff_size = 1024;
 		//$buff_size = 10;
@@ -334,19 +335,9 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 				$stat['errors'][] = $exc->getMessage();
 			}
 
-			$pub['pid'] = $this->storage_pid;
-			//t3lib_div::debug ( $pub );
-			$s_ret = false;
-			$s_ret = $this->ra->save_publication ( $pub );
-			if ( $s_ret ) {
-				$stat['failed']++;
-				$stat['errors'][] = $this->ra->error_message ( );
-			} else {
-				$stat['succeeded']++;
-			}
+			$this->save_publication ( $pub );
 		}
 
-		$con .= $this->import_stat_str ( $stat );
 		return $con;
 	}
 

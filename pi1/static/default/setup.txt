@@ -481,7 +481,13 @@ plugin.tx_sevenpack_pi1 {
 
 	# File icons
 	file_icons {
+		# Icon for empty fields
+		empty_default = EXT:cms/tslib/media/fileicons/default.gif
+
+		# Icon for unknown file type
 		default = EXT:cms/tslib/media/fileicons/default.gif
+
+		# Icons for unknown file extensions
 		doc = EXT:cms/tslib/media/fileicons/doc.gif
 		pdf = EXT:cms/tslib/media/fileicons/pdf.gif
 	}
