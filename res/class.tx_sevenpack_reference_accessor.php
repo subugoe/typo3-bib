@@ -38,62 +38,6 @@ class tx_sevenpack_reference_accessor {
 
 	/**
 	 * These are the publication relevant fields 
-	 * that can be found in a php publication array.
-	 * Typo3 special fields like pid or uid are not listed here
-	 */
-	public $pubFields = array (
-		'bibtype', 
-		'citeid', 
-		'authors', 
-		'title', 
-		'journal', 
-		'year',
-		'month', 
-		'day', 
-		'volume', 
-		'number', 
-		'pages', 
-		'abstract',
-		'affiliation', 
-		'note', 
-		'annotation', 
-		'keywords', 
-		'tags',
-		'file_url', 
-		'web_url', 
-		'web_url2', 
-		'misc', 
-		'misc2', 
-		'editor', 
-		'publisher', 
-		'address', 
-		'howpublished',
-		'series',
-		'edition', 
-		'chapter', 
-		'booktitle', 
-		'school', 
-		'institute', 
-		'organization', 
-		'institution',
-		'event_place',
-		'event_name',
-		'event_date',
-		'state', 
-		'type', 
-		'language', 
-		'ISBN',
-		'ISSN', 
-		'DOI',
-		'extern', 
-		'reviewed', 
-		'in_library', 
-		'borrowed_by'
-	);
-
-
-	/**
-	 * These are the publication relevant fields 
 	 * that can be found in the reference table $this->refTable.
 	 * Typo3 special fields like pid or uid are not listed here
 	 */
@@ -145,6 +89,13 @@ class tx_sevenpack_reference_accessor {
 		'in_library', 
 		'borrowed_by'
 	);
+
+	/**
+	 * These are the publication relevant fields 
+	 * that can be found in a php publication array.
+	 * Typo3 special fields like pid or uid are not listed here
+	 */
+	public $pubFields;
 
 
 	public $allBibTypes = array (
@@ -201,6 +152,9 @@ class tx_sevenpack_reference_accessor {
 
 		$this->t_au_default['table'] = $this->authorTable;
 		$this->t_au_default['alias'] = $this->authorTableAlias;
+
+		$this->pubFields = $this->refFields;
+		$this->pubFields[] = 'authors';
 	}
 
 
