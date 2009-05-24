@@ -90,6 +90,15 @@ class tx_sevenpack_reference_accessor {
 		'borrowed_by'
 	);
 
+
+	/**
+	 * These are the publication relevant fields 
+	 * that can be found in the reference table $this->refTable.
+	 * including the important Typo3 specific fields
+	 */
+	public $refAllFields;
+
+
 	/**
 	 * These are the publication relevant fields 
 	 * that can be found in a php publication array.
@@ -153,8 +162,15 @@ class tx_sevenpack_reference_accessor {
 		$this->t_au_default['table'] = $this->authorTable;
 		$this->t_au_default['alias'] = $this->authorTableAlias;
 
+		// setup pubFields
 		$this->pubFields = $this->refFields;
 		$this->pubFields[] = 'authors';
+
+		// setup refAllFields
+		$this->refAllFields = array (
+			'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
+		);
+		$this->refAllFields = array_merge ( $this->refAllFields, $this->refFields );
 	}
 
 
@@ -1266,7 +1282,8 @@ class tx_sevenpack_reference_accessor {
 	function fetch_db_pub ( $uid ) {
 		$WC  = "uid='".intval($uid)."'";
 		$WC .= $this->enable_fields ( $this->refTable, '', $this->show_hidden );
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( '*', $this->refTable, $WC );
+		$field_csv = implode( ',', $this->refAllFields );
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( $field_csv, $this->refTable, $WC );
 		$pub = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res );
 		if ( is_array ( $pub ) ) {
 			$pub['authors'] = $this->fetch_pub_authors ( $pub['uid'] );
@@ -1285,6 +1302,7 @@ class tx_sevenpack_reference_accessor {
 	 */
 	function mFetch_initialize ( ) {
 		$rta =& $this->refTableAlias;
+		$field_csv = $rta.'.'.implode( ','.$rta.'.', $this->refAllFields );
 		$query = $this->get_reference_select_clause ( $rta.'.*' );
 		$this->dbRes = $GLOBALS['TYPO3_DB']->sql_query ( $query );
 	}
