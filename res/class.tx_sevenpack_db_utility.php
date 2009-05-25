@@ -175,7 +175,11 @@ class tx_sevenpack_db_utility {
 			&& ( $file_end == '.pdf' ) 
 		)
 		{
-			$file = $_SERVER['DOCUMENT_ROOT'] . $file;
+			$root = PATH_site;
+			if ( substr ( $root, -1, 1 ) != '/' ) {
+				$root .= '/';
+			}
+			$file = $root . $file;
 			if ( file_exists ( $file ) ) {
 				$file_mt = filemtime ( $file );
 			} else {

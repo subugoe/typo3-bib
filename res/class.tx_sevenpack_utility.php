@@ -499,7 +499,11 @@ class tx_sevenpack_utility {
 		if ( ( strlen ( $file ) > 0 )
 			&& ( substr ( $file, 0, 10 ) == 'fileadmin/' ) )
 		{
-			$file = $_SERVER['DOCUMENT_ROOT'] . $file;
+			$root = PATH_site;
+			if ( substr ( $root, -1, 1 ) != '/' ) {
+				$root .= '/';
+			}
+			$file = $root . $file;
 			if ( !file_exists ( $file ) ) {
 				//t3lib_div::debug ( array ( 'nexist' => $file ) );
 				$err = array (
