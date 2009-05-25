@@ -260,7 +260,7 @@ class tx_sevenpack_importer {
 						$this->stat['errors'][] = $err[1]['msg'];
 					}
 				}
-				$this->stat['full_text'] = sizeof ( $ret['updated'] );
+				$this->stat['full_text'] = sizeof ( $arr['updated'] );
 			}
 
 		}
