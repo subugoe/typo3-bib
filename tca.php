@@ -54,7 +54,7 @@ $TCA['tx_sevenpack_references'] = array (
 				'type' => 'input',
 				'size' => '48',
 				'max' => '255',
-				'eval' => 'nospace,uniqueInPid,required',
+				'eval' => 'nospace,uniqueInPid',
 			)
 		),
 		'title' => Array (
