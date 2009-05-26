@@ -343,42 +343,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Preference navi
 		//
 		if ( $extConf['show_nav_pref'] ) {
-			// Items per page
-			$iPP = $extConf['sub_page']['ipp'];
-			$extConf['pref_ipps'] = tx_sevenpack_utility::explode_intval (
-				',', $this->conf['prefNav.']['ipp_values'] );
-			if ( is_numeric ( $this->conf['prefNav.']['ipp_default']  ) ) {
-				$extConf['pref_ipp'] = intval ( $this->conf['prefNav.']['ipp_default'] );
-				$iPP = $extConf['pref_ipp'];
-			}
-
-			$pvar = $this->piVars['items_per_page'];
-			if ( is_numeric ( $pvar ) ) {
-				$pvar = max ( intval ( $pvar ), 0 );
-				if ( in_array ( $pvar, $extConf['pref_ipps'] ) ) {
-					$iPP = $pvar;
-					if ( $iPP != $extConf['pref_ipp'] )
-						$extConf['link_vars']['items_per_page'] = $iPP;
-				}
-			}
-			$extConf['sub_page']['ipp'] = $iPP;
-
-			//t3lib_div::debug( $this->piVars );
-
-			// Show abstracts
-			$show = FALSE;
-			if ( $this->piVars['show_abstracts'] != 0 )
-				$show = TRUE;
-			$extConf['hide_fields']['abstract'] = $show ? FALSE : TRUE;
-			$extConf['link_vars']['show_abstracts'] = $show ? '1' : '0';
-
-			// Show keywords
-			$show = FALSE;
-			if ( $this->piVars['show_keywords'] != 0 )
-				$show = TRUE;
-			$extConf['hide_fields']['keywords'] =  $show ? FALSE : TRUE;
-			$extConf['link_vars']['show_keywords'] = $show ? '1' : '0';
-			$extConf['hide_fields']['tags'] = $extConf['hide_fields']['keywords'];
+			$extConf['pref_navi'] = array();
+			$aconf =& $extConf['pref_navi'];
+			$aconf['obj'] =& $this->get_navi_instance ( 'tx_sevenpack_navi_pref' );
+			$aconf['obj']->hook_init();
 		}
 
 
@@ -1576,9 +1544,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_pref'] ) {
-			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_pref' );
-
-			$trans = $obj->translator();
+			$trans = $this->extConf['pref_navi']['obj']->translator();
 			$hasStr = array ( '', '' );
 
 			if ( strlen ( $trans['###PREF_NAVI_TOP###'] ) > 0 )

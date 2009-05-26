@@ -10,6 +10,8 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 
 class tx_sevenpack_navi_pref extends tx_sevenpack_navi  {
 
+	public $extConf;
+
 	/*
 	 * Intialize
 	 */
@@ -18,8 +20,64 @@ class tx_sevenpack_navi_pref extends tx_sevenpack_navi  {
 		if( is_array ( $pi1->conf['prefNav.'] ) )
 			$this->conf =& $pi1->conf['prefNav.'];
 
+		$this->extConf = array();
+		if ( is_array ( $pi1->extConf['pref_navi'] ) )
+			$this->extConf =& $pi1->extConf['pref_navi'];
+
 		$this->pref = 'PREF_NAVI';
 		$this->load_template ( '###PREF_NAVI_BLOCK###' );
+	}
+
+
+	/*
+	 * Hook in to pi1 at init stage
+	 */
+	function hook_init ( ) {
+		$extConf =& $this->pi1->extConf;
+
+		// Items per page
+		$iPP =& $extConf['sub_page']['ipp'];
+
+		// Available ipp values
+		$this->extConf['pref_ipps'] = tx_sevenpack_utility::explode_intval (
+			',', $this->conf['ipp_values'] );
+
+		// Default ipp value
+		if ( is_numeric ( $this->conf['ipp_default']  ) ) {
+			$iPP = intval ( $this->conf['ipp_default'] );
+			$this->extConf['pref_ipp'] = $iPP;
+		}
+
+		// Selected ipp value
+		$pvar = $this->pi1->piVars['items_per_page'];
+		if ( is_numeric ( $pvar ) ) {
+			$pvar = max ( intval ( $pvar ), 0 );
+			if ( in_array ( $pvar, $this->extConf['pref_ipps'] ) ) {
+				$iPP = $pvar;
+				if ( $iPP != $this->extConf['pref_ipp'] ) {
+					$extConf['link_vars']['items_per_page'] = $iPP;
+				}
+			}
+		}
+
+		//t3lib_div::debug( $this->piVars );
+
+		// Show abstracts
+		$show = FALSE;
+		if ( $this->pi1->piVars['show_abstracts'] != 0 ) {
+			$show = TRUE;
+		}
+		$extConf['hide_fields']['abstract'] = $show ? FALSE : TRUE;
+		$extConf['link_vars']['show_abstracts'] = $show ? '1' : '0';
+
+		// Show keywords
+		$show = FALSE;
+		if ( $this->pi1->piVars['show_keywords'] != 0 ) {
+			$show = TRUE;
+		}
+		$extConf['hide_fields']['keywords'] = $show ? FALSE : TRUE;
+		$extConf['hide_fields']['tags'] = $extConf['hide_fields']['keywords'];
+		$extConf['link_vars']['show_keywords'] = $show ? '1' : '0';
 	}
 
 
@@ -57,8 +115,8 @@ class tx_sevenpack_navi_pref extends tx_sevenpack_navi  {
 		$lbl = $this->pi1->get_ll ( 'prefNav_ipp_sel' );
 		$lbl = $cObj->stdWrap ( $lbl, $lcfg['label.'] );
 		$pairs = array();
-		foreach ( $this->pi1->extConf['pref_ipps'] as $ii ) {
-			$pairs[$ii] = '&nbsp;' . $ii . '&nbsp;';
+		foreach ( $this->extConf['pref_ipps'] as $ii ) {
+			$pairs[$ii] = '&nbsp;' . strval ( $ii ) . '&nbsp;';
 		}
 		$attribs = array (
 			'name'     => $this->pi1->prefix_pi1.'[items_per_page]',
