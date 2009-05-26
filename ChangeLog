@@ -1,4 +1,26 @@
-2008-04-15      Sebastian Holtermann  <sebholt@web.de>
+2009-05-26      Sebastian Holtermann  <sebholt@web.de>
+	* List: New search bar
+	* List: New author browser bar
+	* List: New preferences bar
+	* List: Better year navigation bar
+	* List: New enumeration type: File-Icon
+	* List: Fields can be restricted to FE user groups
+	* List: The HTML template is splitted into multiple files
+	* List: Style changes
+	* Export: Export can be restricted to FE user groups
+	* Editor: Field labels can change with the bibtype
+	* Database: PDF full text can be cached and searched by the search bar
+	* Database: New Publication types: Thesis, Manuscript, Report
+	* Database: New Fields: tags, web_url, web_url2, misc2, 
+	            institute, event_name, event_place, event_date, 
+	            language, ISSN, full_text, full_text_tstamp
+	* Documentation: Updated
+	* General: More localized labels
+	* General: New one for all 'charset' variable
+	* Code: Cleanups and improvements
+	* Release version 0.6
+
+2009-04-15      Sebastian Holtermann  <sebholt@web.de>
 
 	* List: Support for file_url restrictions depending on the FE user group and the file_url ending
 	* List: Automatic sorting by publication state. 'published' first, 'in preparation' at last.
@@ -12,20 +34,20 @@
 	* Code: Cleanups and improvements
 	* Release version 0.5.5
 
-2008-03-17      Marco Ziesing  <mz@puremedia-online.de>
+2009-03-17      Marco Ziesing  <mz@puremedia-online.de>
 
 	* Backend: Added ajaxgroupsearch functionality to authorships
 	           Set significant values to labels
 	* General: Added missing XCLASS inclusions
 
-2008-03-15      Sebastian Holtermann  <sebholt@web.de>
+2009-03-15      Sebastian Holtermann  <sebholt@web.de>
 
 	* Editor: Better TCA loading. This fixes the "Unknown widget" error - Patch by Bjoern Pedersen
 	* Export: XML got a 'comment' field which holds the same info text as the BibTeX file head
 	* Documentation: Some new images and some small text fixes
 	* Release version 0.5.4
 
-2008-03-12      Sebastian Holtermann  <sebholt@web.de>
+2009-03-12      Sebastian Holtermann  <sebholt@web.de>
 
 	* Database: Added a DOI field (Thanks to Bjoern Pedersen)
 	* List: Automatic url generation from the DOI field if the file_url field is empty
@@ -33,7 +55,7 @@
 	* List: URL wrap for authors if an author url is set
 	* Release version 0.5.3
 
-2008-03-09      Sebastian Holtermann  <sebholt@web.de>
+2009-03-09      Sebastian Holtermann  <sebholt@web.de>
 
 	* FlexForm: Simplified export link activation (default TRUE)
 	* FlexForm: FE-Editor clear cache flag now is TRUE by default
@@ -41,7 +63,7 @@
 	* Backend: Edit fields for "type" and "ISBN" did not show up in the BE - fixed
 	* Release version 0.5.2
 
-2008-03-08      Sebastian Holtermann  <sebholt@web.de>
+2009-03-08      Sebastian Holtermann  <sebholt@web.de>
 
 	* Database: Fixed missing pid field in tx_sevenpack_authorships
 	            Updaters must use the UPDATE! function in the extension manager!
@@ -55,7 +77,7 @@
 	* General: Code cleanups
 	* Release version 0.5.1
 
-2008-01-24      Sebastian Holtermann  <sebholt@web.de>
+2009-01-24      Sebastian Holtermann  <sebholt@web.de>
 
 	* New: Library fields: reviewed, in_library, borrowed_by
 	* New: Library field filters
@@ -64,7 +86,7 @@
 	* List: More consistent highlightning rules
 	* Release version 0.5
 
-2008-01-24      Sebastian Holtermann  <sebholt@web.de>
+2009-01-24      Sebastian Holtermann  <sebholt@web.de>
 
 	* New: BibTeX import
 	* New: Storage selection for imports
