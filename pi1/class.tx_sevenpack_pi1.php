@@ -2057,6 +2057,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$hl_authors = $this->extConf['highlight_authors'] ? TRUE : FALSE;
 
+		$link_fields  = $this->extConf['author_sep'];
 		$a_sep  = $this->extConf['author_sep'];
 		$a_tmpl = $this->extConf['author_tmpl'];
 
@@ -2072,23 +2073,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 		//t3lib_div::debug ( $filter_authors );
 
-		// Acquire url_icon
-		$url_icon = trim ( $this->conf['authors.']['url_icon_file'] );
-		$url_img = '';
-		if ( strlen ( $url_icon ) > 0 ) {
-			$label = 
-			$url_icon = $GLOBALS['TSFE']->tmpl->getFileName ( $url_icon );
-			$url_icon = htmlspecialchars ( $url_icon, ENT_QUOTES, $charset );
-			$alt = $this->get_ll ( 'img_alt_person', 'Author image', TRUE );
-			$url_img = '<img src="' . $url_icon . '"';
-			$url_img .= ' alt="' . $alt . '"';
-			$class =& $this->conf['authors.']['url_icon_class'];
-			if ( is_string ( $class ) ) {
-				$url_img .= ' class="' . $class . '"';
-			}
-			$url_img .= '/>';
-		}
-
+		$icon_img =& $this->extConf['author_icon_img'];
 
 		$elements = array();
 		// Iterate through authors
@@ -2115,22 +2100,30 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// The link icon
-			$a_url = trim ( $a['url'] );
-			if ( ( strlen ( $a_url ) > 0 ) && ( strlen ( $url_img ) > 0 ) ) {
+			$cr_link = FALSE;
+			$a_icon = '';
+			foreach ( $this->extConf['author_lfields'] as $field ) {
+				$val = trim ( strval ( $a[$field] ) );
+				if ( ( strlen ( $val ) > 0 ) && ( $val != '0' ) ) {
+					$cr_link = TRUE;
+					break;
+				}
+			}
+			if ( $cr_link && ( strlen ( $icon_img ) > 0 ) ) {
 				$wrap = $this->conf['authors.']['url_icon.'];
 				if ( is_array ( $wrap ) ) {
 					if ( is_array ( $wrap['typolink.'] ) ) {
 						$title = $this->get_ll ( 'link_author_info', 'Author info', TRUE );
 						$wrap['typolink.']['title'] = $title;
 					}
-					$a_url = $this->cObj->stdWrap ( $url_img, $wrap );
+					$a_icon = $this->cObj->stdWrap ( $icon_img, $wrap );
 				}
 			}
 
 			// Compose names
 			$a_str = str_replace ( 
 				array ( '###FORENAME###', '###SURNAME###', '###URL_ICON###' ), 
-				array ( $a_fn, $a_sn, $a_url ), $a_tmpl );
+				array ( $a_fn, $a_sn, $a_icon ), $a_tmpl );
 
  			// apply stdWrap
 			$stdWrap = $this->conf['field.']['author.'];
@@ -2236,6 +2229,30 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$conf['authors.']['separator'], $conf['authors.']['separator.'] 
 			);
 		}
+		$this->extConf['author_lfields'] = 'url';
+		if ( isset ( $conf['authors.']['url_icon_fields'] ) ) {
+			$this->extConf['author_lfields'] = 
+				tx_sevenpack_utility::explode_trim ( ',', 
+					$conf['authors.']['url_icon_fields'], TRUE );
+		}
+
+		// Acquire author url icon
+		$src = trim ( $this->conf['authors.']['url_icon_file'] );
+		$img = '';
+		if ( strlen ( $src ) > 0 ) {
+			$src = $GLOBALS['TSFE']->tmpl->getFileName ( $src );
+			$src = htmlspecialchars ( $src, ENT_QUOTES, $charset );
+			$alt = $this->get_ll ( 'img_alt_person', 'Author image', TRUE );
+			$img = '<img';
+			$img .= ' src="' . $src . '"';
+			$img .= ' alt="' . $alt . '"';
+			$class =& $this->conf['authors.']['url_icon_class'];
+			if ( is_string ( $class ) ) {
+				$img .= ' class="' . $class . '"';
+			}
+			$img .= '/>';
+		}
+		$this->extConf['author_icon_img'] = $img;
 
 		// Initialize the label translator
 		$this->label_translator = array();

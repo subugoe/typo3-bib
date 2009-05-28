@@ -42,6 +42,9 @@ plugin.tx_sevenpack_pi1 {
 
 		surname.noTrimWrap = | ||
 
+		# Fields that must be set for a link creation
+		url_icon_fields = url
+
 		url_icon_file = EXT:t3skin/icons/gfx/i/be_users_admin.gif
 		url_icon_class = tx_sevenpack-person_icon
 		url_icon.noTrimWrap = | ||
