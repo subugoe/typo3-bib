@@ -36,11 +36,25 @@ plugin.tx_sevenpack_pi1 {
 	# Number of authors to display (0=all)
 	max_authors = 0
 	authors {
-		template = ###FORENAME######SURNAME###
-		forename.noTrimWrap = || |
-		surname.wrap = |
+		template = ###FORENAME######SURNAME######URL_ICON###
+
+		forename.wrap = |
+
+		surname.noTrimWrap = | ||
+
+		url_icon_file = EXT:t3skin/icons/gfx/i/be_users_admin.gif
+		url_icon_class = tx_sevenpack-person_icon
+		url_icon.noTrimWrap = | ||
+		url_icon.typolink {
+			parameter.field = url
+			extTarget = _blank
+		}
+
 		separator = ,
 		separator.noTrimWrap = || |
+
+		et_al.noTrimWrap = | ||
+
 		highlight.wrap = <span class="tx_sevenpack-author_high">|</span>
 	}
 
@@ -58,6 +72,7 @@ plugin.tx_sevenpack_pi1 {
 		file_icon.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
 
 		# These are wraps for special items
+		file_icon_class = tx_sevenpack-file_icon
 		file_icon_image.typolink {
 			parameter.field = file_url
 			target = _blank
@@ -86,10 +101,10 @@ plugin.tx_sevenpack_pi1 {
 	field {
 
 		# Author
-		author.typolink {
-			parameter.field = url
-			extTarget = _blank
-		}
+		#author.typolink {
+		#	parameter.field = url
+		#	extTarget = _blank
+		#}
 		author.wrap = <span class="tx_sevenpack-author">|</span>
 
 		auto_url.typolink {

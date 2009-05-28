@@ -37,6 +37,18 @@ class tx_sevenpack_reference_accessor {
 
 
 	/**
+	 * These are the author relevant fields 
+	 * that can be found in the reference table $this->authorTable.
+	 * Typo3 special fields like pid or uid are not listed here
+	 */
+	public $authorFields = array (
+		'surname', 'forename', 'url', 'fe_user_id'
+	);
+
+	public $authorAllFields;
+
+
+	/**
 	 * These are the publication relevant fields 
 	 * that can be found in the reference table $this->refTable.
 	 * Typo3 special fields like pid or uid are not listed here
@@ -162,15 +174,22 @@ class tx_sevenpack_reference_accessor {
 		$this->t_au_default['table'] = $this->authorTable;
 		$this->t_au_default['alias'] = $this->authorTableAlias;
 
-		// setup pubFields
-		$this->pubFields = $this->refFields;
-		$this->pubFields[] = 'authors';
+		// setup authorAllFields
+		$this->authorAllFields = array (
+			'uid', 'pid', 'tstamp', 'crdate', 'cruser_id'
+		);
+		$this->authorAllFields = array_merge ( $this->authorAllFields, $this->authorFields );
 
 		// setup refAllFields
 		$this->refAllFields = array (
 			'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
 		);
 		$this->refAllFields = array_merge ( $this->refAllFields, $this->refFields );
+
+		// setup pubFields
+		$this->pubFields = $this->refFields;
+		$this->pubFields[] = 'authors';
+
 	}
 
 
@@ -1110,7 +1129,9 @@ class tx_sevenpack_reference_accessor {
 
 		$WC = implode ( ' AND ', $WC );
 		$WC .= $this->enable_fields ( $aT );
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( '*', $aT, $WC );
+
+		$field_csv = implode ( ',', $this->authorAllFields );
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( $field_csv, $aT, $WC );
 		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
 			$authors[] = $row;
 		}
@@ -1253,7 +1274,8 @@ class tx_sevenpack_reference_accessor {
 
 		$OC = $sta.'.sorting ASC';
 
-		$q  = $this->select_clause_start ( array ( $ata.'.*', $sta.'.sorting' ), 
+		$field_csv = $ata.'.'.implode( ','.$ata.'.', $this->authorAllFields );
+		$q  = $this->select_clause_start ( array ( $field_csv, $sta.'.sorting' ), 
 			array ( $this->t_au_default, $this->t_as_default ) );
 		$q .= ' WHERE '. $WC."\n";
 		$q .= ' ORDER BY '.$OC."\n";
@@ -1261,14 +1283,7 @@ class tx_sevenpack_reference_accessor {
 		//t3lib_div::debug ($q);
 		$res = $GLOBALS['TYPO3_DB']->sql_query ( $q );
 		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
-			$a = array();
-			$a['uid'] = $row['uid'];
-			$a['pid'] = $row['pid'];
-			$a['forename'] = $row['forename'];
-			$a['surname']  = $row['surname'];
-			$a['url'] = $row['url'];
-			$a['sorting'] = $row['sorting'];
-			$authors[] = $a;
+			$authors[] = $row;
 		}
 		return $authors;
 	}
@@ -1303,7 +1318,7 @@ class tx_sevenpack_reference_accessor {
 	function mFetch_initialize ( ) {
 		$rta =& $this->refTableAlias;
 		$field_csv = $rta.'.'.implode( ','.$rta.'.', $this->refAllFields );
-		$query = $this->get_reference_select_clause ( $rta.'.*' );
+		$query = $this->get_reference_select_clause ( $field_csv );
 		$this->dbRes = $GLOBALS['TYPO3_DB']->sql_query ( $query );
 	}
 

@@ -11,6 +11,7 @@
 			<label index="tt_content.list_type_pi3">Publication search</label>
 			<label index="tx_sevenpack_authors">Sevenpack authors</label>
 			<label index="tx_sevenpack_authors_authors">Author(s)</label>
+			<label index="tx_sevenpack_authors_fe_user_id">Frontend user id</label>
 			<label index="tx_sevenpack_authors_forename">Forename</label>
 			<label index="tx_sevenpack_authors_surname">Surname</label>
 			<label index="tx_sevenpack_authors_url">File URL</label>
@@ -97,6 +98,7 @@
 			<label index="tt_content.list_type_pi3">Suche der Veröffentlichungsliste</label>
 			<label index="tx_sevenpack_authors">Sevenpack authors</label>
 			<label index="tx_sevenpack_authors_authors">Autor(en)</label>
+			<label index="tx_sevenpack_authors_fe_user_id">Frontend Benutzer Id</label>
 			<label index="tx_sevenpack_authors_forename">Vorname</label>
 			<label index="tx_sevenpack_authors_surname">Nachname</label>
 			<label index="tx_sevenpack_authors_url">Datei / URL</label>

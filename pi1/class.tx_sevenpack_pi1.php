@@ -783,46 +783,82 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function init_restrictions ( )
 	{
 		$this->extConf['restrict'] = array();
-		$ex_res =& $this->extConf['restrict'];
+		$rest =& $this->extConf['restrict'];
 
-		if ( is_array ( $this->conf['restrictions.'] ) ) {
-			$restrict =& $this->conf['restrictions.'];
+		$cfg_rest =& $this->conf['restrictions.'];
+		if ( !is_array ( $cfg_rest ) ) {
+			return;
+		}
 
-			// Accuire field configurations
-			$fields = array();
-			foreach ( $restrict as $d_field => $data ) {
-				if ( is_array ( $data ) ) {
-					$field = substr ( $d_field, 0, -1 );
-					if ( in_array ( $field, $this->ra->pubFields ) ) {
-						$fields[] = $field;
+		// This is a nested array containing fields
+		// that may have restrictions
+		$fields = array ( 
+			'ref' => array(), 
+			'author' => array() 
+		);
+		$all_fields = array();
+		// Acquire field configurations
+		foreach ( $cfg_rest as $table => $data ) {
+			if ( is_array ( $data ) ) {
+				$t_fields = array ( );
+				$table = substr ( $table, 0, -1 );
+
+				switch ( $table ) {
+					case 'ref':
+						$all_fields =& $this->ra->refFields;
+						break;
+					case 'authors':
+						$all_fields =& $this->ra->authorFields;
+						break;
+					default:
+						continue;
+				}
+
+				foreach ( $data as $t_field => $t_data ) {
+					if ( is_array ( $t_data ) ) {
+						$t_field = substr ( $t_field, 0, -1 );
+						if ( in_array ( $t_field, $all_fields ) ) {
+							$fields[$table][] = $t_field;
+						}
 					}
 				}
 			}
+		}
 
-			// Process restriction requests
+		// Process restriction requests
+		foreach ( $fields as $table => $fields ) {
+			$rest[$table] = array();
+			$d_table = $table . '.';
 			foreach ( $fields as $field ) {
-				$d_field = $field.'.';
-				$res = $restrict[$d_field];
+				$d_field = $field . '.';
+				$rcfg = $cfg_rest[$d_table][$d_field];
 
-				// String extensions
+				// Hide all
+				$all = ( $rcfg['hide_all'] != 0 );
+
+				// Hide on string extensions
 				$ext = tx_sevenpack_utility::explode_trim_lower ( 
-					',', $res['hide_file_ext'], TRUE );
+					',', $rcfg['hide_file_ext'], TRUE );
 
-				// FE user groups
-				$txt = strtolower ( $res['FE_user_groups'] );
-				$groups = 'all';
+				// Reveal on FE user groups
+				$groups = strtolower ( $rcfg['FE_user_groups'] );
 				if ( strpos ( $groups, 'all' ) === FALSE ) {
-					$groups = tx_sevenpack_utility::explode_intval ( ',', $txt );
+					$groups = tx_sevenpack_utility::explode_intval ( ',', $groups );
+				} else {
+					$groups = 'all';
 				}
 
-				$ex_res[$field] = array (
-					'hide_all' => ( $res['hide_all'] != 0 ),
-					'hide_ext' => $ext,
-					'fe_groups' => $groups
-				);
+				if ( $all || ( sizeof ( $ext ) > 0 ) ) {
+					$rest[$table][$field] = array (
+						'hide_all' => $all,
+						'hide_ext' => $ext,
+						'fe_groups' => $groups
+					);
+				}
 			}
 		}
-		//t3lib_div::debug ( $ex_res );
+
+		//t3lib_div::debug ( $rest );
 	}
 
 
@@ -1787,40 +1823,23 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				'Unknown state: '.$pdata['state'], TRUE ) ;
 		}
 
-		// Format the author string
-		$pdata['authors'] = $this->get_item_authors_html ( $pub['authors'] );
-
-		// Editors
-		if ( strlen ( $pdata['editor'] ) > 0 ) {
-			$editors = tx_sevenpack_utility::explode_author_str ( $pdata['editor'] );
-			$lst = array();
-			foreach ( $editors as $ed ) {
-				$app = '';
-				if ( strlen ( $ed['forename'] ) > 0 ) $app .= $ed['forename'] . ' ';
-				if ( strlen ( $ed['surname'] ) > 0 ) $app .= $ed['surname'];
-				$app = $this->cObj->stdWrap ( $app, $this->conf['field.']['editor_each.'] );
-				$lst[] = $app;
-			}
-
-			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
-			$pdata['editor'] = tx_sevenpack_utility::implode_and_last (
-				$lst, ', ', $and );
-		}
-
 		//
 		// Copy field values
 		//
 		$charset = $this->extConf['charset']['upper'];
 		$url_max = 40;
-		if ( strlen ( $this->conf['max_url_string_length'] ) > 0 )
+		if ( is_numeric ( $this->conf['max_url_string_length'] ) > 0 ) {
 			$url_max = intval ( $this->conf['max_url_string_length'] );
-		foreach ( $this->ra->pubFields as $f ) {
+		}
+
+		// Iterate through reference fields
+		foreach ( $this->ra->refFields as $f ) {
 			// Trim string
 			$val = trim ( strval ( $pdata[$f] ) );
 
 			// Check restrictions
 			if ( strlen ( $val ) > 0 )  {
-				if ( $this->check_field_restriction ( $f, $val ) ) {
+				if ( $this->check_field_restriction ( 'ref', $f, $val ) ) {
 					$val = '';
 					$pdata[$f] = $val;
 				}
@@ -1846,12 +1865,56 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
+		// Multi fields 
+		$multi = array ( 
+			'authors' => $this->ra->authorFields 
+		);
+		foreach ( $multi as $table => $fields ) {
+			$elms =& $pdata[$table];
+			if ( !is_array ( $elms ) ) {
+				continue;
+			}
+			foreach ( $elms as &$elm ) {
+				foreach ( $fields as $field ) {
+					$val = $elm[$field];
+					// Check restrictions
+					if ( strlen ( $val ) > 0 )  {
+						if ( $this->check_field_restriction ( $table, $field, $val ) ) {
+							$val = '';
+							$elm[$field] = $val;
+						}
+					}
+					//t3lib_div::debug ( array ( 'field' => $field, 'value' => $val ) );
+					//t3lib_div::debug ( array ( 'elm' => $elm ) );
+				}
+			}
+		}
+
+		// Format the author string
+		$pdata['authors'] = $this->get_item_authors_html ( $pdata['authors'] );
+
+		// Editors
+		if ( strlen ( $pdata['editor'] ) > 0 ) {
+			$editors = tx_sevenpack_utility::explode_author_str ( $pdata['editor'] );
+			$lst = array();
+			foreach ( $editors as $ed ) {
+				$app = '';
+				if ( strlen ( $ed['forename'] ) > 0 ) $app .= $ed['forename'] . ' ';
+				if ( strlen ( $ed['surname'] ) > 0 ) $app .= $ed['surname'];
+				$app = $this->cObj->stdWrap ( $app, $this->conf['field.']['editor_each.'] );
+				$lst[] = $app;
+			}
+
+			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
+			$pdata['editor'] = tx_sevenpack_utility::implode_and_last (
+				$lst, ', ', $and );
+		}
+
 		// Automatic url
 		$order = tx_sevenpack_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
 		$pdata['auto_url'] = $this->get_auto_url ( $pdata, $order );
 		$pdata['auto_url_short'] = tx_sevenpack_utility::crop_middle (
 			$pdata['auto_url'], $url_max, $charset );
-
 
 		//
 		// Do data checks
@@ -1902,6 +1965,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fields[] = 'file_url_short';
 		$fields[] = 'web_url_short';
 		$fields[] = 'web_url2_short';
+		$fields[] = 'auto_url';
 		$fields[] = 'auto_url_short';
 		foreach ( $fields as $f ) {
 			$upStr = strtoupper ( $f );
@@ -1966,6 +2030,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function get_item_authors_html ( $authors ) {
 		$res = '';
+		$charset = $this->extConf['charset']['upper'];
 
 		// Load publication data into cObj
 		$cObj =& $this->cObj;
@@ -1979,11 +2044,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cut_authors = FALSE;
 		if ( ( $max_authors > 0 ) && ( sizeof ( $authors ) > $max_authors ) ) {
 			$cut_authors = TRUE;
-			if ( sizeof($authors) == ( $max_authors + 1 ) ) {
+			if ( sizeof ( $authors ) == ( $max_authors + 1 ) ) {
 				$last_author = $max_authors - 2;
 			} else {
 				$last_author = $max_authors - 1;
 			}
+			$and = '';
 		}
 		$last_author = max ( $last_author, 0 );
 		
@@ -2006,10 +2072,31 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 		//t3lib_div::debug ( $filter_authors );
 
+		// Acquire url_icon
+		$url_icon = trim ( $this->conf['authors.']['url_icon_file'] );
+		$url_img = '';
+		if ( strlen ( $url_icon ) > 0 ) {
+			$label = 
+			$url_icon = $GLOBALS['TSFE']->tmpl->getFileName ( $url_icon );
+			$url_icon = htmlspecialchars ( $url_icon, ENT_QUOTES, $charset );
+			$alt = $this->get_ll ( 'img_alt_person', 'Author image', TRUE );
+			$url_img = '<img src="' . $url_icon . '"';
+			$url_img .= ' alt="' . $alt . '"';
+			$class =& $this->conf['authors.']['url_icon_class'];
+			if ( is_string ( $class ) ) {
+				$url_img .= ' class="' . $class . '"';
+			}
+			$url_img .= '/>';
+		}
+
+
+		$elements = array();
+		// Iterate through authors
 		for ( $i_a=0; $i_a<=$last_author; $i_a++ ) {
 			$a =& $authors[$i_a];
 			//t3lib_div::debug ( $a );
 
+			// Init cObj data
 			$cObj->data = $a;
 			$cObj->data['url'] = htmlspecialchars_decode ( $a['url'], ENT_QUOTES );
 
@@ -2027,13 +2114,29 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$a_sn = $this->cObj->stdWrap ( $a_sn, $this->conf['authors.']['surname.'] );
 			}
 
-			// Compose names and apply stdWrap
+			// The link icon
+			$a_url = trim ( $a['url'] );
+			if ( ( strlen ( $a_url ) > 0 ) && ( strlen ( $url_img ) > 0 ) ) {
+				$wrap = $this->conf['authors.']['url_icon.'];
+				if ( is_array ( $wrap ) ) {
+					if ( is_array ( $wrap['typolink.'] ) ) {
+						$title = $this->get_ll ( 'link_author_info', 'Author info', TRUE );
+						$wrap['typolink.']['title'] = $title;
+					}
+					$a_url = $this->cObj->stdWrap ( $url_img, $wrap );
+				}
+			}
+
+			// Compose names
 			$a_str = str_replace ( 
-				array ( '###FORENAME###', '###SURNAME###' ), 
-				array ( $a_fn, $a_sn ), $a_tmpl );
+				array ( '###FORENAME###', '###SURNAME###', '###URL_ICON###' ), 
+				array ( $a_fn, $a_sn, $a_url ), $a_tmpl );
+
+ 			// apply stdWrap
 			$stdWrap = $this->conf['field.']['author.'];
-			if ( is_array ( $this->conf['field.'][$bib_str.'.']['author.'] ) )
+			if ( is_array ( $this->conf['field.'][$bib_str.'.']['author.'] ) ) {
 				$stdWrap = $this->conf['field.'][$bib_str.'.']['author.'];
+			}
 			$a_str = $this->cObj->stdWrap ( $a_str, $stdWrap );
 
 			// Wrap the filtered authors with a highlightning class on demand
@@ -2050,45 +2153,47 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Append author name
-			$res .= $a_str;
+			$elements[] = $a_str;
 
-			// Append an author separator or "et al."
-			$app = '';
-			if ( $i_a < ($last_author-1) ) {
-				$app = $a_sep;
-			} else {
-				if ( $cut_authors ) {
-					$app = $a_sep;
-					if ( $i_a == $last_author ) {
+			// Append 'et al.'
+			if ( $cut_authors && ( $i_a == $last_author ) ) {
+				// Append et al.
+				$et_al = $this->get_ll ( 'label_et_al', 'et al.', TRUE );
+				$et_al = ( strlen ( $et_al ) > 0 ) ? ' '.$et_al : '';
 
-						// Append et al.
-						$et_al = $this->get_ll ( 'label_et_al', 'et al.', TRUE );
-						$app = ( strlen ( $et_al ) > 0 ) ? ' '.$et_al : '';
-
-						// Highlight "et al." on demand
-						if ( $hl_authors ) {
-							for ( $j = $last_author + 1; $j < sizeof ( $authors ); $j++ ) {
-								$a_et = $authors[$j];
-								foreach ( $filter_authors as $fa ) {
-									if ( $a_et['surname'] == $fa['surname'] ) {
-										if ( !$fa['forename'] || ($a_et['forename'] == $fa['forename']) ) {
-											$app = $this->cObj->stdWrap ( $app, $this->conf['authors.']['highlight.'] );
-											$j = sizeof ( $authors );
-											break;
-										}
+				if ( strlen ( $et_al ) > 0 ) {
+					$wrap = FALSE;
+	
+					// Highlight "et al." on demand
+					if ( $hl_authors ) {
+						for ( $j = $last_author + 1; $j < sizeof ( $authors ); $j++ ) {
+							$a_et = $authors[$j];
+							foreach ( $filter_authors as $fa ) {
+								if ( $a_et['surname'] == $fa['surname'] ) {
+									if ( !$fa['forename'] 
+										|| ( $a_et['forename'] == $fa['forename'] ) ) 
+									{
+										$wrap = $this->conf['authors.']['highlight.'];
+										$j = sizeof ( $authors );
+										break;
 									}
 								}
 							}
 						}
-
 					}
-				} elseif ( $i_a < $last_author ) {
-					$app = $and;
+	
+					if ( is_array ( $wrap ) ) {
+						$et_al = $this->cObj->stdWrap ( $app, $wrap );
+					}
+					$wrap = $this->conf['authors.']['et_al.'];
+					$et_al = $this->cObj->stdWrap ( $et_al, $wrap );
+					$elements[] = $et_al;
 				}
 			}
-
-			$res .= $app;
 		}
+
+		//t3lib_div::debug ( $elements );
+		$res = tx_sevenpack_utility::implode_and_last ( $elements, $a_sep, $and );
 
 		// Restore cObj data
 		$cObj->data = $cObj_restore;
@@ -2437,9 +2542,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return TRUE (restricted) or FALSE (not restricted)
 	 */
-	function check_field_restriction ( $field, $value ) {
-		$res = FALSE;
-
+	function check_field_restriction ( $table, $field, $value ) {
+		// No value no restriction
 		if ( strlen ( $value ) == 0 ) {
 			return FALSE;
 		}
@@ -2458,26 +2562,26 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Are there restrictions at all?
-		$restric =& $this->extConf['restrict'];
-		if ( !is_array ( $restric ) || ( sizeof ( $restric ) == 0 ) ) {
+		$rest =& $this->extConf['restrict'][$table];
+		if ( !is_array ( $rest ) || ( sizeof ( $rest ) == 0 ) ) {
 			return FALSE;
 		}
 
 		// Check Field restrictions
-		if ( is_array ( $restric[$field] ) ) {
-			$rest =& $restric[$field];
+		if ( is_array ( $rest[$field] ) ) {
+			$rcfg =& $rest[$field];
 
 			// Show by default
 			$show = TRUE;
 
 			// Hide on 'hide all'
-			if ( $rest['hide_all'] ) {
+			if ( $rcfg['hide_all'] ) {
 				$show = FALSE;
 			}
 
 			// Hide if any extensions matches
-			if ( $show && is_array ( $rest['hide_ext'] ) ) {
-				foreach ( $rest['hide_ext'] as $ext ) {
+			if ( $show && is_array ( $rcfg['hide_ext'] ) ) {
+				foreach ( $rcfg['hide_ext'] as $ext ) {
 					// Sanitize input
 					$len = strlen ( $ext );
 					if ( ( $len > 0 ) && ( strlen ( $value ) >= $len ) ) {
@@ -2492,20 +2596,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Enable if usergroup matches
-			if ( !$show && isset ( $rest['fe_groups'] ) ) {
-				$groups = $rest['fe_groups'];
+			if ( !$show && isset ( $rcfg['fe_groups'] ) ) {
+				$groups = $rcfg['fe_groups'];
 				if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
 					$show = TRUE;
 			}
 
 			// Restricted !
 			if ( !$show ) {
-				$res = TRUE;
+				//t3lib_div::debug ( array ( 'Restrticted' => $field ) );
+				return TRUE;
 			}
-			//t3lib_div::debug ( array ( 'Field' => $field, 'Restricted' => $res ? 'True' : 'False' ) );
 		}
 
-		return $res;
+		return FALSE;
 	}
 
 
@@ -2523,7 +2627,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				break;
 			$data = trim ( strval ( $pdata[$field] ) );
 			if ( strlen ( $data ) > 0 ) {
-				$rest = $this->check_field_restriction ( $field, $data );
+				$rest = $this->check_field_restriction ( 'ref', $field, $data );
 				if ( !is_array ( $rest ) ) {
 					$url = $data;
 					if ( $field == 'DOI' ) {
@@ -2547,33 +2651,46 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$sources =& $this->icon_src['files'];
 
 		$src = strval ( $sources['.empty_default'] );
+		$alt = 'default';
 		if ( strlen ( $url ) > 0 ) {
 			$src = $sources['.default'];
 
 			foreach ( $sources as $ext => $file  ) {
-				$len = strlen( $ext );
+				$len = strlen ( $ext );
 				if ( strlen ( $url ) >= $len ) {
 					$sub = strtolower ( substr ( $url, -$len ) );
 					if ( $sub == $ext ) {
 						$src = $file;
+						$alt = substr ( $ext, 1 );
 						break;
 					}
 				}
 			}
 
 		} else {
-
+			// NOOP
 		}
 
 		if ( strlen ( $src ) > 0 ) {
 			$img = '<img src="' . $src . '"';
+			$img .= ' alt="' . $alt . '"';
+			$class = $this->conf['enum.']['file_icon_class'];
+			if ( is_string ( $class ) ) {
+				$img .= ' class="' . $class . '"';
+			}
 			$img .= '/>';
 		} else {
 			$img = '&nbsp;';
 		}
 
 		$wrap = $this->conf['enum.']['file_icon_image.'];
-		$img = $this->cObj->stdWrap ( $img, $wrap );
+		if ( is_array ( $wrap ) ) {
+			if ( is_array ( $wrap['typolink.'] ) ) {
+				$title = $this->get_ll ( 'link_get_file', 'Get file', TRUE );
+				$wrap['typolink.']['title'] = $title;
+			}
+			$img = $this->cObj->stdWrap ( $img, $wrap );
+		}
 		//t3lib_div::debug ( array ( 'wrap' => $wrap ) );
 		$res .= $img;
 

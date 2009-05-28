@@ -79,6 +79,7 @@ CREATE TABLE tx_sevenpack_authors (
 	forename tinytext NOT NULL,
 	surname tinytext NOT NULL,
 	url tinytext NOT NULL,
+	fe_user_id int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)

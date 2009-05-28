@@ -627,9 +627,21 @@ $TCA['tx_sevenpack_authors'] = array (
 				)
 			)
 		),
+		'fe_user_id' => Array (
+#			'exclude' => 1,
+			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors_fe_user_id',
+			'config' => Array (
+				'type' => 'group',
+				'size' => 1,
+				'internal_type' => 'db',
+				'allowed' => 'fe_users',
+				'minitems' => 0,
+				'maxitems' => 1,
+			)
+		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'surname,forename,url' )
+		'0' => array ( 'showitem' => 'surname,forename,url,fe_user_id' )
 	),
 );
 

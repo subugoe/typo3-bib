@@ -40,6 +40,7 @@
 			<label index="export_title">Database export</label>
 			<label index="export_xml">XML</label>
 			<label index="export_xmlLinkTitle">Export as XML</label>
+			<label index="img_alt_person">Person</label>
 			<label index="import_bibtex">BibTeX</label>
 			<label index="import_bibtex_title">Reference import from a BibTeX file</label>
 			<label index="import_bibtexLinkTitle">Import from BibTeX</label>
@@ -70,7 +71,9 @@
 			<label index="label_publisher">Publisher</label>
 			<label index="label_references">References</label>
 			<label index="label_volume">Volume</label>
+			<label index="link_author_info">More author informations</label>
 			<label index="link_back_to_list">Back to the list view</label>
+			<label index="link_get_file">Get file</label>
 			<label index="manipulators_delete">Delete this record</label>
 			<label index="manipulators_edit">Edit this record</label>
 			<label index="manipulators_hide">Hide this record</label>
@@ -156,6 +159,7 @@
 			<label index="export_title">Datenbank export</label>
 			<label index="export_xml">XML</label>
 			<label index="export_xmlLinkTitle">Exportiere als XML</label>
+			<label index="img_alt_person">Person</label>
 			<label index="import_bibtex">BibTeX</label>
 			<label index="import_bibtex_title">Referenzen Import aus einer BibTeX Datei</label>
 			<label index="import_bibtexLinkTitle">Importiere aus BibTeX</label>
@@ -186,7 +190,9 @@
 			<label index="label_publisher">Herausgeber</label>
 			<label index="label_references">Referenzen</label>
 			<label index="label_volume">Band</label>
+			<label index="link_author_info">Mehr Informationen zum Autor</label>
 			<label index="link_back_to_list">Zurück zur Listen Ansicht</label>
+			<label index="link_get_file">Zur Datei</label>
 			<label index="manipulators_delete">Diesen Eintrag löschen</label>
 			<label index="manipulators_edit">Diesen Eintrag bearbeiten</label>
 			<label index="manipulators_hide">Diesen Eintrag verstecken</label>

@@ -251,6 +251,14 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		display: none;
 	}
 
+	img.tx_sevenpack-file_icon,
+	img.tx_sevenpack-person_icon {
+		display: inline;
+		padding: 0px;
+		margin: 0px;
+		border-width: 0px;
+	}
+
 	.tx_sevenpack-block {
 		display: block;
 		padding: 0px;
