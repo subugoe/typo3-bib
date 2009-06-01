@@ -90,7 +90,7 @@ plugin.tx_sevenpack_pi1 {
 
 		abstract.wrap = <strong>|:</strong>
 		annotation.wrap = <strong>|:</strong>
-		chapter.wrap = |:
+		chapter.wrap = |
 		editor.wrap = |
 		ISBN.wrap = |
 		keywords.wrap = <strong>|:</strong>

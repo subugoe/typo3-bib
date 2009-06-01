@@ -2260,6 +2260,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$labels = array (
 			'abstract',
 			'annotation',
+			'chapter',
 			'doi',
 			'edition',
 			'editor',
