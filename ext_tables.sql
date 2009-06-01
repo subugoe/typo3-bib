@@ -20,6 +20,7 @@ CREATE TABLE tx_sevenpack_references (
 	day int(11) DEFAULT '0' NOT NULL,
 	volume tinytext NOT NULL,
 	number tinytext NOT NULL,
+	number2 tinytext NOT NULL,
 	pages tinytext NOT NULL,
 	abstract text NOT NULL,
 	full_text longtext NOT NULL,

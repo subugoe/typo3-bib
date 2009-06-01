@@ -63,6 +63,7 @@ class tx_sevenpack_reference_accessor {
 		'day', 
 		'volume', 
 		'number', 
+		'number2', 
 		'pages', 
 		'abstract',
 		'affiliation', 

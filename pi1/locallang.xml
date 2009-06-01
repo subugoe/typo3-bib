@@ -56,6 +56,7 @@
 			<label index="label_and">and</label>
 			<label index="label_annotation">Annotation</label>
 			<label index="label_chapter">Chapter</label>
+			<label index="label_doc_number">Document number</label>
 			<label index="label_doi">DOI</label>
 			<label index="label_edition">edition</label>
 			<label index="label_editor">editor</label>
@@ -70,6 +71,7 @@
 			<label index="label_page">page</label>
 			<label index="label_publisher">Publisher</label>
 			<label index="label_references">References</label>
+			<label index="label_report_number">Report Number</label>
 			<label index="label_volume">Volume</label>
 			<label index="link_author_info">More author informations</label>
 			<label index="link_back_to_list">Back to the list view</label>
@@ -175,6 +177,7 @@
 			<label index="label_and">und</label>
 			<label index="label_annotation">Anmerkung</label>
 			<label index="label_chapter">Kapitel</label>
+			<label index="label_doc_number">Dokument Nummer</label>
 			<label index="label_doi">DOI</label>
 			<label index="label_edition">Edition</label>
 			<label index="label_editor">Editor</label>
@@ -189,6 +192,7 @@
 			<label index="label_page">Seite</label>
 			<label index="label_publisher">Herausgeber</label>
 			<label index="label_references">Referenzen</label>
+			<label index="label_report_number">Report Nummer</label>
 			<label index="label_volume">Band</label>
 			<label index="link_author_info">Mehr Informationen zum Autor</label>
 			<label index="link_back_to_list">Zurück zur Listen Ansicht</label>

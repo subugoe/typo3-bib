@@ -654,6 +654,8 @@ plugin.tx_sevenpack_pi1 {
 			}
 			report {
 				type = olabel_report_type
+				number = olabel_doc_number
+				number2 = olabel_report_number
 			}
 		}
 
@@ -738,7 +740,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			report {
 				required = citeid,title,authors,type,year
-				optional = type,institution,abstract
+				optional = number,institution,institute,abstract,publisher,address,number2
 			}
 		}
 

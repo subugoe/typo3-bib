@@ -2261,6 +2261,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'abstract',
 			'annotation',
 			'chapter',
+			'doc_number',
 			'doi',
 			'edition',
 			'editor',
@@ -2273,6 +2274,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'page',
 			'publisher',
 			'references',
+			'report_number',
 			'volume',
 		);
 		foreach ( $labels as $label ) {

@@ -72,6 +72,7 @@
 			<label index="tx_sevenpack_references_month">Month</label>
 			<label index="tx_sevenpack_references_note">Note</label>
 			<label index="tx_sevenpack_references_number">Number</label>
+			<label index="tx_sevenpack_references_number2">Number 2</label>
 			<label index="tx_sevenpack_references_organization">Organization</label>
 			<label index="tx_sevenpack_references_pages">Pages</label>
 			<label index="tx_sevenpack_references_publisher">Publisher</label>
@@ -159,6 +160,7 @@
 			<label index="tx_sevenpack_references_month">Monat</label>
 			<label index="tx_sevenpack_references_note">Bemerkung</label>
 			<label index="tx_sevenpack_references_number">Nummer</label>
+			<label index="tx_sevenpack_references_number2">Nummer 2</label>
 			<label index="tx_sevenpack_references_organization">Organisation</label>
 			<label index="tx_sevenpack_references_pages">Seite(n)</label>
 			<label index="tx_sevenpack_references_publisher">Verlag</label>
