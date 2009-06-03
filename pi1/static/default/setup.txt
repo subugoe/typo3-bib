@@ -672,11 +672,11 @@ plugin.tx_sevenpack_pi1 {
 			}
 			book {
 				required = citeid,authors|editor,title,publisher,year
-				optional = volume,series,edition,abstract,address,month,ISBN
+				optional = volume,series,edition,abstract,address,month,ISBN,DOI
 			}
 			inbook {
 				required = citeid,authors|editor,title,chapter,pages,publisher,year
-				optional = volume,series,edition,abstract,address,month,ISBN,type
+				optional = volume,series,edition,abstract,address,month,ISBN,type,DOI
 			}
 			booklet {
 				required = citeid,title
@@ -684,7 +684,7 @@ plugin.tx_sevenpack_pi1 {
 			}
 			conference {
 				required = citeid,authors,title,booktitle,year
-				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
+				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization,DOI
 			}
 			incollection {
 				required = citeid,authors,title,booktitle,year
@@ -692,11 +692,11 @@ plugin.tx_sevenpack_pi1 {
 			}
 			proceedings {
 				required = citeid,title,year
-				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization
+				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization,DOI
 			}
 			inproceedings {
 				required = citeid,authors,title,booktitle,year
-				optional = editor,volume,series,pages,address,month,organization,publisher
+				optional = event_name,event_place,event_date,editor,volume,series,pages,address,month,organization,publisher,DOI
 			}
 			manual {
 				required = citeid,title
