@@ -612,7 +612,7 @@ plugin.tx_sevenpack_pi1 {
 		field_labels.wrap = |:
 		field_widgets.wrap = |
 
-		# Warnings in editor (single) view
+		# Warnings in the editor  view
 		warnings {
 			# Required fields missing
 			empty_fields = 1

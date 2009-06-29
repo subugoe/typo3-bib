@@ -77,12 +77,12 @@ class tx_sevenpack_editor_view {
 
 
 	/** 
-	 * The single view/editor can show a single publication entry
+	 * The editor shows a single publication entry
 	 * and allows to edit, delete or save it.
 	 *
-	 * @return A single publication viewer/editor
+	 * @return A publication editor
 	 */
-	function single_view () {
+	function editor_view () {
 		//t3lib_div::debug ($GLOBALS["HTTP_POST_VARS"]);
 
 		// --- check whether the BE user is authorized
@@ -92,7 +92,7 @@ class tx_sevenpack_editor_view {
 		}
 
 		$pi1 =& $this->pi1;
-		$single_mode = $pi1->extConf['single_mode'];
+		$editor_mode = $pi1->extConf['editor_mode'];
 		$preId =& $pi1->prefix_pi1;
 		$preSh =& $pi1->prefixShort;
 		$edConf =& $this->conf;
@@ -107,17 +107,17 @@ class tx_sevenpack_editor_view {
 		$btn_del_class = $preSh.'-delete_button';
 
 		// Determine widget mode
-		switch ( $single_mode ) {
-			case $pi1->SINGLE_SHOW :
+		switch ( $editor_mode ) {
+			case $pi1->EDIT_SHOW :
 				$w_mode = $pi1->W_SHOW;
 				break;
-			case $pi1->SINGLE_EDIT :
-			case $pi1->SINGLE_NEW :
+			case $pi1->EDIT_EDIT :
+			case $pi1->EDIT_NEW :
 				$w_mode = $pi1->W_EDIT;
 				break;
-			case $pi1->SINGLE_CONFIRM_SAVE :
-			case $pi1->SINGLE_CONFIRM_DELETE :
-			case $pi1->SINGLE_CONFIRM_ERASE :
+			case $pi1->EDIT_CONFIRM_SAVE :
+			case $pi1->EDIT_CONFIRM_DELETE :
+			case $pi1->EDIT_CONFIRM_ERASE :
 				$w_mode = $pi1->W_SILENT;
 				break;
 			default :
@@ -132,11 +132,11 @@ class tx_sevenpack_editor_view {
 			$uid = intval ( $pi1->piVars['uid'] );
 		}
 
-		switch ( $single_mode ) {
-			case $pi1->SINGLE_SHOW :
+		switch ( $editor_mode ) {
+			case $pi1->EDIT_SHOW :
 				$title = $this->get_ll ( $this->LLPrefix.'title_view' );
 				break;
-			case $pi1->SINGLE_EDIT :
+			case $pi1->EDIT_EDIT :
 				$title = $this->get_ll ( $this->LLPrefix.'title_edit' );
 				if ( $uid >= 0 ) {
 					$pub = $this->ra->fetch_db_pub ( $uid );
@@ -146,13 +146,13 @@ class tx_sevenpack_editor_view {
 					return $pi1->error_msg ( 'No publication id given' );
 				}
 				break;
-			case $pi1->SINGLE_NEW :
+			case $pi1->EDIT_NEW :
 				$title = $this->get_ll ( $this->LLPrefix.'title_new' );
 				break;
-			case $pi1->SINGLE_CONFIRM_DELETE :
+			case $pi1->EDIT_CONFIRM_DELETE :
 				$title = $this->get_ll ( $this->LLPrefix.'title_confirm_delete' );
 				break;
-			case $pi1->SINGLE_CONFIRM_ERASE :
+			case $pi1->EDIT_CONFIRM_ERASE :
 				$title = $this->get_ll ( $this->LLPrefix.'title_confirm_erase' );
 				break;
 			default:
@@ -267,7 +267,7 @@ class tx_sevenpack_editor_view {
 
 		// Edit button
 		$btn_edit = '';
-		if ( $single_mode == $pi1->SINGLE_CONFIRM_SAVE ) {
+		if ( $editor_mode == $pi1->EDIT_CONFIRM_SAVE ) {
 			$btn_edit =	'<input type="submit" ';
 			if ( $this->is_new )
 				$btn_edit .= 'name="'.$preId.'[action][new]" ';
@@ -290,7 +290,7 @@ class tx_sevenpack_editor_view {
 		$fields = $this->get_edit_fields ( $pub['bibtype'] );
 
 		// Data validation
-		if ( $single_mode == $pi1->SINGLE_CONFIRM_SAVE ) {
+		if ( $editor_mode == $pi1->EDIT_CONFIRM_SAVE ) {
 			$d_err = $this->validate_data ( $pub );
 			$title = $this->get_ll ( $this->LLPrefix.'title_confirm_save' );
 
@@ -335,7 +335,7 @@ class tx_sevenpack_editor_view {
 		//if ( $dataValid ) {
 			if ( $w_mode == $pi1->W_EDIT )
 				$btn_save = '[action][confirm_save]';
-			if ( $single_mode == $pi1->SINGLE_CONFIRM_SAVE )
+			if ( $editor_mode == $pi1->EDIT_CONFIRM_SAVE )
 				$btn_save = '[action][save]';
 			if ( strlen ( $btn_save ) > 0 ) {
 				$btn_save = '<input type="submit" name="'.$preId.$btn_save.'" '.
@@ -347,10 +347,10 @@ class tx_sevenpack_editor_view {
 		// Delete button
 		$btn_delete = '';
 		if ( !$this->is_new ) {
-			if ( ($single_mode != $pi1->SINGLE_SHOW) &&
-			     ($single_mode != $pi1->SINGLE_CONFIRM_SAVE) )
+			if ( ($editor_mode != $pi1->EDIT_SHOW) &&
+			     ($editor_mode != $pi1->EDIT_CONFIRM_SAVE) )
 				$btn_delete = '[action][confirm_delete]';
-			if ( $single_mode == $pi1->SINGLE_CONFIRM_DELETE )
+			if ( $editor_mode == $pi1->EDIT_CONFIRM_DELETE )
 				$btn_delete = '[action][delete]';
 			if ( strlen($btn_delete) ) {
 				$btn_delete = '<input type="submit" name="'.$preId.$btn_delete.'" '.

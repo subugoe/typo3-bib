@@ -57,16 +57,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 	// Enumeration for view modes
 	public $VIEW_LIST   = 0;
-	public $VIEW_SINGLE = 1;
+	public $VIEW_EDITOR = 1;
 	public $VIEW_DIALOG = 2;
 
-	// Single view modes
-	public $SINGLE_SHOW = 0;
-	public $SINGLE_EDIT = 1;
-	public $SINGLE_NEW  = 2;
-	public $SINGLE_CONFIRM_SAVE   = 3;
-	public $SINGLE_CONFIRM_DELETE = 4;
-	public $SINGLE_CONFIRM_ERASE  = 5;
+	// Editor view modes
+	public $EDIT_SHOW = 0;
+	public $EDIT_EDIT = 1;
+	public $EDIT_NEW  = 2;
+	public $EDIT_CONFIRM_SAVE   = 3;
+	public $EDIT_CONFIRM_DELETE = 4;
+	public $EDIT_CONFIRM_ERASE  = 5;
 
 	// Various dialog modes
 	public $DIALOG_SAVE_CONFIRMED   = 1;
@@ -462,32 +462,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				//t3lib_div::debug ( $act_str );
 				switch ( $act_str ) {
 					case 'new':
-						$extConf['view_mode']   = $this->VIEW_SINGLE;
-						$extConf['single_mode'] = $this->SINGLE_NEW;
+						$extConf['view_mode']   = $this->VIEW_EDITOR;
+						$extConf['editor_mode'] = $this->EDIT_NEW;
 						break;
 					case 'edit':
-						$extConf['view_mode']   = $this->VIEW_SINGLE;
-						$extConf['single_mode'] = $this->SINGLE_EDIT;
+						$extConf['view_mode']   = $this->VIEW_EDITOR;
+						$extConf['editor_mode'] = $this->EDIT_EDIT;
 						break;
 					case 'confirm_save':
-						$extConf['view_mode']   = $this->VIEW_SINGLE;
-						$extConf['single_mode'] = $this->SINGLE_CONFIRM_SAVE;
+						$extConf['view_mode']   = $this->VIEW_EDITOR;
+						$extConf['editor_mode'] = $this->EDIT_CONFIRM_SAVE;
 						break;
 					case 'save':
 						$extConf['view_mode']   = $this->VIEW_DIALOG;
 						$extConf['dialog_mode'] = $this->DIALOG_SAVE_CONFIRMED;
 						break;
 					case 'confirm_delete':
-						$extConf['view_mode']   = $this->VIEW_SINGLE;
-						$extConf['single_mode'] = $this->SINGLE_CONFIRM_DELETE;
+						$extConf['view_mode']   = $this->VIEW_EDITOR;
+						$extConf['editor_mode'] = $this->EDIT_CONFIRM_DELETE;
 						break;
 					case 'delete':
 						$extConf['view_mode']   = $this->VIEW_DIALOG;
 						$extConf['dialog_mode'] = $this->DIALOG_DELETE_CONFIRMED;
 						break;
 					case 'confirm_erase':
-						$extConf['view_mode']   = $this->VIEW_SINGLE;
-						$extConf['single_mode'] = $this->SINGLE_CONFIRM_ERASE;
+						$extConf['view_mode']   = $this->VIEW_EDITOR;
+						$extConf['editor_mode'] = $this->EDIT_CONFIRM_ERASE;
 						break;
 					case 'erase':
 						$extConf['view_mode']   = $this->VIEW_DIALOG;
@@ -502,16 +502,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				}
 			}
 
-			// Set unset extConf and piVars single mode
+			// Set unset extConf and piVars editor mode
 			if ( $extConf['view_mode'] == $this->VIEW_DIALOG ) {
-				unset ( $this->piVars['single_mode'] );
+				unset ( $this->piVars['editor_mode'] );
 			}
 
-			if ( isset ( $extConf['single_mode'] ) ) {
-				$this->piVars['single_mode'] = $extConf['single_mode'];
-			} else if ( isset ( $this->piVars['single_mode'] ) ) {
-					$extConf['view_mode']   = $this->VIEW_SINGLE;
-					$extConf['single_mode'] = $this->piVars['single_mode'];
+			if ( isset ( $extConf['editor_mode'] ) ) {
+				$this->piVars['editor_mode'] = $extConf['editor_mode'];
+			} else if ( isset ( $this->piVars['editor_mode'] ) ) {
+					$extConf['view_mode']   = $this->VIEW_EDITOR;
+					$extConf['editor_mode'] = $this->piVars['editor_mode'];
 			}
 
 			// Initialize edit icons
@@ -726,8 +726,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			case $this->VIEW_LIST :
 				return $this->finalize ( $this->list_view () );
 				break;
-			case $this->VIEW_SINGLE :
-				return $this->finalize ( $this->single_view () );
+			case $this->VIEW_EDITOR :
+				return $this->finalize ( $this->editor_view () );
 				break;
 			case $this->VIEW_DIALOG :
 				return $this->finalize ( $this->dialog_view () );
@@ -1352,7 +1352,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function get_edit_link_url ( $vars = array(), $auto_cache = TRUE, $current_record = TRUE )
 	{
 		$pv =& $this->piVars;
-		$keep = array ( 'uid', 'single_mode', 'editor' );
+		$keep = array ( 'uid', 'editor_mode', 'editor' );
 		foreach ( $keep as $k ) {
 			$pvar =& $pv[$k];
 			if ( is_string ( $pvar ) || is_array ( $pvar ) || is_numeric ( $pvar ) ) {
@@ -2748,17 +2748,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/** 
-	 * This loads the single view
+	 * This loads the editor view
 	 *
-	 * @return The single view
+	 * @return The editor view
 	 */
-	function single_view ()
+	function editor_view ()
 	{
 		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 			'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_editor_view.php' ) );
 		$sv = t3lib_div::makeInstance ( 'tx_sevenpack_editor_view' );
 		$sv->initialize ( $this );
-		return $sv->single_view();
+		return $sv->editor_view();
 	}
 
 
