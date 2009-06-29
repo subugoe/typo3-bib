@@ -571,8 +571,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			//
 			// Determine the year to display
 			//
-			//$extConf['year'] = intval ( date ( 'Y' ) ); // System year
-			$extConf['year'] = 'all'; // All years
+			$extConf['year'] = intval ( date ( 'Y' ) ); // System year
+			//$extConf['year'] = 'all'; // All years
 			$ecYear =& $extConf['year'];
 	
 			$pvar = strtolower ( $this->piVars['year'] );
