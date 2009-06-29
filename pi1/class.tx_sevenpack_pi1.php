@@ -57,8 +57,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 	// Enumeration for view modes
 	public $VIEW_LIST   = 0;
-	public $VIEW_EDITOR = 1;
-	public $VIEW_DIALOG = 2;
+	public $VIEW_SINGLE = 1;
+	public $VIEW_EDITOR = 2;
+	public $VIEW_DIALOG = 3;
 
 	// Editor view modes
 	public $EDIT_SHOW = 0;
@@ -533,6 +534,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['dialog_mode'] = $this->DIALOG_EXPORT;
 		}
 
+		// Switch to a single view on demand
+		if ( is_numeric ( $this->piVars['show_uid'] ) ) {
+			$extConf['view_mode'] = $this->VIEW_SINGLE;
+			unset ( $this->piVars['editor_mode'] );
+			unset ( $this->piVars['dialog_mode'] );
+		}
+
 
 		//
 		// Search navigation setup
@@ -541,6 +549,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['search_navi']['obj']->hook_filter();
 		}
 
+
 		//
 		// Fetch publication statistics
 		//
@@ -548,12 +557,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->ra->set_filters ( $extConf['filters'] );
 		//t3lib_div::debug ( $extConf['filters'] );
 
+
 		//
 		// Author navigation hook
 		//
 		if ( $extConf['show_nav_author'] ) {
 			$extConf['author_navi']['obj']->hook_filter();
 		}
+
 
 		//
 		// Year navigation
@@ -725,6 +736,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		switch ( $extConf['view_mode'] ) {
 			case $this->VIEW_LIST :
 				return $this->finalize ( $this->list_view () );
+				break;
+			case $this->VIEW_SINGLE :
+				return $this->finalize ( $this->single_view () );
 				break;
 			case $this->VIEW_EDITOR :
 				return $this->finalize ( $this->editor_view () );
@@ -2744,6 +2758,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$t_str = $this->enum_condition_block ( $this->template['SPACER_BLOCK'] );
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###SPACER###', $t_str );
+	}
+
+
+
+	/** 
+	 * This loads the single view
+	 *
+	 * @return The single view
+	 */
+	function single_view ()
+	{
+		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+			'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_single_view.php' ) );
+		$sv = t3lib_div::makeInstance ( 'tx_sevenpack_single_view' );
+		$sv->initialize ( $this );
+		return $sv->single_view();
 	}
 
 
