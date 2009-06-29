@@ -499,10 +499,10 @@ class tx_sevenpack_editor_view {
 
 
 	/** 
-	 * Depending on the bibliography type this function returns what fields 
-	 * are required and what are optional according to BibTeX
-	 *
-	 * @return An array with subarrays with field lists for
+	 * Depending on the bibliography type this function returns
+	 * The label for a field
+	 * @param field The field
+	 * @param bib_str The bibtype identifier string
 	 */
 	function field_label ( $field, $bib_str ) {
 		$label = $this->ra->refTable . '_' . $field;

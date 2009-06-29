@@ -120,6 +120,14 @@ class tx_sevenpack_reference_accessor {
 	public $pubFields;
 
 
+	/**
+	 * These are the publication relevant fields 
+	 * that can be found in a php publication array.
+	 * This includes Typo3 variables (pid,uid, etc.)
+	 */
+	public $pubAllFields;
+
+
 	public $allBibTypes = array (
 		 0 => 'unknown',
 		 1 => 'article',
@@ -182,15 +190,17 @@ class tx_sevenpack_reference_accessor {
 		$this->authorAllFields = array_merge ( $this->authorAllFields, $this->authorFields );
 
 		// setup refAllFields
-		$this->refAllFields = array (
+		$typo3_fields = array (
 			'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
 		);
-		$this->refAllFields = array_merge ( $this->refAllFields, $this->refFields );
+		$this->refAllFields = array_merge ( $typo3_fields, $this->refFields );
 
 		// setup pubFields
 		$this->pubFields = $this->refFields;
 		$this->pubFields[] = 'authors';
 
+		// setup pubAllFields
+		$this->pubAllFields = array_merge ( $typo3_fields, $this->pubFields );
 	}
 
 

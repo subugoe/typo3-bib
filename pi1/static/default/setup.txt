@@ -564,6 +564,26 @@ plugin.tx_sevenpack_pi1 {
 	}
 
 
+	# Single View
+	single_view {
+		title.wrap = <h2 style="display: none;">|</h2>
+
+		template = EXT:sevenpack/res/templates/single_view.html
+		dont_show = reviewed,in_library,borrowed_by,pid,uid
+
+		all_labels.wrap = |:
+
+		field_wrap {
+			title.wrap = |
+		}
+
+		#pre_text = Some pre text
+		pre_text.wrap = |
+		#post_text = Some post text
+		post_text.wrap = |
+	}
+
+
 	# Frontend editor
 	editor {
 

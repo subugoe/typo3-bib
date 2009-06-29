@@ -537,6 +537,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Switch to a single view on demand
 		if ( is_numeric ( $this->piVars['show_uid'] ) ) {
 			$extConf['view_mode'] = $this->VIEW_SINGLE;
+			$extConf['single_view']['uid'] = intval ( $this->piVars['show_uid'] );
 			unset ( $this->piVars['editor_mode'] );
 			unset ( $this->piVars['dialog_mode'] );
 		}
@@ -1837,6 +1838,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				'Unknown state: '.$pdata['state'], TRUE ) ;
 		}
 
+		// Reviewed
+		if ( $pub['reviewed'] > 0 ) {
+			$pdata['reviewed'] = $this->get_ll ( 'label_yes', 'Yes', TRUE ) ;
+		} else {
+			$pdata['reviewed'] = $this->get_ll ( 'label_no', 'Yes', TRUE ) ;
+		}
+
+		// In library
+		if ( $pub['in_library'] > 0 ) {
+			$pdata['in_library'] = $this->get_ll ( 'label_yes', 'Yes', TRUE ) ;
+		} else {
+			$pdata['in_library'] = $this->get_ll ( 'label_no', 'Yes', TRUE ) ;
+		}
+
 		//
 		// Copy field values
 		//
@@ -1953,6 +1968,24 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//t3lib_div::debug ( $warnings );
 
 		return $pdata;
+	}
+
+
+	/** 
+	 * Prepares the cObj->data array for a reference
+	 *
+	 * @return The procesed publication data array
+	 */
+	function prepare_pub_cObj_data ( $pdata ) {
+		// Item data
+		$this->cObj->data = $pdata;
+		$data =& $this->cObj->data;
+		// Needed since stdWrap/Typolink applies htmlspecialchars to url data
+		$data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
+		$data['web_url'] = htmlspecialchars_decode ( $pdata['web_url'], ENT_QUOTES );
+		$data['web_url2'] = htmlspecialchars_decode ( $pdata['web_url2'], ENT_QUOTES );
+		$data['DOI_url'] = htmlspecialchars_decode ( $pdata['DOI_url'], ENT_QUOTES );
+		$data['auto_url'] = htmlspecialchars_decode ( $pdata['auto_url'], ENT_QUOTES );
 	}
 
 
@@ -2214,21 +2247,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function setup_items ()
+	function prepare_item_setup ()
 	{
-		$items = array();
-
-		// Time measurment
-		//$t_start = microtime( TRUE );
-
-		// Aliases
-		$ra =& $this->ra;
 		$cObj =& $this->cObj;
 		$conf =& $this->conf;
-		$filters =& $this->extConf['filters'];
-
-		// Store cObj data
-		$cObj_restore = $cObj->data;
 
 		// The author name template
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
@@ -2268,6 +2290,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 		$this->extConf['author_icon_img'] = $img;
 
+	}
+
+
+	/** 
+	 * Setup items in the html-template
+	 *
+	 * @return void
+	 */
+	function setup_items ()
+	{
+		$items = array();
+
+		// Time measurment
+		//$t_start = microtime( TRUE );
+
+		// Aliases
+		$ra =& $this->ra;
+		$cObj =& $this->cObj;
+		$conf =& $this->conf;
+		$filters =& $this->extConf['filters'];
+
+		// Store cObj data
+		$cObj_restore = $cObj->data;
+
+		$this->prepare_item_setup();
+
 		// Initialize the label translator
 		$this->label_translator = array();
 		$lt =& $this->label_translator;
@@ -2291,6 +2339,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			'report_number',
 			'volume',
 		);
+
 		foreach ( $labels as $label ) {
 			$up = strtoupper ( $label );
 			$val = $this->get_ll ( 'label_'.$label );
@@ -2362,13 +2411,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pdata = $this->prepare_pub_display ( $pub, $warnings );
 
 			// Item data
-			$cObj->data = $pdata;
-			// Needed since stdWrap/Typolink applies htmlspecialchars to url data
-			$cObj->data['file_url'] = htmlspecialchars_decode ( $pdata['file_url'], ENT_QUOTES );
-			$cObj->data['web_url'] = htmlspecialchars_decode ( $pdata['web_url'], ENT_QUOTES );
-			$cObj->data['web_url2'] = htmlspecialchars_decode ( $pdata['web_url2'], ENT_QUOTES );
-			$cObj->data['DOI_url'] = htmlspecialchars_decode ( $pdata['DOI_url'], ENT_QUOTES );
-			$cObj->data['auto_url'] = htmlspecialchars_decode ( $pdata['auto_url'], ENT_QUOTES );
+			$this->prepare_pub_cObj_data ( $pdata );
 
 			// All publications counter
 			$i_all = $pubs_before + $i_page;
@@ -2453,8 +2496,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$append = '';
 			if ( ( sizeof ( $warnings ) > 0 ) && $ed_mode ) {
 				foreach ( $warnings as $err ) {
-					$append .= $cObj->stdWrap ( $err['msg'],
-						$w_cfg['msg.'] );
+					$append .= $cObj->stdWrap ( $err['msg'], $w_cfg['msg.'] );
 				}
 				$append = $cObj->stdWrap ( $append,
 						$w_cfg['all_wrap.'] );

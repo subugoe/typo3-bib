@@ -347,12 +347,37 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 	}
 	table.tx_sevenpack-layout td,
 	table.tx_sevenpack-layout th,
-	table.tx_sevenpack-layout tr
-	{
+	table.tx_sevenpack-layout tr {
 		border-width: 0px;
 		padding: 0px;
 		margin: 0px;
 	}
+
+
+	table.tx_sevenpack-single_item {
+		border-collapse: collapse;
+		border-width: 0px;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	th.tx_sevenpack-single_label,
+	td.tx_sevenpack-single_value {
+		padding: 0.5ex 0px;
+	}
+
+	th.tx_sevenpack-single_label {
+		min-width: 8em;
+		padding-right: 1em;
+		text-align: left;
+		vertical-align: top;
+	}
+	td.tx_sevenpack-single_value {
+		text-align: left;
+		vertical-align: bottom;
+	}
+
+
 
 
 	div.tx_sevenpack-editor {

@@ -64,6 +64,7 @@
 			<label index="label_ISBN">ISBN</label>
 			<label index="label_ISSN">ISSN</label>
 			<label index="label_keywords">Keywords</label>
+			<label index="label_no">No</label>
 			<label index="label_no_items">No references have been found</label>
 			<label index="label_note">Note</label>
 			<label index="label_tags">Tags</label>
@@ -73,6 +74,7 @@
 			<label index="label_references">References</label>
 			<label index="label_report_number">Report Number</label>
 			<label index="label_volume">Volume</label>
+			<label index="label_yes">Yes</label>
 			<label index="link_author_info">More author informations</label>
 			<label index="link_back_to_list">Back to the list view</label>
 			<label index="link_get_file">Get file</label>
@@ -119,6 +121,7 @@
 			<label index="searchNav_sep_space">Space</label>
 			<label index="searchNav_sep_pipe">Pipe</label>
 			<label index="searchNav_separator">Separator</label>
+			<label index="single_view_title">Publication single view</label>
 			<label index="stat_total_label">Total</label>
 			<label index="stat_year_total_label">This year / Total</label>
 			<label index="upload_file">Upload file</label>
@@ -185,6 +188,7 @@
 			<label index="label_ISBN">ISBN</label>
 			<label index="label_ISSN">ISSN</label>
 			<label index="label_keywords">Schlüsselwörter</label>
+			<label index="label_no">Nein</label>
 			<label index="label_no_items">Es wurden keine Referenzen gefunden</label>
 			<label index="label_note">Bemerkung</label>
 			<label index="label_tags">Tags</label>
@@ -194,6 +198,7 @@
 			<label index="label_references">Referenzen</label>
 			<label index="label_report_number">Report Nummer</label>
 			<label index="label_volume">Band</label>
+			<label index="label_yes">Ja</label>
 			<label index="link_author_info">Mehr Informationen zum Autor</label>
 			<label index="link_back_to_list">Zurück zur Listen Ansicht</label>
 			<label index="link_get_file">Zur Datei</label>
@@ -240,6 +245,7 @@
 			<label index="searchNav_sep_space">Leerzeichen</label>
 			<label index="searchNav_sep_pipe">Pipe</label>
 			<label index="searchNav_separator">Separator</label>
+			<label index="single_view_title">Publikations Einzelansicht</label>
 			<label index="stat_total_label">Total</label>
 			<label index="stat_year_total_label">Dieses Jahr / Total</label>
 			<label index="upload_file">Datei hochladen</label>
