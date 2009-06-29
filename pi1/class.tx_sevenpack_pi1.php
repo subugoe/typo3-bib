@@ -2755,8 +2755,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function single_view ()
 	{
 		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_single_view.php' ) );
-		$sv = t3lib_div::makeInstance ( 'tx_sevenpack_single_view' );
+			'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_editor_view.php' ) );
+		$sv = t3lib_div::makeInstance ( 'tx_sevenpack_editor_view' );
 		$sv->initialize ( $this );
 		return $sv->single_view();
 	}
@@ -2779,8 +2779,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				break;
 			default :
 				require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-					'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_single_view.php' ) );
-				$sv = t3lib_div::makeInstance('tx_sevenpack_single_view');
+					'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_editor_view.php' ) );
+				$sv = t3lib_div::makeInstance( 'tx_sevenpack_editor_view' );
 				$sv->initialize ( $this );
 				$con .= $sv->dialog_view();
 		}

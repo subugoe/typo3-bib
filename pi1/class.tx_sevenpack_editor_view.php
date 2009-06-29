@@ -9,7 +9,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
 
-class tx_sevenpack_single_view {
+class tx_sevenpack_editor_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
@@ -1196,8 +1196,8 @@ class tx_sevenpack_single_view {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_single_view.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_single_view.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_editor_view.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_editor_view.php"]);
 }
 
 ?>
