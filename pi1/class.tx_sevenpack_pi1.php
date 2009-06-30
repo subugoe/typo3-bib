@@ -1791,7 +1791,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return The procesed publication data array
 	 */
-	function prepare_pub_display ( $pub, &$warnings = array() ) {
+	function prepare_pub_display ( $pub, &$warnings = array(), $show_hidden = false ) {
 
 		// The error list
 		$d_err = array();
@@ -1868,7 +1868,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Check restrictions
 			if ( strlen ( $val ) > 0 )  {
-				if ( $this->check_field_restriction ( 'ref', $f, $val ) ) {
+				if ( $this->check_field_restriction ( 'ref', $f, $val, $show_hidden ) ) {
 					$val = '';
 					$pdata[$f] = $val;
 				}
@@ -2622,14 +2622,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return TRUE (restricted) or FALSE (not restricted)
 	 */
-	function check_field_restriction ( $table, $field, $value ) {
+	function check_field_restriction ( $table, $field, $value, $show_hidden = false ) {
 		// No value no restriction
 		if ( strlen ( $value ) == 0 ) {
 			return FALSE;
 		}
 
 		// Field is hidden
-		if ( $this->extConf['hide_fields'][$field] ) {
+		if ( !$show_hidden && $this->extConf['hide_fields'][$field] ) {
 			return TRUE;
 		}
 

@@ -569,7 +569,7 @@ plugin.tx_sevenpack_pi1 {
 		title.wrap = <h2 style="display: none;">|</h2>
 
 		template = EXT:sevenpack/res/templates/single_view.html
-		dont_show = reviewed,in_library,borrowed_by,pid,uid
+		dont_show = pid,uid,reviewed,in_library,borrowed_by,citeid
 
 		all_labels.wrap = |:
 
