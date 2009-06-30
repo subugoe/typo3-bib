@@ -574,7 +574,7 @@ plugin.tx_sevenpack_pi1 {
 		all_labels.wrap = |:
 
 		field_wrap {
-			title.wrap = |
+			#title.wrap = |
 		}
 
 		#pre_text = Some pre text

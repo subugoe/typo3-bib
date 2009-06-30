@@ -114,7 +114,10 @@ class tx_sevenpack_single_view {
 						$stdWrap = $pi1->conf['field.'][$bib_str.'.'][$field.'.'];
 					if ( isset ( $this->conf['field_wrap.'][$field.'.'] ) )
 						$stdWrap = $this->conf['field_wrap.'][$field.'.'];
-					//t3lib_div::debug ( $stdWrap );
+					t3lib_div::debug ( array ( $field => $stdWrap ));
+					if ( isset ( $stdWrap['single_view_link'] ) ) {
+						$value = $pi1->get_link ( $value, array ( 'show_uid' => strval ( $pdata['uid'] ) ) );
+					}
 					$value = $cObj->stdWrap ( $value, $stdWrap );
 
 
