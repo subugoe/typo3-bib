@@ -2024,10 +2024,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			if ( strlen ( $val ) > 0 )  {
 				// Wrap default or by bibtype
+				$stdWrap = array();
 				$stdWrap = $conf['field.'][$f.'.'];
 				if ( is_array ( $conf['field.'][$bib_str.'.'][$f.'.'] ) )
 					$stdWrap = $conf['field.'][$bib_str.'.'][$f.'.'];
 				//t3lib_div::debug ( $stdWrap );
+				if ( isset ( $stdWrap['single_view_link'] ) ) {
+					$val = $this->get_link ( $val, array ( 'show_uid' => strval ( $pdata['uid'] ) ) );
+				}
 				$val = $cObj->stdWrap ( $val, $stdWrap );
 
 				if ( strlen ( $val ) > 0 ) {
