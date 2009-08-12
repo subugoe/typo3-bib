@@ -65,6 +65,11 @@ $TCA['tx_sevenpack_authorships'] = array (
 );
 
 
+// Allow items on standard pages
+t3lib_extMgm::allowTableOnStandardPages('tx_sevenpack_references');
+t3lib_extMgm::allowTableOnStandardPages('tx_sevenpack_authors');
+t3lib_extMgm::allowTableOnStandardPages('tx_sevenpack_authorships');
+
 
 t3lib_div::loadTCA('tt_content');
 
