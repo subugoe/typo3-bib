@@ -267,7 +267,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['pid_list'] = $pid_list;
 			$this->ra->pid_list = $pid_list;
 		} else {
-			return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
+			$extConf['pid_list'] = array ( intval ( $GLOBALS['TSFE']->id ) );
+			//return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
 		}
 
 		//
