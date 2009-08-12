@@ -1625,6 +1625,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$linkStr = $this->cObj->substituteMarker ( $tmpl, '###NEW_ENTRY###', $linkStr );
 			$hasStr = array ( '','' );
 			//t3lib_div::debug ( $linkStr );
+			$this->extConf['has_top_navi'] = TRUE;
 		}
 
 		$tmpl =& $this->template['LIST_VIEW'];
