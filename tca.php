@@ -211,9 +211,9 @@ $TCA['tx_sevenpack_references'] = array (
 #			'exclude' => 1,
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_affiliation',
 			'config' => Array (
-				'type' => 'input',
-				'size' => '48',
-				'max' => '255',
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '2',
 				'eval' => 'trim',
 			)
 		),
@@ -407,9 +407,9 @@ $TCA['tx_sevenpack_references'] = array (
 #			'exclude' => 1,
 			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_booktitle',
 			'config' => Array (
-				'type' => 'input',
-				'size' => '48',
-				'max' => '255',
+				'type' => 'text',
+				'cols' => '48',
+				'rows' => '2',
 				'eval' => 'trim',
 			)
 		),
