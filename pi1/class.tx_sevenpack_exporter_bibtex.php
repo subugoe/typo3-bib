@@ -51,10 +51,10 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 		$bt->push ( '/<\/strong>/', '}'  );
 
 		// Local characters
-		$bt->push ( '/&(.)acute;/', '{\`\\1}'  );
+		$bt->push ( '/&(.)acute;/', '{\\\'\\1}');
 		$bt->push ( '/&(.)tilde;/', '{\~\\1}'  );
 		$bt->push ( '/&(.)circ;/',  '{\^\\1}'  );
-		$bt->push ( '/&(.)grave;/', '{\\\'\\1}');
+		$bt->push ( '/&(.)grave;/', '{\`\\1}'  );
 		$bt->push ( '/&(.)uml;/',   '{\"\\1}'  );
 		$bt->push ( '/&(.)cedil;/', '\c{\\1}'  );
 		$bt->push ( '/&szlig;/',    '{\ss}'  );

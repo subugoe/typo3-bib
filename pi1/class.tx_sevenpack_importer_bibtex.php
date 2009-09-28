@@ -68,10 +68,10 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 		// Local characters
 		$replace = array (
-			'`'    => '&\\1acute;',
+			'`'    => '&\\1grave;',
 			'~'    => '&\\1tilde;',
 			'\\^'  => '&\\1circ;',
-			'\\\'' => '&\\1grave;',
+			'\\\'' => '&\\1acute;',
 			'"'    => '&\\1uml;',
 		);
 

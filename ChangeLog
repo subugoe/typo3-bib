@@ -1,3 +1,8 @@
+2009-09-28      Sebastian Holtermann  <sebholt@web.de>
+	* Documentation: Updated with a description of the automatic pdf text extraction
+	* BibTeX import/export: Fix for a wrong accent conversion (D. Sauveron).
+	* Release version 0.7.3
+
 2009-09-23      Sebastian Holtermann  <sebholt@web.de>
 	* Database: The data types of affiliation and booktitle are changed 
 	            from tinytext to text which is longer (D. Sauveron).
