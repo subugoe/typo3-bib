@@ -191,7 +191,7 @@
 			<label index="label_no">Nein</label>
 			<label index="label_no_items">Es wurden keine Referenzen gefunden</label>
 			<label index="label_note">Bemerkung</label>
-			<label index="label_tags">Tags</label>
+			<label index="label_tags">Marker</label>
 			<label index="label_of_series">aus</label>
 			<label index="label_page">Seite</label>
 			<label index="label_publisher">Herausgeber</label>

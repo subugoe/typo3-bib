@@ -1,3 +1,7 @@
+2009-29-10      Sebastian Holtermann  <sebholt@web.de>
+	* List: New tags filter option
+	* Release version 0.7.4
+
 2009-09-28      Sebastian Holtermann  <sebholt@web.de>
 	* Documentation: Updated with a description of the automatic pdf text extraction
 	* BibTeX import/export: Fix for a wrong accent conversion (D. Sauveron).
