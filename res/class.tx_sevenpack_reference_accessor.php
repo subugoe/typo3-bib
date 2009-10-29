@@ -720,6 +720,29 @@ class tx_sevenpack_reference_accessor {
 			}
 		}
 
+
+		// Filter by tags
+		if ( is_array ( $filter['tags'] ) && ( sizeof ( $filter['tags'] ) > 0 ) ) {
+			$f =& $filter['tags'];
+			if ( is_array ( $f['words'] ) && ( sizeof ( $f['words'] ) > 0 ) ) {
+				$wca = array();
+
+				if ( $f['rule'] == 0 ) { // OR
+					$wca[] = $this->get_filter_search_fields_clause ( $f['words'], array ( 'tags' ) );
+				} else { // AND
+					foreach ( $f['words'] as $word ) {
+						$wca[] = $this->get_filter_search_fields_clause ( array ( $word ), array ( 'tags' ) );
+					}
+				}
+
+				//t3lib_div::debug ( array ( 'wca' => $wca ) );
+				foreach ( $wca as $app ) {
+					if ( strlen ( $app ) > 0 ) $WC[] = $app;
+				}
+			}
+		}
+
+
 		// Filter by keywords
 		if ( is_array ( $filter['keywords'] ) && ( sizeof ( $filter['keywords'] ) > 0 ) ) {
 			$f =& $filter['keywords'];
@@ -780,7 +803,8 @@ class tx_sevenpack_reference_accessor {
 	 * for the search for keywords (OR)
 	 *
 	 * @param $words An array or words
-	 * @return The ORDER clause string
+	 * @param $fields An array of fields to search in
+	 * @return The WHERE clause string
 	 */
 	function get_filter_search_fields_clause ( $words, $fields ) {
 		$rT  =& $this->refTable;
@@ -840,7 +864,7 @@ class tx_sevenpack_reference_accessor {
 
 
 	/**
-	 * Returns a serch word object as it is required by the 'all' search 
+	 * Returns a search word object as it is required by the 'all' search 
 	 * filter argument
 	 *
 	 * @return The search object (string or array)

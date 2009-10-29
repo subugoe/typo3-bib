@@ -40,6 +40,7 @@
 			<label index="tt_content.pi_flexform.enable_reviewes">Enable reviewed filter</label>
 			<label index="tt_content.pi_flexform.enable_search_all">Enable general keyword filter</label>
 			<label index="tt_content.pi_flexform.enable_state">Enable stater filter</label>
+			<label index="tt_content.pi_flexform.enable_tags">Enable tag filter</label>
 			<label index="tt_content.pi_flexform.enable_year">Enable year filter</label>
 			<label index="tt_content.pi_flexform.enum.TS">TypoScript (default)</label>
 			<label index="tt_content.pi_flexform.enum.bullets">Bullet</label>
@@ -96,6 +97,8 @@
 			<label index="tt_content.pi_flexform.stat_mode.1">Total</label>
 			<label index="tt_content.pi_flexform.stat_mode.2">Year / Total</label>
 			<label index="tt_content.pi_flexform.stat_mode.TS">TypoScript (default)</label>
+			<label index="tt_content.pi_flexform.tags">Tags - comma separated</label>
+			<label index="tt_content.pi_flexform.tags_rule">Tags filter rule</label>
 			<label index="tt_content.pi_flexform.years">Year(s) - comma separated / ranges with minus (-)</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -133,6 +136,7 @@
 			<label index="tt_content.pi_flexform.enable_reviewes">Aktiviere Begutachtet Filter</label>
 			<label index="tt_content.pi_flexform.enable_search_all">Aktiviere allgemeinen Schlüsselwort Filter</label>
 			<label index="tt_content.pi_flexform.enable_state">Aktiviere Zustands Filter</label>
+			<label index="tt_content.pi_flexform.enable_tags">Aktiviere Marker filter</label>
 			<label index="tt_content.pi_flexform.enable_year">Aktiviere Jahres Filter</label>
 			<label index="tt_content.pi_flexform.enum.TS">TypoScript (Standard)</label>
 			<label index="tt_content.pi_flexform.enum.bullets">Bullet</label>
@@ -182,13 +186,15 @@
 			<label index="tt_content.pi_flexform.show_textfields.annotation">Anmerkung</label>
 			<label index="tt_content.pi_flexform.show_textfields.keywords">Schlüsselwörter</label>
 			<label index="tt_content.pi_flexform.show_textfields.note">Bemerkung</label>
-			<label index="tt_content.pi_flexform.show_textfields.tags">Tags</label>
+			<label index="tt_content.pi_flexform.show_textfields.tags">Marker</label>
 			<label index="tt_content.pi_flexform.split_bibtypes">Trenne nach Bibliographie Typen</label>
 			<label index="tt_content.pi_flexform.stat_mode">Statistik Modus</label>
 			<label index="tt_content.pi_flexform.stat_mode.0">Keiner</label>
 			<label index="tt_content.pi_flexform.stat_mode.1">Total</label>
 			<label index="tt_content.pi_flexform.stat_mode.2">Jahr / Total</label>
 			<label index="tt_content.pi_flexform.stat_mode.TS">TypoScript (Standard)</label>
+			<label index="tt_content.pi_flexform.tags">Marker - Komma separiert</label>
+			<label index="tt_content.pi_flexform.tags_rule">Marker Filter Regel</label>
 			<label index="tt_content.pi_flexform.years">Jahr(e) - Komma getrennt / Intervalle mit Minus (-)</label>
 		</languageKey>
 		<languageKey index="it" type="array">

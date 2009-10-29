@@ -358,6 +358,52 @@
 				</TCEforms>
 			</highlight_authors>
 
+			<!-- Tags filter -->
+			<!-- Enable filter -->
+			<enable_tags>
+				<TCEforms>
+					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_tags</label>
+					<config>
+						<type>check</type>
+						<default>0</default>
+					</config>
+				</TCEforms>
+			</enable_tags>
+			
+			<!-- Tags list -->
+			<tags>
+				<TCEforms>
+					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.tags</label>
+					<config>
+						<type>text</type>
+						<cols>30</cols>
+						<rows>4</rows>
+					</config>
+				</TCEforms>
+			</tags>
+			
+			<!-- Tags rule -->
+			<tags_rule>
+				<TCEforms>
+					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.tags_rule</label>
+					<config>
+						<type>radio</type>
+						<items>
+							<numIndex index="0">
+								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
+								<numIndex index="1">0</numIndex>
+							</numIndex>
+							<numIndex index="1">
+								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
+								<numIndex index="1">1</numIndex>
+							</numIndex>
+						</items>
+						<default>0</default>
+					</config>
+				</TCEforms>
+			</tags_rule>
+			
+			
 			<!-- Keyword filter -->
 			<!-- Enable filter -->
 			<enable_keywords>

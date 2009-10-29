@@ -1035,6 +1035,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
+		// Tags filter
+		if ( $this->pi_getFFvalue ( $ff, 'enable_tags', $fSheet ) ) {
+			$f = array();
+			$f['rule'] = $this->pi_getFFvalue ( $ff, 'tags_rule', $fSheet);
+			$f['rule'] = intval ( $f['rule'] );
+			$kw = $this->pi_getFFvalue ( $ff, 'tags', $fSheet);
+			if ( strlen ( $kw ) > 0 ) {
+				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				foreach ( $words as &$word ) {
+					$word = $this->ra->search_word ( $word, $this->extConf['charset']['upper'] );
+				}
+				$f['words'] = $words;
+				$filter['tags'] = $f;
+			}
+		}
+
 		// Keywords filter
 		if ( $this->pi_getFFvalue ( $ff, 'enable_keywords', $fSheet ) ) {
 			$f = array();

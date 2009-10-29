@@ -173,7 +173,7 @@
 			<label index="tx_sevenpack_references_state_I_2">eingereicht</label>
 			<label index="tx_sevenpack_references_state_I_3">noch nicht publiziert</label>
 			<label index="tx_sevenpack_references_state_I_4">in Vorbereitung</label>
-			<label index="tx_sevenpack_references_tags">Tags</label>
+			<label index="tx_sevenpack_references_tags">Marker</label>
 			<label index="tx_sevenpack_references_title">Titel</label>
 			<label index="tx_sevenpack_references_type">Typ</label>
 			<label index="tx_sevenpack_references_volume">Band</label>
