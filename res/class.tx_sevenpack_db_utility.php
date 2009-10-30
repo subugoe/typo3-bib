@@ -115,7 +115,7 @@ class tx_sevenpack_db_utility {
 			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
 			$WC[] = 'pid IN ('.$csv.')';
 		}
-		$WC[] = 'LENGTH(file_url) > 0';
+		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
 		$WC = implode ( ' AND ', $WC );
 		$WC .= $this->ra->enable_fields ( $rT );
@@ -148,25 +148,18 @@ class tx_sevenpack_db_utility {
 		//t3lib_div::debug ( array ( 'Updating full text' => $uid ) );
 
 		$WC = 'uid=' . intval ( $uid );
-
-		$res = $db->exec_SELECTquery ( 'file_url,full_text_tstamp', $rT, $WC );
-		while ( $row = $db->sql_fetch_assoc ( $res ) ) {
-			$pubs[] = $row;
-		}
-		$num = sizeof ( $pubs );
-		if ( ( $num == 0 ) || ( $num > 1) ) {
+		$rows = $db->exec_SELECTgetRows ( 'file_url,full_text_tstamp,full_text_file_url', $rT, $WC );
+		if ( sizeof ( $rows ) != 1 ) {
 			return FALSE;
 		}
-		$pub = $pubs[0];
-
-		$db_time = $pub['full_text_tstamp'];
-		$file_time = 1;
+		$pub = $rows[0];
 
 		// Determine File time
 		$file = $pub['file_url'];
 		$file_low = strtolower ( $file );
 		$file_start = substr ( $file, 0, 9 );
 		$file_end = substr ( $file_low, -4, 4 );
+		$file_exists = FALSE;
 		//t3lib_div::debug ( array ( 'file' => $file ) );
 		//t3lib_div::debug ( array ( 'file_start' => $file_start ) );
 		//t3lib_div::debug ( array ( 'file_end' => $file_end ) );
@@ -182,20 +175,42 @@ class tx_sevenpack_db_utility {
 			$file = $root . $file;
 			if ( file_exists ( $file ) ) {
 				$file_mt = filemtime ( $file );
-			} else {
-				// file does not exist
-				return FALSE;
+				$file_exists = TRUE;
 			}
-		} else {
-			// No local useable file
-			return FALSE;
 		}
 
-		//t3lib_div::debug ( array ( 'file_time' => $file_mt, 'db_time' => $db_time ) );
+		$db_update = FALSE;
+		$db_data['full_text'] = '';
+		$db_data['full_text_tstamp'] = time();
+		$db_data['full_text_file_url'] = '';
+
+		if ( !$file_exists ) {
+			$clear = FALSE;
+			if ( strlen ( $pub['full_text_file_url'] ) > 0 ) {
+				$clear = TRUE;
+				if ( strlen ( $pub['file_url'] ) > 0 ) {
+					if ( $pub['file_url'] == $pub['full_text_file_url'] ) {
+						$clear = FALSE;
+					}
+				}
+			}
+
+			if ( $clear ) {
+				//t3lib_div::debug ( 'Clearing full_text_cache for ' . $WC );
+				$db_update = TRUE;
+			} else {
+				//t3lib_div::debug ( 'Keeping full_text_cache for ' . $WC );
+				return FALSE;
+			}
+		}
 
 		// Actually update
-		if ( ( ( $file_time > $db_time ) || $force ) ) {
-
+		if ( $file_exists && (
+				( $file_mt > $pub['full_text_tstamp'] ) ||
+				( $pub['file_url'] != $pub['full_text_file_url'] ) ||
+				$force )
+		) 
+		{
 			// Check if pdftotext is executable
 			if ( !is_executable ( $this->pdftotext_bin ) ) {
 				$err = array();
@@ -231,15 +246,19 @@ class tx_sevenpack_db_utility {
 			$full_text = fread ( $handle, filesize ( $target ) );
 			fclose ( $handle );
 
-			//t3lib_div::debug ( $full_text );
-
 			// Delete temporary text file
 			unlink ( $target );
 
-			// Write text to database
-			$WC = 'uid=' . intval ( $uid );
-			$pub = array ( 'full_text' => $full_text, 'full_text_tstamp' => time() );
-			$ret = $db->exec_UPDATEquery ( $rT, $WC, $pub );
+			//t3lib_div::debug ( $full_text );
+
+			$db_update = TRUE;
+			$db_data['full_text'] = $full_text;
+			$db_data['full_text_file_url'] = $pub['file_url'];
+		}
+
+		if ( $db_update ) {
+			//t3lib_div::debug ( 'Updating full_text_cache ' );
+			$ret = $db->exec_UPDATEquery ( $rT, $WC, $db_data );
 			if ( $ret == FALSE ) {
 				$err = array();
 				$err['msg'] = 'Full text update failed: ' . $db->sql_error();

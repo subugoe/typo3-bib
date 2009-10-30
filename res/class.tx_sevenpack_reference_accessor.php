@@ -1465,7 +1465,6 @@ class tx_sevenpack_reference_accessor {
 		$refRow['pid']    = intval ( $pub['pid'] );
 		$refRow['tstamp'] = time();
 		$refRow['hidden'] = intval ( $pub['hidden'] );
-		$refRow['full_text_tstamp'] = 0;
 
 		$query = '';
 		if ( $uid >= 0 ) {

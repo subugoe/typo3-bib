@@ -1,3 +1,9 @@
+2009-30-10      Sebastian Holtermann  <sebholt@web.de>
+	* General: The full text cache remembers the filename of the
+	           cached file to avoid unneccessary cache updates
+	* Database: New full_text_file_url field (not editable)
+	* Release version 0.7.5
+
 2009-29-10      Sebastian Holtermann  <sebholt@web.de>
 	* List: New tags filter option
 	* Release version 0.7.4

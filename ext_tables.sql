@@ -25,6 +25,7 @@ CREATE TABLE tx_sevenpack_references (
 	abstract text NOT NULL,
 	full_text longtext NOT NULL,
 	full_text_tstamp int(11) DEFAULT '0' NOT NULL,
+	full_text_file_url tinytext NOT NULL,
 	affiliation text NOT NULL,
 	note text NOT NULL,
 	annotation text NOT NULL,
