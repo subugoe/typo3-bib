@@ -2473,7 +2473,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$enum = str_replace ( '###I_ALL###', strval ( $i_all ), $enum );
 			$enum = str_replace ( '###I_PAGE###', strval ( $i_page ), $enum );
 			if ( !( strpos( $enum, '###FILE_URL_ICON###' ) === FALSE ) ) {
-				$repl = $this->get_file_url_icon ( $pdata );
+				$repl = $this->get_file_url_icon ( $pub, $pdata );
 				$enum = str_replace ( '###FILE_URL_ICON###', $repl, $enum );
 			}
 			$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( $enum, $enum_wrap );
@@ -2754,9 +2754,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	/**
 	 * Returns the file url icon
 	 *
+	 * @param pub The unprocessed db data
+	 * @param pdata The processed db data
 	 * @return The html icon img tag
 	 */
-	function get_file_url_icon ( $pdata ) {
+	function get_file_url_icon ( $pub, $pdata ) {
 		$res = '';
 
 		$def = FALSE;
@@ -2765,9 +2767,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$src = strval ( $sources['.empty_default'] );
 		$alt = 'default';
 
+		// Acquire file type
 		$url = '';
 		if ( !$pdata['_file_nexist'] ) {
-			$url = $pdata['file_url'];
+			$url = $pub['file_url'];
 		}
 		if ( strlen ( $url ) > 0 ) {
 			$src = $sources['.default'];
@@ -2783,9 +2786,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					}
 				}
 			}
-
-		} else {
-			// NOOP
 		}
 
 		if ( strlen ( $src ) > 0 ) {

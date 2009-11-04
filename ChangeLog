@@ -1,6 +1,6 @@
 2009-11-05      Sebastian Holtermann  <sebholt@web.de>
 	* List: Fixed broken link creation when file_url contained ampersand characters
-	* List: PHP cleanups which resulted in nice speedups
+	* List: PHP cleanups and optimisations
 	* Release version 0.7.8
 
 2009-11-04      Sebastian Holtermann  <sebholt@web.de>

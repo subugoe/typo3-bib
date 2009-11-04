@@ -1029,7 +1029,7 @@ class tx_sevenpack_editor_view {
 		$messages = tx_sevenpack_utility::string_counter ( $messages );
 		$con .= '<ul>' . "\n";
 		foreach ( $messages as $msg => $count ) {
-			$msg = htmlspecialchars ( $msg, ENT_QUOTES, $pi1->extConf['charset']['upper'] );
+			$msg = htmlspecialchars ( $msg, ENT_QUOTES, $this->pi1->extConf['charset']['upper'] );
 			$con .= '<li>';
  			$con .= $msg;
 			if ( $count > 1 ) {
@@ -1222,11 +1222,13 @@ class tx_sevenpack_editor_view {
 			return '';
 
 		//t3lib_div::debug ( array ( 's_errors' => $errors ) );
+		$charset = $this->pi1->extConf['charset']['upper'];
 
 		$res = '<ul>';
 		foreach ( $errors as $err ) {
 			$tmp = '<li>';
-			$tmp .= $this->pi1->cObj->stdWrap ( $err['msg'], 
+			$msg = htmlspecialchars ( $err['msg'], ENT_QUOTES, $charset );
+			$tmp .= $this->pi1->cObj->stdWrap ( $msg, 
 				$this->conf['warn_box.']['msg.'] ) . "\n";
 
 			$lst =& $err['list'];
