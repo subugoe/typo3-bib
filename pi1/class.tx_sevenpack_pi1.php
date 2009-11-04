@@ -2279,6 +2279,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 		$conf =& $this->conf;
 
+		$charset = $this->extConf['charset']['upper'];
+
 		// The author name template
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
 		if ( isset ( $conf['authors.']['template'] ) ) {
@@ -2522,11 +2524,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Append string for item data
 			$append = '';
 			if ( ( sizeof ( $warnings ) > 0 ) && $ed_mode ) {
+				$charset = $this->extConf['charset']['upper'];
 				foreach ( $warnings as $err ) {
-					$append .= $cObj->stdWrap ( $err['msg'], $w_cfg['msg.'] );
+					$msg = htmlspecialchars ( $err['msg'], ENT_QUOTES, $charset );
+					$append .= $cObj->stdWrap ( $msg, $w_cfg['msg.'] );
 				}
-				$append = $cObj->stdWrap ( $append,
-						$w_cfg['all_wrap.'] );
+				$append = $cObj->stdWrap ( $append, $w_cfg['all_wrap.'] );
 			}
 			$translator['###ITEM_APPEND###'] = $append;
 
