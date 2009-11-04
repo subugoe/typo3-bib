@@ -258,12 +258,15 @@ class tx_sevenpack_db_utility {
 
 			// Compose and execute command
 			$charset = strtoupper ( $this->charset );
+			$file_shell = escapeshellarg ( $file );
+			$target_shell = escapeshellarg ( $target );
+
 			$cmd = strval ( $this->pdftotext_bin );
 			if ( strlen ( $charset ) > 0 ) {
 				$cmd .= ' -enc ' . $charset;
 			}
-			$cmd .= ' ' . $file;
-			$cmd .= ' ' . $target;
+			$cmd .= ' ' . $file_shell;
+			$cmd .= ' ' . $target_shell;
 			//t3lib_div::debug ( array ( 'cmd' => $cmd ) );
 
 			$cmd_txt = array();
