@@ -1185,21 +1185,18 @@ class tx_sevenpack_editor_view {
 			}
 		}
 
-		//
 		// Local file does not exist
-		//
 		$type = 'file_nexist';
 		if ( $warn[$type] ) {
-			$msg = $this->get_ll ( 'editor_error_file_nexist' );
 			$file = $pub['file_url'];
-			$err = tx_sevenpack_utility::check_file_nexist ( $file, $type, $msg );
-			if ( is_array ( $err ) )
-				$d_err[] = $err;
+			if ( tx_sevenpack_utility::check_file_nexist ( $file ) ) {
+				$msg = $this->get_ll ( 'editor_error_file_nexist' );
+				$msg = str_replace ( '%f', $file, $msg );
+				$d_err[] = array ( 'type' => $type, 'msg' => $msg );
+			}
 		}
 
-		//
 		// Cite id doubles
-		//
 		$type = 'double_citeid';
 		if ( $warn[$type] && !$this->conf['no_edit.']['citeid'] ) {
 			if ( $this->ra->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {

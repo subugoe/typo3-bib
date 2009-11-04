@@ -512,25 +512,19 @@ class tx_sevenpack_utility {
 	/**
 	 * Checks if a local file exists
 	 *
-	 * @return FALSE or the error message array
+	 * @return FALSE if the file exists TRUE if it does not exist
 	 */
-	function check_file_nexist ( $file, $type = '', $msg = '' ) {
-		if ( ( strlen ( $file ) > 0 )
-			&& ( substr ( $file, 0, 10 ) == 'fileadmin/' ) )
+	function check_file_nexist ( $file ) {
+		//t3lib_div::debug ( array ( 'check_file_nexist ' => $file ) );
+		if ( ( strlen ( $file ) > 0 ) &&
+		     ( substr ( $file, 0, 10 ) == 'fileadmin/' ) )
 		{
 			$root = PATH_site;
 			if ( substr ( $root, -1, 1 ) != '/' ) {
 				$root .= '/';
 			}
 			$file = $root . $file;
-			if ( !file_exists ( $file ) ) {
-				//t3lib_div::debug ( array ( 'nexist' => $file ) );
-				$err = array (
-					'type' => $type,
-					'msg' => str_replace ( '%f', $file, $msg )
-				);
-				return $err;
-			}
+			return !file_exists ( $file );
 		}
 		return FALSE;
 	}

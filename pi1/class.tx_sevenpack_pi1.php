@@ -1810,6 +1810,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 * @return The procesed publication data array
 	 */
 	function prepare_pub_display ( $pub, &$warnings = array(), $show_hidden = false ) {
+		//t3lib_div::debug ( array ( 'prepare_pub_display' => '' ) );
 
 		// The error list
 		$d_err = array();
@@ -1820,7 +1821,18 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pdata[$f] = $this->filter_pub_html_display ( $pdata[$f] );
 		}
 
-		// Preformat some data
+		// Preprocess some data
+
+		// File url
+		// Check file existance
+		$file_url = trim ( strval ( $pub['file_url'] ) );
+		if ( tx_sevenpack_utility::check_file_nexist ( $file_url ) ) {
+			$pdata['file_url'] = '';
+			$pdata['_file_nexist'] = TRUE;
+		} else {
+			$pdata['_file_nexist'] = FALSE;
+		}
+
 		// Bibtype
 		$pdata['bibtype_short'] = $this->ra->allBibTypes[$pdata['bibtype']];
 		$pdata['bibtype'] = $this->get_ll (
@@ -1856,26 +1868,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				'Unknown state: '.$pdata['state'], TRUE ) ;
 		}
 
-		// Reviewed
-		if ( $pub['reviewed'] > 0 ) {
-			$pdata['reviewed'] = $this->get_ll ( 'label_yes', 'Yes', TRUE ) ;
-		} else {
-			$pdata['reviewed'] = $this->get_ll ( 'label_no', 'Yes', TRUE ) ;
-		}
+		// Bool strings
+		$b_yes = $this->get_ll ( 'label_yes', 'Yes', TRUE );
+		$b_no = $this->get_ll ( 'label_no', 'No', TRUE );
 
-		// In library
-		if ( $pub['in_library'] > 0 ) {
-			$pdata['in_library'] = $this->get_ll ( 'label_yes', 'Yes', TRUE ) ;
-		} else {
-			$pdata['in_library'] = $this->get_ll ( 'label_no', 'Yes', TRUE ) ;
-		}
+		// Bool fields
+		$pdata['reviewed']   = ( $pub['reviewed']   > 0 ) ? $b_yes : $b_no;
+		$pdata['in_library'] = ( $pub['in_library'] > 0 ) ? $b_yes : $b_no;
 
 		//
 		// Copy field values
 		//
 		$charset = $this->extConf['charset']['upper'];
 		$url_max = 40;
-		if ( is_numeric ( $this->conf['max_url_string_length'] ) > 0 ) {
+		if ( is_numeric ( $this->conf['max_url_string_length'] ) ) {
 			$url_max = intval ( $this->conf['max_url_string_length'] );
 		}
 
@@ -1884,31 +1890,31 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Trim string
 			$val = trim ( strval ( $pdata[$f] ) );
 
+			if ( strlen ( $val ) == 0 ) {
+				$pdata[$f] = $val;
+				continue;
+			}
+
 			// Check restrictions
-			if ( strlen ( $val ) > 0 )  {
-				if ( $this->check_field_restriction ( 'ref', $f, $val, $show_hidden ) ) {
-					$val = '';
-					$pdata[$f] = $val;
-				}
+			if ( $this->check_field_restriction ( 'ref', $f, $val, $show_hidden ) ) {
+				$pdata[$f] = '';
+				continue;
 			}
 
 			// Treat some fields
-			if ( strlen ( $val ) > 0 )  {
-				switch ( $f ) {
-					case 'file_url':
-					case 'web_url':
-					case 'web_url2':
-						$val = tx_sevenpack_utility::fix_html_ampersand ( $val );
-						$pdata[$f] = $val;
-						$pdata[$f.'_short'] = tx_sevenpack_utility::crop_middle ( 
-							$val, $url_max, $charset );
-						break;
-					case 'DOI':
-						$pdata[$f] = $val;
-						$pdata['DOI_url'] = 'http://dx.doi.org/' . $val;
-					default:
-						$pdata[$f] = $val;
-				}
+			switch ( $f ) {
+				case 'file_url':
+				case 'web_url':
+				case 'web_url2':
+					$pdata[$f] = tx_sevenpack_utility::fix_html_ampersand ( $val );
+					$val = tx_sevenpack_utility::crop_middle ( $val, $url_max, $charset );
+					$pdata[$f.'_short'] = tx_sevenpack_utility::fix_html_ampersand ( $val );
+					break;
+				case 'DOI':
+					$pdata[$f] = $val;
+					$pdata['DOI_url'] = 'http://dx.doi.org/' . $val;
+				default:
+					$pdata[$f] = $val;
 			}
 		}
 
@@ -1963,27 +1969,25 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$pdata['auto_url_short'] = tx_sevenpack_utility::crop_middle (
 			$pdata['auto_url'], $url_max, $charset );
 
-		//
 		// Do data checks
-		//
 		if ( $this->extConf['edit_mode'] ) {
 			$w_cfg =& $this->conf['editor.']['list.']['warnings.'];
-			//
+
 			// Local file does not exist
-			//
 			$type = 'file_nexist';
 			if ( $w_cfg[$type] ) {
-				$msg = $this->get_ll ( 'editor_error_file_nexist' );
-				$file = $pub['file_url'];
-				//t3lib_div::debug ( $file );
-				$err = tx_sevenpack_utility::check_file_nexist ( $file, $type, $msg );
-				if ( is_array ( $err ) )
-					$d_err[] = $err;
+				if ( $pdata['_file_nexist'] ) {
+					$msg = $this->get_ll ( 'editor_error_file_nexist' );
+					$msg = str_replace ( '%f', $file_url, $msg );
+					$d_err[] = array ( 'type' => $type, 'msg' => $msg );
+				}
 			}
+
 		}
 
 		$warnings = $d_err;
 		//t3lib_div::debug ( $warnings );
+		//t3lib_div::debug ( $pdata );
 
 		return $pdata;
 	}
@@ -2032,6 +2036,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fields[] = 'web_url2_short';
 		$fields[] = 'auto_url';
 		$fields[] = 'auto_url_short';
+
 		foreach ( $fields as $f ) {
 			$upStr = strtoupper ( $f );
 			$tkey = '###'.$upStr.'###';
@@ -2466,7 +2471,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$enum = str_replace ( '###I_ALL###', strval ( $i_all ), $enum );
 			$enum = str_replace ( '###I_PAGE###', strval ( $i_page ), $enum );
 			if ( !( strpos( $enum, '###FILE_URL_ICON###' ) === FALSE ) ) {
-				$repl = $this->get_file_url_icon ( $pub['file_url'] );
+				$repl = $this->get_file_url_icon ( $pdata );
 				$enum = str_replace ( '###FILE_URL_ICON###', $repl, $enum );
 			}
 			$translator['###ENUM_NUMBER###'] = $cObj->stdWrap ( $enum, $enum_wrap );
@@ -2651,14 +2656,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			return TRUE;
 		}
 
-		// Check if local file does not exist
-		if ( $field == 'file_url' ) {
-			$err = tx_sevenpack_utility::check_file_nexist ( $value );
-			if ( is_array ( $err ) ) {
-				return TRUE;
-			}
-		}
-
 		// Are there restrictions at all?
 		$rest =& $this->extConf['restrict'][$table];
 		if ( !is_array ( $rest ) || ( sizeof ( $rest ) == 0 ) ) {
@@ -2714,24 +2711,36 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	/**
 	 * Prepares the virtual auto_url from the data and field order
 	 *
+	 * @param $pdata The processed publication data
 	 * @return The generated url
 	 */
 	function get_auto_url ( $pdata, $order ) {
-		//t3lib_div::debug( array ( 'Order: ' => $order ) );
+		//t3lib_div::debug( 'get_auto_url' );
 		$url = '';
 
 		foreach ( $order as $field ) {
-			if ( strlen ( $url ) > 0 )
-				break;
-			$data = trim ( strval ( $pdata[$field] ) );
-			if ( strlen ( $data ) > 0 ) {
-				$rest = $this->check_field_restriction ( 'ref', $field, $data );
-				if ( !is_array ( $rest ) ) {
-					$url = $data;
-					if ( $field == 'DOI' ) {
-						$url = $pdata['DOI_url'];
+			if ( strlen ( $pdata[$field] ) == 0 ) {
+				continue;
+			}
+			if ( $this->check_field_restriction ( 'ref', $field, $pdata[$field] ) ) {
+				continue;
+			}
+
+			switch ( $field ) {
+				case 'file_url':
+					if ( !$pdata['_file_nexist'] ) {
+						$url = $pdata[$field];
 					}
-				}
+					break;
+				case 'DOI':
+					$url = $pdata['DOI_url'];
+					break;
+				default:
+					$url = $pdata[$field];
+			}
+
+			if ( strlen ( $url ) > 0 ) {
+				break;
 			}
 		}
 		//t3lib_div::debug ( array ( 'auto_url: ' => $url ) );
@@ -2741,8 +2750,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 	/**
 	 * Returns the file url icon
+	 *
+	 * @return The html icon img tag
 	 */
-	function get_file_url_icon ( $url ) {
+	function get_file_url_icon ( $pdata ) {
 		$res = '';
 
 		$def = FALSE;
@@ -2750,6 +2761,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$src = strval ( $sources['.empty_default'] );
 		$alt = 'default';
+
+		$url = '';
+		if ( !$pdata['_file_nexist'] ) {
+			$url = $pdata['file_url'];
+		}
 		if ( strlen ( $url ) > 0 ) {
 			$src = $sources['.default'];
 
