@@ -21,6 +21,9 @@ class tx_sevenpack_db_utility {
 	public $ra;
 	public $charset;
 
+	// Full text caching variables
+	public $ft_max_num;
+	public $ft_max_sec;
 	public $pdftotext_bin;
 	public $tmp_dir;
 
@@ -38,26 +41,11 @@ class tx_sevenpack_db_utility {
 		}
 
 		$this->charset = 'UTF-8';
+
+		$this->ft_max_num = 100;
+		$this->ft_max_sec = 3;
 		$this->pdftotext_bin = 'pdftotext';
 		$this->tmp_dir = '/tmp';
-	}
-
-
-	/**
-	 * Reads the full text generation configuration
-	 *
-	 * @return void
-	 */
-	function read_full_text_conf ( $cfg ) {
-		//t3lib_div::debug ( $cfg );
-		if ( is_array ( $cfg ) ) {
-			if ( isset ( $cfg['pdftotext_bin'] ) ) {
-				$this->pdftotext_bin = trim ( $cfg['pdftotext_bin'] );
-			}
-			if ( isset ( $cfg['tmp_dir'] ) ) {
-				$this->tmp_dir = trim ( $cfg['tmp_dir'] );
-			}
-		}
 	}
 
 
@@ -98,6 +86,30 @@ class tx_sevenpack_db_utility {
 
 
 	/**
+	 * Reads the full text generation configuration
+	 *
+	 * @return void
+	 */
+	function read_full_text_conf ( $cfg ) {
+		//t3lib_div::debug ( $cfg );
+		if ( is_array ( $cfg ) ) {
+			if ( isset ( $cfg['max_num'] ) ) {
+				$this->ft_max_num = intval ( $cfg['max_num'] );
+			}
+			if ( isset ( $cfg['max_sec'] ) ) {
+				$this->ft_max_sec = intval ( $cfg['max_sec'] );
+			}
+			if ( isset ( $cfg['pdftotext_bin'] ) ) {
+				$this->pdftotext_bin = trim ( $cfg['pdftotext_bin'] );
+			}
+			if ( isset ( $cfg['tmp_dir'] ) ) {
+				$this->tmp_dir = trim ( $cfg['tmp_dir'] );
+			}
+		}
+	}
+
+
+	/**
 	 * Updates the full_text field for all references if neccessary
 	 *
 	 * @return An array with some statistical data
@@ -107,12 +119,14 @@ class tx_sevenpack_db_utility {
 		$stat = array();
 		$stat['updated'] = array();
 		$stat['errors'] = array();
+		$stat['limit_num'] = 0;
+		$stat['limit_time'] = 0;
 		$uids = array();
 
 		$WC = array();
 
-		if ( sizeof ( $this->pid_list ) > 0 ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
+		if ( sizeof ( $this->ra->pid_list ) > 0 ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->ra->pid_list );
 			$WC[] = 'pid IN ('.$csv.')';
 		}
 		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
@@ -124,12 +138,26 @@ class tx_sevenpack_db_utility {
 			$uids[] = intval ( $row['uid'] );
 		}
 
+		$time_start = time();
 		foreach ( $uids as $uid ) {
 			$err = $this->update_full_text ( $uid, $force );
 			if ( is_array ( $err ) ) {
 				$stat['errors'][] = array ( $uid, $err );
-			} else if ( $err ) {
-				$stat['updated'][] = $uid;
+			} else {
+				if ( $err ) {
+					$stat['updated'][] = $uid;
+					if ( sizeof ( $stat['updated'] ) >= $this->ft_max_num ) {
+						$stat['limit_num'] = 1;
+						break;
+					}
+				}
+			}
+
+			// Check time limit
+			$time_delta = time() - $time_start;
+			if ( $time_delta >= $this->ft_max_sec ) {
+				$stat['limit_time'] = 1;
+				break;
 			}
 		}
 		return $stat;
@@ -137,7 +165,7 @@ class tx_sevenpack_db_utility {
 
 
 	/**
-	 * Updates the full_text for the reference with the geiven uid
+	 * Updates the full_text for the reference with the given uid
 	 *
 	 * @return Not defined
 	 */
@@ -221,6 +249,12 @@ class tx_sevenpack_db_utility {
 
 			// Determine temporary text file
 			$target = tempnam ( $this->tmp_dir, 'sevenpack_pdftotext' );
+			if ( $target === FALSE ) {
+				$err = array();
+				$err['msg'] = 'Could not create temporary file in ' . strval ( $this->tmp_dir );
+				return $err;
+			}
+			//t3lib_div::debug ( array ( 'tmp_dir' => $this->tmp_dir, 'target' => $target ) );
 
 			// Compose and execute command
 			$charset = strtoupper ( $this->charset );
@@ -237,7 +271,7 @@ class tx_sevenpack_db_utility {
 			exec ( $cmd, $cmd_txt, $retval );
 			if ( $retval != 0 ) {
 				$err = array();
-				$err['msg'] = 'pdftotext failed: ' . implode ( '', $cmd_txt );
+				$err['msg'] = 'pdftotext failed on ' . strval ( $pub['file_url'] ) . ': ' . implode ( '', $cmd_txt );
 				return $err;
 			}
 

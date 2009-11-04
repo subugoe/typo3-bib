@@ -1,3 +1,10 @@
+2009-11-04      Sebastian Holtermann  <sebholt@web.de>
+	* Full text cache: Time and number limit for full text cache updates.
+	                   This should help to avoid hitting a PHP CPU/Time limit.
+	* Full text cache: Check if a temporary file could be created
+	* Localization: Fixed english link titles in the year navigation bar
+	* Release version 0.7.6
+
 2009-30-10      Sebastian Holtermann  <sebholt@web.de>
 	* General: The full text cache remembers the filename of the
 	           cached file to avoid unneccessary cache updates

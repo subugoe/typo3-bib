@@ -256,6 +256,25 @@ class tx_sevenpack_utility {
 
 
 	/** 
+	 * Counts strings in an array of strings
+	 * 
+	 * @return An associative array contatining the input strings and their counts
+	 */
+	function string_counter ( $messages ) {
+		$res = array();
+		foreach ( $messages as $msg ) {
+			$msg = strval ( $msg );
+			if ( array_key_exists ( $msg, $res ) ) {
+				$res[$msg] += 1;
+			} else {
+				$res[$msg] = 1;
+			}
+		}
+		return $res;
+	}
+
+
+	/** 
 	 * Crops the first argument to a given range
 	 * 
 	 * @return The value fitted into the given range

@@ -260,7 +260,7 @@ class tx_sevenpack_importer {
 						$this->stat['errors'][] = $err[1]['msg'];
 					}
 				}
-				$this->stat['full_text'] = sizeof ( $arr['updated'] );
+				$this->stat['full_text'] = $arr;
 			}
 
 		}
@@ -317,15 +317,25 @@ class tx_sevenpack_importer {
 				intval ( $stat['failed'] ) );
 		}
 
-		if ( isset ( $stat['full_text'] ) ) {
+		if ( is_array ( $stat['full_text'] ) ) {
+			$fts =& $stat['full_text'];
 			$con .= $this->table_row_str ( 
-				'Updated full texts:', 
-				intval ( $stat['full_text'] ) );
+				'Updated full texts:', count ( $fts['updated'] ) );
+			if ( $fts['limit_num'] ) {
+				$con .= $this->table_row_str ( 
+					$this->pi1->get_ll ( 'msg_warn_ftc_limit' ), 
+					$this->pi1->get_ll ( 'msg_warn_ftc_limit_num' ) );
+			}
+			if ( $fts['limit_time'] ) {
+				$con .= $this->table_row_str ( 
+					$this->pi1->get_ll ( 'msg_warn_ftc_limit' ), 
+					$this->pi1->get_ll ( 'msg_warn_ftc_limit_time' ) );
+			}
 		}
 
 		if ( is_array ( $stat['warnings'] ) && ( count ( $stat['warnings'] ) > 0 ) ) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = $this->message_counter ( $stat['warnings'] );
+			$messages = tx_sevenpack_utility::string_counter ( $stat['warnings'] );
 			foreach ( $messages as $msg => $count ) {
 				$str = $this->message_times_str ( $msg, $count );
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -337,7 +347,7 @@ class tx_sevenpack_importer {
 
 		if ( is_array ( $stat['errors'] ) && ( count ( $stat['errors'] ) > 0 ) ) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = $this->message_counter ( $stat['errors'] );
+			$messages = tx_sevenpack_utility::string_counter ( $stat['errors'] );
 			foreach ( $messages as $msg => $count ) {
 				$str = $this->message_times_str ( $msg, $count );
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -352,20 +362,6 @@ class tx_sevenpack_importer {
 
 
 		return $con;
-	}
-
-
-	function message_counter ( $messages ) {
-		$res = array();
-		foreach ( $messages as $msg ) {
-			if ( array_key_exists ( $msg, $res ) ) {
-				$res[$msg] += 1;
-			} else {
-				$res[$msg] = 1;
-			}
-		}
-		arsort ( $res );
-		return $res;
 	}
 
 

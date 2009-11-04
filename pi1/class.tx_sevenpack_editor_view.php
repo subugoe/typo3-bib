@@ -956,31 +956,90 @@ class tx_sevenpack_editor_view {
 	 * @return The requested dialog
 	 */
 	function post_db_write ( ) {
-		$mess = array();
+		$events = array();
+		$errors = array();
 		if ( $this->conf['delete_no_ref_authors'] ) {
 			$count = $this->db_utility->delete_no_ref_authors();
 			if ( $count > 0 ) {
 				$msg = $this->get_ll ( 'msg_deleted_authors' );
 				$msg = str_replace ( '%d', strval ( $count ), $msg );
-				$mess[] = $msg;
+				$events[] = $msg;
 			}
 		}
 		if ( $this->conf['full_text.']['update'] ) {
-			$arr = $this->db_utility->update_full_text_all();
-			$count = sizeof ( $arr['updated'] );
+			$stat = $this->db_utility->update_full_text_all();
+
+			$count = sizeof ( $stat['updated'] );
 			if ( $count > 0 ) {
 				$msg = $this->get_ll ( 'msg_updated_full_text' );
 				$msg = str_replace ( '%d', strval ( $count ), $msg );
-				$mess[] = $msg;
+				$events[] = $msg;
 			}
-			if ( sizeof ( $arr['errors'] ) > 0 ) {
-				foreach ( $arr['errors'] as $err ) {
+
+			if ( sizeof ( $stat['errors'] ) > 0 ) {
+				foreach ( $stat['errors'] as $err ) {
 					$msg = $err[1]['msg'];
-					$mess[] = $msg;
+					$errors[] = $msg;
 				}
 			}
+
+			if ( $stat['limit_num'] ) {
+				$msg = $this->get_ll ( 'msg_warn_ftc_limit' ) . ' - ';
+				$msg .= $this->get_ll ( 'msg_warn_ftc_limit_num' );
+				$errors[] = $msg;
+			}
+
+			if ( $stat['limit_time'] ) {
+				$msg = $this->get_ll ( 'msg_warn_ftc_limit' ) . ' - ';
+				$msg .= $this->get_ll ( 'msg_warn_ftc_limit_time' );
+				$errors[] = $msg;
+			}
+
 		}
-		return $mess;
+		return array ( $events, $errors );
+	}
+
+
+	/** 
+	 * Creates a html text from a post db write event
+	 *
+	 * @return The html message string
+	 */
+	function post_db_write_message ( $messages ) {
+		$con = '';
+		if ( count ( $messages[0] ) > 0 ) {
+			$con .= '<h4>' . $this->get_ll ( 'msg_title_events' ) . '</h4>' . "\n";
+			$con .= $this->post_db_write_message_items ( $messages[0] );
+		}
+		if ( count ( $messages[1] ) > 0 ) {
+			$con .= '<h4>' . $this->get_ll ( 'msg_title_errors' ) . '</h4>' . "\n";
+			$con .= $this->post_db_write_message_items ( $messages[1] );
+		}
+		return $con;
+	}
+
+
+	/** 
+	 * Creates a html text from a post db write event
+	 *
+	 * @return The html message string
+	 */
+	function post_db_write_message_items ( $messages ) {
+		$con = '';
+		$messages = tx_sevenpack_utility::string_counter ( $messages );
+		$con .= '<ul>' . "\n";
+		foreach ( $messages as $msg => $count ) {
+			$msg = htmlspecialchars ( $msg, ENT_QUOTES, $pi1->extConf['charset']['upper'] );
+			$con .= '<li>';
+ 			$con .= $msg;
+			if ( $count > 1 ) {
+				$app = str_replace ( '%d', strval ( $count ), $this->get_ll ( 'msg_times' ) );
+				$con .= '(' . $app . ')';
+			}
+ 			$con .= '</li>' . "\n";
+		}
+		$con .= '</ul>' . "\n";
+		return $con;
 	}
 
 
@@ -1003,15 +1062,8 @@ class tx_sevenpack_editor_view {
 					$con .= '</div>' . "\n";
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_save_success' ).'</p>';
-					$arr = $this->post_db_write();
-					if ( sizeof ( $arr ) > 0 ) {
-						$con .= '<ul>' . "\n";
-						foreach ( $arr as $msg ) {
-							$msg = htmlspecialchars ( $msg, ENT_QUOTES, $pi1->extConf['charset']['upper'] );
-							$con .= '<li>' . $msg . '</li>' . "\n";
-						}
-						$con .= '</ul>' . "\n";
-					}
+					$messages = $this->post_db_write();
+					$con .= $this->post_db_write_message ( $messages );
 				}
 				break;
 
@@ -1023,8 +1075,9 @@ class tx_sevenpack_editor_view {
 					$con .= '<p>'.$this->ra->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
-					$this->post_db_write();
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_success' ).'</p>';
+					$messages = $this->post_db_write();
+					$con .= $this->post_db_write_message ( $messages );
 				}
 				break;
 
@@ -1032,8 +1085,9 @@ class tx_sevenpack_editor_view {
 				if ( $this->ra->erase_publication ( $pi1->piVars['uid'] ) ) {
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_fail' ).'</p>';
 				} else {
-					$this->post_db_write();
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_success' ).'</p>';
+					$messages = $this->post_db_write();
+					$con .= $this->post_db_write_message ( $messages );
 				}
 				break;
 

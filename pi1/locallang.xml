@@ -91,7 +91,13 @@
 			<label index="msg_erase_success">The publication has been erased.</label>
 			<label index="msg_save_fail">The publication data saving failed.</label>
 			<label index="msg_save_success">The publication has been saved.</label>
+			<label index="msg_times">%d times</label>
+			<label index="msg_title_events">Events</label>
+			<label index="msg_title_errors">Issues</label>
 			<label index="msg_updated_full_text">%d full text field(s) has/have been updated</label>
+			<label index="msg_warn_ftc_limit">Not all full text caches have been updated</label>
+			<label index="msg_warn_ftc_limit_num">Number limit reached</label>
+			<label index="msg_warn_ftc_limit_time">Time limit reached</label>
 			<label index="pageNav_begin">First</label>
 			<label index="pageNav_beginLinkTitle">First page</label>
 			<label index="pageNav_label">Page</label>
@@ -127,7 +133,7 @@
 			<label index="upload_file">Upload file</label>
 			<label index="yearNav_all_years">All</label>
 			<label index="yearNav_label">Year</label>
-			<label index="yearNav_yearLinkTitle">Publikations in %y</label>
+			<label index="yearNav_yearLinkTitle">Publications in %y</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="authorNav_label">Autor</label>
@@ -215,6 +221,9 @@
 			<label index="msg_erase_success">Die Referenz wurde entfernt.</label>
 			<label index="msg_save_fail">Speichern der Referenz ist fehlgeschlagen.</label>
 			<label index="msg_save_success">Die Referenz wurde gespeichert.</label>
+			<label index="msg_times">%d Mal</label>
+			<label index="msg_title_events">Ereignisse</label>
+			<label index="msg_title_errors">Probleme</label>
 			<label index="msg_updated_full_text">%d Volltext Feld(er) wurde(n) aktualisiert</label>
 			<label index="pageNav_begin">Anfang</label>
 			<label index="pageNav_beginLinkTitle">Erste Seite</label>

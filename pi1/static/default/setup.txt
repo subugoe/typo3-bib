@@ -590,6 +590,8 @@ plugin.tx_sevenpack_pi1 {
 		# Full text configuration
 		full_text {
 			update = 0
+			max_num = 100
+			max_sec = 5
 			pdftotext_bin = /usr/bin/pdftotext
 			tmp_dir = /tmp
 		}
