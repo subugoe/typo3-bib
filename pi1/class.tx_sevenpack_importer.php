@@ -4,21 +4,26 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
+
+require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_pregexp_translator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
+	'EXT:sevenpack/res/class.tx_sevenpack_reference_writer.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
+
 
 class tx_sevenpack_importer {
 
 	public $pi1;
 	public $ref_read;
+	public $ref_write;
 
 	public $db_utility;
 
@@ -42,7 +47,10 @@ class tx_sevenpack_importer {
 	 */
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
-		$this->ref_read  =& $pi1->ref_read;
+		$this->ref_read =& $pi1->ref_read;
+
+		$this->ref_write = t3lib_div::makeInstance ( 'tx_sevenpack_reference_writer' );
+		$this->ref_write->initialize( $this->ref_read );
 
 		$this->storage_pid = 0;
 		$this->stat = array();
@@ -164,11 +172,11 @@ class tx_sevenpack_importer {
 		// Save publications
 		if ( $s_ok ) {
 			//t3lib_div::debug ( $pub );
-			$s_fail = $this->ref_read->save_publication ( $pub );
+			$s_fail = $this->ref_write->save_publication ( $pub );
 
 			if ( $s_fail ) {
 				$stat['failed']++;
-				$stat['errors'][] = $this->ref_read->error_message();
+				$stat['errors'][] = $this->ref_write->error_message();
 			} else {
 				$stat['succeeded']++;
 			}

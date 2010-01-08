@@ -4,7 +4,7 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_reference_accessor.php' ) );
+	'EXT:sevenpack/res/class.tx_sevenpack_reference_reader.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
@@ -37,7 +37,7 @@ class tx_sevenpack_db_utility {
 		if ( is_object ( $ref_read ) ) {
 			$this->ref_read =& $ref_read;
 		} else {
-			$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
+			$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_reader' );
 		}
 
 		$this->charset = 'UTF-8';

@@ -317,7 +317,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$trans['###SELECTION###'] = $this->get_author_selection();
 		$trans['###SURNAME_SELECT###'] = $this->get_html_select();
 
-		$tmpl = $this->pi1->enum_condition_block ( $this->template );
+		$tmpl = $this->pi1->setup_enum_cond_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
 		return $con;

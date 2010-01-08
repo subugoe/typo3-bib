@@ -7,14 +7,19 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+	'EXT:sevenpack/res/class.tx_sevenpack_reference_writer.php' ) );
+
+require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
+
 
 class tx_sevenpack_editor_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
 	public $ref_read;  // Reference reader
-	public $db_utility;  // Reference accessor
+	public $ref_write;  // Reference writer
+	public $db_utility;  // Databse utility
 	public $LLPrefix = 'editor_';
 	public $idGenerator = FALSE;
 
@@ -1051,14 +1056,18 @@ class tx_sevenpack_editor_view {
 	function dialog_view () {
 		$con = '';
 		$pi1 =& $this->pi1;
+
+		$this->ref_write = t3lib_div::makeInstance ( 'tx_sevenpack_reference_writer' );
+		$this->ref_write->initialize( $this->ref_read );
+
 		switch ( $pi1->extConf['dialog_mode'] ) {
 
 			case $pi1->DIALOG_SAVE_CONFIRMED : 
 				$pub = $this->get_http_ref();
-				if ( $this->ref_read->save_publication ( $pub ) ) {
+				if ( $this->ref_write->save_publication ( $pub ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_save_fail' ).'</p>';
-					$con .= '<p>'.$this->ref_read->html_error_message().'</p>';
+					$con .= '<p>'.$this->ref_write->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_save_success' ).'</p>';
@@ -1069,10 +1078,10 @@ class tx_sevenpack_editor_view {
 
 			case $pi1->DIALOG_DELETE_CONFIRMED : 
 				$pub = $this->get_http_ref();
-				if ( $this->ref_read->delete_publication ( $pi1->piVars['uid'], $pub['mod_key'] ) ) {
+				if ( $this->ref_write->delete_publication ( $pi1->piVars['uid'], $pub['mod_key'] ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_fail' ).'</p>';
-					$con .= '<p>'.$this->ref_read->html_error_message().'</p>';
+					$con .= '<p>'.$this->ref_write->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_success' ).'</p>';
@@ -1082,7 +1091,7 @@ class tx_sevenpack_editor_view {
 				break;
 
 			case $pi1->DIALOG_ERASE_CONFIRMED : 
-				if ( $this->ref_read->erase_publication ( $pi1->piVars['uid'] ) ) {
+				if ( $this->ref_write->erase_publication ( $pi1->piVars['uid'] ) ) {
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_fail' ).'</p>';
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_success' ).'</p>';

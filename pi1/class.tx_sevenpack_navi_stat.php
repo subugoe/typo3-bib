@@ -77,7 +77,7 @@ class tx_sevenpack_navi_stat extends tx_sevenpack_navi  {
 
 		//t3lib_div::debug( $trans );
 
-		$tmpl = $this->pi1->enum_condition_block ( $this->template );
+		$tmpl = $this->pi1->setup_enum_cond_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
 		return $con;

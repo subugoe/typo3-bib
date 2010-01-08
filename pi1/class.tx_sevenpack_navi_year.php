@@ -147,7 +147,7 @@ class tx_sevenpack_navi_year extends tx_sevenpack_navi  {
 		$trans['###SELECTION###'] = $selection;
 		$trans['###SELECT_FORM###'] = $sel;
 
-		$tmpl = $this->pi1->enum_condition_block ( $this->template );
+		$tmpl = $this->pi1->setup_enum_cond_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
 		return $con;

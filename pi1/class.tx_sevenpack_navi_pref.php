@@ -183,7 +183,7 @@ class tx_sevenpack_navi_pref extends tx_sevenpack_navi  {
 		$trans['###GO###'] = $go_btn;
 		$trans['###FORM_END###'] = $fo_end;
 
-		$tmpl = $this->pi1->enum_condition_block ( $this->template );
+		$tmpl = $this->pi1->setup_enum_cond_block ( $this->template );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
 		return $con;

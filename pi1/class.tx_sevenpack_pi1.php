@@ -34,7 +34,7 @@
 require_once ( PATH_tslib.'class.tslib_pibase.php' );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_reference_accessor.php' ) );
+	'EXT:sevenpack/res/class.tx_sevenpack_reference_reader.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
@@ -114,7 +114,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	// These are derived/extra configuration values
 	public $extConf;
 
-	public $ref_read;  // The reference database accessor class
+	public $ref_read;  // The reference database reader
 	public $fetchRes;
 	public $icon_src = array();
 
@@ -140,7 +140,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
-		$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
+		$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_reader' );
 		$this->ref_read->set_cObj ( $this->cObj );
 
 		// Initialize current configuration
@@ -495,10 +495,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 						$extConf['view_mode']   = $this->VIEW_DIALOG;
 						$extConf['dialog_mode'] = $this->DIALOG_ERASE_CONFIRMED;
 					case 'hide':
-						$this->ref_read->hide_publication ( $this->piVars['uid'], TRUE );
+						$this->hide_publication( TRUE );
 						break;
 					case 'reveal':
-						$this->ref_read->hide_publication ( $this->piVars['uid'], FALSE );
+						$this->hide_publication( FALSE );
 						break;
 					default:
 				}
@@ -708,7 +708,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
-		// Setup reference accessor
+		// Setup reference reader
 		//t3lib_div::debug ( $this->stat );
 		//t3lib_div::debug ( $extConf['filters'] );
 		$this->ref_read->set_filters ( $extConf['filters'] );
@@ -1637,7 +1637,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$hasStr = '';
 
 		if ( $this->extConf['edit_mode'] )  {
-			$tmpl = $this->enum_condition_block ( $this->template['NEW_ENTRY_NAVI_BLOCK'] );
+			$tmpl = $this->setup_enum_cond_block ( $this->template['NEW_ENTRY_NAVI_BLOCK'] );
 			$linkStr = $this->get_new_manipulator ( );
 			$linkStr = $this->cObj->substituteMarker ( $tmpl, '###NEW_ENTRY###', $linkStr );
 			$hasStr = array ( '','' );
@@ -1726,7 +1726,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$trans['###LABEL###'] = $label;
 			$trans['###EXPORTS###'] = $exports;
  
-			$block = $this->enum_condition_block ( $this->template['EXPORT_NAVI_BLOCK'] );
+			$block = $this->setup_enum_cond_block ( $this->template['EXPORT_NAVI_BLOCK'] );
 			$block = $this->cObj->substituteMarkerArrayCached ( $block, $trans, array() );
 			$hasStr = array ( '','' );
 		}
@@ -1754,7 +1754,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( is_array ( $this->conf['import.'] ) )
 				$cfg =& $this->conf['import.'];
 
-			$str = $this->enum_condition_block ( $this->template['IMPORT_NAVI_BLOCK'] );
+			$str = $this->setup_enum_cond_block ( $this->template['IMPORT_NAVI_BLOCK'] );
 			$translator = array();
 			$imports = array();
 
@@ -2379,9 +2379,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// block templates
 		$item_tmpl = array();
-		$item_block = $this->enum_condition_block ( $this->template['ITEM_BLOCK'] );
-		$year_block = $this->enum_condition_block ( $this->template['YEAR_BLOCK'] );
-		$bib_block = $this->enum_condition_block ( $this->template['BIBTYPE_BLOCK'] );
+		$item_block = $this->setup_enum_cond_block ( $this->template['ITEM_BLOCK'] );
+		$year_block = $this->setup_enum_cond_block ( $this->template['YEAR_BLOCK'] );
+		$bib_block = $this->setup_enum_cond_block ( $this->template['BIBTYPE_BLOCK'] );
 
 		// Initialize the enumeration template
 		$eid = 'page';
@@ -2823,7 +2823,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function enum_condition_block ( $templ ) 
+	function setup_enum_cond_block ( $templ ) 
 	{
 		$sub = $this->extConf['has_enum'] ? array() : '';
 		$templ = $this->cObj->substituteSubpart ( 
@@ -2833,17 +2833,32 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 
 	/** 
-	 * Setup the BibTex export link in the template
+	 * Setup the a spacer block
 	 *
 	 * @return void
 	 */
 	function setup_spacer ()
 	{
-		$t_str = $this->enum_condition_block ( $this->template['SPACER_BLOCK'] );
+		$t_str = $this->setup_enum_cond_block ( $this->template['SPACER_BLOCK'] );
 		$tmpl =& $this->template['LIST_VIEW'];
 		$tmpl = $this->cObj->substituteMarker ( $tmpl, '###SPACER###', $t_str );
 	}
 
+
+	/** 
+	 * Hides or reveals a publication
+	 *
+	 * @return void
+	 */
+	function hide_publication ( $hide = TRUE )
+	{
+		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
+			'EXT:sevenpack/res/class.tx_sevenpack_reference_writer.php' ) );
+
+		$ref_write = t3lib_div::makeInstance ( 'tx_sevenpack_reference_writer' );
+		$ref_write->initialize( $this->ref_read );
+		$ref_write->hide_publication ( $this->piVars['uid'], $hide );
+	}
 
 
 	/** 

@@ -291,7 +291,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 
 		$has_extra = $extConf['extra'] ? array ( '', '' ) : '';
 
-		$tmpl = $this->pi1->enum_condition_block ( $this->template );
+		$tmpl = $this->pi1->setup_enum_cond_block ( $this->template );
 		$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_EXTRA###', $has_extra );
 		$con = $cObj->substituteMarkerArrayCached ( $tmpl, $trans );
 
