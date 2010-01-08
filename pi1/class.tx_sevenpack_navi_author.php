@@ -64,7 +64,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 	function hook_filter ( ) {
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$ra =& $this->pi1->ra;
+		$ref_read =& $this->pi1->ref_read;
 
 		// Init statistics
 		$this->pi1->stat['authors'] = array();
@@ -75,7 +75,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		//
 		// Fetch all surnames and initialize letters
 		//
-		$astat['surnames'] = $ra->fetch_author_surnames();
+		$astat['surnames'] = $ref_read->fetch_author_surnames();
 		$astat['sel_surnames'] = array();
 		$this->init_letters ( $astat['surnames'] );
 
@@ -108,8 +108,8 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 			//
 			// Fetch selected surnames
 			//
-			$ra->set_filters ( $filters );
-			$sel_surnames = $ra->fetch_author_surnames ( );
+			$ref_read->set_filters ( $filters );
+			$sel_surnames = $ref_read->fetch_author_surnames ( );
 			//t3lib_div::debug ( $sel_surnames );
 
 			//
@@ -144,7 +144,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 			//
 			// Restore filter
 			//
-			$ra->set_filters ( $this->pi1->extConf['filters'] );
+			$ref_read->set_filters ( $this->pi1->extConf['filters'] );
 		}
 
 		//
@@ -181,7 +181,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 			$ff['author']['author']['authors'] = $filter;
 
 			//t3lib_div::debug ( $extConf['filters'] );
-			$ra->set_filters ( $ff );
+			$ref_read->set_filters ( $ff );
 		}
 	}
 

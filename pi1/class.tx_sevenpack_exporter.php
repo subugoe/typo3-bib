@@ -9,7 +9,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 class tx_sevenpack_exporter {
 
 	public $pi1;
-	public $ra;
+	public $ref_read;
 	public $filters;
 	public $filter_key;
 	public $page_mode;
@@ -34,7 +34,7 @@ class tx_sevenpack_exporter {
 	 */
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
-		$this->ra  =& $pi1->ra;
+		$this->ref_read  =& $pi1->ref_read;
 
 		// Setup filters
 		$this->filters = $this->pi1->extConf['filters'];
@@ -92,7 +92,7 @@ class tx_sevenpack_exporter {
 	 *         database content, FALSE otherwise.
 	 */
 	function file_is_newer ( $file ) {
-		$db_time = $this->ra->fetch_max_tstamp ( );
+		$db_time = $this->ref_read->fetch_max_tstamp ( );
 
 		if ( file_exists ( $file ) ) {
 			$ft = filemtime ( $file );
@@ -123,12 +123,12 @@ class tx_sevenpack_exporter {
 		} else if ( $ret == 0 ) {
 
 			// Initialize db access
-			$this->ra->set_filters ( $this->filters );
-			$this->ra->mFetch_initialize ();
+			$this->ref_read->set_filters ( $this->filters );
+			$this->ref_read->mFetch_initialize ();
 
 			// Setup info array
 			$infoArr = array();
-			$infoArr['pubNum'] = $this->ra->mFetch_num();
+			$infoArr['pubNum'] = $this->ref_read->mFetch_num();
 			$infoArr['index'] = -1;
 
 			// Write pre data
@@ -136,7 +136,7 @@ class tx_sevenpack_exporter {
 			$this->sink_write ( $data );
 
 			// Write publications
-			while ( $pub =  $this->ra->mFetch() )  {
+			while ( $pub =  $this->ref_read->mFetch() )  {
 				$infoArr['index']++;
 				$data = $this->export_format_publication ( $pub, $infoArr );
 				$this->sink_write ( $data );
@@ -147,7 +147,7 @@ class tx_sevenpack_exporter {
 			$this->sink_write ( $data );
 
 			// Clean up db access
-			$this->ra->mFetch_finish();
+			$this->ref_read->mFetch_finish();
 
 			$this->info = $infoArr;
 		}

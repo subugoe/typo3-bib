@@ -18,7 +18,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 class tx_sevenpack_importer {
 
 	public $pi1;
-	public $ra;
+	public $ref_read;
 
 	public $db_utility;
 
@@ -42,7 +42,7 @@ class tx_sevenpack_importer {
 	 */
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
-		$this->ra  =& $pi1->ra;
+		$this->ref_read  =& $pi1->ref_read;
 
 		$this->storage_pid = 0;
 		$this->stat = array();
@@ -51,7 +51,7 @@ class tx_sevenpack_importer {
 
 		// setup db_utility
 		$this->db_utility = t3lib_div::makeInstance ( 'tx_sevenpack_db_utility' );
-		$this->db_utility->initialize ( $pi1->ra );
+		$this->db_utility->initialize ( $pi1->ref_read );
 		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
 		$this->db_utility->read_full_text_conf ( $pi1->conf['editor.']['full_text.'] );
 
@@ -164,11 +164,11 @@ class tx_sevenpack_importer {
 		// Save publications
 		if ( $s_ok ) {
 			//t3lib_div::debug ( $pub );
-			$s_fail = $this->ra->save_publication ( $pub );
+			$s_fail = $this->ref_read->save_publication ( $pub );
 
 			if ( $s_fail ) {
 				$stat['failed']++;
-				$stat['errors'][] = $this->ra->error_message();
+				$stat['errors'][] = $this->ref_read->error_message();
 			} else {
 				$stat['succeeded']++;
 			}

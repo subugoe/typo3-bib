@@ -18,7 +18,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
  */
 class tx_sevenpack_db_utility {
 
-	public $ra;
+	public $ref_read;
 	public $charset;
 
 	// Full text caching variables
@@ -33,11 +33,11 @@ class tx_sevenpack_db_utility {
 	 *
 	 * @return void
 	 */
-	function initialize ( $ra = FALSE ) {
-		if ( is_object ( $ra ) ) {
-			$this->ra =& $ra;
+	function initialize ( $ref_read = FALSE ) {
+		if ( is_object ( $ref_read ) ) {
+			$this->ref_read =& $ref_read;
 		} else {
-			$this->ra = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
+			$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
 		}
 
 		$this->charset = 'UTF-8';
@@ -55,8 +55,8 @@ class tx_sevenpack_db_utility {
 	 * @return The number of deleted authors
 	 */
 	function delete_no_ref_authors ( ) {
-		$aT =& $this->ra->authorTable;
-		$sT =& $this->ra->aShipTable;
+		$aT =& $this->ref_read->authorTable;
+		$sT =& $this->ref_read->aShipTable;
 		$count = 0;
 
 		$sel = 'SELECT t_au.uid' . "\n";
@@ -115,7 +115,7 @@ class tx_sevenpack_db_utility {
 	 * @return An array with some statistical data
 	 */
 	function update_full_text_all ( $force = FALSE ) {
-		$rT =& $this->ra->refTable;
+		$rT =& $this->ref_read->refTable;
 		$stat = array();
 		$stat['updated'] = array();
 		$stat['errors'] = array();
@@ -125,14 +125,14 @@ class tx_sevenpack_db_utility {
 
 		$WC = array();
 
-		if ( sizeof ( $this->ra->pid_list ) > 0 ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->ra->pid_list );
+		if ( sizeof ( $this->ref_read->pid_list ) > 0 ) {
+			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->ref_read->pid_list );
 			$WC[] = 'pid IN ('.$csv.')';
 		}
 		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
 		$WC = implode ( ' AND ', $WC );
-		$WC .= $this->ra->enable_fields ( $rT );
+		$WC .= $this->ref_read->enable_fields ( $rT );
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'uid', $rT, $WC );
 		while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res ) ) {
 			$uids[] = intval ( $row['uid'] );
@@ -170,7 +170,7 @@ class tx_sevenpack_db_utility {
 	 * @return Not defined
 	 */
 	function update_full_text ( $uid, $force = FALSE ) {
-		$rT =& $this->ra->refTable;
+		$rT =& $this->ref_read->refTable;
 		$db =& $GLOBALS['TYPO3_DB'];
 
 		//t3lib_div::debug ( array ( 'Updating full text' => $uid ) );

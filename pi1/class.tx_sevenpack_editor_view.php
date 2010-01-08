@@ -13,7 +13,7 @@ class tx_sevenpack_editor_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
-	public $ra;  // Reference accessor
+	public $ref_read;  // Reference reader
 	public $db_utility;  // Reference accessor
 	public $LLPrefix = 'editor_';
 	public $idGenerator = FALSE;
@@ -30,15 +30,15 @@ class tx_sevenpack_editor_view {
 	function initialize ( $pi1 ) {
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['editor.'];
-		$this->ra =& $pi1->ra;
-		$this->ra->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
+		$this->ref_read =& $pi1->ref_read;
+		$this->ref_read->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
 		// Load editor language data
 		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/pi1/locallang_editor.xml' );
 
 
 		// setup db_utility
 		$this->db_utility = t3lib_div::makeInstance ( 'tx_sevenpack_db_utility' );
-		$this->db_utility->initialize ( $pi1->ra );
+		$this->db_utility->initialize ( $pi1->ref_read );
 		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
 		$this->db_utility->read_full_text_conf ( $this->conf['full_text.'] );
 
@@ -125,7 +125,7 @@ class tx_sevenpack_editor_view {
 		}
 
 		// include $TCA
-		t3lib_div::loadTCA ( $this->ra->refTable );
+		t3lib_div::loadTCA ( $this->ref_read->refTable );
 
 		// determine entry uid
 		if ( array_key_exists( 'uid', $pi1->piVars ) ) {
@@ -139,7 +139,7 @@ class tx_sevenpack_editor_view {
 			case $pi1->EDIT_EDIT :
 				$title = $this->get_ll ( $this->LLPrefix.'title_edit' );
 				if ( $uid >= 0 ) {
-					$pub = $this->ra->fetch_db_pub ( $uid );
+					$pub = $this->ref_read->fetch_db_pub ( $uid );
 					if ( !$pub )
 						return $pi1->error_msg ( 'No publication with uid: ' . $uid );
 				} else {
@@ -175,7 +175,7 @@ class tx_sevenpack_editor_view {
 
 		// Set default bibtype to aticle
 		if ( $this->is_new_first && ( $pub['bibtype'] == 0 ) ) {
-			$pub['bibtype'] = array_search ( 'article', $this->ra->allBibTypes );
+			$pub['bibtype'] = array_search ( 'article', $this->ref_read->allBibTypes );
 		}
 
 		// Set current year for new entries
@@ -219,7 +219,7 @@ class tx_sevenpack_editor_view {
 		// Load default values for very new entries
 		if ( $this->is_new_first ) {
 			if ( is_array ( $edConf['field_default.'] ) ) {
-				foreach ( $this->ra->refFields as $field ) {
+				foreach ( $this->ref_read->refFields as $field ) {
 					if ( array_key_exists ( $field, $edConf['field_default.'] ) )
 						$pub[$field] = strval ( $edConf['field_default.'][$field] );
 				}
@@ -408,7 +408,7 @@ class tx_sevenpack_editor_view {
 		$fieldTypes = array ( 'required', 'optional', 'other', 'library', 'typo3' );
 		array_unshift ( $fields['required'], 'bibtype' );
 
-		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
+		$bib_str = $this->ref_read->allBibTypes[$pub['bibtype']];
 
 		foreach ( $fieldTypes as $ft ) {
 			$class_str = ' class="'.$preSh.'-editor_'.$ft.'"';
@@ -505,11 +505,11 @@ class tx_sevenpack_editor_view {
 	 * @param bib_str The bibtype identifier string
 	 */
 	function field_label ( $field, $bib_str ) {
-		$label = $this->ra->refTable . '_' . $field;
+		$label = $this->ref_read->refTable . '_' . $field;
 
 		switch ( $field ) {
 			case 'authors':
-				$label = $this->ra->authorTable . '_' . $field;
+				$label = $this->ref_read->authorTable . '_' . $field;
 				break;
 			case 'year':
 				$label = 'olabel_year_month_day';
@@ -549,7 +549,7 @@ class tx_sevenpack_editor_view {
 		$fields = array ();
 		$bib_str = $bibType;
 		if ( is_numeric ( $bib_str ) ) {
-			$bib_str = $this->ra->allBibTypes[$bibType];
+			$bib_str = $this->ref_read->allBibTypes[$bibType];
 		}
 
 		$all_groups = array ( 'all', $bib_str );
@@ -572,7 +572,7 @@ class tx_sevenpack_editor_view {
 		}
 
 		// Merge field lists
-		$pubFields = $this->ra->pubFields;
+		$pubFields = $this->ref_read->pubFields;
 		unset ( $pubFields[array_search ( 'bibtype',$pubFields)] );
 		foreach ( $all_types as $type ) {
 			$fields[$type] = array();
@@ -634,7 +634,7 @@ class tx_sevenpack_editor_view {
 
 	function get_default_edit_widget ( $field, $value, $mode )
 	{
-		$cfg =& $GLOBALS['TCA'][$this->ra->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->ref_read->refTable]['columns'][$field]['config'];
 		$con = ''; // Content
 		$cclass = $this->pi1->prefixShort.'-editor_input';
 		$Iclass = ' class="'.$cclass.'"';
@@ -704,7 +704,7 @@ class tx_sevenpack_editor_view {
 
 	function get_default_static_widget ( $field, $value, $mode )
 	{
-		$cfg =& $GLOBALS['TCA'][$this->ra->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->ref_read->refTable]['columns'][$field]['config'];
 		$con = ''; // Content
 		$Iclass = ' class="'.$this->pi1->prefixShort.'-editor_input'.'"';
 		$pi1 =& $this->pi1;
@@ -778,8 +778,8 @@ class tx_sevenpack_editor_view {
 			$con .= '<table class="'.$pi1->prefixShort.'-editor_author">' . "\n";
 			$con .= '<tbody>' . "\n";
 			$con .= '<tr><td></td>';
-			$con .= '<th>'.$this->get_ll ( $this->ra->authorTable.'_forename' ).'</th>';
-			$con .= '<th>'.$this->get_ll ( $this->ra->authorTable.'_surname' ).'</th>';
+			$con .= '<th>'.$this->get_ll ( $this->ref_read->authorTable.'_forename' ).'</th>';
+			$con .= '<th>'.$this->get_ll ( $this->ref_read->authorTable.'_surname' ).'</th>';
 			if ( $editMode ) {
 				$con .= '<th></th><th></th>';
 			}
@@ -910,7 +910,7 @@ class tx_sevenpack_editor_view {
 	function get_http_ref ( $hsc = FALSE ) {
 		$pub = array();
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$fields = $this->ra->pubFields;
+		$fields = $this->ref_read->pubFields;
 		$fields[] = 'uid';
 		$fields[] = 'pid';
 		$fields[] = 'hidden';
@@ -1055,10 +1055,10 @@ class tx_sevenpack_editor_view {
 
 			case $pi1->DIALOG_SAVE_CONFIRMED : 
 				$pub = $this->get_http_ref();
-				if ( $this->ra->save_publication ( $pub ) ) {
+				if ( $this->ref_read->save_publication ( $pub ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_save_fail' ).'</p>';
-					$con .= '<p>'.$this->ra->html_error_message().'</p>';
+					$con .= '<p>'.$this->ref_read->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_save_success' ).'</p>';
@@ -1069,10 +1069,10 @@ class tx_sevenpack_editor_view {
 
 			case $pi1->DIALOG_DELETE_CONFIRMED : 
 				$pub = $this->get_http_ref();
-				if ( $this->ra->delete_publication ( $pi1->piVars['uid'], $pub['mod_key'] ) ) {
+				if ( $this->ref_read->delete_publication ( $pi1->piVars['uid'], $pub['mod_key'] ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_fail' ).'</p>';
-					$con .= '<p>'.$this->ra->html_error_message().'</p>';
+					$con .= '<p>'.$this->ref_read->html_error_message().'</p>';
 					$con .= '</div>' . "\n";
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_success' ).'</p>';
@@ -1082,7 +1082,7 @@ class tx_sevenpack_editor_view {
 				break;
 
 			case $pi1->DIALOG_ERASE_CONFIRMED : 
-				if ( $this->ra->erase_publication ( $pi1->piVars['uid'] ) ) {
+				if ( $this->ref_read->erase_publication ( $pi1->piVars['uid'] ) ) {
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_fail' ).'</p>';
 				} else {
 					$con .= '<p>'.$this->get_ll ( 'msg_erase_success' ).'</p>';
@@ -1109,7 +1109,7 @@ class tx_sevenpack_editor_view {
 		$d_err = array();
 		$title = $this->get_ll ( $this->LLPrefix.'title_confirm_save' );
 
-		$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
+		$bib_str = $this->ref_read->allBibTypes[$pub['bibtype']];
 
 		$fields = $this->get_edit_fields ( $bib_str, TRUE );
 
@@ -1170,7 +1170,7 @@ class tx_sevenpack_editor_view {
 				$err = array ( 'type' => $type );
 				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_empty_fields');
 				$err['list'] = array();
-				$bib_str = $this->ra->allBibTypes[$pub['bibtype']];
+				$bib_str = $this->ref_read->allBibTypes[$pub['bibtype']];
 				foreach ( $empty as $field ) {
 					switch ( $field ) {
 						case 'authors':
@@ -1199,7 +1199,7 @@ class tx_sevenpack_editor_view {
 		// Cite id doubles
 		$type = 'double_citeid';
 		if ( $warn[$type] && !$this->conf['no_edit.']['citeid'] ) {
-			if ( $this->ra->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {
+			if ( $this->ref_read->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {
 				$err = array ( 'type' => $type );
 				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_id_exists');
 				$d_err[] = $err; 

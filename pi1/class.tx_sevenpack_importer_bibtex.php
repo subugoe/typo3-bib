@@ -235,7 +235,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 		// Setup publication fields
 		$this->pubKeys = array();
-		foreach ( $this->ra->pubFields as $field ) {
+		foreach ( $this->ref_read->pubFields as $field ) {
 			$lfield = strtolower ( $field );
 			switch ( $lfield ) {
 				case 'bibtype':
@@ -634,8 +634,8 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 		// Bibtype
 		$raw_val = strtolower ( $raw['type'] );
-		if ( in_array ( $raw_val, $this->ra->allBibTypes ) ) {
-			$pub['bibtype'] = array_search ( $raw_val, $this->ra->allBibTypes );
+		if ( in_array ( $raw_val, $this->ref_read->allBibTypes ) ) {
+			$pub['bibtype'] = array_search ( $raw_val, $this->ref_read->allBibTypes );
 		} else {
 			throw new tx_sevenpack_Translator_Exception ( 'Unknown bibtype: ' . strval ( $raw_val ) );
 		}
@@ -654,7 +654,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 					$pub['authors'] = $this->translate_raw_authors ( $r_val );
 					break;
 				case 'state':
-					foreach ( $this->ra->allStates as $ii => $state ) {
+					foreach ( $this->ref_read->allStates as $ii => $state ) {
 						if ( strtolower ( $r_val ) == $state ) {
 							$r_val = $ii;
 							break;

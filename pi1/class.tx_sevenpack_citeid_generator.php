@@ -7,12 +7,12 @@ if ( !isset($GLOBALS['TSFE']) )
 class tx_sevenpack_citeid_generator {
 
 	public $pi1;
-	public $ra;
+	public $ref_read;
 	public $charset;
 
 
 	function initialize ( $pi1 ) {
-		$this->ra =& $pi1->ra;
+		$this->ref_read =& $pi1->ref_read;
 		$this->charset = $pi1->extConf['charset']['upper'];
 	}
 
@@ -31,7 +31,7 @@ class tx_sevenpack_citeid_generator {
 			$uid = intval ( $row['uid'] );
 
 		$num = 1;
-		while ( $this->ra->citeid_exists ( $tmpId, $uid ) ) {
+		while ( $this->ref_read->citeid_exists ( $tmpId, $uid ) ) {
 			$num++;
 			$tmpId = $id.'_'.$num;
 		}

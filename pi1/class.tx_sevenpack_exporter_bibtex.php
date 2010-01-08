@@ -146,14 +146,14 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 	{
 		$str = '';
 
-		$bibtype = ucfirst ( $this->ra->allBibTypes[$pub['bibtype']] );
+		$bibtype = ucfirst ( $this->ref_read->allBibTypes[$pub['bibtype']] );
 
 		$str .= '@';
 		$str .= $bibtype . ' { ';
 		$str .= trim ( $pub['citeid'] ).",\n";
 
 		$entries = array();
-		foreach ( $this->ra->pubFields as $key ) {
+		foreach ( $this->ref_read->pubFields as $key ) {
 			$append = TRUE;
 			switch ( $key ) {
 				case 'bibtype':
@@ -257,7 +257,7 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 				}
 				break;
 			case 'state':
-				$value = $this->ra->allStates[$value];
+				$value = $this->ref_read->allStates[$value];
 				$value = $this->bibtex_format_string ( $value );
 				break;
 			default:

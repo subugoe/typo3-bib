@@ -70,7 +70,7 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 		//t3lib_div::debug ( $tags );
 
 		$refFields = array();
-		foreach ( $this->ra->refFields as $field ) {
+		foreach ( $this->ref_read->refFields as $field ) {
 			$refFields[] = strtolower ( $field );
 		}
 		//t3lib_div::debug ( $refFields );
@@ -117,7 +117,7 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 							if ( $type == 'complete' ) {
 								switch ( $tag_low ) {
 									case 'bibtype':
-										foreach ( $this->ra->allBibTypes as $ii => $bib ) {
+										foreach ( $this->ref_read->allBibTypes as $ii => $bib ) {
 											if ( strtolower ( $value ) == $bib ) {
 												$value = $ii;
 												break;
@@ -125,7 +125,7 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 										}
 										break;
 									case 'state':
-										foreach ( $this->ra->allStates as $ii => $state ) {
+										foreach ( $this->ref_read->allStates as $ii => $state ) {
 											if ( strtolower ( $value ) == $state ) {
 												$value = $ii;
 												break;
@@ -135,10 +135,10 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 									default:
 								}
 								// Apply value
-								if ( in_array ( $tag_low, $this->ra->refFields ) ) {
+								if ( in_array ( $tag_low, $this->ref_read->refFields ) ) {
 									$pub[$tag_low] = $value;
 								} else {
-									if ( in_array ( $tag_up, $this->ra->refFields ) ) {
+									if ( in_array ( $tag_up, $this->ref_read->refFields ) ) {
 										$pub[$tag_up] = $value;
 									} else {
 										$pub[$tag] = $value;	

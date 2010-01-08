@@ -114,7 +114,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	// These are derived/extra configuration values
 	public $extConf;
 
-	public $ra;  // The reference database accessor class
+	public $ref_read;  // The reference database accessor class
 	public $fetchRes;
 	public $icon_src = array();
 
@@ -140,8 +140,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
-		$this->ra = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
-		$this->ra->set_cObj ( $this->cObj );
+		$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_accessor' );
+		$this->ref_read->set_cObj ( $this->cObj );
 
 		// Initialize current configuration
 		$extConf['link_vars'] = array();
@@ -230,7 +230,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( array_key_exists ( 'citeid_gen_old', $eo ) )
 				$extConf['editor']['citeid_gen_old'] = $eo['citeid_gen_old'] ? TRUE : FALSE;
 		}
-		$this->ra->clear_cache = $extConf['editor']['clear_page_cache'];
+		$this->ref_read->clear_cache = $extConf['editor']['clear_page_cache'];
 
 
 		//
@@ -265,7 +265,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pid_list = tx_sevenpack_utility::explode_intval ( ',', $pid_list );
 
 			$extConf['pid_list'] = $pid_list;
-			$this->ra->pid_list = $pid_list;
+			$this->ref_read->pid_list = $pid_list;
 		} else {
 			$extConf['pid_list'] = array ( intval ( $GLOBALS['TSFE']->id ) );
 			//return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
@@ -410,7 +410,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( $GLOBALS['BE_USER']->isAdmin() )
 				$be_ok = TRUE;
 			else
-				$be_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ra->refTable );
+				$be_ok = $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ref_read->refTable );
 		}
 
 		// allow FE-user editing from special groups (set via TS)
@@ -444,7 +444,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $extConf['edit_mode'] ) {
 			$extConf['show_hidden'] = TRUE;
 		}
-		$this->ra->show_hidden = $extConf['show_hidden'];
+		$this->ref_read->show_hidden = $extConf['show_hidden'];
 
 
 		//
@@ -495,10 +495,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 						$extConf['view_mode']   = $this->VIEW_DIALOG;
 						$extConf['dialog_mode'] = $this->DIALOG_ERASE_CONFIRMED;
 					case 'hide':
-						$this->ra->hide_publication ( $this->piVars['uid'], TRUE );
+						$this->ref_read->hide_publication ( $this->piVars['uid'], TRUE );
 						break;
 					case 'reveal':
-						$this->ra->hide_publication ( $this->piVars['uid'], FALSE );
+						$this->ref_read->hide_publication ( $this->piVars['uid'], FALSE );
 						break;
 					default:
 				}
@@ -556,7 +556,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Fetch publication statistics
 		//
 		$this->stat = array();
-		$this->ra->set_filters ( $extConf['filters'] );
+		$this->ref_read->set_filters ( $extConf['filters'] );
 		//t3lib_div::debug ( $extConf['filters'] );
 
 
@@ -573,7 +573,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		if ( $extConf['show_nav_year'] ) {
 			// Fetch a year histogram
-			$hist = $this->ra->fetch_histogram ( 'year' );
+			$hist = $this->ref_read->fetch_histogram ( 'year' );
 			$this->stat['year_hist'] = $hist;
 			$this->stat['years'] = array_keys ( $hist );
 			sort ( $this->stat['years'] );
@@ -629,7 +629,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Determine number of publications
 		//
 		if ( !is_numeric ( $this->stat['num_all'] ) ) {
-			$this->stat['num_all'] = $this->ra->fetch_num ( );
+			$this->stat['num_all'] = $this->ref_read->fetch_num ( );
 			$this->stat['num_page'] = $this->stat['num_all'];
 		}
 
@@ -672,7 +672,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $this->extConf['date_sorting'] == $this->SORT_ASC ) {
 			$dSort = 'ASC';
 		}
-		$rta =& $this->ra->refTableAlias;
+		$rta =& $this->ref_read->refTableAlias;
 		$sort_f = array (
 			array ( 'field' => $rta.'.year',    'dir' => $dSort ),
 			array ( 'field' => $rta.'.month',   'dir' => $dSort ),
@@ -711,7 +711,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Setup reference accessor
 		//t3lib_div::debug ( $this->stat );
 		//t3lib_div::debug ( $extConf['filters'] );
-		$this->ra->set_filters ( $extConf['filters'] );
+		$this->ref_read->set_filters ( $extConf['filters'] );
 
 		//
 		// Disable navigations om demand
@@ -822,10 +822,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 				switch ( $table ) {
 					case 'ref':
-						$all_fields =& $this->ra->refFields;
+						$all_fields =& $this->ref_read->refFields;
 						break;
 					case 'authors':
-						$all_fields =& $this->ra->authorFields;
+						$all_fields =& $this->ref_read->authorFields;
 						break;
 					default:
 						continue;
@@ -969,7 +969,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$states = intval ( $this->pi_getFFvalue ( $ff, 'states', $fSheet ) );
 
 			$j = 1;
-			for ( $i=0; $i < sizeof ( $this->ra->allStates ); $i++ ) {
+			for ( $i=0; $i < sizeof ( $this->ref_read->allStates ); $i++ ) {
 				if ( $states & $j )
 					$f['states'][] = $i;
 				$j = $j*2;
@@ -986,7 +986,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$types = explode ( ',', $types );
 			foreach ( $types as $v ) {
 				$v = intval ( $v );
-				if ( ( $v >= 0 ) && ( $v < sizeof ( $this->ra->allBibTypes ) ) )
+				if ( ( $v >= 0 ) && ( $v < sizeof ( $this->ref_read->allBibTypes ) ) )
 					$f['types'][] = $v;
 			}
 			if ( sizeof ( $f['types'] ) > 0 )
@@ -1045,7 +1045,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( strlen ( $kw ) > 0 ) {
 				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
-					$word = $this->ra->search_word ( $word, $this->extConf['charset']['upper'] );
+					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
 				$f['words'] = $words;
 				$filter['tags'] = $f;
@@ -1061,7 +1061,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( strlen ( $kw ) > 0 ) {
 				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
-					$word = $this->ra->search_word ( $word, $this->extConf['charset']['upper'] );
+					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
 				$f['words'] = $words;
 				$filter['keywords'] = $f;
@@ -1077,7 +1077,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			if ( strlen ( $kw ) > 0 ) {
 				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
-					$word = $this->ra->search_word ( $word, $this->extConf['charset']['upper'] );
+					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
 				$f['words'] = $words;
 				$filter['all'] = $f;
@@ -1153,7 +1153,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Bibtype data blocks
 		$bib_types = array ();
-		foreach ( $this->ra->allBibTypes as $val ) {
+		foreach ( $this->ref_read->allBibTypes as $val ) {
 			$bib_types[] = strtoupper ( $val ) . '_DATA';
 		}
 		$bib_types[] = 'DEFAULT_DATA';
@@ -1437,7 +1437,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Remove not allowed tags
 		// Keep the following tags
-		$tags =& $this->ra->allowed_tags;
+		$tags =& $this->ref_read->allowed_tags;
 
 		$LE = '#LE'.$rand.'LE#';
 		$GE = '#GE'.$rand.'GE#';
@@ -1818,7 +1818,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Prepare processed row data
 		$pdata = $pub;
-		foreach ( $this->ra->refFields as $f ) {
+		foreach ( $this->ref_read->refFields as $f ) {
 			$pdata[$f] = $this->filter_pub_html_display ( $pdata[$f] );
 		}
 
@@ -1835,9 +1835,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Bibtype
-		$pdata['bibtype_short'] = $this->ra->allBibTypes[$pdata['bibtype']];
+		$pdata['bibtype_short'] = $this->ref_read->allBibTypes[$pdata['bibtype']];
 		$pdata['bibtype'] = $this->get_ll (
-			$this->ra->refTable.'_bibtype_I_'.$pdata['bibtype'],
+			$this->ref_read->refTable.'_bibtype_I_'.$pdata['bibtype'],
 			'Unknown bibtype: '.$pdata['bibtype'], TRUE ) ;
 
 		// Extern
@@ -1865,7 +1865,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				break;
 			default : 
 				$pdata['state'] = $this->get_ll (
-				$this->ra->refTable.'_state_I_'.$pdata['state'],
+				$this->ref_read->refTable.'_state_I_'.$pdata['state'],
 				'Unknown state: '.$pdata['state'], TRUE ) ;
 		}
 
@@ -1887,7 +1887,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Iterate through reference fields
-		foreach ( $this->ra->refFields as $f ) {
+		foreach ( $this->ref_read->refFields as $f ) {
 			// Trim string
 			$val = trim ( strval ( $pdata[$f] ) );
 
@@ -1921,7 +1921,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Multi fields 
 		$multi = array ( 
-			'authors' => $this->ra->authorFields 
+			'authors' => $this->ref_read->authorFields 
 		);
 		foreach ( $multi as $table => $fields ) {
 			$elms =& $pdata[$table];
@@ -2031,7 +2031,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Prepare the translator
 		// Remove empty field marker from the template
-		$fields = $this->ra->pubFields;
+		$fields = $this->ref_read->pubFields;
 		$fields[] = 'file_url_short';
 		$fields[] = 'web_url_short';
 		$fields[] = 'web_url2_short';
@@ -2336,7 +2336,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//$t_start = microtime( TRUE );
 
 		// Aliases
-		$ra =& $this->ra;
+		$ref_read =& $this->ref_read;
 		$cObj =& $this->cObj;
 		$conf =& $this->conf;
 		$filters =& $this->extConf['filters'];
@@ -2407,7 +2407,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Database accessor initialization
-		$ra->mFetch_initialize();
+		$ref_read->mFetch_initialize();
 
 		// Determine publication numbers
 		$pubs_before = 0;
@@ -2435,7 +2435,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$i_bibtype = 1;
 
 		// Start the fetch loop
-		while ( $pub = $ra->mFetch ( ) )  {
+		while ( $pub = $ref_read->mFetch ( ) )  {
 			// Get prepared publication data
 			$warnings = array();
 			$pdata = $this->prepare_pub_display ( $pub, $warnings );
@@ -2551,7 +2551,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// clean up
-		$ra->mFetch_finish();
+		$ref_read->mFetch_finish();
 
 		// Restore cObj data
 		$cObj->data = $cObj_restore;

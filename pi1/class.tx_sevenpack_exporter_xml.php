@@ -40,13 +40,13 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 		$charset = $pi1->extConf['charset']['lower'];
 		//t3lib_div::debug ( $charset );
 		if ( $charset != 'utf-8' ) {
-			$pub = $pi1->ra->change_pub_charset ( $pub, $charset, 'utf-8' );
+			$pub = $this->ref_read->change_pub_charset ( $pub, $charset, 'utf-8' );
 		}
 
 		$str .= '<reference>' . "\n";
 
 		$entries = array();
-		foreach ( $this->ra->pubFields as $key ) {
+		foreach ( $this->ref_read->pubFields as $key ) {
 			$value = '';
 			$append = TRUE;
 
@@ -107,11 +107,11 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 				}
 				break;
 			case 'bibtype':
-				$value = $this->ra->allBibTypes[$value];
+				$value = $this->ref_read->allBibTypes[$value];
 				$value = $this->xml_format_string ( $value );
 				break;
 			case 'state':
-				$value = $this->ra->allStates[$value];
+				$value = $this->ref_read->allStates[$value];
 				$value = $this->xml_format_string ( $value );
 				break;
 			default:

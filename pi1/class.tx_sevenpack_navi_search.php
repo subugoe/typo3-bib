@@ -145,7 +145,7 @@ class tx_sevenpack_navi_search extends tx_sevenpack_navi  {
 			// Setup search patterns
 			$words = array();
 			foreach ( $strings as $txt ) {
-				$words[] = $this->pi1->ra->search_word ( $txt, $charset );
+				$words[] = $this->pi1->ref_read->search_word ( $txt, $charset );
 			}
 
 			$exclude = array ( );

@@ -8,7 +8,7 @@ class tx_sevenpack_single_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
-	public $ra;  // Reference accessor
+	public $ref_read;  // Reference accessor
 	public $db_utility;  // Reference accessor
 	public $LLPrefix = 'editor_';
 	public $idGenerator = FALSE;
@@ -25,7 +25,7 @@ class tx_sevenpack_single_view {
 	function initialize ( $pi1 ) {
 		$this->pi1  =& $pi1;
 		$this->conf =& $pi1->conf['single_view.'];
-		$this->ra   =& $pi1->ra;
+		$this->ref_read =& $pi1->ref_read;
 		// Load editor language data
 		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/pi1/locallang_editor.xml' );
 	}
@@ -41,7 +41,7 @@ class tx_sevenpack_single_view {
 		$con = '';
 
 		$uid = intval ( $pi1->extConf['single_view']['uid'] );
-		$ref = $pi1->ra->fetch_db_pub ( $uid );
+		$ref = $this->ref_read->fetch_db_pub ( $uid );
 		if ( is_array ( $ref ) ) {
 			$con .= $this->type_reference ( $ref );
 		} else {
@@ -93,7 +93,7 @@ class tx_sevenpack_single_view {
 		$trans = array();
 
 		// The filed list
-		$fields = $pi1->ra->pubAllFields;
+		$fields = $this->ref_read->pubAllFields;
 		$dont_show = tx_sevenpack_utility::explode_trim ( ',', $conf['dont_show'], TRUE );
 
 		// Remove condition fields and setup the translator
@@ -162,11 +162,11 @@ class tx_sevenpack_single_view {
 	 */
 	function field_label ( $field, $bib_str ) {
 		$pi1 =& $this->pi1;
-		$label = $pi1->ra->refTable . '_' . $field;
+		$label = $this->ref_read->refTable . '_' . $field;
 
 		switch ( $field ) {
 			case 'authors':
-				$label = $pi1->ra->authorTable . '_' . $field;
+				$label = $this->ref_read->authorTable . '_' . $field;
 				break;
 		}
 
