@@ -767,6 +767,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					'extConf' => $this->extConf,
 					'conf' => $this->conf,
 					'piVars' => $this->piVars,
+					'stat' => $this->stat,
 					'HTTP_POST_VARS' => $GLOBALS['HTTP_POST_VARS'],
 					'HTTP_GET_VARS' => $GLOBALS['HTTP_GET_VARS'],
 					//'$this->cObj->data' => $this->cObj->data
