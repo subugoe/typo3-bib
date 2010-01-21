@@ -1,5 +1,6 @@
 2010-21-01      Sebastian Holtermann  <sebholt@web.de>
-	* List: Fixed double reference count in the year navigation view when *all* was selected
+	* List: Fixed double reference count in the year navigation view when *all years* was selected (O. Fischer)
+	* List: Fixed the editor default year for new entries if *all years* was selected
 	* Internals: Separated reference reader and writer classes - May give a little more speed
 	* Release version 0.7.9
 
