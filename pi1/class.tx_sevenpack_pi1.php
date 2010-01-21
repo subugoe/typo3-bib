@@ -1474,22 +1474,24 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function list_view ()
 	{
-		$this->setup_search_navi ();  // setup year navigation
-		$this->setup_year_navi ();  // setup year navigation
-		$this->setup_author_navi (); // setup author navigation
-		$this->setup_pref_navi ();  // setup preferences navigation
-		$this->setup_page_navi ();  // setup page navigation
+  		// Setup navigation elements
+		$this->setup_search_navi ();
+		$this->setup_year_navi ();
+		$this->setup_author_navi ();
+		$this->setup_pref_navi ();
+		$this->setup_page_navi ();
 
-		$this->setup_new_entry_navi ();  // setup new entry button
+		$this->setup_new_entry_navi ();
 
-		$this->setup_export_navi ();  // setup export links
-		$this->setup_import_navi ();  // setup import link
-		$this->setup_statistic_navi ();  // setup statistic element
+		$this->setup_export_navi ();
+		$this->setup_import_navi ();
+		$this->setup_statistic_navi ();
 
-		$this->setup_spacer ();  // setup spacer
-		$this->setup_top_navigation ();  // setup page navigation element
+		$this->setup_spacer ();
+		$this->setup_top_navigation ();
 
-		$this->setup_items (); // setup the publication items
+		// Setup all publication items
+		$this->setup_items (); 
 
 		//t3lib_div::debug ( $this->template['LIST_VIEW'] );
 
@@ -2406,12 +2408,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$this->extConf['split_years'] = TRUE;
 		}
 
-		// Database accessor initialization
+		// Database reading initialization
 		$ref_read->mFetch_initialize();
 
 		// Determine publication numbers
 		$pubs_before = 0;
-		if ( $this->extConf['d_mode'] == $this->D_Y_NAV ) {
+		if ( ( $this->extConf['d_mode'] == $this->D_Y_NAV ) &&
+			  is_numeric ( $this->extConf['year'] ) ) 
+		{
 			foreach ( $this->stat['year_hist'] as $y => $n ) {
 				if ( $y == $this->extConf['year'] )
 					break;
