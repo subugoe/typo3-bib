@@ -185,7 +185,7 @@ class tx_sevenpack_editor_view {
 
 		// Set current year for new entries
 		if ( $this->is_new && ( $w_mode == $pi1->W_EDIT ) && ( $pub['year'] == 0 ) ) {
-			if ( isset ( $pi1->extConf['year'] ) )
+			if ( is_numeric ( $pi1->extConf['year'] ) )
 				$pub['year'] = intval ( $pi1->extConf['year'] );
 			else
 				$pub['year'] = intval ( date ( 'Y' ) );

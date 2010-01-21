@@ -1,3 +1,8 @@
+2010-21-01      Sebastian Holtermann  <sebholt@web.de>
+	* List: Fixed double reference count in the year navigation view when *all* was selected
+	* Internals: Separated reference reader and writer classes - May give a little more speed
+	* Release version 0.7.9
+
 2009-11-05      Sebastian Holtermann  <sebholt@web.de>
 	* List: Fixed broken link creation when file_url contained ampersand characters
 	* List: PHP cleanups and optimisations
