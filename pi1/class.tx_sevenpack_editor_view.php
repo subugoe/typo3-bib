@@ -419,12 +419,9 @@ class tx_sevenpack_editor_view {
 			$class_str = ' class="'.$preSh.'-editor_'.$ft.'"';
 
 			if ( sizeof ( $fields[$ft] ) > 0 ) {
-				$con .= '<h3>';
-				$con .= $this->get_ll ( $this->LLPrefix.'fields_'.$ft );
-				$con .= '</h3>';
 
-				$con .= '<table class="'.$preSh.'-editor_fields">' . "\n";
-				$con .= '<tbody>' . "\n";
+				$rows_vis = "";
+				$rows_hidden = "";
 				foreach ( $fields[$ft] as $f ) {
 
 					// Field label
@@ -434,6 +431,9 @@ class tx_sevenpack_editor_view {
 					$wm = $w_mode;
 					if ( ( $wm == $pi1->W_EDIT ) && $edConf['no_edit.'][$f] ) {
 						$wm = $pi1->W_SILENT;
+					}
+					if ( $edConf['no_show.'][$f] ) {
+						$wm = $pi1->W_HIDDEN;
 					}
 					//t3lib_div::debug ( array ( $f, $edConf['no_edit.'][$f] ) );
 
@@ -472,17 +472,36 @@ class tx_sevenpack_editor_view {
 						$widget .= $btn_update;
 					}
 
-					if ( ( strlen ( $label ) + strlen ( $widget ) ) > 0 ) {
-						$label  = $pi1->cObj->stdWrap ( $label, $edConf['field_labels.'] );
-						$widget = $pi1->cObj->stdWrap ( $widget, $edConf['field_widgets.'] );
-						$con .= '<tr>';
-						$con .= '<th' . $class_str . '>' . $label  . '</th>' . "\n";
-						$con .= '<td' . $class_str . '>' . $widget . '</td>' . "\n";
-						$con .= '</tr>' . "\n";
+					if ( strlen ( $widget ) > 0 ) {
+						if ( $wm == $pi1->W_HIDDEN ) {
+							$rows_hidden .= $widget . "\n";
+						} else {
+							$label  = $pi1->cObj->stdWrap ( $label, $edConf['field_labels.'] );
+							$widget = $pi1->cObj->stdWrap ( $widget, $edConf['field_widgets.'] );
+							$rows_vis .= '<tr>';
+							$rows_vis .= '<th' . $class_str . '>' . $label  . '</th>' . "\n";
+							$rows_vis .= '<td' . $class_str . '>' . $widget . '</td>' . "\n";
+							$rows_vis .= '</tr>' . "\n";
+						}
 					}
+
 				}
-				$con .= '</tbody>' . "\n";
-				$con .= '</table>' . "\n";
+
+				if ( strlen ( $rows_vis ) > 0 ) {
+					$con .= '<h3>';
+					$con .= $this->get_ll ( $this->LLPrefix.'fields_'.$ft );
+					$con .= '</h3>';
+
+					$con .= '<table class="'.$preSh.'-editor_fields">' . "\n";
+					$con .= '<tbody>' . "\n";
+
+					$con .= $rows_vis . "\n";
+
+					$con .= '</tbody>' . "\n";
+					$con .= '</table>' . "\n";
+				}
+
+				$con .= $rows_hidden . "\n";
 			}
 		}
 
