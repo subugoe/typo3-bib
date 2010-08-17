@@ -328,14 +328,19 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 		// Translate and save the raw references
 		foreach ( $this->raw_refs as $raw ) {
+			$save_ok = false;
 			try {
 				$pub = $this->translate_raw_ref ( $raw );
+				$save_ok = true;
 			} catch ( tx_sevenpack_Translator_Exception $exc ) {
 				$stat['failed']++;
 				$stat['errors'][] = $exc->getMessage();
+				$save_ok = false;
 			}
 
-			$this->save_publication ( $pub );
+			if ( $save_ok ) {
+				$this->save_publication ( $pub );
+			}
 		}
 
 		return $con;
