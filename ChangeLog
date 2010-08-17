@@ -1,4 +1,10 @@
-2010-21-01      Sebastian Holtermann  <sebholt@web.de>
+2010-08-17      Sebastian Holtermann  <sebholt@web.de>
+	* Editor: Fields can be hidden entirely with the new no_show variable
+	* Import: BibTeX publications with an unknown bitype don't trigger invalid double imports anymore
+	* ChangeLog: Fixed some dates which had a wrong order ;-)
+	* Release version 0.7.10
+
+2010-01-21      Sebastian Holtermann  <sebholt@web.de>
 	* List: Fixed double reference count in the year navigation view when *all years* was selected (O. Fischer)
 	* List: Fixed the editor default year for new entries if *all years* was selected
 	* Internals: Separated reference reader and writer classes - May give a little more speed
@@ -21,13 +27,13 @@
 	* Localization: Fixed english link titles in the year navigation bar
 	* Release version 0.7.6
 
-2009-30-10      Sebastian Holtermann  <sebholt@web.de>
+2009-10-30      Sebastian Holtermann  <sebholt@web.de>
 	* General: The full text cache remembers the filename of the
 	           cached file to avoid unneccessary cache updates
 	* Database: New full_text_file_url field (not editable)
 	* Release version 0.7.5
 
-2009-29-10      Sebastian Holtermann  <sebholt@web.de>
+2009-10-29      Sebastian Holtermann  <sebholt@web.de>
 	* List: New tags filter option
 	* Release version 0.7.4
 
