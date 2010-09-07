@@ -149,7 +149,7 @@ $TCA['tx_sevenpack_references'] = array (
 					Array('9',   '9'),
 					Array('10', '10'),
 					Array('11', '11'),
-					Array('13', '13'),
+					Array('12', '12'),
 					Array('13', '13'),
 					Array('14', '14'),
 					Array('15', '15'),

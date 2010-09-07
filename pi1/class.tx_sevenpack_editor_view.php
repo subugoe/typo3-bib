@@ -171,7 +171,7 @@ class tx_sevenpack_editor_view {
 		}
 
 		// merge in data from HTTP request
-		$pub = array_merge ( $pub, $this->get_http_ref () );
+		$pub = array_merge ( $pub, $this->get_ref_http () );
 
 		$this->is_new = TRUE;
 		$this->is_new_first = TRUE;
@@ -197,35 +197,9 @@ class tx_sevenpack_editor_view {
 				$pub['year'] = intval ( date ( 'Y' ) );
 		}
 
-		// Generate cite id if requested
-		$genID = FALSE;
-		$genIDRequest = FALSE;
 		if ( is_array ( $pi1->piVars['action'] ) )
 			if ( array_key_exists ( 'generate_id', $pi1->piVars['action'] ) )
 				$genIDRequest = TRUE;
-		if ( $this->is_new ) {
-			switch ( $edExtConf['citeid_gen_new'] ) {
-				case $pi1->AUTOID_FULL:
-					$genID = TRUE;
-					break;
-				case $pi1->AUTOID_HALF:
-					if ( $genIDRequest )
-						$genID = TRUE;
-					break;
-				default: break;
-			}
-		} else {
-			$auto_id = $edExtConf['citeid_gen_old'];
-			if ( ( $genIDRequest && ( $auto_id == $pi1->AUTOID_HALF ) )
-				|| ( strlen ( $pub['citeid'] ) == 0 ) )
-			{
-				$genID = TRUE;
-			}
-		}
-
-		if ( $genID ) {
-			$pub['citeid'] = $this->idGenerator->generateId ( $pub );
-		}
 
 		// Load default values for very new entries
 		if ( $this->is_new_first ) {
@@ -237,10 +211,19 @@ class tx_sevenpack_editor_view {
 			}
 		}
 
+		// Generate cite id if requested
+		$genID = FALSE;
+		$genIDRequest = FALSE;
+
 		// Evaluate actions
 		if ( is_array ( $pi1->piVars['action'] ) ) {
-			//t3lib_div::debug ( $pi1->piVars['action'] );
 			$actions =& $pi1->piVars['action'];
+			//t3lib_div::debug ( $actions );
+
+			// Generate cite id
+			if ( array_key_exists ( 'generate_id', $actions ) ) {
+				$genIDRequest = TRUE;
+			}
 
 			// Raise author
 			if ( is_numeric ( $actions['raise_author'] )  ) {
@@ -268,7 +251,32 @@ class tx_sevenpack_editor_view {
 			if ( isset( $pi1->piVars['action']['less_authors'] ) ) {
 				$pi1->piVars['editor']['numAuthors'] -= 1;
 			}
+		}
 
+		// Generate cite id on demand
+		if ( $this->is_new ) {
+			// Generate cite id for new entries
+			switch ( $edExtConf['citeid_gen_new'] ) {
+				case $pi1->AUTOID_FULL:
+					$genID = TRUE;
+					break;
+				case $pi1->AUTOID_HALF:
+					if ( $genIDRequest )
+						$genID = TRUE;
+					break;
+				default: break;
+			}
+		} else {
+			// Generate cite id for already existing (old) entries
+			$auto_id = $edExtConf['citeid_gen_old'];
+			if ( ( $genIDRequest && ( $auto_id == $pi1->AUTOID_HALF ) )
+				|| ( strlen ( $pub['citeid'] ) == 0 ) )
+			{
+				$genID = TRUE;
+			}
+		}
+		if ( $genID ) {
+			$pub['citeid'] = $this->idGenerator->generateId ( $pub );
 		}
 
 		// Determine the number of authors
@@ -508,10 +516,12 @@ class tx_sevenpack_editor_view {
 			}
 
 			if ( strlen ( $rows_silent ) > 0 ) {
+				$con .= "\n";
 				$con .= $rows_silent . "\n";
 			}
 
 			if ( strlen ( $rows_hidden ) > 0 ) {
+				$con .= "\n";
 				$con .= $rows_hidden . "\n";
 			}
 		}
@@ -645,17 +655,19 @@ class tx_sevenpack_editor_view {
 
 		$wm = $mode;
 
-		if ( $field == 'uid' ) {
-			if ( $wm == $this->W_EDIT ) {
-				$wm = $this->W_SHOW;
-			}
-		}
-		
 		if ( ( $wm == $this->W_EDIT ) && $edConf['no_edit.'][$field] ) {
 			$wm = $this->W_SHOW;
 		}
 		if ( $edConf['no_show.'][$field] ) {
 			$wm = $this->W_HIDDEN;
+		}
+
+		if ( $field == 'uid' ) {
+			if ( $wm == $this->W_EDIT ) {
+				$wm = $this->W_SHOW;
+			} else if ( $wm == $this->W_HIDDEN ) {
+				$wm = $this->W_SILENT;
+			}
 		}
 
 		return $wm;
@@ -1005,14 +1017,14 @@ class tx_sevenpack_editor_view {
 	 * @return An array containing the formatted publication 
 	 *         data that was found in the HTTP request
 	 */
-	function get_http_ref ( $hsc = FALSE ) {
+	function get_ref_http ( $hsc = FALSE ) {
 		$pub = array();
 		$charset = $this->pi1->extConf['charset']['upper'];
 		$fields = $this->ref_read->pubFields;
 		$fields[] = 'uid';
 		$fields[] = 'pid';
 		$fields[] = 'hidden';
-		$fields[] = 'mod_key'; // Get generated on loading from the database
+		$fields[] = 'mod_key'; // Gets generated on loading from the database
 		$data =& $this->pi1->piVars['DATA']['pub'];
 		if ( is_array ( $data ) ) {
 			foreach ( $fields as $f ) {
@@ -1156,7 +1168,7 @@ class tx_sevenpack_editor_view {
 		switch ( $pi1->extConf['dialog_mode'] ) {
 
 			case $pi1->DIALOG_SAVE_CONFIRMED : 
-				$pub = $this->get_http_ref();
+				$pub = $this->get_ref_http();
 				if ( $this->ref_write->save_publication ( $pub ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_save_fail' ).'</p>';
@@ -1170,7 +1182,7 @@ class tx_sevenpack_editor_view {
 				break;
 
 			case $pi1->DIALOG_DELETE_CONFIRMED : 
-				$pub = $this->get_http_ref();
+				$pub = $this->get_ref_http();
 				if ( $this->ref_write->delete_publication ( $pi1->piVars['uid'], $pub['mod_key'] ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_delete_fail' ).'</p>';

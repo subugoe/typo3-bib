@@ -212,6 +212,7 @@ class tx_sevenpack_utility {
 	 * @return The select element
 	 */
 	function html_select_input ( $pairs, $value, $attribs = array() ) {
+		$value = strval ( $value );
 		$con .= '<select';
 		foreach ( $attribs as $a_key => $a_value ) {
 			if ( !( $a_value === FALSE ) )
@@ -219,15 +220,16 @@ class tx_sevenpack_utility {
 		}
 		$con .= '>' . "\n";
 		foreach ( $pairs as $p_value => $p_name ) {
+			$p_value = strval ( $p_value );
 			$con .= '<option value="' . $p_value . '"';
-			if ( strval ( $p_value ) == strval ( $value ) ) {
+			if ( $p_value == strval ( $value ) ) {
 				$con .= ' selected="selected"';
 			}
 			$con .= '>';
-			$con .= $p_name;
-			$con .= '</option>'."\n"; 
+			$con .= strval ( $p_name );
+			$con .= '</option>' . "\n"; 
 		}
-		$con .= '</select>'."\n";
+		$con .= '</select>' . "\n";
 		return $con;
 	}
 
