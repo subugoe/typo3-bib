@@ -109,6 +109,8 @@ class tx_sevenpack_editor_view {
 		$edConf =& $this->conf;
 		$edExtConf =& $pi1->extConf['editor'];
 
+		$pub_http = $this->get_ref_http ();
+		$pub_db = array();
 		$pub = array(); // The publication data
 		$con = ''; // Content
 		$preCon = ''; // Pre content
@@ -140,7 +142,9 @@ class tx_sevenpack_editor_view {
 
 		// determine entry uid
 		if ( array_key_exists( 'uid', $pi1->piVars ) ) {
-			$uid = intval ( $pi1->piVars['uid'] );
+			if (  is_numeric ( $pi1->piVars['uid'] ) ) {
+				$uid = intval ( $pi1->piVars['uid'] );
+			}
 		}
 
 		switch ( $editor_mode ) {
@@ -150,8 +154,8 @@ class tx_sevenpack_editor_view {
 			case $pi1->EDIT_EDIT :
 				$title = $this->get_ll ( $this->LLPrefix.'title_edit' );
 				if ( $uid >= 0 ) {
-					$pub = $this->ref_read->fetch_db_pub ( $uid );
-					if ( !$pub )
+					$pub_db = $this->ref_read->fetch_db_pub ( $uid );
+					if ( !$pub_db )
 						return $pi1->error_msg ( 'No publication with uid: ' . $uid );
 				} else {
 					return $pi1->error_msg ( 'No publication id given' );
@@ -170,13 +174,10 @@ class tx_sevenpack_editor_view {
 				break;
 		}
 
-		// merge in data from HTTP request
-		$pub = array_merge ( $pub, $this->get_ref_http () );
-
 		$this->is_new = TRUE;
 		$this->is_new_first = TRUE;
 		if ( $uid >= 0 ) {
-			$pub['uid'] = $uid;
+			$pub_http['uid'] = $uid;
 			$this->is_new = FALSE;
 			$this->is_new_first = FALSE;
 		}
@@ -184,32 +185,15 @@ class tx_sevenpack_editor_view {
 			$this->is_new_first = FALSE;
 		}
 
-		// Set default bibtype to aticle
-		if ( $this->is_new_first && ( $pub['bibtype'] == 0 ) ) {
-			$pub['bibtype'] = array_search ( 'article', $this->ref_read->allBibTypes );
-		}
-
-		// Set current year for new entries
-		if ( $this->is_new && ( $w_mode == $this->W_EDIT ) && ( $pub['year'] == 0 ) ) {
-			if ( is_numeric ( $pi1->extConf['year'] ) )
-				$pub['year'] = intval ( $pi1->extConf['year'] );
-			else
-				$pub['year'] = intval ( date ( 'Y' ) );
-		}
-
-		if ( is_array ( $pi1->piVars['action'] ) )
-			if ( array_key_exists ( 'generate_id', $pi1->piVars['action'] ) )
-				$genIDRequest = TRUE;
-
-		// Load default values for very new entries
+		// merge in data from HTTP request
 		if ( $this->is_new_first ) {
-			if ( is_array ( $edConf['field_default.'] ) ) {
-				foreach ( $this->ref_read->refFields as $field ) {
-					if ( array_key_exists ( $field, $edConf['field_default.'] ) )
-						$pub[$field] = strval ( $edConf['field_default.'][$field] );
-				}
-			}
+			$pub = $this->get_ref_default();
 		}
+		if ( !$this->is_new && is_array ( $pub_db ) ) {
+			$pub = array_merge ( $pub, $pub_db );
+		}
+		$pub = array_merge ( $pub, $pub_http );
+
 
 		// Generate cite id if requested
 		$genID = FALSE;
@@ -979,7 +963,7 @@ class tx_sevenpack_editor_view {
 	{
 		// Pid
 		$pi1 =& $this->pi1;
-		$pids = $pi1->extConf['filters']['flexform']['pid'];
+		$pids = $pi1->extConf['pid_list'];
 		$value = intval ( $value );
 		$fieldAttr = $pi1->prefix_pi1 . '[DATA][pub][pid]';
 
@@ -988,7 +972,6 @@ class tx_sevenpack_editor_view {
 
 		// Fetch page titles
 		$pages = tx_sevenpack_utility::get_page_titles ( $pids ); 
-		$pages = array_reverse ( $pages, TRUE ); // Due to how recursive prepends the folders
 
 		if ( $mode == $this->W_SHOW ) {
 			$con .= tx_sevenpack_utility::html_hidden_input (
@@ -1011,6 +994,59 @@ class tx_sevenpack_editor_view {
 
 
 	/** 
+	 * Returns the default publication data 
+	 *
+	 * @return An array containing the default publication data
+	 */
+	function get_default_pid ( ) {
+		$edConf =& $this->conf;
+		$pid = 0;
+		if ( is_numeric ( $edConf['default_pid'] ) ) {
+			$pid = intval ( $edConf['default_pid'] );
+		}
+		if ( !in_array ( $pid, $this->ref_read->pid_list ) ) {
+			$pid = intval ( $this->ref_read->pid_list[0] );
+		}
+		return $pid;
+	}
+
+	
+	/** 
+	 * Returns the default publication data 
+	 *
+	 * @return An array containing the default publication data
+	 */
+	function get_ref_default ( ) {
+		$edConf =& $this->conf;
+		$pub = array();
+		
+		if ( is_array ( $edConf['field_default.'] ) ) {
+			foreach ( $this->ref_read->refFields as $field ) {
+				if ( array_key_exists ( $field, $edConf['field_default.'] ) )
+					$pub[$field] = strval ( $edConf['field_default.'][$field] );
+			}
+		}
+
+		if ( $pub['bibtype'] == 0 ) {
+			$pub['bibtype'] = array_search ( 'article', $this->ref_read->allBibTypes );
+		}
+
+		if ( $pub['year'] == 0 ) {
+			if ( is_numeric ( $pi1->extConf['year'] ) )
+				$pub['year'] = intval ( $pi1->extConf['year'] );
+			else
+				$pub['year'] = intval ( date ( 'Y' ) );
+		}
+			
+		if ( !in_array ( $pub['pid'], $this->ref_read->pid_list ) ) {
+			$pub['pid'] = $this->get_default_pid();
+		}
+
+		return $pub;
+	}
+
+
+	/** 
 	 * Returns the publication data that was encoded in the
 	 * HTTP erquest
 	 *
@@ -1027,13 +1063,13 @@ class tx_sevenpack_editor_view {
 		$fields[] = 'mod_key'; // Gets generated on loading from the database
 		$data =& $this->pi1->piVars['DATA']['pub'];
 		if ( is_array ( $data ) ) {
-			foreach ( $fields as $f ) {
-				switch ( $f )
-				{
+			foreach ( $fields as $ff ) {
+				switch ( $ff ) {
+
 					case 'authors':
-						if ( is_array ( $data[$f] ) ) {
+						if ( is_array ( $data[$ff] ) ) {
 							$pub['authors'] = array();
-							foreach ( $data[$f] as $v ) {
+							foreach ( $data[$ff] as $v ) {
 								$fn = trim ( $v['forename'] );
 								$sn = trim ( $v['surname'] );
 								if ( $hsc ) {
@@ -1045,12 +1081,16 @@ class tx_sevenpack_editor_view {
 								}
 							}
 						}
+
 						break;
+
 					default:
-						if ( array_key_exists ( $f, $data ) ) {
-							$pub[$f] = $data[$f];
-							if ( $hsc )
-								$pub[$f] = htmlspecialchars ( $pub[$f], ENT_QUOTES, $charset );
+
+						if ( array_key_exists ( $ff, $data ) ) {
+							$pub[$ff] = $data[$ff];
+							if ( $hsc ) {
+								$pub[$ff] = htmlspecialchars ( $pub[$ff], ENT_QUOTES, $charset );
+							}
 						}
 				}
 			}

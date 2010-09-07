@@ -257,13 +257,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			$pid_list = $this->pi_getPidList ( implode ( ',', $pid_list ), $extConf['recursive'] );
 			$pid_list = tx_sevenpack_utility::explode_intval ( ',', $pid_list );
+			$pid_list = array_reverse ( $pid_list ); // Due to how recursive prepends the folders
 
 			$extConf['pid_list'] = $pid_list;
-			$this->ref_read->pid_list = $pid_list;
 		} else {
+			// Use current page as storage
 			$extConf['pid_list'] = array ( intval ( $GLOBALS['TSFE']->id ) );
-			//return $this->finalize ( $this->error_msg ( 'No storage pid given. Select a Starting point.' ) );
 		}
+		$this->ref_read->pid_list = $extConf['pid_list'];
 
 		//
 		// Adjustments

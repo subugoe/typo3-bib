@@ -94,6 +94,24 @@ class tx_sevenpack_importer {
 		}
 		return $title;
 	}
+	
+	
+	/** 
+	 * Returns the default storage uid
+	 *
+	 * @return The parent id pid
+	 */
+	function get_default_pid ( ) {
+		$edConf =& $this->pi1->conf['editor.'];
+		$pid = 0;
+		if ( is_numeric ( $edConf['default_pid'] ) ) {
+			$pid = intval ( $edConf['default_pid'] );
+		}
+		if ( !in_array ( $pid, $this->ref_read->pid_list ) ) {
+			$pid = intval ( $this->ref_read->pid_list[0] );
+		}
+		return $pid;
+	}
 
 
 	/**
@@ -108,12 +126,11 @@ class tx_sevenpack_importer {
 		$con = '';
 
 		$pids = $this->pi1->extConf['pid_list'];
-		$default_pid = intval ( $this->pi1->conf['editor.']['default_pid'] );
+		$default_pid = $this->get_default_pid();
 
 		if ( sizeof ( $pids ) > 1 ) {
 			// Fetch page titles
 			$pages = tx_sevenpack_utility::get_page_titles ( $pids ); 
-			$pages = array_reverse ( $pages, TRUE ); // Due to how recursive prepends the folders
 
 			$val = $this->pi1->get_ll ( 'import_storage_info', 'import_storage_info', TRUE );
 			$con .= '<p>' . $val . '</p>' . "\n";
