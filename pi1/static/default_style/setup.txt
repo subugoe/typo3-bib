@@ -419,9 +419,15 @@ plugin.tx_sevenpack_pi1._CSS_DEFAULT_STYLE (
 		float: right;
 	}
 
-	.tx_sevenpack-editor_input {
-		border: 1px solid black;
+	select.tx_sevenpack-editor_input,
+	input.tx_sevenpack-editor_input,
+	textarea.tx_sevenpack-editor_input {
 		padding: 2px;
+	}
+
+	input.tx_sevenpack-editor_input,
+	textarea.tx_sevenpack-editor_input {
+		border: 1px solid black;
 	}
 
 	table.tx_sevenpack-editor_author {

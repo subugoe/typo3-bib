@@ -83,12 +83,6 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	public $ENUM_EMPTY  = 4;
 	public $ENUM_FILE_ICON = 5;
 
-	// Widget modes
-	public $W_SHOW   = 0;
-	public $W_EDIT   = 1;
-	public $W_SILENT = 2;
-	public $W_HIDDEN = 3;
-
 	// Import modes
 	public $IMP_BIBTEX = 1;
 	public $IMP_XML    = 2;
