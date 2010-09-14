@@ -156,8 +156,8 @@ class tx_sevenpack_importer {
 		$pids =& $this->pi1->extConf['pid_list'];
 
 		$pid = intval ( $this->pi1->piVars['import_pid'] );
-		if ( ! in_array ( $pid, $pids ) ) {
-			$pid = intval ( $pids[0] );
+		if ( !in_array ( $pid, $pids ) ) {
+			$pid = $this->get_default_pid();
 		}
 		//t3lib_div::debug ( 'Acquire pid: ' + $pid );
 	}

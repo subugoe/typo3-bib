@@ -18,7 +18,6 @@ class tx_sevenpack_reference_reader {
 	public $clear_cache;
 	public $pid_list;
 	public $show_hidden; // Show hidden references
-	protected $error;
 
 	public $refTable    = 'tx_sevenpack_references';
 	public $authorTable = 'tx_sevenpack_authors';
@@ -172,7 +171,6 @@ class tx_sevenpack_reference_reader {
 		$this->clear_cache = FALSE;
 		$this->pid_list = array();
 		$this->show_hidden = FALSE;
-		$this->error = FALSE;
 
 		$this->t_ref_default['table'] = $this->refTable;
 		$this->t_ref_default['alias'] = $this->refTableAlias;
@@ -211,31 +209,6 @@ class tx_sevenpack_reference_reader {
 	 */
 	function set_cObj ( &$cObj ) {
 		$this->cObj =& $cObj;
-	}
-
-
-	/**
-	 * Returns the error message and resets it.
-	 * The returned message is either a string or FALSE
-	 *
-	 * @return The last error message
-	 */
-	function error_message ( ) {
-		$err = $this->error;
-		$this->error = FALSE;
-		return $err;
-	}
-
-
-	/** 
-	 * Same as error_message() but returns a html version
-	 *
-	 * @return The last error message
-	 */
-	function html_error_message ( ) {
-		$err = $this->error_message();
-		$err = str_replace ( "\n", "<br/>\n", $err );
-		return $err;
 	}
 
 

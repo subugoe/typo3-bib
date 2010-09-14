@@ -994,9 +994,9 @@ class tx_sevenpack_editor_view {
 
 
 	/** 
-	 * Returns the default publication data 
+	 * Returns the default storage uid
 	 *
-	 * @return An array containing the default publication data
+	 * @return The parent id pid
 	 */
 	function get_default_pid ( ) {
 		$edConf =& $this->conf;

@@ -25,6 +25,33 @@ class tx_sevenpack_reference_writer {
 	function initialize ( $ref_read ) {
 		$this->ref_read =& $ref_read;
 		$this->clear_cache = FALSE;
+		$this->error = FALSE;
+	}
+	
+	
+
+	/**
+	 * Returns the error message and resets it.
+	 * The returned message is either a string or FALSE
+	 *
+	 * @return The last error message
+	 */
+	function error_message ( ) {
+		$err = $this->error;
+		$this->error = FALSE;
+		return $err;
+	}
+
+
+	/** 
+	 * Same as error_message() but returns a html version
+	 *
+	 * @return The last error message
+	 */
+	function html_error_message ( ) {
+		$err = $this->error_message();
+		$err = str_replace ( "\n", "<br/>\n", $err );
+		return $err;
 	}
 
 
@@ -101,6 +128,14 @@ class tx_sevenpack_reference_writer {
 				$pub['pid'] = intval ( $pub_db['pid'] );
 			else
 				$pub['pid'] = $this->ref_read->pid_list[0];
+		}
+
+		// Check if the pid is in the allowed list
+		if ( !in_array ( $pub['pid'], $this->ref_read->pid_list ) ) {
+			$this->error = 'The given storage folder (pid=' . strval ( $pub['pid'] ) . 
+				') is not in the list of allowed publication storage folders';
+			$this->log ( $this->error, 1 );
+			return TRUE;
 		}
 
 		$refRow = array ( );
