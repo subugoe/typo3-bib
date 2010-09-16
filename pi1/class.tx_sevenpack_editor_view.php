@@ -1217,6 +1217,15 @@ class tx_sevenpack_editor_view {
 
 			case $pi1->DIALOG_SAVE_CONFIRMED : 
 				$pub = $this->get_ref_http();
+				foreach ( $this->ref_read->refFields as $ff ) {
+					if ( $pub[$ff] ) {
+						if ( $this->conf['no_edit.'][$ff] || 
+							$this->conf['no_show.'][$ff] ) 
+						{
+							unset ( $pub[$ff] );
+						}
+					}
+				}
 				if ( $this->ref_write->save_publication ( $pub ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_save_fail' ).'</p>';
@@ -1360,7 +1369,9 @@ class tx_sevenpack_editor_view {
 
 		// Cite id doubles
 		$type = 'double_citeid';
-		if ( $warn[$type] && !$this->conf['no_edit.']['citeid'] ) {
+		if ( $warn[$type] && !$this->conf['no_edit.']['citeid'] && 
+			!$this->conf['no_show.']['citeid'] ) 
+		{
 			if ( $this->ref_read->citeid_exists ( $pub['citeid'], $pub['uid'] ) ) {
 				$err = array ( 'type' => $type );
 				$err['msg'] = $this->get_ll ( $this->LLPrefix.'error_id_exists');

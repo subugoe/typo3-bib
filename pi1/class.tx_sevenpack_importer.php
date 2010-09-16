@@ -182,6 +182,13 @@ class tx_sevenpack_importer {
 
 		// Data adjustments
 		$pub['pid'] = $this->storage_pid;
+		
+		// Don't accept publication uids since that
+		// could override existing publications
+		if ( array_key_exists ( 'uid', $pub ) ) {
+			unset ( $pub['uid'] );
+		}
+
 		if ( strlen ( $pub['citeid'] ) == 0 ) {
 			$pub['citeid'] = $this->idGenerator->generateId ( $pub );
 		}
@@ -197,7 +204,6 @@ class tx_sevenpack_importer {
 			} else {
 				$stat['succeeded']++;
 			}
-
 		}
 
 		return $res;
