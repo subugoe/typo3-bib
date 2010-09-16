@@ -24,7 +24,7 @@ class tx_sevenpack_editor_view {
 	public $idGenerator = FALSE;
 
 	public $is_new = FALSE;
-	public $is_new_first = FALSE;
+	public $is_first_edit = FALSE;
 	
 	// Widget modes
 	public $W_SHOW   = 0; // Show and pass value
@@ -147,53 +147,62 @@ class tx_sevenpack_editor_view {
 			}
 		}
 
+		$this->is_new = TRUE;
+		if ( $uid >= 0 ) {
+			$this->is_new = FALSE;
+			$pub_http['uid'] = $uid;
+		}
+
+		$this->is_first_edit = TRUE;		
+		if ( is_array ( $pi1->piVars['DATA']['pub'] ) ) {
+			$this->is_first_edit = FALSE;
+		}
+
+		$title = $this->LLPrefix;
 		switch ( $editor_mode ) {
 			case $pi1->EDIT_SHOW :
-				$title = $this->get_ll ( $this->LLPrefix.'title_view' );
+				$title .= 'title_view';
 				break;
 			case $pi1->EDIT_EDIT :
-				$title = $this->get_ll ( $this->LLPrefix.'title_edit' );
-				if ( $uid >= 0 ) {
-					$pub_db = $this->ref_read->fetch_db_pub ( $uid );
-					if ( !$pub_db )
-						return $pi1->error_msg ( 'No publication with uid: ' . $uid );
-				} else {
-					return $pi1->error_msg ( 'No publication id given' );
-				}
+				$title .= 'title_edit';
 				break;
 			case $pi1->EDIT_NEW :
-				$title = $this->get_ll ( $this->LLPrefix.'title_new' );
+				$title .= 'title_new';
 				break;
 			case $pi1->EDIT_CONFIRM_DELETE :
-				$title = $this->get_ll ( $this->LLPrefix.'title_confirm_delete' );
+				$title .= 'title_confirm_delete';
 				break;
 			case $pi1->EDIT_CONFIRM_ERASE :
-				$title = $this->get_ll ( $this->LLPrefix.'title_confirm_erase' );
+				$title .= 'title_confirm_erase';
 				break;
 			default:
+				$title .= 'title_edit';
 				break;
 		}
+		$title = $this->get_ll ( $title );
 
-		$this->is_new = TRUE;
-		$this->is_new_first = TRUE;
-		if ( $uid >= 0 ) {
-			$pub_http['uid'] = $uid;
-			$this->is_new = FALSE;
-			$this->is_new_first = FALSE;
-		}
-		if ( is_array ( $pi1->piVars['DATA']['pub'] ) ) {
-			$this->is_new_first = FALSE;
+		// Load default data
+		if ( $this->is_first_edit ) {
+			if ( $this->is_new ) {
+				// Load defaults for a new publication 
+				$pub = $this->get_ref_default();
+			} else {
+				if ( $uid < 0 ) {
+					return $pi1->error_msg ( 'No publication id given' );
+				}
+
+				// Load publication data from database				
+				$pub_db = $this->ref_read->fetch_db_pub ( $uid );
+				if ( $pub_db ) {
+					$pub = array_merge ( $pub, $pub_db );
+				} else {
+					return $pi1->error_msg ( 'No publication with uid: ' . $uid );
+				}
+			}
 		}
 
-		// merge in data from HTTP request
-		if ( $this->is_new_first ) {
-			$pub = $this->get_ref_default();
-		}
-		if ( !$this->is_new && is_array ( $pub_db ) ) {
-			$pub = array_merge ( $pub, $pub_db );
-		}
+		// Merge in data from HTTP request
 		$pub = array_merge ( $pub, $pub_http );
-
 
 		// Generate cite id if requested
 		$genID = FALSE;
@@ -372,16 +381,6 @@ class tx_sevenpack_editor_view {
 		$con .= '>' . "\n";
 		$con .= $preCon;
 
-		// Invisible 'uid' and 'mod_key' field
-		if ( !$this->is_new ) {
-			$con .= '<input type="hidden" name="'.$preId.'[DATA][pub][uid]" ';
-			$con .= 'value="'.$uid.'"/>' . "\n";
-			if ( isset ( $pub['mod_key'] ) ) {
-				$con .= '<input type="hidden" name="'.$preId.'[DATA][pub][mod_key]" ';
-				$con .= 'value="'.htmlspecialchars ( $pub['mod_key'], ENT_QUOTES ).'"/>' . "\n";
-			}
-		}
-
 		// Javascript for automatic submitting
 		$con .= '<script type="text/javascript">' . "\n";
 		$con .= '/* <![CDATA[ */' . "\n";
@@ -399,14 +398,14 @@ class tx_sevenpack_editor_view {
 		$con .= '<div class="'.$preSh.'-editor">' . "\n";
 
 		// Top buttons
-		$con .= '<div class="'.$preSh.'-editor_button_box">';
+		$con .= '<div class="'.$preSh.'-editor_button_box">'. "\n";
 		$con .= '<span class="'.$preSh.'-box_right">';
 		$con .= $btn_delete;
-		$con .= '</span>';
+		$con .= '</span>'. "\n";
 		$con .= '<span class="'.$preSh.'-box_left">';
 		$con .= $btn_save . $btn_edit . $btn_cancel . $btn_help;
-		$con .= '</span>';
-		$con .= '</div>';
+		$con .= '</span>'. "\n";
+		$con .= '</div>'. "\n";
 
 		$fieldGroups = array ( 
 			'required', 
@@ -475,7 +474,7 @@ class tx_sevenpack_editor_view {
 					} else {
 						$label  = $pi1->cObj->stdWrap ( $label, $edConf['field_labels.'] );
 						$widget = $pi1->cObj->stdWrap ( $widget, $edConf['field_widgets.'] );
-						$rows_vis .= '<tr>';
+						$rows_vis .= '<tr>' . "\n";
 						$rows_vis .= '<th' . $class_str . '>' . $label  . '</th>' . "\n";
 						$rows_vis .= '<td' . $class_str . '>' . $widget . '</td>' . "\n";
 						$rows_vis .= '</tr>' . "\n";
@@ -509,19 +508,29 @@ class tx_sevenpack_editor_view {
 				$con .= $rows_hidden . "\n";
 			}
 		}
+		
+		// Invisible 'uid' and 'mod_key' field
+		if ( !$this->is_new ) {
+			if ( isset ( $pub['mod_key'] ) ) {
+				$con .= tx_sevenpack_utility::html_hidden_input (
+					$preId.'[DATA][pub][mod_key]', 
+					htmlspecialchars ( $pub['mod_key'], ENT_QUOTES ) );
+				$con .= "\n";
+			}
+		}
 
 		// Footer Buttons
-		$con .= '<div class="'.$preSh.'-editor_button_box">';
+		$con .= '<div class="'.$preSh.'-editor_button_box">' . "\n";
 		$con .= '<span class="'.$preSh.'-box_right">';
 		$con .= $btn_delete;
-		$con .= '</span>';
+		$con .= '</span>' . "\n";
 		$con .= '<span class="'.$preSh.'-box_left">';
 		$con .= $btn_save . $btn_edit . $btn_cancel;
-		$con .= '</span>';
-		$con .= '</div>';
+		$con .= '</span>' . "\n";
+		$con .= '</div>' . "\n";
 
 		$con .= '</div>' . "\n";
-		$con .= '</form>';
+		$con .= '</form>' . "\n";
 
 		return $con;
 	}
@@ -723,7 +732,6 @@ class tx_sevenpack_editor_view {
 
 				$con .= tx_sevenpack_utility::html_text_input (
 					$fieldAttr, $htmlValue, $attrs );
-				$con .= "\n";
 
 				break;
 
@@ -759,13 +767,11 @@ class tx_sevenpack_editor_view {
 			case 'check' :
 				$con .= tx_sevenpack_utility::html_check_input (
 					$fieldAttr, '1', ( $value == 1 ), $attrs );
-				$con .= "\n";
 
 				break;
 
 			default :
 				$con .= 'Unknown edit widget: ' . $widgetType;
-				$con .= "\n";
 		}
 
 		return $con;
@@ -810,8 +816,10 @@ class tx_sevenpack_editor_view {
 			}
 
 		} else if ( $mode == $this->W_SILENT ) {
+
 			$con .= tx_sevenpack_utility::html_hidden_input ( 
 				$fieldAttr, $htmlValue );
+
 		}
 
 		return $con;
