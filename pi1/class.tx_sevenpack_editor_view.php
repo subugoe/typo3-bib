@@ -659,6 +659,12 @@ class tx_sevenpack_editor_view {
 			if ( $wm == $this->W_EDIT ) {
 				$wm = $this->W_SHOW;
 			} else if ( $wm == $this->W_HIDDEN ) {
+				// uid must be passed always
+				$wm = $this->W_SILENT;
+			}
+		} else if ( $field == 'pid' ) {
+			// pid must be passed always
+			if ( $wm == $this->W_HIDDEN ) {
 				$wm = $this->W_SILENT;
 			}
 		}
@@ -1217,15 +1223,22 @@ class tx_sevenpack_editor_view {
 
 			case $pi1->DIALOG_SAVE_CONFIRMED : 
 				$pub = $this->get_ref_http();
-				foreach ( $this->ref_read->refFields as $ff ) {
+				
+				// Unset fields that should not be edited
+				$checkFields = $this->ref_read->refFields;
+				$checkFields[] = 'pid';
+				$checkFields[] = 'hidden';
+				foreach ( $checkFields as $ff ) {
 					if ( $pub[$ff] ) {
 						if ( $this->conf['no_edit.'][$ff] || 
 							$this->conf['no_show.'][$ff] ) 
 						{
+							//t3lib_div::debug ( "Unsettig field " . $ff );
 							unset ( $pub[$ff] );
 						}
 					}
 				}
+
 				if ( $this->ref_write->save_publication ( $pub ) ) {
 					$con .= '<div class="'.$pi1->prefixShort.'-warning_box">' . "\n";
 					$con .= '<p>'.$this->get_ll ( 'msg_save_fail' ).'</p>';
@@ -1303,25 +1316,33 @@ class tx_sevenpack_editor_view {
 		if ( $warn[$type] ) {
 			$empty = array();
 			// Find empty fields
-			foreach ( $fields['required'] as $field ) {
-				switch ( $field ) {
-					case 'authors':
-						if ( !is_array ( $pub[$field] ) || ( sizeof ( $pub[$field] ) == 0 ) )
-							$empty[] = $field;
-						break;
-					default:
-						if ( strlen ( trim ( $pub[$field] ) ) == 0 ) 
-							$empty[] = $field;
-				}	
+			foreach ( $fields['required'] as $ff ) {
+				if ( !$this->conf['no_edit.'][$ff] && 
+					!$this->conf['no_show.'][$ff] ) 
+				{
+					switch ( $ff ) {
+						case 'authors':
+							if ( !is_array ( $pub[$ff] ) || 
+								( sizeof ( $pub[$ff] ) == 0 ) ) 
+							{
+								$empty[] = $ff;
+							}
+							break;
+						default:
+							if ( strlen ( trim ( $pub[$ff] ) ) == 0 ) 
+								$empty[] = $ff;
+					}
+				}
 			}
 
 			// Check conditions
 			$clear = array();
 			foreach ( $empty as $em ) {
 				$ok = FALSE;
-				foreach ( $cond as $con ) {
-					if ( in_array ( $em, $con ) ) {
-						foreach ( $con as $ff ) {
+				foreach ( $cond as $con_ored ) {
+					if ( in_array ( $em, $con_ored ) ) {
+						// Check if at least one field is not empty
+						foreach ( $con_ored as $ff ) {
 							if ( !in_array ( $ff, $empty ) ) {
 								$ok = TRUE;
 								break;

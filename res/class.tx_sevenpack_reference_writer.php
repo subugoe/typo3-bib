@@ -122,7 +122,7 @@ class tx_sevenpack_reference_writer {
 			}
 		}
 
-		// Select first pid from list if no one is present
+		// Acquire the storage folder pid if it is not given
 		if ( !is_numeric ( $pub['pid'] ) ) {
 			if ( is_array ( $pub_db ) )
 				$pub['pid'] = intval ( $pub_db['pid'] );
