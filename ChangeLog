@@ -1,3 +1,12 @@
+2010-09-16      Sebastian Holtermann  <sebholt@web.de>
+	* Editor: Better handling for no_edit and no_show flags (C. Lerrahn)
+	* Editor: Dicarding of no_edit and no_show fields when saving
+	* Editor: Check for invalid pids when saving (C. Lerrahn)
+	* Editor: General code overhauling
+	* Import: Check for invalid pids when saving
+	* General: Typo fixes (T. Schaefer)
+	* Release version 0.7.11
+
 2010-08-17      Sebastian Holtermann  <sebholt@web.de>
 	* Editor: Fields can be hidden entirely with the new no_show variable
 	* Import: BibTeX publications with an unknown bitype don't trigger invalid double imports anymore
