@@ -760,9 +760,9 @@ class tx_sevenpack_editor_view {
 
 				$pairs = array();
 				for ( $ii=0; $ii < sizeof($cfg['items']); $ii++ )  {
-					$p_name = $this->get_db_ll ( $cfg['items'][$ii][0], $cfg['items'][$ii][0] );
-					$p_val = strtolower ( $cfg['items'][$ii][1] );
-					$pairs[$p_val] = $p_name;
+					$p_desc = $this->get_db_ll ( $cfg['items'][$ii][0], $cfg['items'][$ii][0] );
+					$p_val = $cfg['items'][$ii][1];
+					$pairs[$p_val] = $p_desc;
 				}
 
 				$con .= tx_sevenpack_utility::html_select_input (

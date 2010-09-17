@@ -261,6 +261,7 @@ $TCA['tx_sevenpack_references'] = array (
 				'size' => '48',
 				'max' => '255',
 				'checkbox' => '0',
+				'eval' => 'trim',
 				'wizards' => Array(
 					'_PADDING' => 2,
 					'link' => Array(
