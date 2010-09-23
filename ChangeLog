@@ -1,3 +1,8 @@
+2010-09-23      Sebastian Holtermann  <sebholt@web.de>
+	* General: Changed <? to <?php in res/class.tx_sevenpack_labels.php
+	* General: Some small fixes (T. Schaefer)
+	* Release version 0.7.12
+
 2010-09-16      Sebastian Holtermann  <sebholt@web.de>
 	* Editor: Better handling for no_edit and no_show flags (C. Lerrahn)
 	* Editor: Dicarding of no_edit and no_show fields when saving
