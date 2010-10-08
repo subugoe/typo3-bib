@@ -1,3 +1,7 @@
+2010-10-08      Sebastian Holtermann  <sebholt@web.de>
+	* Backend: The DOI field now appears in the backend, too. (T. Schaefer)
+	* Release version 0.7.13
+
 2010-09-23      Sebastian Holtermann  <sebholt@web.de>
 	* General: Changed <? to <?php in res/class.tx_sevenpack_labels.php
 	* General: Some small fixes (T. Schaefer)

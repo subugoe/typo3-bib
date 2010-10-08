@@ -586,7 +586,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, number2, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url2, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, ISSN, extern, reviewed, in_library, borrowed_by' )
+		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, number2, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url2, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, DOI, ISSN, extern, reviewed, in_library, borrowed_by' )
 	),
 );
 
