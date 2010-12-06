@@ -1,5 +1,5 @@
 2010-12-06      Sebastian Holtermann  <sebholt@web.de>
-	* SQL: Non critical SQL generation fix (T. Schaefer)
+	* SQL generation fix (T. Schaefer)
 	* German localization fixes (T. Schaefer)
 	* More german localization fixes
 	* Release version 0.7.14
