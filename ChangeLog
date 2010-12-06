@@ -1,3 +1,9 @@
+2010-12-06      Sebastian Holtermann  <sebholt@web.de>
+	* SQL: Non critical SQL generation fix (T. Schaefer)
+	* German localization fixes (T. Schaefer)
+	* More german localization fixes
+	* Release version 0.7.14
+
 2010-10-08      Sebastian Holtermann  <sebholt@web.de>
 	* Backend: The DOI field now appears in the backend, too. (T. Schaefer)
 	* Release version 0.7.13
