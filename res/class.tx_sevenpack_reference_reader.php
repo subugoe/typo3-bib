@@ -652,7 +652,7 @@ class tx_sevenpack_reference_reader {
 			if ( is_numeric ( $f['value'] ) ) {
 				$wca = $rta.'.reviewed = \'0\'';
 				if ( intval ( $f['value'] ) != 0 )
-					$wca = $rta.'.reviewed! = \'0\'';
+					$wca = $rta.'.reviewed != \'0\'';
 				$WC[] = $wca;
 			}
 		}

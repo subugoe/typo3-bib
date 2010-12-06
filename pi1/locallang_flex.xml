@@ -39,7 +39,7 @@
 			<label index="tt_content.pi_flexform.enable_origin">Enable intern/extern filter</label>
 			<label index="tt_content.pi_flexform.enable_reviewes">Enable reviewed filter</label>
 			<label index="tt_content.pi_flexform.enable_search_all">Enable general keyword filter</label>
-			<label index="tt_content.pi_flexform.enable_state">Enable stater filter</label>
+			<label index="tt_content.pi_flexform.enable_state">Enable state filter</label>
 			<label index="tt_content.pi_flexform.enable_tags">Enable tag filter</label>
 			<label index="tt_content.pi_flexform.enable_year">Enable year filter</label>
 			<label index="tt_content.pi_flexform.enum.TS">TypoScript (default)</label>
@@ -102,11 +102,11 @@
 			<label index="tt_content.pi_flexform.years">Year(s) - comma separated / ranges with minus (-)</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="tt_content.pi_flexform.author_rule">Autoren Filter Regel</label>
+			<label index="tt_content.pi_flexform.author_rule">Autoren-Filter-Regel</label>
 			<label index="tt_content.pi_flexform.author_rule.AND">UND (alle Autoren)</label>
 			<label index="tt_content.pi_flexform.author_rule.OR">ODER (mindestens einer der Autoren)</label>
 			<label index="tt_content.pi_flexform.authors">Autoren - Nachname, Vorname</label>
-			<label index="tt_content.pi_flexform.bibtypes">Bibliographie Typen</label>
+			<label index="tt_content.pi_flexform.bibtypes">Bibliographietypen</label>
 			<label index="tt_content.pi_flexform.borrowed">Verliehen</label>
 			<label index="tt_content.pi_flexform.borrowed.0">Nicht verliehen</label>
 			<label index="tt_content.pi_flexform.borrowed.1">Verliehen</label>
@@ -114,38 +114,38 @@
 			<label index="tt_content.pi_flexform.citeid_gen_old">Zitations-Id: Generierung für bestehende Einträge</label>
 			<label index="tt_content.pi_flexform.citeids">Zitations-Ids (Getrennt durch neue Zeile)</label>
 			<label index="tt_content.pi_flexform.clear_page_cache">Cache leeren nach Bearbeitung?</label>
-			<label index="tt_content.pi_flexform.date_sorting">Datums-Sortierung</label>
+			<label index="tt_content.pi_flexform.date_sorting">Datumssortierung</label>
 			<label index="tt_content.pi_flexform.date_sorting.0">Absteigend</label>
 			<label index="tt_content.pi_flexform.date_sorting.1">Aufsteigend</label>
 			<label index="tt_content.pi_flexform.date_sorting.TS">TypoScript (Standard)</label>
 			<label index="tt_content.pi_flexform.debug">Debug</label>
-			<label index="tt_content.pi_flexform.display_mode">Listen Typ</label>
+			<label index="tt_content.pi_flexform.display_mode">Listentyp</label>
 			<label index="tt_content.pi_flexform.display_mode.0">Einfach</label>
 			<label index="tt_content.pi_flexform.display_mode.1">Nach Jahren getrennt</label>
-			<label index="tt_content.pi_flexform.display_mode.2">Mit Jahres Navigation</label>
+			<label index="tt_content.pi_flexform.display_mode.2">Mit Jahres-Navigation</label>
 			<label index="tt_content.pi_flexform.display_mode.TS">TypoScript (Standard)</label>
-			<label index="tt_content.pi_flexform.enable_author">Aktiviere Autoren Filter</label>
-			<label index="tt_content.pi_flexform.enable_bibtype">Aktiviere Bibliograhie-Typ Filter</label>
-			<label index="tt_content.pi_flexform.enable_borrowed">Aktiviere Verliehen Filter</label>
-			<label index="tt_content.pi_flexform.enable_citeid">Aktiviere Zitations-Id Filter</label>
+			<label index="tt_content.pi_flexform.enable_author">Aktiviere Autoren-Filter</label>
+			<label index="tt_content.pi_flexform.enable_bibtype">Aktiviere Bibliograhie-Typ-Filter</label>
+			<label index="tt_content.pi_flexform.enable_borrowed">Aktiviere Verliehen-Filter</label>
+			<label index="tt_content.pi_flexform.enable_citeid">Aktiviere Zitations-Id-Filter</label>
 			<label index="tt_content.pi_flexform.enable_editor">Aktiviere Editor?</label>
-			<label index="tt_content.pi_flexform.enable_export_links">Aktiviere Export Links?</label>
-			<label index="tt_content.pi_flexform.enable_in_library">Aktiviere In Bibliothek Filter</label>
-			<label index="tt_content.pi_flexform.enable_keywords">Aktiviere Schlüsselwort Filter</label>
-			<label index="tt_content.pi_flexform.enable_origin">Aktiviere Intern/Extern Filter</label>
-			<label index="tt_content.pi_flexform.enable_reviewes">Aktiviere Begutachtet Filter</label>
-			<label index="tt_content.pi_flexform.enable_search_all">Aktiviere allgemeinen Schlüsselwort Filter</label>
-			<label index="tt_content.pi_flexform.enable_state">Aktiviere Zustands Filter</label>
-			<label index="tt_content.pi_flexform.enable_tags">Aktiviere Marker filter</label>
-			<label index="tt_content.pi_flexform.enable_year">Aktiviere Jahres Filter</label>
+			<label index="tt_content.pi_flexform.enable_export_links">Aktiviere Exportlinks?</label>
+			<label index="tt_content.pi_flexform.enable_in_library">Aktiviere In-Bibliothek-Filter</label>
+			<label index="tt_content.pi_flexform.enable_keywords">Aktiviere Schlüsselwort-Filter</label>
+			<label index="tt_content.pi_flexform.enable_origin">Aktiviere Intern/Extern-Filter</label>
+			<label index="tt_content.pi_flexform.enable_reviewes">Aktiviere Begutachtet-Filter</label>
+			<label index="tt_content.pi_flexform.enable_search_all">Aktiviere allgemeinen Schlüsselwort-Filter</label>
+			<label index="tt_content.pi_flexform.enable_state">Aktiviere Zustands-Filter</label>
+			<label index="tt_content.pi_flexform.enable_tags">Aktiviere Marker-Filter</label>
+			<label index="tt_content.pi_flexform.enable_year">Aktiviere Jahres-Filter</label>
 			<label index="tt_content.pi_flexform.enum.TS">TypoScript (Standard)</label>
 			<label index="tt_content.pi_flexform.enum.bullets">Bullet</label>
 			<label index="tt_content.pi_flexform.enum.count_all">Zähler (Alle)</label>
 			<label index="tt_content.pi_flexform.enum.count_page">Zähler (Seite)</label>
 			<label index="tt_content.pi_flexform.enum.empty">Keine</label>
-			<label index="tt_content.pi_flexform.enum.file_icon">Datei Icon</label>
-			<label index="tt_content.pi_flexform.enum_style">Aufzählungs Stil</label>
-			<label index="tt_content.pi_flexform.export_mode">Export Optionen</label>
+			<label index="tt_content.pi_flexform.enum.file_icon">Datei-Icon</label>
+			<label index="tt_content.pi_flexform.enum_style">Aufzählungsstil</label>
+			<label index="tt_content.pi_flexform.export_mode">Exportoptionen</label>
 			<label index="tt_content.pi_flexform.export_mode.0">BibTeX</label>
 			<label index="tt_content.pi_flexform.export_mode.1">XML</label>
 			<label index="tt_content.pi_flexform.full_automatic">Vollautomatisch</label>
@@ -155,8 +155,8 @@
 			<label index="tt_content.pi_flexform.in_library.0">Nicht in Bibliothek</label>
 			<label index="tt_content.pi_flexform.in_library.1">In Bibliothek</label>
 			<label index="tt_content.pi_flexform.items_per_page">Anz. von Referenzen pro Seite (0=Alle, -1=TypoScript)</label>
-			<label index="tt_content.pi_flexform.keywords">Schlüsselwörter - Komma separiert</label>
-			<label index="tt_content.pi_flexform.keywords_rule">Schlüsselwort Filter Regel</label>
+			<label index="tt_content.pi_flexform.keywords">Schlüsselwörter - Kommasepariert</label>
+			<label index="tt_content.pi_flexform.keywords_rule">Schlüsselwort-Filter-Regel</label>
 			<label index="tt_content.pi_flexform.max_authors">Anz. der zu zeigenden Autoren (0=Alle, -1=TypoScript)</label>
 			<label index="tt_content.pi_flexform.off">Aus</label>
 			<label index="tt_content.pi_flexform.origins">Intern/Extern</label>
@@ -169,11 +169,11 @@
 			<label index="tt_content.pi_flexform.pubstate.3">Noch nicht publiziert</label>
 			<label index="tt_content.pi_flexform.pubstate.4">In Vorbereitung</label>
 			<label index="tt_content.pi_flexform.reviewes">Begutachtet</label>
-			<label index="tt_content.pi_flexform.reviewes.0">Nur begutachtet</label>
-			<label index="tt_content.pi_flexform.reviewes.1">Nur unbegutachtet</label>
+			<label index="tt_content.pi_flexform.reviewes.0">Nur unbegutachtet</label>
+			<label index="tt_content.pi_flexform.reviewes.1">Nur begutachtet</label>
 			<label index="tt_content.pi_flexform.rule_AND">UND</label>
 			<label index="tt_content.pi_flexform.rule_OR">ODER</label>
-			<label index="tt_content.pi_flexform.search_all">Suche in allen Feldern - Komma separiert</label>
+			<label index="tt_content.pi_flexform.search_all">Suche in allen Feldern - Kommasepariert</label>
 			<label index="tt_content.pi_flexform.search_all_rule">Schlüsselwort Filter Regel</label>
 			<label index="tt_content.pi_flexform.sheet_fe_editor">FE Editor</label>
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
@@ -187,15 +187,15 @@
 			<label index="tt_content.pi_flexform.show_textfields.keywords">Schlüsselwörter</label>
 			<label index="tt_content.pi_flexform.show_textfields.note">Bemerkung</label>
 			<label index="tt_content.pi_flexform.show_textfields.tags">Marker</label>
-			<label index="tt_content.pi_flexform.split_bibtypes">Trenne nach Bibliographie Typen</label>
+			<label index="tt_content.pi_flexform.split_bibtypes">Trenne nach Bibliographietypen</label>
 			<label index="tt_content.pi_flexform.stat_mode">Statistik Modus</label>
 			<label index="tt_content.pi_flexform.stat_mode.0">Keiner</label>
 			<label index="tt_content.pi_flexform.stat_mode.1">Total</label>
 			<label index="tt_content.pi_flexform.stat_mode.2">Jahr / Total</label>
 			<label index="tt_content.pi_flexform.stat_mode.TS">TypoScript (Standard)</label>
-			<label index="tt_content.pi_flexform.tags">Marker - Komma separiert</label>
-			<label index="tt_content.pi_flexform.tags_rule">Marker Filter Regel</label>
-			<label index="tt_content.pi_flexform.years">Jahr(e) - Komma getrennt / Intervalle mit Minus (-)</label>
+			<label index="tt_content.pi_flexform.tags">Marker - Kommasepariert</label>
+			<label index="tt_content.pi_flexform.tags_rule">Marker-Filter-Regel</label>
+			<label index="tt_content.pi_flexform.years">Jahr(e) - Kommasepariert / Intervalle mit Minus (-)</label>
 		</languageKey>
 		<languageKey index="it" type="array">
 			<label index="tt_content.pi_flexform.author_rule">XXX-TRANSLATE: Author filter rule</label>
