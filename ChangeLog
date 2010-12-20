@@ -1,3 +1,8 @@
+2010-12-20      Sebastian Holtermann  <sebholt@web.de>
+	* Backend: Fixed authorship label (R. Wildling)
+	* Code: Indentation cleanups
+	* Release version 0.7.15
+
 2010-12-06      Sebastian Holtermann  <sebholt@web.de>
 	* SQL generation fix (T. Schaefer)
 	* German localization fixes (T. Schaefer)
