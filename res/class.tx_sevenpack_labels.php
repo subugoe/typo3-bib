@@ -10,16 +10,30 @@ class tx_sevenpack_labels {
 	 * @return Name of author and title of reference
 	 */
 	function get_authorship_label(&$params, &$pObj) {
-		$pub_id    = $params['row']['pub_id'];
-		$author_id = $params['row']['uid'];
+		$item_id = $params['row']['uid'];
+		$title = '';
 
-		if ($pub_id && $author_id) {
-			$publication = t3lib_BEfunc::getRecord('tx_sevenpack_references', $pub_id);
-			$author      = t3lib_BEfunc::getRecord('tx_sevenpack_authors', $author_id);
-			$params['title'] = $author['surname'] .', '. $author['forename'] .' ['. $publication['title'] .']';
-		} else {
-			$params['title'] = '[Error!]';
+		if ( $item_id ) {
+			$item = t3lib_BEfunc::getRecord('tx_sevenpack_authorships', $item_id);
+			
+			$author_id = $item['author_id'];
+			if ( $author_id ) {
+				$author = t3lib_BEfunc::getRecord('tx_sevenpack_authors', $author_id);
+				$title .= $author['surname'] . ', ' . $author['forename'];
+			}
+
+			$pub_id = $item['pub_id'];
+			if ( $pub_id ) {
+				$pub = t3lib_BEfunc::getRecord('tx_sevenpack_references', $pub_id);
+				$title .= ' [' . $pub['title'] . ']';
+			}
 		}
+		
+		if ( strlen ( $title ) == 0 ) {
+			$title = '[Error!]';
+		}
+		
+		$params['title'] = $title;
 	}
 
 }
