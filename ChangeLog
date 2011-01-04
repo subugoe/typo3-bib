@@ -1,3 +1,8 @@
+2011-01-04      Sebastian Holtermann  <sebholt@web.de>
+	* Editor: Basic support for per publication edit restrictions (K. Weidenbach)
+	* Code: Small space at end of line cleanups
+	* Release version 0.7.16
+
 2010-12-20      Sebastian Holtermann  <sebholt@web.de>
 	* Backend: Fixed authorship label (R. Wildling)
 	* Code: Indentation cleanups
