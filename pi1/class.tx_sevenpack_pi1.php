@@ -5,7 +5,7 @@
 *  (c) 2008 Sebastian Holtermann (sebholt@web.de)
 *  All rights reserved
 *
-*  This script is part of the TYPO3 project. The TYPO3 project is 
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -165,7 +165,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		$show_fields = $this->pi_getFFvalue ( $ff, 'show_textfields', $fSheet);
 		$show_fields = explode ( ',', $show_fields );
-		$extConf['hide_fields'] = array ( 'abstract' => 1, 'annotation' => 1, 
+		$extConf['hide_fields'] = array ( 'abstract' => 1, 'annotation' => 1,
 			'note' => 1, 'keywords' => 1, 'tags' => 1 );
 		foreach ( $show_fields as $f ) {
 			$field = FALSE;
@@ -239,7 +239,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$pid_list = array_merge ( $pid_list, $tmp );
 		}
 
-		// Remove doubles and zero 
+		// Remove doubles and zero
 		$pid_list = array_unique ( $pid_list );
 		if ( in_array ( 0, $pid_list ) ) {
 			unset ( $pid_list[array_search(0,$pid_list)] );
@@ -373,7 +373,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Acquire export modes
 			$modes = $this->conf['export.']['enable_export'];
 			if ( strlen ( $modes ) > 0 ) {
-				$modes = tx_sevenpack_utility::explode_trim_lower ( 
+				$modes = tx_sevenpack_utility::explode_trim_lower (
 					',', $modes, TRUE );
 			}
 
@@ -516,7 +516,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Switch to an import view on demand
 			$allImport = intval ( $this->IMP_BIBTEX | $this->IMP_XML );
-			if ( isset( $this->piVars['import'] ) && 
+			if ( isset( $this->piVars['import'] ) &&
 			     ( intval ( $this->piVars['import'] ) & $allImport ) ) {
 				$extConf['view_mode']   = $this->VIEW_DIALOG;
 				$extConf['dialog_mode'] = $this->DIALOG_IMPORT;
@@ -582,7 +582,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['year'] = intval ( date ( 'Y' ) ); // System year
 			//$extConf['year'] = 'all'; // All years
 			$ecYear =& $extConf['year'];
-	
+
 			$pvar = strtolower ( $this->piVars['year'] );
 			if ( is_numeric ( $pvar ) ) {
 				$ecYear = intval ( $pvar );
@@ -601,7 +601,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// The selected year has no publications so select the closest year
 			if ( ( $this->stat['num_all'] > 0 ) && is_numeric ( $ecYear ) ) {
-				$ecYear = tx_sevenpack_utility::find_nearest_int ( 
+				$ecYear = tx_sevenpack_utility::find_nearest_int (
 					$ecYear, $this->stat['years'] );
 			}
 			// Append default link variable
@@ -758,7 +758,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	{
 		if ( $this->extConf['debug'] )
 			$str .= t3lib_div::view_array (
-				array ( 
+				array (
 					'extConf' => $this->extConf,
 					'conf' => $this->conf,
 					'piVars' => $this->piVars,
@@ -766,7 +766,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					'HTTP_POST_VARS' => $GLOBALS['HTTP_POST_VARS'],
 					'HTTP_GET_VARS' => $GLOBALS['HTTP_GET_VARS'],
 					//'$this->cObj->data' => $this->cObj->data
-				) 
+				)
 			);
 		return $this->pi_wrapInBaseClass ( $str );
 	}
@@ -804,9 +804,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// This is a nested array containing fields
 		// that may have restrictions
-		$fields = array ( 
-			'ref' => array(), 
-			'author' => array() 
+		$fields = array (
+			'ref' => array(),
+			'author' => array()
 		);
 		$all_fields = array();
 		// Acquire field configurations
@@ -849,7 +849,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$all = ( $rcfg['hide_all'] != 0 );
 
 				// Hide on string extensions
-				$ext = tx_sevenpack_utility::explode_trim_lower ( 
+				$ext = tx_sevenpack_utility::explode_trim_lower (
 					',', $rcfg['hide_file_ext'], TRUE );
 
 				// Reveal on FE user groups
@@ -1124,7 +1124,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Initializes an array which contains subparts of the
 	 * html templates.
 	 *
@@ -1143,7 +1143,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// List blocks
 		$list_blocks = array (
-			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK' 
+			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK'
 		);
 
 		// Bibtype data blocks
@@ -1155,7 +1155,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$bib_types[] = 'ITEM_BLOCK';
 
 		// Misc navigation blocks
-		$navi_blocks = array ( 'EXPORT_NAVI_BLOCK', 
+		$navi_blocks = array ( 'EXPORT_NAVI_BLOCK',
 			'IMPORT_NAVI_BLOCK', 'NEW_ENTRY_NAVI_BLOCK' );
 
 		// Fetch the template file list
@@ -1194,7 +1194,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 			$tmpl = $this->cObj->fileResource ( $val['file'] );
 			if ( strlen ( $tmpl ) == 0 ) {
-				$err[] = 'The HTML template file \'' . $val['file'] . '\' for \'' . $key . 
+				$err[] = 'The HTML template file \'' . $val['file'] . '\' for \'' . $key .
 					'\' is not readable or empty';
 				continue;
 			}
@@ -1216,7 +1216,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Initialize the edit icons
 	 *
 	 * @return void
@@ -1235,14 +1235,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Initialize the list view icons
 	 *
 	 * @return void
 	 */
 	function init_list_icons ()
 	{
-		$list = array ( 
+		$list = array (
 			'default' => 'EXT:cms/tslib/media/fileicons/default.gif' );
 		$more = $this->conf['file_icons.'];
 		if ( is_array ( $more ) ) {
@@ -1258,7 +1258,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Extend the $this->LOCAL_LANG label with another language set
 	 *
 	 * @return void
@@ -1294,7 +1294,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Get the string in the local language to a given key .
 	 *
 	 * @return The string in the local language
@@ -1413,7 +1413,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 */
 	function filter_pub_html ( $str, $hsc = FALSE ) {
 		$charset = $this->extConf['charset']['upper'];
-		if ( $hsc ) 
+		if ( $hsc )
 			$str = htmlspecialchars ( $str, ENT_QUOTES, $charset );
 
 		return $str;
@@ -1486,7 +1486,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->setup_top_navigation ();
 
 		// Setup all publication items
-		$this->setup_items (); 
+		$this->setup_items ();
 
 		//t3lib_div::debug ( $this->template['LIST_VIEW'] );
 
@@ -1494,7 +1494,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Returns the year navigation bar
 	 *
 	 * @return A HTML string with the year navigation bar
@@ -1519,7 +1519,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Returns the year navigation bar
 	 *
 	 * @return A HTML string with the year navigation bar
@@ -1623,7 +1623,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Setup the add-new-entry element
 	 *
 	 * @return void
@@ -1648,7 +1648,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Setup the statistic element
 	 *
 	 * @return void
@@ -1675,8 +1675,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
-	 * Setup the export-link element 
+	/**
+	 * Setup the export-link element
 	 *
 	 * @return void
 	 */
@@ -1704,7 +1704,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				if ( in_array ( $mod, $extConf['modes'] ) ) {
 					$title = $this->get_ll ( 'export_' . $mod . 'LinkTitle', $mod, TRUE );
 					$txt = $this->get_ll ( 'export_' . $mod );
-					$link = $this->get_link ( $txt, array ( 'export' => $mod ), 
+					$link = $this->get_link ( $txt, array ( 'export' => $mod ),
 						FALSE, array ( 'title' => $title ) );
 					$link = $this->cObj->stdWrap ( $link, $cfg[$mod . '.'] );
 					$exports[] = $link;
@@ -1722,7 +1722,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$trans = array();
 			$trans['###LABEL###'] = $label;
 			$trans['###EXPORTS###'] = $exports;
- 
+
 			$block = $this->setup_enum_cond_block ( $this->template['EXPORT_NAVI_BLOCK'] );
 			$block = $this->cObj->substituteMarkerArrayCached ( $block, $trans, array() );
 			$hasStr = array ( '','' );
@@ -1734,7 +1734,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Setup the import-link element in the
 	 * HTML-template
 	 *
@@ -1757,13 +1757,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// Import bibtex
 			$title = $this->get_ll ( 'import_bibtexLinkTitle', 'bibtex', TRUE );
-			$link = $this->get_link ( $this->get_ll ( 'import_bibtex' ), array('import'=>$this->IMP_BIBTEX), 
+			$link = $this->get_link ( $this->get_ll ( 'import_bibtex' ), array('import'=>$this->IMP_BIBTEX),
 					FALSE, array ( 'title' => $title ) );
 			$imports[] = $this->cObj->stdWrap ( $link, $cfg['bibtex.'] );
 
 			// Import xml
 			$title = $this->get_ll ( 'import_xmlLinkTitle', 'xml', TRUE );
-			$link = $this->get_link ( $this->get_ll ( 'import_xml' ), array('import'=>$this->IMP_XML), 
+			$link = $this->get_link ( $this->get_ll ( 'import_xml' ), array('import'=>$this->IMP_XML),
 					FALSE, array ( 'title' => $title ) );
 			$imports[] = $this->cObj->stdWrap ( $link, $cfg['xml.'] );
 
@@ -1772,10 +1772,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$sep = $this->cObj->stdWrap ( $cfg['separator'], $cfg['separator.'] );
 
 			// Import label
-			$translator['###LABEL###'] = $this->cObj->stdWrap ( 
+			$translator['###LABEL###'] = $this->cObj->stdWrap (
 				$this->get_ll ( $cfg['label'] ), $cfg['label.'] );
 			$translator['###IMPORTS###'] = implode ( $sep, $imports );
- 
+
 			$str = $this->cObj->substituteMarkerArrayCached ( $str, $translator, array() );
 			$hasStr = array ( '','' );
 		}
@@ -1786,7 +1786,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Setup the top navigation block
 	 *
 	 * @return void
@@ -1802,7 +1802,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Prepares database publication data for displaying
 	 *
 	 * @return The procesed publication data array
@@ -1857,10 +1857,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// State
 		switch ( $pdata['state'] ) {
-			case 0 :  
-				$pdata['state'] = ''; 
+			case 0 :
+				$pdata['state'] = '';
 				break;
-			default : 
+			default :
 				$pdata['state'] = $this->get_ll (
 				$this->ref_read->refTable.'_state_I_'.$pdata['state'],
 				'Unknown state: '.$pdata['state'], TRUE ) ;
@@ -1916,9 +1916,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 		}
 
-		// Multi fields 
-		$multi = array ( 
-			'authors' => $this->ref_read->authorFields 
+		// Multi fields
+		$multi = array (
+			'authors' => $this->ref_read->authorFields
 		);
 		foreach ( $multi as $table => $fields ) {
 			$elms =& $pdata[$table];
@@ -1991,7 +1991,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Prepares the cObj->data array for a reference
 	 *
 	 * @return The procesed publication data array
@@ -2009,7 +2009,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Returns the html interpretation of the publication
 	 * item as it is defined in the html template
 	 *
@@ -2095,7 +2095,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Returns the authors string for a publication
 	 *
 	 * @return void
@@ -2124,7 +2124,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$and = '';
 		}
 		$last_author = max ( $last_author, 0 );
-		
+
 		//t3lib_div::debug ( array ( 'authors' => $authors, 'max_authors' => $max_authors, 'last_author' => $last_author ) );
 
 		$hl_authors = $this->extConf['highlight_authors'] ? TRUE : FALSE;
@@ -2138,7 +2138,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Collect filter authors
 			foreach ( $this->extConf['filters'] as $filter ) {
 				if ( is_array( $filter['author']['authors'] ) ) {
-					$filter_authors = array_merge ( 
+					$filter_authors = array_merge (
 						$filter_authors, $filter['author']['authors'] );
 				}
 			}
@@ -2193,8 +2193,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Compose names
-			$a_str = str_replace ( 
-				array ( '###FORENAME###', '###SURNAME###', '###URL_ICON###' ), 
+			$a_str = str_replace (
+				array ( '###FORENAME###', '###SURNAME###', '###URL_ICON###' ),
 				array ( $a_fn, $a_sn, $a_icon ), $a_tmpl );
 
  			// apply stdWrap
@@ -2209,7 +2209,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				foreach ( $filter_authors as $fa ) {
 					if ( $a['surname'] == $fa['surname'] ) {
 						if ( !$fa['forename'] || ($a['forename'] == $fa['forename']) ) {
-							$a_str = $this->cObj->stdWrap ( 
+							$a_str = $this->cObj->stdWrap (
 								$a_str, $this->conf['authors.']['highlight.'] );
 							break;
 						}
@@ -2228,15 +2228,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 				if ( strlen ( $et_al ) > 0 ) {
 					$wrap = FALSE;
-	
+
 					// Highlight "et al." on demand
 					if ( $hl_authors ) {
 						for ( $j = $last_author + 1; $j < sizeof ( $authors ); $j++ ) {
 							$a_et = $authors[$j];
 							foreach ( $filter_authors as $fa ) {
 								if ( $a_et['surname'] == $fa['surname'] ) {
-									if ( !$fa['forename'] 
-										|| ( $a_et['forename'] == $fa['forename'] ) ) 
+									if ( !$fa['forename']
+										|| ( $a_et['forename'] == $fa['forename'] ) )
 									{
 										$wrap = $this->conf['authors.']['highlight.'];
 										$j = sizeof ( $authors );
@@ -2246,7 +2246,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 							}
 						}
 					}
-	
+
 					if ( is_array ( $wrap ) ) {
 						$et_al = $this->cObj->stdWrap ( $app, $wrap );
 					}
@@ -2267,7 +2267,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Setup items in the html-template
 	 *
 	 * @return void
@@ -2282,20 +2282,20 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// The author name template
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
 		if ( isset ( $conf['authors.']['template'] ) ) {
-			$this->extConf['author_tmpl'] = $cObj->stdWrap ( 
-				$conf['authors.']['template'], $conf['authors.']['template.'] 
+			$this->extConf['author_tmpl'] = $cObj->stdWrap (
+				$conf['authors.']['template'], $conf['authors.']['template.']
 			);
 		}
 		$this->extConf['author_sep'] = ', ';
 		if ( isset ( $conf['authors.']['separator'] ) ) {
-			$this->extConf['author_sep'] = $cObj->stdWrap ( 
-				$conf['authors.']['separator'], $conf['authors.']['separator.'] 
+			$this->extConf['author_sep'] = $cObj->stdWrap (
+				$conf['authors.']['separator'], $conf['authors.']['separator.']
 			);
 		}
 		$this->extConf['author_lfields'] = 'url';
 		if ( isset ( $conf['authors.']['url_icon_fields'] ) ) {
-			$this->extConf['author_lfields'] = 
-				tx_sevenpack_utility::explode_trim ( ',', 
+			$this->extConf['author_lfields'] =
+				tx_sevenpack_utility::explode_trim ( ',',
 					$conf['authors.']['url_icon_fields'], TRUE );
 		}
 
@@ -2320,7 +2320,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Setup items in the html-template
 	 *
 	 * @return void
@@ -2409,7 +2409,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Determine publication numbers
 		$pubs_before = 0;
 		if ( ( $this->extConf['d_mode'] == $this->D_Y_NAV ) &&
-			  is_numeric ( $this->extConf['year'] ) ) 
+			  is_numeric ( $this->extConf['year'] ) )
 		{
 			foreach ( $this->stat['year_hist'] as $y => $n ) {
 				if ( $y == $this->extConf['year'] )
@@ -2492,15 +2492,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$manip_hide = '';
 			$manip_all = array();
 			$subst_sub = '';
-			if ( $ed_mode )  {
-				$subst_sub = array ( '', '' );
-				$manip_all[] = $this->get_edit_manipulator ( $pub );
-				$manip_all[] = $this->get_hide_manipulator ( $pub );
-				$manip_all = tx_sevenpack_utility::html_layout_table ( array ( $manip_all ) );
+			if ( $ed_mode ) {
+				if ( $this->checkFEauthorRestriction( $pub['uid'] ) ) {
+					$subst_sub = array ( '', '' );
+					$manip_all[] = $this->get_edit_manipulator ( $pub );
+					$manip_all[] = $this->get_hide_manipulator ( $pub );
+					$manip_all = tx_sevenpack_utility::html_layout_table ( array ( $manip_all ) );
 
-				$translator['###MANIPULATORS###'] = $cObj->stdWrap (
-					$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
-				);
+					$translator['###MANIPULATORS###'] = $cObj->stdWrap (
+						$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
+					);
+				}
 			}
 
 			$tmpl = $cObj->substituteSubpart ( $tmpl, '###HAS_MANIPULATORS###', $subst_sub );
@@ -2587,7 +2589,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function get_new_manipulator ( ) {
 		$label = $this->get_ll ( 'manipulators_new', 'New', TRUE );
 		$imgSrc = 'src="'.$this->icon_src['new_record'].'"';
-		$img = '<img '.$imgSrc.' alt="'.$label.'" ' . 
+		$img = '<img '.$imgSrc.' alt="'.$label.'" ' .
 			'class="'.$this->prefixShort.'-new_icon" />';
 
 		$res = $this->get_link ( $img, array('action'=>array('new'=>1)), TRUE, array('title'=>$label) );
@@ -2603,18 +2605,17 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// The edit button
 		$label = $this->get_ll ( 'manipulators_edit', 'Edit', TRUE );
 		$imgSrc = 'src="'.$this->icon_src['edit'].'"';
-		$img = '<img '.$imgSrc.' alt="'.$label.'" ' . 
+		$img = '<img '.$imgSrc.' alt="'.$label.'" ' .
 			'class="'.$this->prefixShort.'-edit_icon" />';
 
-		$res = $this->get_link ( $img, 
-			array ( 'action'=>array('edit'=>1),'uid'=>$pub['uid'] ), 
+		$res = $this->get_link ( $img,
+			array ( 'action'=>array('edit'=>1),'uid'=>$pub['uid'] ),
 			TRUE, array ( 'title'=>$label ) );
 
 		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['list.']['manipulators.']['edit.'] );
 
 		return $res;
 	}
-
 
 	/**
 	 * Returns the hide button
@@ -2630,10 +2631,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$action = array('reveal'=>1);
 		}
 
-		$img = '<img '.$imgSrc.' alt="'.$label.'" ' . 
+		$img = '<img '.$imgSrc.' alt="'.$label.'" ' .
 			'class="'.$this->prefixShort.'-hide_icon" />';
-		$res = $this->get_link ( $img, 
-			array ( 'action'=>$action, 'uid'=>$pub['uid'] ), 
+		$res = $this->get_link ( $img,
+			array ( 'action'=>$action, 'uid'=>$pub['uid'] ),
 			TRUE, array('title'=>$label) );
 
 		$res = $this->cObj->stdWrap ( $res, $this->conf['editor.']['list.']['manipulators.']['hide.'] );
@@ -2816,22 +2817,22 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Removes the enumeration condition block
 	 * or just the block markers
 	 *
 	 * @return void
 	 */
-	function setup_enum_cond_block ( $templ ) 
+	function setup_enum_cond_block ( $templ )
 	{
 		$sub = $this->extConf['has_enum'] ? array() : '';
-		$templ = $this->cObj->substituteSubpart ( 
+		$templ = $this->cObj->substituteSubpart (
 			$templ, '###HAS_ENUM###', $sub );
 		return $templ;
 	}
 
 
-	/** 
+	/**
 	 * Setup the a spacer block
 	 *
 	 * @return void
@@ -2844,7 +2845,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * Hides or reveals a publication
 	 *
 	 * @return void
@@ -2860,7 +2861,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * This loads the single view
 	 *
 	 * @return The single view
@@ -2875,7 +2876,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * This loads the editor view
 	 *
 	 * @return The editor view
@@ -2890,7 +2891,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * This switches to the requested dialog
 	 *
 	 * @return The requested dialog
@@ -2919,7 +2920,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * The export dialog
 	 *
 	 * @return The export dialog
@@ -2992,7 +2993,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	}
 
 
-	/** 
+	/**
 	 * The import dialog
 	 *
 	 * @return The import dialog
@@ -3029,9 +3030,53 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		return $con;
 	}
 
+
+	/**
+	 *
+	 * This method checks if the current FE user is allowed to edit
+	 * this publication.
+	 *
+	 * The FE user is allowed to edit if he is an author of the publication.
+	 * This check is only done if FE_edit_own_records is set to 1 in TS,
+	 * otherwise all publications can be editited.
+	 *
+	 * @todo code duplication in here, better extend $extConf['edit_mode'] in some way
+	 * @todo put conf['FE_edit_own_records'] check in extConf[], so it is not checked every time
+	 * @todo make TS also a FlexForm value
+	 *
+	 * @param intger $pub_id
+	 * @return TRUE (allowed) FALSE (restricted)
+	 */
+	function checkFEauthorRestriction ( $pub_id )
+	{
+		// always allow BE users with sufficient rights
+		if ( is_object ( $GLOBALS['BE_USER'] ) ) {
+			if ( $GLOBALS['BE_USER']->isAdmin() )
+				return true;
+			else if ( $GLOBALS['BE_USER']->check ( 'tables_modify', $this->ref_read->refTable ) )
+				return true;
+		}
+
+		// Is FE-user editing only for own records enabled? (set via TS)
+		if ( isset ( $this->conf['FE_edit_own_records'] ) && $this->conf['FE_edit_own_records'] != 0 ) {
+			// query all authors of this publication
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery("fe_user_id", "tx_sevenpack_authors as a,tx_sevenpack_authorships as m", "a.uid=m.author_id AND m.pub_id=".$pub_id);
+			while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res) ) {
+				// check if author == FE user and allow editing
+				if ( $row[0] == $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->userid_column] )
+					return true;
+			}
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
+			return false;
+		}
+
+		// default behavior, FE user can edit all records
+		return true;
+	}
+
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_pi1.php"])	{
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_pi1.php"]) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_pi1.php"]);
 }
 
