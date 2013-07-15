@@ -20,7 +20,7 @@ $TCA['tx_bib_references'] = array (
 		'enablecolumns' => array (
 			'disabled' => 'hidden',
 		),
-		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
+		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/Tca/References.php',
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
 	),
 	'feInterface' => array (
@@ -40,7 +40,7 @@ $TCA['tx_bib_authors'] = array (
 		'cruser_id' => 'cruser_id',
 		'default_sortby' => 'ORDER BY surname',	
 		'delete' => 'deleted',	
-		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
+		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'Configuration/Tca/Authors.php',
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
 	),
 	'feInterface' => array (
@@ -55,9 +55,9 @@ $TCA['tx_bib_authorships'] = array (
 		'label'     => 'pub_id',
 		'label_userFunc'    => "tx_bib_labels->get_authorship_label",
 		'label_alt_force'   => 1,
-		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',	
+		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',
 		'delete' => 'deleted',
-		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
+		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'Configuration/Tca/Authorships.php',
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
 		//'hideTable' => true
 	),
@@ -104,6 +104,5 @@ t3lib_extMgm::addStaticFile(
 	'Configuration/TypoScript/default_style',
 	'Publication list CSS'
 );
-
 
 ?>

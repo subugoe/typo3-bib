@@ -24,20 +24,10 @@
 /**
  * Plugin 'Publication List' for the 'bib' extension.
  *
- * @author	Sebastian Holtermann <sebholt@web.de>
- * @package TYPO3
- * @subpackage tx_bib
+ * @author Sebastian Holtermann <sebholt@web.de>
+ * @author Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
  *
  */
-
-
-require_once ( PATH_tslib.'class.tslib_pibase.php' );
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_reference_reader.php' ) );
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_utility.php' ) );
 
 class tx_bib_pi1 extends tslib_pibase {
 
@@ -2185,9 +2175,9 @@ class tx_bib_pi1 extends tslib_pibase {
 
 		$elements = array();
 		// Iterate through authors
-		for ( $i_a=0; $i_a<=$last_author; $i_a++ ) {
-			$a =& $authors[$i_a];
-			//t3lib_div::debug ( $a );
+		for ($i_a = 0; $i_a <= $last_author; $i_a++) {
+			$a = $authors[$i_a];
+			// debug($a);
 
 			// Init cObj data
 			$cObj->data = $a;
