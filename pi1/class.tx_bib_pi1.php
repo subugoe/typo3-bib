@@ -2911,8 +2911,6 @@ class tx_bib_pi1 extends tslib_pibase {
 	 */
 	function single_view ()
 	{
-		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:'.$this->extKey.'/pi1/class.tx_bib_single_view.php' ) );
 		$sv = t3lib_div::makeInstance ( 'tx_bib_single_view' );
 		$sv->initialize ( $this );
 		return $sv->single_view();
@@ -2926,8 +2924,6 @@ class tx_bib_pi1 extends tslib_pibase {
 	 */
 	function editor_view ()
 	{
-		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:'.$this->extKey.'/pi1/class.tx_bib_editor_view.php' ) );
 		$sv = t3lib_div::makeInstance ( 'tx_bib_editor_view' );
 		$sv->initialize ( $this );
 		return $sv->editor_view();
@@ -2950,8 +2946,6 @@ class tx_bib_pi1 extends tslib_pibase {
 				$con .= $this->import_dialog ( );
 				break;
 			default :
-				require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-					'EXT:'.$this->extKey.'/pi1/class.tx_bib_editor_view.php' ) );
 				$sv = t3lib_div::makeInstance( 'tx_bib_editor_view' );
 				$sv->initialize ( $this );
 				$con .= $sv->dialog_view();

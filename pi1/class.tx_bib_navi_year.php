@@ -1,13 +1,5 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/pi1/class.tx_bib_navi.php') );
-
-
 class tx_bib_navi_year extends tx_bib_navi  {
 
 	/*

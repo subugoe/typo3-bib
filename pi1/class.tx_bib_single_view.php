@@ -1,9 +1,5 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-
 class tx_bib_single_view {
 
 	public $pi1; // Plugin 1

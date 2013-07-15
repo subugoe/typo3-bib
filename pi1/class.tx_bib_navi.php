@@ -1,8 +1,5 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
 class tx_bib_navi {
 
 	public $pi1;
