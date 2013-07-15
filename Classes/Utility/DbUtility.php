@@ -1,10 +1,4 @@
 <?php
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is not meant to be executed');
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_utility.php' ) );
-
 
 /**
  * This class provides the reference database interface
@@ -12,7 +6,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
  *
  * @author Sebastian Holtermann
  */
-class tx_bib_db_utility {
+class Tx_Bib_Utility_DbUtility {
 
 	public $ref_read;
 	public $charset;
@@ -306,8 +300,8 @@ class tx_bib_db_utility {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.tx_bib_db_utility.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.tx_bib_db_utility.php']);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.Tx_Bib_Utility_DbUtility.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.Tx_Bib_Utility_DbUtility.php']);
 }
 
 

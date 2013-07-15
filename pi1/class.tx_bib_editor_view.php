@@ -6,12 +6,6 @@ if ( !isset($GLOBALS['TSFE']) )
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
 
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_reference_writer.php' ) );
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_db_utility.php' ) );
-
 
 class tx_bib_editor_view {
 
@@ -48,7 +42,7 @@ class tx_bib_editor_view {
 
 
 		// setup db_utility
-		$this->db_utility = t3lib_div::makeInstance ( 'tx_bib_db_utility' );
+		$this->db_utility = t3lib_div::makeInstance ( 'Tx_Bib_Utility_DbUtility' );
 		$this->db_utility->initialize ( $pi1->ref_read );
 		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
 		$this->db_utility->read_full_text_conf ( $this->conf['full_text.'] );
@@ -1216,7 +1210,7 @@ class tx_bib_editor_view {
 		$con = '';
 		$pi1 =& $this->pi1;
 
-		$this->ref_write = t3lib_div::makeInstance ( 'tx_bib_reference_writer' );
+		$this->ref_write = t3lib_div::makeInstance ( 'Tx_Bib_Utility_ReferenceWriter' );
 		$this->ref_write->initialize( $this->ref_read );
 
 		switch ( $pi1->extConf['dialog_mode'] ) {

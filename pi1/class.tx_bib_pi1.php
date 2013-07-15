@@ -2892,12 +2892,8 @@ class tx_bib_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function hide_publication ( $hide = TRUE )
-	{
-		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:bib/Classes/Utility/class.tx_bib_reference_writer.php' ) );
-
-		$ref_write = t3lib_div::makeInstance ( 'tx_bib_reference_writer' );
+	function hide_publication ( $hide = TRUE ) {
+		$ref_write = t3lib_div::makeInstance ( 'Tx_Bib_Utility_ReferenceWriter' );
 		$ref_write->initialize( $this->ref_read );
 		$ref_write->hide_publication ( $this->piVars['uid'], $hide );
 	}

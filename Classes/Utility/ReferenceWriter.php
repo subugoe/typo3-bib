@@ -1,7 +1,4 @@
 <?php
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is not meant to be executed');
-
 
 /**
  * This class provides functions to write or manipulate 
@@ -9,7 +6,7 @@ if ( !isset($GLOBALS['TSFE']) )
  *
  * @author Sebastian Holtermann
  */
-class tx_bib_reference_writer {
+class Tx_Bib_Utility_ReferenceWriter {
 
 	public $ref_read;
 	public $clear_cache;
@@ -473,8 +470,8 @@ class tx_bib_reference_writer {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_writer.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_writer.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.Tx_Bib_Utility_ReferenceWriter.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.Tx_Bib_Utility_ReferenceWriter.php"]);
 }
 
 ?>
