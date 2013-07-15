@@ -21,7 +21,7 @@ $TCA['tx_bib_references'] = array (
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',
@@ -41,7 +41,7 @@ $TCA['tx_bib_authors'] = array (
 		'default_sortby' => 'ORDER BY surname',	
 		'delete' => 'deleted',	
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'surname,forename,url',
@@ -58,7 +58,7 @@ $TCA['tx_bib_authorships'] = array (
 		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',	
 		'delete' => 'deleted',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
 		//'hideTable' => true
 	),
 	'feInterface' => array (
