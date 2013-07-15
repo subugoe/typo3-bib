@@ -9,7 +9,7 @@ if ( !isset($GLOBALS['TSFE']) )
  *
  * @author Sebastian Holtermann
  */
-class tx_sevenpack_reference_reader {
+class tx_bib_reference_reader {
 
 	protected $filter;
 	protected $cObj;
@@ -19,9 +19,9 @@ class tx_sevenpack_reference_reader {
 	public $pid_list;
 	public $show_hidden; // Show hidden references
 
-	public $refTable    = 'tx_sevenpack_references';
-	public $authorTable = 'tx_sevenpack_authors';
-	public $aShipTable  = 'tx_sevenpack_authorships';
+	public $refTable    = 'tx_bib_references';
+	public $authorTable = 'tx_bib_authors';
+	public $aShipTable  = 'tx_bib_authorships';
 
 	public $refTableAlias    = 't_ref';
 	public $authorTableAlias = 't_authors';
@@ -165,7 +165,7 @@ class tx_sevenpack_reference_reader {
 	 *
 	 * @return void
 	 */
-	function tx_sevenpack_reference_reader ( ) {
+	function tx_bib_reference_reader ( ) {
 		$this->dbRes = NULL;
 		$this->filters = array();
 		$this->clear_cache = FALSE;
@@ -515,13 +515,13 @@ class tx_sevenpack_reference_reader {
 
 		// Filter by UID
 		if ( is_array ( $filter['uid'] ) && ( sizeof ( $filter['uid'] ) > 0 ) ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['uid'] );
+			$csv = tx_bib_utility::implode_intval ( ',', $filter['uid'] );
 			$WC[] = $rta.'.uid IN ('.$csv.')';
 		}
 
 		// Filter by storage PID
 		if ( is_array ( $filter['pid'] ) && ( sizeof ( $filter['pid'] ) > 0 ) ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $filter['pid'] );
+			$csv = tx_bib_utility::implode_intval ( ',', $filter['pid'] );
 			$WC[] = $rta.'.pid IN ('.$csv.')';
 		}
 
@@ -531,7 +531,7 @@ class tx_sevenpack_reference_reader {
 			$wca = '';
 			// years
 			if ( is_array ( $f['years'] ) && ( sizeof ( $f['years'] ) > 0 ) ) {
-				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['years'] );
+				$csv = tx_bib_utility::implode_intval ( ',', $f['years'] );
 				$wca .= ' '.$rta.'.year IN ('.$csv.')'."\n";
 			}
 			// ranges
@@ -621,7 +621,7 @@ class tx_sevenpack_reference_reader {
 		if ( is_array ( $filter['bibtype'] ) && ( sizeof ( $filter['bibtype'] ) > 0 ) ) {
 			$f =& $filter['bibtype'];
 			if ( is_array ( $f['types'] ) && ( sizeof ( $f['types'] ) > 0 ) ) {
-				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['types'] );
+				$csv = tx_bib_utility::implode_intval ( ',', $f['types'] );
 				$WC[] = $rta.'.bibtype IN ('.$csv.')';
 			}
 		}
@@ -630,7 +630,7 @@ class tx_sevenpack_reference_reader {
 		if ( is_array ( $filter['state'] ) && ( sizeof ( $filter['state'] ) > 0 ) ) {
 			$f =& $filter['state'];
 			if ( is_array ( $f['states'] ) && ( sizeof ( $f['states'] ) > 0 ) ) {
-				$csv = tx_sevenpack_utility::implode_intval ( ',', $f['states'] );
+				$csv = tx_bib_utility::implode_intval ( ',', $f['states'] );
 				$WC[] = $rta.'.state IN ('.$csv.')';
 			}
 		}
@@ -988,7 +988,7 @@ class tx_sevenpack_reference_reader {
 			$WC[] = 'uid!='."'".intval($uid)."'";
 		}
 		if ( sizeof ( $this->pid_list ) > 0 ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->pid_list );
+			$csv = tx_bib_utility::implode_intval ( ',', $this->pid_list );
 			$WC[] = 'pid IN ('.$csv.')';
 		}
 		$WC = implode ( ' AND ', $WC );
@@ -1129,7 +1129,7 @@ class tx_sevenpack_reference_reader {
 		}
 		$WC[] = '(' . implode ( ' OR ', $wca ) . ')';
 		if ( is_array ( $pids ) ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $pids );
+			$csv = tx_bib_utility::implode_intval ( ',', $pids );
 			$WC[] = 'pid IN ('.$csv.')';
 		} else {
 			$WC[] = 'pid='.intval ( $pids );
@@ -1421,8 +1421,8 @@ class tx_sevenpack_reference_reader {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/class.tx_sevenpack_reference_reader.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/class.tx_sevenpack_reference_reader.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_reader.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_reader.php"]);
 }
 
 ?>

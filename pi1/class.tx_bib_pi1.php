@@ -22,11 +22,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 /**
- * Plugin 'Publication List' for the 'sevenpack' extension.
+ * Plugin 'Publication List' for the 'bib' extension.
  *
  * @author	Sebastian Holtermann <sebholt@web.de>
  * @package TYPO3
- * @subpackage tx_sevenpack
+ * @subpackage tx_bib
  *
  */
 
@@ -34,21 +34,21 @@
 require_once ( PATH_tslib.'class.tslib_pibase.php' );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_reference_reader.php' ) );
+	'EXT:bib/res/class.tx_bib_reference_reader.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
+	'EXT:bib/res/class.tx_bib_utility.php' ) );
 
-class tx_sevenpack_pi1 extends tslib_pibase {
+class tx_bib_pi1 extends tslib_pibase {
 
-	public $prefixId = 'tx_sevenpack_pi1';		// Same as class name
-	public $scriptRelPath = 'pi1/class.tx_sevenpack_pi1.php';	// Path to this script relative to the extension dir.
-	public $extKey = 'sevenpack';	// The extension key.
+	public $prefixId = 'tx_bib_pi1';		// Same as class name
+	public $scriptRelPath = 'pi1/class.tx_bib_pi1.php';	// Path to this script relative to the extension dir.
+	public $extKey = 'bib';	// The extension key.
 
 	public $pi_checkCHash = TRUE;
 
-	public $prefixShort = 'tx_sevenpack';	// Get/Post variable prefix.
-	public $prefix_pi1 = 'tx_sevenpack_pi1';		// pi1 prefix id
+	public $prefixShort = 'tx_bib';	// Get/Post variable prefix.
+	public $prefix_pi1 = 'tx_bib_pi1';		// pi1 prefix id
 
 	// Enumeration for list modes
 	public $D_SIMPLE  = 0;
@@ -134,7 +134,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
-		$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_reader' );
+		$this->ref_read = t3lib_div::makeInstance ( 'tx_bib_reference_reader' );
 		$this->ref_read->set_cObj ( $this->cObj );
 
 		// Initialize current configuration
@@ -232,10 +232,10 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		//
 		$pid_list = array();
 		if ( isset ( $this->conf['pid_list'] ) ) {
-			$pid_list = tx_sevenpack_utility::explode_intval ( ',', $this->conf['pid_list'] );
+			$pid_list = tx_bib_utility::explode_intval ( ',', $this->conf['pid_list'] );
 		}
 		if ( isset ( $this->cObj->data['pages'] ) ) {
-			$tmp = tx_sevenpack_utility::explode_intval ( ',', $this->cObj->data['pages'] );
+			$tmp = tx_bib_utility::explode_intval ( ',', $this->cObj->data['pages'] );
 			$pid_list = array_merge ( $pid_list, $tmp );
 		}
 
@@ -256,7 +256,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['recursive'] = intval ( $extConf['recursive'] );
 
 			$pid_list = $this->pi_getPidList ( implode ( ',', $pid_list ), $extConf['recursive'] );
-			$pid_list = tx_sevenpack_utility::explode_intval ( ',', $pid_list );
+			$pid_list = tx_bib_utility::explode_intval ( ',', $pid_list );
 			$pid_list = array_reverse ( $pid_list ); // Due to how recursive prepends the folders
 
 			$extConf['pid_list'] = $pid_list;
@@ -313,7 +313,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['dynamic'] = TRUE;
 			$extConf['search_navi'] = array();
 			$aconf =& $extConf['search_navi'];
-			$aconf['obj'] =& $this->get_navi_instance ( 'tx_sevenpack_navi_search' );
+			$aconf['obj'] =& $this->get_navi_instance ( 'tx_bib_navi_search' );
 			$aconf['obj']->hook_init();
 		}
 
@@ -331,7 +331,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$extConf['dynamic'] = TRUE;
 			$extConf['author_navi'] = array();
 			$aconf =& $extConf['author_navi'];
-			$aconf['obj'] =& $this->get_navi_instance ( 'tx_sevenpack_navi_author' );
+			$aconf['obj'] =& $this->get_navi_instance ( 'tx_bib_navi_author' );
 			$aconf['obj']->hook_init();
 		}
 
@@ -342,7 +342,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		if ( $extConf['show_nav_pref'] ) {
 			$extConf['pref_navi'] = array();
 			$aconf =& $extConf['pref_navi'];
-			$aconf['obj'] =& $this->get_navi_instance ( 'tx_sevenpack_navi_pref' );
+			$aconf['obj'] =& $this->get_navi_instance ( 'tx_bib_navi_pref' );
 			$aconf['obj']->hook_init();
 		}
 
@@ -366,14 +366,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$groups = $this->conf['export.']['FE_groups_only'];
 			$fe_ok = TRUE;
 			if ( strlen ( $groups ) > 0 ) {
-				$fe_ok = tx_sevenpack_utility::check_fe_user_groups ( $groups );
+				$fe_ok = tx_bib_utility::check_fe_user_groups ( $groups );
 			}
 			//t3lib_div::debug ( array ( $groups, $fe_ok ) );
 
 			// Acquire export modes
 			$modes = $this->conf['export.']['enable_export'];
 			if ( strlen ( $modes ) > 0 ) {
-				$modes = tx_sevenpack_utility::explode_trim_lower (
+				$modes = tx_bib_utility::explode_trim_lower (
 					',', $modes, TRUE );
 			}
 
@@ -412,7 +412,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$fe_ok = FALSE;
 		if ( !$be_ok && isset ( $this->conf['FE_edit_groups'] ) ) {
 			$groups = $this->conf['FE_edit_groups'];
-			if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
+			if ( tx_bib_utility::check_fe_user_groups ( $groups ) )
 				$fe_ok = TRUE;
 		}
 
@@ -601,7 +601,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 			// The selected year has no publications so select the closest year
 			if ( ( $this->stat['num_all'] > 0 ) && is_numeric ( $ecYear ) ) {
-				$ecYear = tx_sevenpack_utility::find_nearest_int (
+				$ecYear = tx_bib_utility::find_nearest_int (
 					$ecYear, $this->stat['years'] );
 			}
 			// Append default link variable
@@ -638,7 +638,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		if ( $iPP > 0 ) {
 			$subPage['max']     = floor ( ( $this->stat['num_page']-1 ) / $iPP );
-			$subPage['current'] = tx_sevenpack_utility::crop_to_range (
+			$subPage['current'] = tx_bib_utility::crop_to_range (
 				$this->piVars['page'], 0, $subPage['max'] );
 		}
 
@@ -849,13 +849,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				$all = ( $rcfg['hide_all'] != 0 );
 
 				// Hide on string extensions
-				$ext = tx_sevenpack_utility::explode_trim_lower (
+				$ext = tx_bib_utility::explode_trim_lower (
 					',', $rcfg['hide_file_ext'], TRUE );
 
 				// Reveal on FE user groups
 				$groups = strtolower ( $rcfg['FE_user_groups'] );
 				if ( strpos ( $groups, 'all' ) === FALSE ) {
-					$groups = tx_sevenpack_utility::explode_intval ( ',', $groups );
+					$groups = tx_bib_utility::explode_intval ( ',', $groups );
 				} else {
 					$groups = 'all';
 				}
@@ -911,14 +911,14 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['years'] = array();
 			$f['ranges'] = array();
 			$ffStr = $this->pi_getFFvalue ( $ff, 'years', $fSheet );
-			$arr = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ffStr, TRUE );
+			$arr = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ffStr, TRUE );
 			foreach ( $arr as $y ) {
 				if ( strpos ( $y, '-' ) === FALSE ) {
 					if ( is_numeric ( $y ) )
 						$f['years'][] = intval ( $y );
 				} else {
 					$range = array();
-					$elms = tx_sevenpack_utility::explode_trim ( '-', $y, FALSE );
+					$elms = tx_bib_utility::explode_trim ( '-', $y, FALSE );
 					if ( is_numeric ( $elms[0] ) )
 						$range['from'] = intval ( $elms[0] );
 					if ( is_numeric ( $elms[1] ) )
@@ -942,7 +942,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 
 			$authors = $this->pi_getFFvalue ( $ff, 'authors', $fSheet );
-			$authors = tx_sevenpack_utility::multi_explode_trim ( array ( "\r" , "\n" ), $authors, TRUE );
+			$authors = tx_bib_utility::multi_explode_trim ( array ( "\r" , "\n" ), $authors, TRUE );
 			foreach ( $authors as $a ) {
 				$parts = t3lib_div::trimExplode ( ',', $a );
 				$author = array();
@@ -1025,7 +1025,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f = array();
 			$ids = $this->pi_getFFvalue ( $ff, 'citeids', $fSheet);
 			if ( strlen ( $ids ) > 0 ) {
-				$ids = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
+				$ids = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
 				$f['ids'] = array_unique ( $ids );
 				$filter['citeid'] = $f;
 			}
@@ -1038,7 +1038,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'tags', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
 					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
@@ -1054,7 +1054,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
 					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
@@ -1070,7 +1070,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'search_all', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$words = tx_sevenpack_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
 					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
@@ -1101,7 +1101,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Publication ids
 		if ( is_string ( $this->piVars['search']['ref_ids'] ) ) {
 			$ids = $this->piVars['search']['ref_ids'];
-			$ids = tx_sevenpack_utility::explode_intval ( ',', $ids );
+			$ids = tx_bib_utility::explode_intval ( ',', $ids );
 
 			if( sizeof ( $ids ) > 0 ) {
 				$filter['uid'] = $ids;
@@ -1111,7 +1111,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// General search
 		if ( is_string ( $this->piVars['search']['all'] ) ) {
 			$words = $this->piVars['search']['all'];
-			$words = tx_sevenpack_utility::explode_trim ( ',', $words, TRUE );
+			$words = tx_bib_utility::explode_trim ( ',', $words, TRUE );
 			if ( sizeof ( $words ) > 0 ) {
 				$filter['all']['words'] = $words;
 				$filter['all']['rule'] = 1; // AND
@@ -1454,7 +1454,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Handle illegal ampersands
 		if ( !( strpos ( $str, '&' ) === FALSE ) ) {
-			$str = tx_sevenpack_utility::fix_html_ampersand ( $str );
+			$str = tx_bib_utility::fix_html_ampersand ( $str );
 		}
 
 		$str = $this->filter_pub_html ( $str, $hsc );
@@ -1531,7 +1531,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_year'] ) {
-			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_year' );
+			$obj = $this->get_navi_instance ( 'tx_bib_navi_year' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1583,7 +1583,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_page'] ) {
-			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_page' );
+			$obj = $this->get_navi_instance ( 'tx_bib_navi_page' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1660,7 +1660,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$cObj =& $this->cObj;
 
 		if ( $this->extConf['show_nav_stat'] ) {
-			$obj = $this->get_navi_instance ( 'tx_sevenpack_navi_stat' );
+			$obj = $this->get_navi_instance ( 'tx_bib_navi_stat' );
 
 			$trans = $obj->translator();
 			$hasStr = array ( '', '' );
@@ -1824,7 +1824,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// File url
 		// Check file existance
 		$file_url = trim ( strval ( $pub['file_url'] ) );
-		if ( tx_sevenpack_utility::check_file_nexist ( $file_url ) ) {
+		if ( tx_bib_utility::check_file_nexist ( $file_url ) ) {
 			$pdata['file_url'] = '';
 			$pdata['_file_nexist'] = TRUE;
 		} else {
@@ -1905,9 +1905,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				case 'file_url':
 				case 'web_url':
 				case 'web_url2':
-					$pdata[$f] = tx_sevenpack_utility::fix_html_ampersand ( $val );
-					$val = tx_sevenpack_utility::crop_middle ( $val, $url_max, $charset );
-					$pdata[$f.'_short'] = tx_sevenpack_utility::fix_html_ampersand ( $val );
+					$pdata[$f] = tx_bib_utility::fix_html_ampersand ( $val );
+					$val = tx_bib_utility::crop_middle ( $val, $url_max, $charset );
+					$pdata[$f.'_short'] = tx_bib_utility::fix_html_ampersand ( $val );
 					break;
 				case 'DOI':
 					$pdata[$f] = $val;
@@ -1967,7 +1967,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Editors
 		if ( strlen ( $pdata['editor'] ) > 0 ) {
-			$editors = tx_sevenpack_utility::explode_author_str ( $pdata['editor'] );
+			$editors = tx_bib_utility::explode_author_str ( $pdata['editor'] );
 			$lst = array();
 			foreach ( $editors as $ed ) {
 				$app = '';
@@ -1978,7 +1978,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
-			$pdata['editor'] = tx_sevenpack_utility::implode_and_last (
+			$pdata['editor'] = tx_bib_utility::implode_and_last (
 				$lst, ', ', $and );
 
 			#nkw
@@ -1990,9 +1990,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		// Automatic url
-		$order = tx_sevenpack_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
+		$order = tx_bib_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
 		$pdata['auto_url'] = $this->get_auto_url ( $pdata, $order );
-		$pdata['auto_url_short'] = tx_sevenpack_utility::crop_middle (
+		$pdata['auto_url_short'] = tx_bib_utility::crop_middle (
 			$pdata['auto_url'], $url_max, $charset );
 
 		// Do data checks
@@ -2308,7 +2308,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		}
 
 		//t3lib_div::debug ( $elements );
-		$res = tx_sevenpack_utility::implode_and_last ( $elements, $a_sep, $and );
+		$res = tx_bib_utility::implode_and_last ( $elements, $a_sep, $and );
 
 		// Restore cObj data
 		$cObj->data = $cObj_restore;
@@ -2347,7 +2347,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$this->extConf['author_lfields'] = 'url';
 		if ( isset ( $conf['authors.']['url_icon_fields'] ) ) {
 			$this->extConf['author_lfields'] =
-				tx_sevenpack_utility::explode_trim ( ',',
+				tx_bib_utility::explode_trim ( ',',
 					$conf['authors.']['url_icon_fields'], TRUE );
 		}
 
@@ -2549,7 +2549,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 					$subst_sub = array ( '', '' );
 					$manip_all[] = $this->get_edit_manipulator ( $pub );
 					$manip_all[] = $this->get_hide_manipulator ( $pub );
-					$manip_all = tx_sevenpack_utility::html_layout_table ( array ( $manip_all ) );
+					$manip_all = tx_bib_utility::html_layout_table ( array ( $manip_all ) );
 
 					$translator['###MANIPULATORS###'] = $cObj->stdWrap (
 						$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
@@ -2749,7 +2749,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			// Enable if usergroup matches
 			if ( !$show && isset ( $rcfg['fe_groups'] ) ) {
 				$groups = $rcfg['fe_groups'];
-				if ( tx_sevenpack_utility::check_fe_user_groups ( $groups ) )
+				if ( tx_bib_utility::check_fe_user_groups ( $groups ) )
 					$show = TRUE;
 			}
 
@@ -2905,9 +2905,9 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function hide_publication ( $hide = TRUE )
 	{
 		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:sevenpack/res/class.tx_sevenpack_reference_writer.php' ) );
+			'EXT:bib/res/class.tx_bib_reference_writer.php' ) );
 
-		$ref_write = t3lib_div::makeInstance ( 'tx_sevenpack_reference_writer' );
+		$ref_write = t3lib_div::makeInstance ( 'tx_bib_reference_writer' );
 		$ref_write->initialize( $this->ref_read );
 		$ref_write->hide_publication ( $this->piVars['uid'], $hide );
 	}
@@ -2921,8 +2921,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function single_view ()
 	{
 		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_single_view.php' ) );
-		$sv = t3lib_div::makeInstance ( 'tx_sevenpack_single_view' );
+			'EXT:'.$this->extKey.'/pi1/class.tx_bib_single_view.php' ) );
+		$sv = t3lib_div::makeInstance ( 'tx_bib_single_view' );
 		$sv->initialize ( $this );
 		return $sv->single_view();
 	}
@@ -2936,8 +2936,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	function editor_view ()
 	{
 		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_editor_view.php' ) );
-		$sv = t3lib_div::makeInstance ( 'tx_sevenpack_editor_view' );
+			'EXT:'.$this->extKey.'/pi1/class.tx_bib_editor_view.php' ) );
+		$sv = t3lib_div::makeInstance ( 'tx_bib_editor_view' );
 		$sv->initialize ( $this );
 		return $sv->editor_view();
 	}
@@ -2960,8 +2960,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				break;
 			default :
 				require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-					'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_editor_view.php' ) );
-				$sv = t3lib_div::makeInstance( 'tx_sevenpack_editor_view' );
+					'EXT:'.$this->extKey.'/pi1/class.tx_bib_editor_view.php' ) );
+				$sv = t3lib_div::makeInstance( 'tx_bib_editor_view' );
 				$sv->initialize ( $this );
 				$con .= $sv->dialog_view();
 		}
@@ -2989,11 +2989,11 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		$eclass = '';
 		switch ( $mode ) {
 			case 'bibtex':
-				$eclass = 'tx_sevenpack_exporter_bibtex';
+				$eclass = 'tx_bib_exporter_bibtex';
 				$label = 'export_bibtex';
 				break;
 			case 'xml':
-				$eclass = 'tx_sevenpack_exporter_xml';
+				$eclass = 'tx_bib_exporter_xml';
 				$label = 'export_xml';
 				break;
 			default:
@@ -3064,13 +3064,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			switch ( $mode ) {
 				case $this->IMP_BIBTEX:
 					require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-						'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_importer_bibtex.php' ) );
-					$importer = t3lib_div::makeInstance ( 'tx_sevenpack_importer_bibtex' );
+						'EXT:'.$this->extKey.'/pi1/class.tx_bib_importer_bibtex.php' ) );
+					$importer = t3lib_div::makeInstance ( 'tx_bib_importer_bibtex' );
 					break;
 				case $this->IMP_XML:
 					require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-						'EXT:'.$this->extKey.'/pi1/class.tx_sevenpack_importer_xml.php' ) );
-					$importer = t3lib_div::makeInstance ( 'tx_sevenpack_importer_xml' );
+						'EXT:'.$this->extKey.'/pi1/class.tx_bib_importer_xml.php' ) );
+					$importer = t3lib_div::makeInstance ( 'tx_bib_importer_xml' );
 					break;
 			}
 			$importer->initialize ( $this );
@@ -3112,7 +3112,7 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Is FE-user editing only for own records enabled? (set via TS)
 		if ( isset ( $this->conf['FE_edit_own_records'] ) && $this->conf['FE_edit_own_records'] != 0 ) {
 			// query all authors of this publication
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery("fe_user_id", "tx_sevenpack_authors as a,tx_sevenpack_authorships as m", "a.uid=m.author_id AND m.pub_id=".$pub_id);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery("fe_user_id", "tx_bib_authors as a,tx_bib_authorships as m", "a.uid=m.author_id AND m.pub_id=".$pub_id);
 			while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res) ) {
 				// check if author == FE user and allow editing
 				if ( $row[0] == $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->userid_column] )
@@ -3128,8 +3128,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_pi1.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_pi1.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_pi1.php"]) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_pi1.php"]);
 }
 
 ?>

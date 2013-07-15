@@ -2,7 +2,7 @@
 <T3locallang>
 	<meta type="array">
 		<type>module</type>
-		<description>Language labels for plugin &quot;tx_sevenpack_pi1&quot;</description>
+		<description>Language labels for plugin &quot;tx_bib_pi1&quot;</description>
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">

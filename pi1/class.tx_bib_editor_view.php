@@ -4,16 +4,16 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
+	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_reference_writer.php' ) );
+	'EXT:bib/res/class.tx_bib_reference_writer.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
+	'EXT:bib/res/class.tx_bib_db_utility.php' ) );
 
 
-class tx_sevenpack_editor_view {
+class tx_bib_editor_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
@@ -48,7 +48,7 @@ class tx_sevenpack_editor_view {
 
 
 		// setup db_utility
-		$this->db_utility = t3lib_div::makeInstance ( 'tx_sevenpack_db_utility' );
+		$this->db_utility = t3lib_div::makeInstance ( 'tx_bib_db_utility' );
 		$this->db_utility->initialize ( $pi1->ref_read );
 		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
 		$this->db_utility->read_full_text_conf ( $this->conf['full_text.'] );
@@ -59,10 +59,10 @@ class tx_sevenpack_editor_view {
 			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName ( $this->conf['citeid_generator_file'] );
 			if ( file_exists ( $ext_file ) ) {
 				require_once ( $ext_file );
-				$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator_ext' );
+				$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator_ext' );
 			}
 		} else {
-			$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator' );
+			$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator' );
 		}
 		$this->idGenerator->initialize ( $pi1 );
 	}
@@ -82,7 +82,7 @@ class tx_sevenpack_editor_view {
 
 	function get_db_ll ( $key, $alt = '', $hsc = FALSE )
 	{
-		$key = str_replace ( 'LLL:EXT:sevenpack/locallang_db.xml:', '', $key );
+		$key = str_replace ( 'LLL:EXT:bib/locallang_db.xml:', '', $key );
 		return $this->pi1->get_ll ( $key, $alt, $hsc );
 	}
 
@@ -293,7 +293,7 @@ class tx_sevenpack_editor_view {
 		$btn_help = '';
 		if ( $w_mode == $this->W_EDIT ) {
 			$url = $GLOBALS['TSFE']->tmpl->getFileName (
-				'EXT:sevenpack/doc/syntax.xhtml' );
+				'EXT:bib/doc/syntax.xhtml' );
 			$btn_help = '<span class="'.$btn_class.'">'.
 				'<a href="'.$url.'" target="_blank">'.
 				$this->get_ll ( $this->LLPrefix.'btn_syntax_help').'</a></span>';
@@ -512,7 +512,7 @@ class tx_sevenpack_editor_view {
 		// Invisible 'uid' and 'mod_key' field
 		if ( !$this->is_new ) {
 			if ( isset ( $pub['mod_key'] ) ) {
-				$con .= tx_sevenpack_utility::html_hidden_input (
+				$con .= tx_bib_utility::html_hidden_input (
 					$preId.'[DATA][pub][mod_key]', 
 					htmlspecialchars ( $pub['mod_key'], ENT_QUOTES ) );
 				$con .= "\n";
@@ -601,7 +601,7 @@ class tx_sevenpack_editor_view {
 			if ( is_array ( $cfg_arr ) ) {
 				foreach ( $all_types as $type ) {
 					$cfg_fields[$group][$type] = array();
-					$ff = tx_sevenpack_utility::multi_explode_trim (
+					$ff = tx_bib_utility::multi_explode_trim (
 						array ( ',', '|' ), $cfg_arr[$type], TRUE );
 					//t3lib_div::debug ( $ff );
 					$cfg_fields[$group][$type] = $ff;
@@ -736,7 +736,7 @@ class tx_sevenpack_editor_view {
 					$size = $isize;
 				$attrs['size'] = strval ( $size );
 
-				$con .= tx_sevenpack_utility::html_text_input (
+				$con .= tx_bib_utility::html_text_input (
 					$fieldAttr, $htmlValue, $attrs );
 
 				break;
@@ -765,13 +765,13 @@ class tx_sevenpack_editor_view {
 					$pairs[$p_val] = $p_desc;
 				}
 
-				$con .= tx_sevenpack_utility::html_select_input (
+				$con .= tx_bib_utility::html_select_input (
 					$pairs, $value, $attrs );
 
 				break;
 
 			case 'check' :
-				$con .= tx_sevenpack_utility::html_check_input (
+				$con .= tx_bib_utility::html_check_input (
 					$fieldAttr, '1', ( $value == 1 ), $attrs );
 
 				break;
@@ -797,7 +797,7 @@ class tx_sevenpack_editor_view {
 
 		$con = '';
 		if ( $mode == $this->W_SHOW ) {
-			$con .= tx_sevenpack_utility::html_hidden_input ( 
+			$con .= tx_bib_utility::html_hidden_input (
 				$fieldAttr, $htmlValue );
 
 			switch ( $widgetType ) {
@@ -823,7 +823,7 @@ class tx_sevenpack_editor_view {
 
 		} else if ( $mode == $this->W_SILENT ) {
 
-			$con .= tx_sevenpack_utility::html_hidden_input ( 
+			$con .= tx_bib_utility::html_hidden_input (
 				$fieldAttr, $htmlValue );
 
 		}
@@ -870,28 +870,28 @@ class tx_sevenpack_editor_view {
 				
 				$row_con[0] = strval ( $i+1 );
 				if ( $mode == $this->W_SHOW ) {
-					$row_con[1] = tx_sevenpack_utility::html_hidden_input (
+					$row_con[1] = tx_bib_utility::html_hidden_input (
 						$key_data.'['.$i.'][forename]', $fn );
 					$row_con[1] .= $fn;
 
-					$row_con[2] =  tx_sevenpack_utility::html_hidden_input (
+					$row_con[2] =  tx_bib_utility::html_hidden_input (
 						$key_data.'['.$i.'][surname]',  $sn );
 					$row_con[2] .= $sn;
 
 				} else if ( $mode == $this->W_EDIT ) {
 
-					$lowerBtn = tx_sevenpack_utility::html_image_input ( 
+					$lowerBtn = tx_bib_utility::html_image_input (
 						$key_action.'[lower_author]', 
 						strval ( $i ), $pi1->icon_src['down'] );
-					$raiseBtn = tx_sevenpack_utility::html_image_input ( 
+					$raiseBtn = tx_bib_utility::html_image_input (
 						$key_action.'[raise_author]', 
 						strval ( $i ), $pi1->icon_src['up'] );
 
-					$row_con[1] = tx_sevenpack_utility::html_text_input ( 
+					$row_con[1] = tx_bib_utility::html_text_input (
 						$key_data.'['.$i.'][forename]', $fn,
 						array ( 'size' => $isize, 'maxlength' => 255, 'class' => $cclass ) );
 
-					$row_con[2] .= tx_sevenpack_utility::html_text_input ( 
+					$row_con[2] .= tx_bib_utility::html_text_input (
 						$key_data.'['.$i.'][surname]', $sn,
 						array ( 'size' => $isize, 'maxlength' => 255, 'class' => $cclass ) );
 
@@ -943,10 +943,10 @@ class tx_sevenpack_editor_view {
 			// Bottom buttons
 			if ( $mode == $this->W_EDIT ) {
 				$con .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">' . "\n";
-				$con .= tx_sevenpack_utility::html_submit_input (
+				$con .= tx_bib_utility::html_submit_input (
 					$key_action.'[more_authors]', '+' );
 				$con .= ' ';
-				$con .= tx_sevenpack_utility::html_submit_input (
+				$con .= tx_bib_utility::html_submit_input (
 					$key_action.'[less_authors]', '-' );
 				$con .= '</div>' . "\n";
 			}
@@ -956,9 +956,9 @@ class tx_sevenpack_editor_view {
 			for ( $i=0; $i < sizeof ( $authors ); $i++ ) {
 				$fn = $pi1->filter_pub_html ( $authors[$i]['forename'], TRUE );
 				$sn = $pi1->filter_pub_Html ( $authors[$i]['surname'], TRUE );
-				$con .= tx_sevenpack_utility::html_hidden_input (
+				$con .= tx_bib_utility::html_hidden_input (
 					$key_data.'['.$i.'][forename]', $fn );
-				$con .= tx_sevenpack_utility::html_hidden_input (
+				$con .= tx_bib_utility::html_hidden_input (
 					$key_data.'['.$i.'][surname]', $sn );
 			}
 
@@ -985,20 +985,20 @@ class tx_sevenpack_editor_view {
 		$attrs['class'] = $pi1->prefixShort.'-editor_input';
 
 		// Fetch page titles
-		$pages = tx_sevenpack_utility::get_page_titles ( $pids ); 
+		$pages = tx_bib_utility::get_page_titles ( $pids );
 
 		if ( $mode == $this->W_SHOW ) {
-			$con .= tx_sevenpack_utility::html_hidden_input (
+			$con .= tx_bib_utility::html_hidden_input (
 				$fieldAttr, $value );
 			$con .= strval ( $pages[$value] );
 
 		} else if ( $mode == $this->W_EDIT ) {
 			$attrs['name'] = $fieldAttr;
-			$con .= tx_sevenpack_utility::html_select_input (
+			$con .= tx_bib_utility::html_select_input (
 				$pages, $value, $attrs );
 
 		} else if ( $mode == $this->W_SILENT ) {
-			$con .= tx_sevenpack_utility::html_hidden_input (
+			$con .= tx_bib_utility::html_hidden_input (
 				$fieldAttr, $value );
 
 		}
@@ -1190,7 +1190,7 @@ class tx_sevenpack_editor_view {
 	 */
 	function post_db_write_message_items ( $messages ) {
 		$con = '';
-		$messages = tx_sevenpack_utility::string_counter ( $messages );
+		$messages = tx_bib_utility::string_counter ( $messages );
 		$con .= '<ul>' . "\n";
 		foreach ( $messages as $msg => $count ) {
 			$msg = htmlspecialchars ( $msg, ENT_QUOTES, $this->pi1->extConf['charset']['upper'] );
@@ -1216,7 +1216,7 @@ class tx_sevenpack_editor_view {
 		$con = '';
 		$pi1 =& $this->pi1;
 
-		$this->ref_write = t3lib_div::makeInstance ( 'tx_sevenpack_reference_writer' );
+		$this->ref_write = t3lib_div::makeInstance ( 'tx_bib_reference_writer' );
 		$this->ref_write->initialize( $this->ref_read );
 
 		switch ( $pi1->extConf['dialog_mode'] ) {
@@ -1298,10 +1298,10 @@ class tx_sevenpack_editor_view {
 		$fields = $this->get_edit_fields ( $bib_str, TRUE );
 
 		$cond = array();
-		$parts = tx_sevenpack_utility::explode_trim ( ',', $this->conf['groups.'][$bib_str.'.']['required'] );
+		$parts = tx_bib_utility::explode_trim ( ',', $this->conf['groups.'][$bib_str.'.']['required'] );
 		foreach ( $parts as $part ) {
 			if ( !( strpos ( $part, '|' ) === FALSE ) ) {
-				$cond[] = tx_sevenpack_utility::explode_trim ( '|', $part );
+				$cond[] = tx_bib_utility::explode_trim ( '|', $part );
 			}
 		}
 		//t3lib_div::debug ( $cond );
@@ -1381,7 +1381,7 @@ class tx_sevenpack_editor_view {
 		$type = 'file_nexist';
 		if ( $warn[$type] ) {
 			$file = $pub['file_url'];
-			if ( tx_sevenpack_utility::check_file_nexist ( $file ) ) {
+			if ( tx_bib_utility::check_file_nexist ( $file ) ) {
 				$msg = $this->get_ll ( 'editor_error_file_nexist' );
 				$msg = str_replace ( '%f', $file, $msg );
 				$d_err[] = array ( 'type' => $type, 'msg' => $msg );
@@ -1443,8 +1443,8 @@ class tx_sevenpack_editor_view {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_editor_view.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_editor_view.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_editor_view.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_editor_view.php"]);
 }
 
 ?>

@@ -9,7 +9,7 @@ if ( !isset($GLOBALS['TSFE']) )
  *
  * @author Sebastian Holtermann
  */
-class tx_sevenpack_reference_writer {
+class tx_bib_reference_writer {
 
 	public $ref_read;
 	public $clear_cache;
@@ -455,7 +455,7 @@ class tx_sevenpack_reference_writer {
 	function log ( $message, $error = 0 ) {
 		$be_user = $GLOBALS['BE_USER'];
 		if ( is_object ( $be_user ) ) {
-			$be_user->simplelog ( $message, 'sevenpack', $error );
+			$be_user->simplelog ( $message, 'bib', $error );
 		}
 	}
 
@@ -473,8 +473,8 @@ class tx_sevenpack_reference_writer {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/class.tx_sevenpack_reference_writer.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/class.tx_sevenpack_reference_writer.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_writer.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_writer.php"]);
 }
 
 ?>

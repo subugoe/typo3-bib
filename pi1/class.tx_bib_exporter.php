@@ -4,9 +4,9 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_pregexp_translator.php') );
+	'EXT:bib/res/class.tx_bib_pregexp_translator.php') );
 
-class tx_sevenpack_exporter {
+class tx_bib_exporter {
 
 	public $pi1;
 	public $ref_read;
@@ -47,7 +47,7 @@ class tx_sevenpack_exporter {
 		// Setup export file path and name
 		$this->file_path = $this->pi1->conf['export.']['path'];
 		if ( !strlen($this->file_path) ) 
-			$this->file_path = 'uploads/tx_sevenpack';
+			$this->file_path = 'uploads/tx_bib';
 
 		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.dat';
 		$this->file_new = FALSE;
@@ -57,7 +57,7 @@ class tx_sevenpack_exporter {
 		$this->data = '';
 
 		$_EXTKEY = $this->pi1->extKey;
-		include ( $GLOBALS['TSFE']->tmpl->getFileName ( 'EXT:sevenpack/ext_emconf.php' ) );
+		include ( $GLOBALS['TSFE']->tmpl->getFileName ( 'EXT:bib/ext_emconf.php' ) );
 		if ( is_array ( $EM_CONF ) ) {
 			$this->EM_CONF = $EM_CONF[$this->pi1->extKey];
 		}
@@ -280,8 +280,8 @@ class tx_sevenpack_exporter {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_exporter.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_exporter.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter.php"]);
 }
 
 

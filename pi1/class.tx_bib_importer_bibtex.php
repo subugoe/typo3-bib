@@ -5,13 +5,13 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_importer.php') );
+	'EXT:bib/pi1/class.tx_bib_importer.php') );
 
 
-class tx_sevenpack_Parser_Exception extends Exception { 
+class tx_bib_Parser_Exception extends Exception {
 }
 
-class tx_sevenpack_Translator_Exception extends Exception { 
+class tx_bib_Translator_Exception extends Exception {
 }
 
 
@@ -19,7 +19,7 @@ class tx_sevenpack_Translator_Exception extends Exception {
  * This parser follows the bibtex format described here
  * http://artis.imag.fr/~Xavier.Decoret/resources/xdkbibtex/bibtex_summary.html
  */
-class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
+class tx_bib_importer_bibtex extends tx_bib_importer {
 
 	public $bt; // Bibtex translator
 
@@ -61,10 +61,10 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 		$this->import_type = $pi1->IMP_BIBTEX;
 
-		$this->bt = t3lib_div::makeInstance ( 'tx_sevenpack_PRegExp_Translator' );
+		$this->bt = t3lib_div::makeInstance ( 'tx_bib_PRegExp_Translator' );
 		$bt =& $this->bt;
 
-		$bt = t3lib_div::makeInstance ( 'tx_sevenpack_PRegExp_Translator' );
+		$bt = t3lib_div::makeInstance ( 'tx_bib_PRegExp_Translator' );
 
 		// Local characters
 		$replace = array (
@@ -320,7 +320,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 						$this->pline += 1;
 				}
 			}
-		} catch ( tx_sevenpack_Parser_Exception $exc ) {
+		} catch ( tx_bib_Parser_Exception $exc ) {
 			$stat['errors'][] = 'Line ' . strval ( $this->pline ) . ': ' . $exc->getMessage();
 		}
 
@@ -332,7 +332,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 			try {
 				$pub = $this->translate_raw_ref ( $raw );
 				$save_ok = true;
-			} catch ( tx_sevenpack_Translator_Exception $exc ) {
+			} catch ( tx_bib_Translator_Exception $exc ) {
 				$stat['failed']++;
 				$stat['errors'][] = $exc->getMessage();
 				$save_ok = false;
@@ -408,7 +408,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 						$this->buffer = substr ( $this->buffer, strlen ( $type ) );
 					} else {
 						if ( strlen ( $this->raw_ref['type'] ) == 0 ) {
-							throw new tx_sevenpack_Parser_Exception ( 'Empty bibliography type' );
+							throw new tx_bib_Parser_Exception ( 'Empty bibliography type' );
 						}
 						//$this->debug( 'Found reference type: ' . $this->raw_ref['type'] );
 						$this->pstate = $this->P_S_Ref_Beg;
@@ -423,7 +423,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							$this->buffer = substr ( $this->buffer, 1 );
 							$this->pstate = $this->P_S_Id;
 						} else {
-							throw new tx_sevenpack_Parser_Exception ( 'Expected an {' );
+							throw new tx_bib_Parser_Exception ( 'Expected an {' );
 						}
 					}
 					break;
@@ -435,7 +435,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							//$this->debug( 'Found citeid begin' );
 							$this->pstate = $this->P_R_Id;
 						} else {
-							throw new tx_sevenpack_Parser_Exception ( 'Invalid citeid beginning' );
+							throw new tx_bib_Parser_Exception ( 'Invalid citeid beginning' );
 						}
 					}
 					break;
@@ -449,7 +449,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 						$this->buffer = substr ( $this->buffer, strlen ( $id ) );
 					} else {
 						if ( strlen ( $this->raw_ref['citeid'] ) == 0 ) {
-							throw new tx_sevenpack_Parser_Exception ( 'Empty citeid' );
+							throw new tx_bib_Parser_Exception ( 'Empty citeid' );
 						}
 						//$this->debug( 'Found citeid: ' . $this->raw_ref['citeid'] );
 						$this->pstate = $this->P_S_Comma;
@@ -470,7 +470,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							$this->push_raw_ref();
 							$this->pstate = $this->P_S_Ref;
 						} else {
-							throw new tx_sevenpack_Parser_Exception ( 'Expected , or } but found: ' . $char );
+							throw new tx_bib_Parser_Exception ( 'Expected , or } but found: ' . $char );
 						}
 					}
 					break;
@@ -489,7 +489,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							$this->push_raw_ref();
 							$this->pstate = $this->P_S_Ref;
 						} else {
-							throw new tx_sevenpack_Parser_Exception ( 'Found illegal pair name characer: ' . $char );
+							throw new tx_bib_Parser_Exception ( 'Found illegal pair name characer: ' . $char );
 						}
 					}
 					break;
@@ -503,7 +503,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 						$this->buffer = substr ( $this->buffer, strlen ( $str ) );
 					} else {
 						if ( strlen ( $this->pair_name ) == 0 ) {
-							throw new tx_sevenpack_Parser_Exception ( 'Empty value name' );
+							throw new tx_bib_Parser_Exception ( 'Empty value name' );
 						}
 						//$this->debug( 'Found pair name: ' . $this->pair_name );
 						$this->pstate = $this->P_S_Assign;
@@ -519,7 +519,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							$this->buffer = substr ( $this->buffer, 1 );
 							$this->pstate = $this->P_S_Pair_Value;
 						} else  {
-							throw new tx_sevenpack_Parser_Exception ( 'Expected = but found ' . $char );
+							throw new tx_bib_Parser_Exception ( 'Expected = but found ' . $char );
 						}
 					}
 
@@ -540,7 +540,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							$this->buffer = substr ( $this->buffer, 1 );
 							$this->pstate = $this->P_R_Pair_Value;
 						} else {
-							throw new tx_sevenpack_Parser_Exception ( 'Found illegal pair value begin characer: ' . $char );
+							throw new tx_bib_Parser_Exception ( 'Found illegal pair value begin characer: ' . $char );
 						}
 					}
 					break;
@@ -563,7 +563,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 							case "'":
 								if ( ($prev_char != "\\") && ($this->pair_start == $char) ) {
 									if ( $this->pair_braces != 0 ) {
-										throw new tx_sevenpack_Parser_Exception ( 'Unbalanced brace count' );
+										throw new tx_bib_Parser_Exception ( 'Unbalanced brace count' );
 									}
 									$go_on = false;
 								} else {
@@ -587,7 +587,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 										if ( $this->pair_start == "{" ) {
 											$go_on = false;
 										} else {
-											throw new tx_sevenpack_Parser_Exception ( 'Unbalanced brace count' );
+											throw new tx_bib_Parser_Exception ( 'Unbalanced brace count' );
 										}
 									}
 								}
@@ -620,11 +620,11 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 						}
 					}
 					$this->buffer = substr ( $this->buffer, $last+1 );
-					//throw new tx_sevenpack_Parser_Exception ( 'Stopping here');
+					//throw new tx_bib_Parser_Exception ( 'Stopping here');
 					break;
 
 				default:
-					throw new tx_sevenpack_Parser_Exception ( 'Illegal BibTeX parser state: ' . strval ( $this->pstate ) );
+					throw new tx_bib_Parser_Exception ( 'Illegal BibTeX parser state: ' . strval ( $this->pstate ) );
 					break;
 			}
 		}
@@ -642,7 +642,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 		if ( in_array ( $raw_val, $this->ref_read->allBibTypes ) ) {
 			$pub['bibtype'] = array_search ( $raw_val, $this->ref_read->allBibTypes );
 		} else {
-			throw new tx_sevenpack_Translator_Exception ( 'Unknown bibtype: ' . strval ( $raw_val ) );
+			throw new tx_bib_Translator_Exception ( 'Unknown bibtype: ' . strval ( $raw_val ) );
 		}
 
 		// Citeid
@@ -687,7 +687,7 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 
 	/**
-	 * Translates some latex commands to sevenpack style
+	 * Translates some latex commands to bib style
 	 * The input string should be ASCII
 	 */
 	function translate_raw_string ( $raw ) {
@@ -744,8 +744,8 @@ class tx_sevenpack_importer_bibtex extends tx_sevenpack_importer {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_importer_bibtex.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_importer_bibtex.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer_bibtex.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer_bibtex.php"]);
 }
 
 

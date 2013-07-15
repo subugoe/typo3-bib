@@ -4,10 +4,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_reference_reader.php' ) );
+	'EXT:bib/res/class.tx_bib_reference_reader.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
+	'EXT:bib/res/class.tx_bib_utility.php' ) );
 
 
 /**
@@ -16,7 +16,7 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
  *
  * @author Sebastian Holtermann
  */
-class tx_sevenpack_db_utility {
+class tx_bib_db_utility {
 
 	public $ref_read;
 	public $charset;
@@ -37,7 +37,7 @@ class tx_sevenpack_db_utility {
 		if ( is_object ( $ref_read ) ) {
 			$this->ref_read =& $ref_read;
 		} else {
-			$this->ref_read = t3lib_div::makeInstance ( 'tx_sevenpack_reference_reader' );
+			$this->ref_read = t3lib_div::makeInstance ( 'tx_bib_reference_reader' );
 		}
 
 		$this->charset = 'UTF-8';
@@ -75,7 +75,7 @@ class tx_sevenpack_db_utility {
 
 		$count = sizeof ( $uids );
 		if ( $count > 0 ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $uids  );
+			$csv = tx_bib_utility::implode_intval ( ',', $uids  );
 			//t3lib_div::debug ( $csv );
 	
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery ( $aT,
@@ -126,7 +126,7 @@ class tx_sevenpack_db_utility {
 		$WC = array();
 
 		if ( sizeof ( $this->ref_read->pid_list ) > 0 ) {
-			$csv = tx_sevenpack_utility::implode_intval ( ',', $this->ref_read->pid_list );
+			$csv = tx_bib_utility::implode_intval ( ',', $this->ref_read->pid_list );
 			$WC[] = 'pid IN ('.$csv.')';
 		}
 		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
@@ -248,7 +248,7 @@ class tx_sevenpack_db_utility {
 			}
 
 			// Determine temporary text file
-			$target = tempnam ( $this->tmp_dir, 'sevenpack_pdftotext' );
+			$target = tempnam ( $this->tmp_dir, 'bib_pdftotext' );
 			if ( $target === FALSE ) {
 				$err = array();
 				$err['msg'] = 'Could not create temporary file in ' . strval ( $this->tmp_dir );
@@ -310,8 +310,8 @@ class tx_sevenpack_db_utility {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/res/class.tx_sevenpack_db_utility.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/res/class.tx_sevenpack_db_utility.php']);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.tx_bib_db_utility.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.tx_bib_db_utility.php']);
 }
 
 

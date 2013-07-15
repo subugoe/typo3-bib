@@ -4,7 +4,7 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 
-class tx_sevenpack_single_view {
+class tx_bib_single_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
@@ -94,7 +94,7 @@ class tx_sevenpack_single_view {
 
 		// The filed list
 		$fields = $this->ref_read->pubAllFields;
-		$dont_show = tx_sevenpack_utility::explode_trim ( ',', $conf['dont_show'], TRUE );
+		$dont_show = tx_bib_utility::explode_trim ( ',', $conf['dont_show'], TRUE );
 
 		// Remove condition fields and setup the translator
 		foreach ( $fields as $field ) {
@@ -191,8 +191,8 @@ class tx_sevenpack_single_view {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_single_view.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_single_view.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_single_view.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_single_view.php"]);
 }
 
 ?>

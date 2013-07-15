@@ -5,10 +5,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_exporter.php') );
+	'EXT:bib/pi1/class.tx_bib_exporter.php') );
 
 
-class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
+class tx_bib_exporter_xml extends tx_bib_exporter {
 
 	// Pattern replacements
 	public $pat;
@@ -127,7 +127,7 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 	{
 		$str  = '';
 		$str .= '<?xml version="1.0" encoding="utf-8"?>'."\n";
-		$str .= '<sevenpack>'."\n";
+		$str .= '<bib>'."\n";
 		$str .= '<comment>'."\n";
 		$str .= $this->xml_format_string ( $this->info_text ( $infoArr ) );
 		$str .= '</comment>'."\n";
@@ -138,14 +138,14 @@ class tx_sevenpack_exporter_xml extends tx_sevenpack_exporter {
 	function file_outtro ( $infoArr = array() )
 	{
 		$str = '';
-		$str .= '</sevenpack>'."\n";
+		$str .= '</bib>'."\n";
 		return $str;
 	}
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_exporter_xml.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_exporter_xml.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_xml.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_xml.php"]);
 }
 
 ?>

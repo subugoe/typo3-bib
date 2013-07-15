@@ -12,7 +12,7 @@
 
 	<!-- GENERAL -->
 	<TCEforms>
-		<sheetTitle>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.sheet_general</sheetTitle>
+		<sheetTitle>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.sheet_general</sheetTitle>
 	</TCEforms>
 
 	<type>array</type>
@@ -22,24 +22,24 @@
 		<!-- List type -->
 		<display_mode>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode</label>
 				<config>
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.TS</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.TS</numIndex>
 							<numIndex index="1">-1</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.0</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.0</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.1</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.1</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.2</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.display_mode.2</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
 					</items>   
@@ -53,32 +53,32 @@
 		<!-- Enumeration style -->
 		<enum_style>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum_style</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum_style</label>
 				<config>
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.TS</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.TS</numIndex>
 							<numIndex index="1">-1</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.count_page</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.count_page</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.count_all</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.count_all</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
 						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.bullets</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.bullets</numIndex>
 							<numIndex index="1">3</numIndex>
 						</numIndex>
 						<numIndex index="4" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.empty</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.empty</numIndex>
 							<numIndex index="1">4</numIndex>
 						</numIndex>
 						<numIndex index="5" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.file_icon</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enum.file_icon</numIndex>
 							<numIndex index="1">5</numIndex>
 						</numIndex>
 					</items>
@@ -92,7 +92,7 @@
 		<!-- Show search bar -->
 		<show_search>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_search</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_search</label>
 				<config>
 					<type>check</type>
 					<default>0</default>
@@ -103,7 +103,7 @@
 		<!-- Show author navigation -->
 		<show_authors>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_authors</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_authors</label>
 				<config>
 					<type>check</type>
 					<default>0</default>
@@ -114,7 +114,7 @@
 		<!-- Show preferences navigation -->
 		<show_pref>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_preferences</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_preferences</label>
 				<config>
 					<type>check</type>
 					<default>0</default>
@@ -126,20 +126,20 @@
 		<!-- Date sorting -->
 		<date_sorting>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting</label>
 				<config>
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting.TS</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting.TS</numIndex>
 							<numIndex index="1">-1</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting.0</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting.0</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting.1</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.date_sorting.1</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 					</items>   
@@ -153,28 +153,28 @@
 		<!-- Show textfields -->
 		<show_textfields>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields</label>
 				<config>
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.abstract</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.abstract</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.annotation</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.annotation</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.note</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.note</numIndex>
 							<numIndex index="1">3</numIndex>
 						</numIndex>
 						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.keywords</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.keywords</numIndex>
 							<numIndex index="1">4</numIndex>
 						</numIndex>
 						<numIndex index="4" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.tags</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.show_textfields.tags</numIndex>
 							<numIndex index="1">5</numIndex>
 						</numIndex>
 					</items>
@@ -187,7 +187,7 @@
 		<!-- Split up bibliography types -->
 		<split_bibtypes>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.split_bibtypes</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.split_bibtypes</label>
 				<config>
 					<type>check</type>
 					<default>0</default>
@@ -198,7 +198,7 @@
 		<!-- GENERAL: items per page -->
 		<items_per_page>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.items_per_page</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.items_per_page</label>
 				<config>
 					<type>input</type>
 					<size>3</size>
@@ -210,7 +210,7 @@
 		<!-- GENERAL: Number of authors per page -->
 		<max_authors>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.max_authors</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.max_authors</label>
 				<config>
 					<type>input</type>
 					<size>3</size>
@@ -222,24 +222,24 @@
 		<!-- Statistic mode -->
 		<stat_mode>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode</label>
 				<config>
 					<type>select</type>
 					<items type="array">
 						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.TS</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.TS</numIndex>
 							<numIndex index="1">-1</numIndex>
 						</numIndex>
 						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.0</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.0</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.1</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.1</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.2</numIndex>
+							<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.stat_mode.2</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
 					</items>   
@@ -253,7 +253,7 @@
 		<!-- GENERAL: export options -->
 		<export_mode>
 			<TCEforms>
- 				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_export_links</label>
+ 				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_export_links</label>
 				<config>
 					<type>check</type>
 					<default>1</default>
@@ -271,7 +271,7 @@
 	<ROOT>
 
 		<TCEforms>
-			<sheetTitle>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.sheet_filter</sheetTitle>
+			<sheetTitle>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.sheet_filter</sheetTitle>
 		</TCEforms>
 
 		<type>array</type>
@@ -281,7 +281,7 @@
 			<!-- Enable filter -->
 			<enable_year>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_year</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_year</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -292,7 +292,7 @@
 			<!-- year -->
 			<years>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.years</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.years</label>
 					<config>
 						<type>text</type>
 						<cols>30</cols>
@@ -305,7 +305,7 @@
 			<!-- Enable filter -->
 			<enable_author>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_author</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_author</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -316,7 +316,7 @@
 			<!-- author list -->
 			<authors>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.authors</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.authors</label>
 					<config>
 						<type>text</type>
 						<cols>30</cols>
@@ -328,18 +328,18 @@
 			<!-- Author rule -->
 			<author_rule>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule</label>
 					<config>
 						<type>radio</type>
 						<items>
 							<numIndex index="0">
 								<numIndex 
-											 index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule.OR</numIndex>
+											 index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule.OR</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1">
 								<numIndex 
-											 index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule.AND</numIndex>
+											 index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.author_rule.AND</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -350,7 +350,7 @@
 
 			<highlight_authors>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.highlight_authors</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.highlight_authors</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -362,7 +362,7 @@
 			<!-- Enable filter -->
 			<enable_tags>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_tags</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_tags</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -373,7 +373,7 @@
 			<!-- Tags list -->
 			<tags>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.tags</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.tags</label>
 					<config>
 						<type>text</type>
 						<cols>30</cols>
@@ -385,16 +385,16 @@
 			<!-- Tags rule -->
 			<tags_rule>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.tags_rule</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.tags_rule</label>
 					<config>
 						<type>radio</type>
 						<items>
 							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -408,7 +408,7 @@
 			<!-- Enable filter -->
 			<enable_keywords>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_keywords</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_keywords</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -419,7 +419,7 @@
 			<!-- keyword list -->
 			<keywords>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords</label>
 					<config>
 						<type>text</type>
 						<cols>30</cols>
@@ -431,16 +431,16 @@
 			<!-- Keyword rule -->
 			<keywords_rule>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords_rule</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.keywords_rule</label>
 					<config>
 						<type>radio</type>
 						<items>
 							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -453,7 +453,7 @@
 			<!-- Enable filter -->
 			<enable_state>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_state</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_state</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -464,28 +464,28 @@
 			<!-- State (submitted, accepted, unpublished) -->
 			<states>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.pub_states</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.pub_states</label>
 					<config>
 						<type>check</type>
 						<items>
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.0</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.0</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.1</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 							<numIndex index="2" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.2</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.2</numIndex>
 								<numIndex index="1">2</numIndex>
 							</numIndex>
 							<numIndex index="3" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.3</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.3</numIndex>
 								<numIndex index="1">3</numIndex>
 							</numIndex>
 							<numIndex index="4" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.4</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.pubstate.4</numIndex>
 								<numIndex index="1">4</numIndex>
 							</numIndex>
 						</items>
@@ -500,7 +500,7 @@
 			<!-- Enable filter -->
 			<enable_bibtype>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_bibtype</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_bibtype</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -511,84 +511,84 @@
 			<!-- bibtype list -->
 			<bibtypes>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.bibtypes</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.bibtypes</label>
 					<config>
 						<type>select</type>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_1</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_2</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_2</numIndex>
 								<numIndex index="1">2</numIndex>
 							</numIndex>
 							<numIndex index="2" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_3</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_3</numIndex>
 								<numIndex index="1">3</numIndex>
 							</numIndex>
 							<numIndex index="3" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_4</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_4</numIndex>
 								<numIndex index="1">4</numIndex>
 							</numIndex>
 							<numIndex index="4" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_5</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_5</numIndex>
 								<numIndex index="1">5</numIndex>
 							</numIndex>
 							<numIndex index="5" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_6</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_6</numIndex>
 								<numIndex index="1">6</numIndex>
 							</numIndex>
 							<numIndex index="6" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_7</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_7</numIndex>
 								<numIndex index="1">7</numIndex>
 							</numIndex>
 							<numIndex index="7" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_8</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_8</numIndex>
 								<numIndex index="1">8</numIndex>
 							</numIndex>
 							<numIndex index="8" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_9</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_9</numIndex>
 								<numIndex index="1">9</numIndex>
 							</numIndex>
 							<numIndex index="9" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_10</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_10</numIndex>
 								<numIndex index="1">10</numIndex>
 							</numIndex>
 							<numIndex index="10" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_11</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_11</numIndex>
 								<numIndex index="1">11</numIndex>
 							</numIndex>
 							<numIndex index="11" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_12</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_12</numIndex>
 								<numIndex index="1">12</numIndex>
 							</numIndex>
 							<numIndex index="12" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_13</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_13</numIndex>
 								<numIndex index="1">13</numIndex>
 							</numIndex>
 							<numIndex index="13" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_14</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_14</numIndex>
 								<numIndex index="1">14</numIndex>
 							</numIndex>
 							<numIndex index="14" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_15</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_15</numIndex>
 								<numIndex index="1">15</numIndex>
 							</numIndex>
 							<numIndex index="15" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_16</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_16</numIndex>
 								<numIndex index="1">16</numIndex>
 							</numIndex>
 							<numIndex index="16" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_17</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_17</numIndex>
 								<numIndex index="1">17</numIndex>
 							</numIndex>
 							<numIndex index="17" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_18</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_18</numIndex>
 								<numIndex index="1">18</numIndex>
 							</numIndex>
 							<numIndex index="18" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_19</numIndex>
+								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_19</numIndex>
 								<numIndex index="1">19</numIndex>
 							</numIndex>
 						</items>
@@ -602,7 +602,7 @@
 			<!-- Enable filter -->
 			<enable_origin>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_origin</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_origin</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -613,16 +613,16 @@
 			<!-- Origins -->
 			<origins>
 				<TCEforms>
-					<!-- <label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.origins</label> -->
+					<!-- <label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.origins</label> -->
 					<config>
 						<type>select</type>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.origins.0</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.origins.0</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.origins.1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.origins.1</numIndex>
 								<numIndex index="1">2</numIndex>
 							</numIndex>
 						</items>
@@ -636,7 +636,7 @@
 			<!-- Enable filter -->
 			<enable_reviewes>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_reviewes</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_reviewes</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -647,16 +647,16 @@
 			<!-- Reviewes -->
 			<reviewes>
 				<TCEforms>
-					<!-- <label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.reviewes</label> -->
+					<!-- <label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.reviewes</label> -->
 					<config>
 						<type>select</type>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.reviewes.0</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.reviewes.0</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.reviewes.1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.reviewes.1</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -670,7 +670,7 @@
 			<!-- Enable filter -->
 			<enable_in_library>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_in_library</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_in_library</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -681,16 +681,16 @@
 			<!-- In library -->
 			<in_library>
 				<TCEforms>
-					<!-- <label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.in_library</label> -->
+					<!-- <label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.in_library</label> -->
 					<config>
 						<type>select</type>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.in_library.0</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.in_library.0</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.in_library.1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.in_library.1</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -704,7 +704,7 @@
 			<!-- Enable filter -->
 			<enable_borrowed>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_borrowed</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_borrowed</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -715,16 +715,16 @@
 			<!-- borrowed -->
 			<borrowed>
 				<TCEforms>
-					<!-- <label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.borrowed</label> -->
+					<!-- <label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.borrowed</label> -->
 					<config>
 						<type>select</type>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.borrowed.0</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.borrowed.0</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.borrowed.1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.borrowed.1</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -738,7 +738,7 @@
 			<!-- Enable filter -->
 			<enable_citeid>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_citeid</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_citeid</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -749,7 +749,7 @@
 			<!-- citeid list -->
 			<citeids>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.citeids</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.citeids</label>
 					<config>
 						<type>text</type>
 						<cols>30</cols>
@@ -762,7 +762,7 @@
 			<!-- Enable filter -->
 			<enable_search_all>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_search_all</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_search_all</label>
 					<config>
 						<type>check</type>
 						<default>0</default>
@@ -773,7 +773,7 @@
 			<!-- Search all word list -->
 			<search_all>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.search_all</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.search_all</label>
 					<config>
 						<type>text</type>
 						<cols>30</cols>
@@ -785,16 +785,16 @@
 			<!-- Search all rule -->
 			<search_all_rule>
 				<TCEforms>
-					<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.search_all_rule</label>
+					<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.search_all_rule</label>
 					<config>
 						<type>radio</type>
 						<items>
 							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
+								<numIndex index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 						</items>
@@ -814,7 +814,7 @@
 <ROOT>
 
 	<TCEforms>
-		<sheetTitle>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.sheet_fe_editor</sheetTitle>
+		<sheetTitle>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.sheet_fe_editor</sheetTitle>
 	</TCEforms>
 
 	<type>array</type>
@@ -823,7 +823,7 @@
 		<!-- Allow editing -->
 		<enable_editor>
 			<TCEforms>
- 				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_editor</label>
+ 				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.enable_editor</label>
 				<config>
 					<type>check</type>
 					<default>0</default>
@@ -834,23 +834,23 @@
 		<!-- Automatic cite id generation -->
 		<citeid_gen_new>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_new</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_new</label>
 				<config>
 					<type>radio</type>
 					<items>
 						<numIndex index="0">
 							<numIndex 
-								  index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
+								  index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1">
 							<numIndex 
-								  index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
+								  index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="2">
 							<numIndex 
-								  index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.full_automatic</numIndex>
+								  index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.full_automatic</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
 					</items>
@@ -863,18 +863,18 @@
 		<!-- Automatic cite id generation -->
 		<citeid_gen_old>
 			<TCEforms>
-				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_old</label>
+				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_old</label>
 				<config>
 					<type>radio</type>
 					<items>
 						<numIndex index="0">
 							<numIndex 
-										 index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
+										 index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1">
 							<numIndex 
-										 index="0">LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
+										 index="0">LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 					</items>
@@ -887,7 +887,7 @@
 		<!-- Automatic cite id generation -->
 		<clear_cache>
 			<TCEforms>
- 				<label>LLL:EXT:sevenpack/pi1/locallang_flex.xml:tt_content.pi_flexform.clear_page_cache</label>
+ 				<label>LLL:EXT:bib/pi1/locallang_flex.xml:tt_content.pi_flexform.clear_page_cache</label>
 				<config>
 					<type>check</type>
 					<default>1</default>

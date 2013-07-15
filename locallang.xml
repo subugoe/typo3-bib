@@ -2,7 +2,7 @@
 <T3locallang>
 	<meta type="array">
 		<type>module</type>
-		<description>Language labels for extension 'sevenpack'</description>
+		<description>Language labels for extension 'bib'</description>
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">

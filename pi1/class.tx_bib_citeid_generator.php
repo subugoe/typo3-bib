@@ -4,7 +4,7 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 
-class tx_sevenpack_citeid_generator {
+class tx_bib_citeid_generator {
 
 	public $pi1;
 	public $ref_read;
@@ -42,7 +42,7 @@ class tx_sevenpack_citeid_generator {
 
 	function generateBasicId ( $row ) {
 		$authors = $row['authors'];
-		$editors = tx_sevenpack_utility::explode_author_str ( $row['editor'] );
+		$editors = tx_bib_utility::explode_author_str ( $row['editor'] );
 
 		$persons = array ( $authors, $editors );
 
@@ -112,8 +112,8 @@ class tx_sevenpack_citeid_generator {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_citeid_generator.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_citeid_generator.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_citeid_generator.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_citeid_generator.php"]);
 }
 
 ?>

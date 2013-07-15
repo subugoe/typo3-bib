@@ -4,22 +4,22 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_citeid_generator.php' ) );
+	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_pregexp_translator.php' ) );
+	'EXT:bib/res/class.tx_bib_pregexp_translator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_utility.php' ) );
+	'EXT:bib/res/class.tx_bib_utility.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_reference_writer.php' ) );
+	'EXT:bib/res/class.tx_bib_reference_writer.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/res/class.tx_sevenpack_db_utility.php' ) );
+	'EXT:bib/res/class.tx_bib_db_utility.php' ) );
 
 
-class tx_sevenpack_importer {
+class tx_bib_importer {
 
 	public $pi1;
 	public $ref_read;
@@ -49,7 +49,7 @@ class tx_sevenpack_importer {
 		$this->pi1 =& $pi1;
 		$this->ref_read =& $pi1->ref_read;
 
-		$this->ref_write = t3lib_div::makeInstance ( 'tx_sevenpack_reference_writer' );
+		$this->ref_write = t3lib_div::makeInstance ( 'tx_bib_reference_writer' );
 		$this->ref_write->initialize( $this->ref_read );
 
 		$this->storage_pid = 0;
@@ -58,7 +58,7 @@ class tx_sevenpack_importer {
 		$this->stat['errors'] = array();
 
 		// setup db_utility
-		$this->db_utility = t3lib_div::makeInstance ( 'tx_sevenpack_db_utility' );
+		$this->db_utility = t3lib_div::makeInstance ( 'tx_bib_db_utility' );
 		$this->db_utility->initialize ( $pi1->ref_read );
 		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
 		$this->db_utility->read_full_text_conf ( $pi1->conf['editor.']['full_text.'] );
@@ -69,10 +69,10 @@ class tx_sevenpack_importer {
 			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName ( $this->conf['citeid_generator_file'] );
 			if ( file_exists ( $ext_file ) ) {
 				require_once ( $ext_file );
-				$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator_ext' );
+				$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator_ext' );
 			}
 		} else {
-			$this->idGenerator = t3lib_div::makeInstance ( 'tx_sevenpack_citeid_generator' );
+			$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator' );
 		}
 		$this->idGenerator->initialize ( $pi1 );
 	}
@@ -130,12 +130,12 @@ class tx_sevenpack_importer {
 
 		if ( sizeof ( $pids ) > 1 ) {
 			// Fetch page titles
-			$pages = tx_sevenpack_utility::get_page_titles ( $pids ); 
+			$pages = tx_bib_utility::get_page_titles ( $pids );
 
 			$val = $this->pi1->get_ll ( 'import_storage_info', 'import_storage_info', TRUE );
 			$con .= '<p>' . $val . '</p>' . "\n";
 
-			$val = tx_sevenpack_utility::html_select_input (
+			$val = tx_bib_utility::html_select_input (
 				$pages, $default_pid,
 				array ( 'name' => $this->pi1->prefixId . '[import_pid]' )
 			);
@@ -244,7 +244,7 @@ class tx_sevenpack_importer {
 	 *
 	 */
 	function import_state_1 ( ) {
-		$btn_attribs = array ( 'class' => 'tx_sevenpack-button' );
+		$btn_attribs = array ( 'class' => 'tx_bib-button' );
 		$con = '';
 
 		// Pre import information
@@ -265,7 +265,7 @@ class tx_sevenpack_importer {
 
 		// The submit button
 		$val = $this->pi1->get_ll ( 'import_file', 'import_file', TRUE );
-		$btn = tx_sevenpack_utility::html_submit_input ( 'submit', $val, $btn_attribs );
+		$btn = tx_bib_utility::html_submit_input ( 'submit', $val, $btn_attribs );
 		$con .= '<p>' . $btn . '</p>' . "\n";
 
 		$con .= '</form>';
@@ -321,7 +321,7 @@ class tx_sevenpack_importer {
 
 		$con = '';
 		$con .= '<strong>Import statistics</strong>: ';
-		$con .= '<table class="tx_sevenpack-editor_fields">';
+		$con .= '<table class="tx_bib-editor_fields">';
 		$con .= '<tbody>';
 
 		$con .= $this->table_row_str ( 
@@ -366,7 +366,7 @@ class tx_sevenpack_importer {
 
 		if ( is_array ( $stat['warnings'] ) && ( count ( $stat['warnings'] ) > 0 ) ) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = tx_sevenpack_utility::string_counter ( $stat['warnings'] );
+			$messages = tx_bib_utility::string_counter ( $stat['warnings'] );
 			foreach ( $messages as $msg => $count ) {
 				$str = $this->message_times_str ( $msg, $count );
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -378,7 +378,7 @@ class tx_sevenpack_importer {
 
 		if ( is_array ( $stat['errors'] ) && ( count ( $stat['errors'] ) > 0 ) ) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = tx_sevenpack_utility::string_counter ( $stat['errors'] );
+			$messages = tx_bib_utility::string_counter ( $stat['errors'] );
 			foreach ( $messages as $msg => $count ) {
 				$str = $this->message_times_str ( $msg, $count );
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -451,8 +451,8 @@ class tx_sevenpack_importer {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_importer.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_importer.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer.php"]);
 }
 
 

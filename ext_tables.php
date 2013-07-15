@@ -1,11 +1,11 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
-require_once(t3lib_extMgm::extPath($_EXTKEY).'res/class.tx_sevenpack_labels.php');
+require_once(t3lib_extMgm::extPath($_EXTKEY).'res/class.tx_bib_labels.php');
 
-$TCA['tx_sevenpack_references'] = array (
+$TCA['tx_bib_references'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references',
+		'title'     => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references',
 		'label'     => 'citeid',
 		'label_alt' => 'title,bibtype',
 		'label_alt_force'   => 1,
@@ -19,7 +19,7 @@ $TCA['tx_sevenpack_references'] = array (
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_sevenpack_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',
@@ -27,9 +27,9 @@ $TCA['tx_sevenpack_references'] = array (
 );
 
 
-$TCA['tx_sevenpack_authors'] = array (
+$TCA['tx_bib_authors'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors',		
+		'title'     => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authors',
 		'label'     => 'surname',
 		'label_alt' => 'forename',
     'label_alt_force'   => 1,
@@ -39,7 +39,7 @@ $TCA['tx_sevenpack_authors'] = array (
 		'default_sortby' => 'ORDER BY surname',	
 		'delete' => 'deleted',	
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_sevenpack_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'surname,forename,url',
@@ -47,16 +47,16 @@ $TCA['tx_sevenpack_authors'] = array (
 );
 
 
-$TCA['tx_sevenpack_authorships'] = array (
+$TCA['tx_bib_authorships'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authorships',
+		'title'     => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authorships',
 		'label'     => 'pub_id',
-		'label_userFunc'    => "tx_sevenpack_labels->get_authorship_label",
+		'label_userFunc'    => "tx_bib_labels->get_authorship_label",
 		'label_alt_force'   => 1,
 		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',	
 		'delete' => 'deleted',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_sevenpack_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
 		#'hideTable' => true
 	),
 	'feInterface' => array (
@@ -66,9 +66,9 @@ $TCA['tx_sevenpack_authorships'] = array (
 
 
 // Allow items on standard pages
-t3lib_extMgm::allowTableOnStandardPages('tx_sevenpack_references');
-t3lib_extMgm::allowTableOnStandardPages('tx_sevenpack_authors');
-t3lib_extMgm::allowTableOnStandardPages('tx_sevenpack_authorships');
+t3lib_extMgm::allowTableOnStandardPages('tx_bib_references');
+t3lib_extMgm::allowTableOnStandardPages('tx_bib_authors');
+t3lib_extMgm::allowTableOnStandardPages('tx_bib_authorships');
 
 
 t3lib_div::loadTCA('tt_content');
@@ -77,14 +77,11 @@ t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
 $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi1']='pi_flexform';
 
-t3lib_extMgm::addPlugin(array('LLL:EXT:sevenpack/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
-t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:sevenpack/pi1/flexform_ds.xml');
+t3lib_extMgm::addPlugin(array('LLL:EXT:bib/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
+t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:bib/pi1/flexform_ds.xml');
 
 t3lib_extMgm::addStaticFile($_EXTKEY, 'pi1/static/default', 'Publication list defaults');
 t3lib_extMgm::addStaticFile($_EXTKEY, 'pi1/static/default_style', 'Publication list CSS');
-
-
-if (TYPO3_MODE=='BE')	$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['tx_sevenpack_pi1_wizicon'] = t3lib_extMgm::extPath($_EXTKEY).'pi1/class.tx_sevenpack_pi1_wizicon.php';
 
 
 ?>

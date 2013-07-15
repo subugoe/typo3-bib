@@ -5,10 +5,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_importer.php') );
+	'EXT:bib/pi1/class.tx_bib_importer.php') );
 
 
-class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
+class tx_bib_importer_xml extends tx_bib_importer {
 
 	function initialize ( $pi1 ) {
 		parent::initialize( $pi1 );
@@ -77,7 +77,7 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 
 		$pubs = array ( );
 		$startlevel = 0;
-		$in_sevenpack = FALSE;
+		$in_bib = FALSE;
 		$in_ref       = FALSE;
 		$in_authors   = FALSE;
 		$in_person    = FALSE;
@@ -88,10 +88,10 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 			$type  =& $cTag['type'];
 			$level =& $cTag['level'];
 			$value =  $this->import_utf8_string ( $cTag['value'] );
-			if ( !$in_sevenpack ) {
-				if ( ( $tag == 'sevenpack' ) &&
+			if ( !$in_bib ) {
+				if ( ( $tag == 'bib' ) &&
 				     ( $type == 'open' ) ) {
-					$in_sevenpack = TRUE;
+					$in_bib = TRUE;
 				}
 			} else {
 
@@ -101,9 +101,9 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 						$in_ref = TRUE;
 						$pub = array ( );
 					} else
-					if ( ( $tag == 'sevenpack' ) && ( $type == 'close' ) ) {
-						// Leave sevenpack
-						$in_sevenpack = FALSE;
+					if ( ( $tag == 'bib' ) && ( $type == 'close' ) ) {
+						// Leave bib
+						$in_bib = FALSE;
 					}
 				} else {
 					// In reference
@@ -196,8 +196,8 @@ class tx_sevenpack_importer_xml extends tx_sevenpack_importer {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_importer_xml.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_importer_xml.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer_xml.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer_xml.php"]);
 }
 
 

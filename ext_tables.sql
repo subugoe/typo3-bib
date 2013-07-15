@@ -1,7 +1,7 @@
 #
-# Table structure for table 'tx_sevenpack_references'
+# Table structure for table 'tx_bib_references'
 #
-CREATE TABLE tx_sevenpack_references (
+CREATE TABLE tx_bib_references (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
@@ -68,9 +68,9 @@ CREATE TABLE tx_sevenpack_references (
 
 
 #
-# Table structure for table 'tx_sevenpack_authors'
+# Table structure for table 'tx_bib_authors'
 #
-CREATE TABLE tx_sevenpack_authors (
+CREATE TABLE tx_bib_authors (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
@@ -89,9 +89,9 @@ CREATE TABLE tx_sevenpack_authors (
 
 
 #
-# Table structure for table 'tx_sevenpack_authorships'
+# Table structure for table 'tx_bib_authorships'
 #
-CREATE TABLE tx_sevenpack_authorships (
+CREATE TABLE tx_bib_authorships (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,

@@ -1,12 +1,12 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
-$TCA['tx_sevenpack_references'] = array (
-	'ctrl' => $TCA['tx_sevenpack_references']['ctrl'],
+$TCA['tx_bib_references'] = array (
+	'ctrl' => $TCA['tx_bib_references']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => $TCA['tx_sevenpack_references']['feInterface']['fe_admin_fieldList']
+		'showRecordFieldList' => $TCA['tx_bib_references']['feInterface']['fe_admin_fieldList']
 	),
-	'feInterface' => $TCA['tx_sevenpack_references']['feInterface'],
+	'feInterface' => $TCA['tx_bib_references']['feInterface'],
 	'columns' => array (
 		'hidden' => array (
 #			'exclude' => 1,
@@ -18,30 +18,30 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'bibtype' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype',
 			'config' => Array (
 				'type' => 'select',
 				'items' => Array (
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_0', '0'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_1', '1'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_2', '2'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_3', '3'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_4', '4'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_5', '5'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_6', '6'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_7', '7'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_8', '8'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_9', '9'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_10', '10'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_11', '11'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_12', '12'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_13', '13'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_14', '14'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_15', '15'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_16', '16'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_17', '17'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_18', '18'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_bibtype_I_19', '19'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_0', '0'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_1', '1'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_2', '2'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_3', '3'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_4', '4'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_5', '5'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_6', '6'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_7', '7'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_8', '8'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_9', '9'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_10', '10'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_11', '11'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_12', '12'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_13', '13'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_14', '14'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_15', '15'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_16', '16'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_17', '17'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_18', '18'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_19', '19'),
 				),
 				'size' => 1,
 				'maxitems' => 1,
@@ -49,7 +49,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'citeid' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_citeid',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_citeid',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -59,7 +59,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'title' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_title',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_title',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -68,7 +68,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'journal' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_journal',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_journal',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -78,7 +78,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'year' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_year',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_year',
 			'config' => Array (
 				'type'     => 'input',
 				'size'     => '4',
@@ -93,7 +93,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'volume' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_volume',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_volume',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -103,7 +103,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'number' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_number',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_number',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -113,7 +113,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'number2' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_number2',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_number2',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -123,7 +123,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'pages' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_pages',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_pages',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -133,7 +133,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'day' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_day',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_day',
 			'config' => Array (
 				'type' => 'select',
 				'items' => Array (
@@ -176,7 +176,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'month' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_month',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_month',
 			'config' => Array (
 				'type' => 'select',
 				'items' => Array (
@@ -200,7 +200,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'abstract' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_abstract',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_abstract',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -209,7 +209,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'affiliation' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_affiliation',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_affiliation',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -219,7 +219,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'note' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_note',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_note',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -228,7 +228,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'annotation' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_annotation',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_annotation',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -237,7 +237,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'keywords' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_keywords',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_keywords',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -246,7 +246,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'tags' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_tags',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_tags',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -255,7 +255,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'file_url' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_file_url',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_file_url',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -276,7 +276,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'web_url' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_web_url',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_web_url',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -296,7 +296,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'web_url2' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_web_url2',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_web_url2',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -316,7 +316,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'misc' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_misc',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_misc',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -326,7 +326,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'misc2' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_misc2',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_misc2',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -336,7 +336,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'editor' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_editor',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_editor',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -346,7 +346,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'publisher' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_publisher',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_publisher',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -356,7 +356,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'address' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_address',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_address',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -366,7 +366,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'howpublished' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_howpublished',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_howpublished',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -376,7 +376,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'series' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_series',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_series',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -386,7 +386,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'edition' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_edition',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_edition',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -396,7 +396,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'chapter' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_chapter',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_chapter',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -406,7 +406,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'booktitle' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_booktitle',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_booktitle',
 			'config' => Array (
 				'type' => 'text',
 				'cols' => '48',
@@ -416,7 +416,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'school' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_school',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_school',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -426,7 +426,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'institute' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_institute',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_institute',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -436,7 +436,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'organization' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_organization',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_organization',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -446,7 +446,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'institution' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_institution',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_institution',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -456,7 +456,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'event_name' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_event_name',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_event_name',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -466,7 +466,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'event_place' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_event_place',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_event_place',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -476,7 +476,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'event_date' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_event_date',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_event_date',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -486,15 +486,15 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'state' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_state',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_state',
 			'config' => Array (
 				'type' => 'select',
 				'items' => Array (
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_state_I_0', '0'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_state_I_1', '1'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_state_I_2', '2'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_state_I_3', '3'),
-					Array('LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_state_I_4', '4'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_state_I_0', '0'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_state_I_1', '1'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_state_I_2', '2'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_state_I_3', '3'),
+					Array('LLL:EXT:bib/locallang_db.xml:tx_bib_references_state_I_4', '4'),
 				),
 				'size' => 1,
 				'maxitems' => 1,
@@ -502,7 +502,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'type' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_type',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_type',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -512,7 +512,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'language' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_language',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_language',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -522,7 +522,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'ISBN' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_ISBN',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_ISBN',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -532,7 +532,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'ISSN' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_ISSN',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_ISSN',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -542,7 +542,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'DOI' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_DOI',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_DOI',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -552,7 +552,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'extern' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_extern',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_extern',
 			'config' => Array (
 				'type'    => 'check',
 				'default' => '0'
@@ -560,7 +560,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'reviewed' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_reviewed',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_reviewed',
 			'config' => Array (
 				'type'    => 'check',
 				'default' => '0'
@@ -568,7 +568,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'in_library' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_in_library',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_in_library',
 			'config' => Array (
 				'type'    => 'check',
 				'default' => '0'
@@ -576,7 +576,7 @@ $TCA['tx_sevenpack_references'] = array (
 		),
 		'borrowed_by' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_references_borrowed_by',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references_borrowed_by',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -591,16 +591,16 @@ $TCA['tx_sevenpack_references'] = array (
 );
 
 
-$TCA['tx_sevenpack_authors'] = array (
-	'ctrl' => $TCA['tx_sevenpack_authors']['ctrl'],
+$TCA['tx_bib_authors'] = array (
+	'ctrl' => $TCA['tx_bib_authors']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => $TCA['tx_sevenpack_authors']['feInterface']['fe_admin_fieldList']
+		'showRecordFieldList' => $TCA['tx_bib_authors']['feInterface']['fe_admin_fieldList']
 	),
-	'feInterface' => $TCA['tx_sevenpack_authors']['feInterface'],
+	'feInterface' => $TCA['tx_bib_authors']['feInterface'],
 	'columns' => array (
 		'surname' => array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors_surname',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authors_surname',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -610,7 +610,7 @@ $TCA['tx_sevenpack_authors'] = array (
 		),
 		'forename' => array (		
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors_forename',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authors_forename',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -620,7 +620,7 @@ $TCA['tx_sevenpack_authors'] = array (
 		),
 		'url' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors_url',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authors_url',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -640,7 +640,7 @@ $TCA['tx_sevenpack_authors'] = array (
 		),
 		'fe_user_id' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authors_fe_user_id',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authors_fe_user_id',
 			'config' => Array (
 				'type' => 'group',
 				'size' => 1,
@@ -657,20 +657,20 @@ $TCA['tx_sevenpack_authors'] = array (
 );
 
 
-$TCA['tx_sevenpack_authorships'] = array (
-	'ctrl' => $TCA['tx_sevenpack_authorships']['ctrl'],
+$TCA['tx_bib_authorships'] = array (
+	'ctrl' => $TCA['tx_bib_authorships']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => $TCA['tx_sevenpack_authorships']['feInterface']['fe_admin_fieldList']
+		'showRecordFieldList' => $TCA['tx_bib_authorships']['feInterface']['fe_admin_fieldList']
 	),
 	'feInterface' => $TCA['tx_pmeightpack_authorships']['feInterface'],
 	'columns' => array (
 		'pub_id' => array (
 #      "exclude" => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authorships_pub_id',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authorships_pub_id',
 			'config' => array (
 				'type' => 'group',
 				'internal_type' => 'db',
-				'allowed' => 'tx_sevenpack_references',
+				'allowed' => 'tx_bib_references',
 				'size' => 1,
 				'minitems' => 1,
 				'maxitems' => 1,
@@ -686,10 +686,10 @@ $TCA['tx_sevenpack_authorships'] = array (
 							'inputStyle' => 'width:200px;',
 							'itemListStyle' => 'width:320px;',
 							'tables' => array (
-								'tx_sevenpack_references' => array (
+								'tx_bib_references' => array (
 									'searchBySQL' => array (
 									'fields' => 'r.title, r.uid',
-									'tables' => 'tx_sevenpack_references AS r',
+									'tables' => 'tx_bib_references AS r',
 									'where' => 'r.title LIKE "%###SEARCHWORD###%" AND r.deleted=0 AND r.hidden=0',
 									'group_by' => '',
 									'order_by' => 'r.title DESC',
@@ -704,11 +704,11 @@ $TCA['tx_sevenpack_authorships'] = array (
 		),
 		'author_id' => array (
 #      "exclude" => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authorships_author_id',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authorships_author_id',
 			'config' => array (
 				'type' => 'group',
 				'internal_type' => 'db',
-				'allowed' => 'tx_sevenpack_authors',
+				'allowed' => 'tx_bib_authors',
 				'size' => 1,
 				'minitems' => 1,
 				'maxitems' => 1,
@@ -724,10 +724,10 @@ $TCA['tx_sevenpack_authorships'] = array (
 							'inputStyle' => 'width:200px;',
 							'itemListStyle' => 'width:320px;',
 							'tables' => array(
-								'tx_sevenpack_authors' => array(
+								'tx_bib_authors' => array(
 									'searchBySQL' => array(
 									'fields' => 'a.surname, a.uid',
-									'tables' => 'tx_sevenpack_authors AS a',
+									'tables' => 'tx_bib_authors AS a',
 									'where' => 'a.surname LIKE "%###SEARCHWORD###%" AND a.deleted=0 AND a.hidden=0',
 									'group_by' => '',
 									'order_by' => 'a.surname DESC, a.forename DESC',
@@ -742,7 +742,7 @@ $TCA['tx_sevenpack_authorships'] = array (
 		),
 		'sorting' => array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:sevenpack/locallang_db.xml:tx_sevenpack_authorships_sorting',
+			'label' => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authorships_sorting',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '10',

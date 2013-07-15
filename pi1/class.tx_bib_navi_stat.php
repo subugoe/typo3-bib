@@ -5,10 +5,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_navi.php') );
+	'EXT:bib/pi1/class.tx_bib_navi.php') );
 
 
-class tx_sevenpack_navi_stat extends tx_sevenpack_navi  {
+class tx_bib_navi_stat extends tx_bib_navi  {
 
 	/*
 	 * Initialize
@@ -85,8 +85,8 @@ class tx_sevenpack_navi_stat extends tx_sevenpack_navi  {
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_stat.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_stat.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_stat.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_stat.php']);
 }
 
 ?>

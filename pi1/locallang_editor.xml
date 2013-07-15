@@ -2,7 +2,7 @@
 <T3locallang>
 	<meta type="array">
 		<type>database</type>
-		<description>Language labels for database tables/fields belonging to extension 'sevenpack'</description>
+		<description>Language labels for database tables/fields belonging to extension 'bib'</description>
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
@@ -41,9 +41,9 @@
 			<label index="olabel_thesis_type">Thesis type</label>
 			<label index="olabel_university">University</label>
 			<label index="olabel_year_month_day">Date (Y-M-D)</label>
-			<label index="tx_sevenpack_references_hidden">Hidden</label>
-			<label index="tx_sevenpack_references_pid">Storage folder</label>
-			<label index="tx_sevenpack_references_uid">uid</label>
+			<label index="tx_bib_references_hidden">Hidden</label>
+			<label index="tx_bib_references_pid">Storage folder</label>
+			<label index="tx_bib_references_uid">uid</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="editor_btn_cancel">Abbruch</label>
@@ -81,9 +81,9 @@
 			<label index="olabel_thesis_type">Thesen Typ</label>
 			<label index="olabel_university">Universität</label>
 			<label index="olabel_year_month_day">Datum (J-M-T)</label>
-			<label index="tx_sevenpack_references_hidden">Versteckt</label>
-			<label index="tx_sevenpack_references_pid">Ablage Ordner</label>
-			<label index="tx_sevenpack_references_uid">uid</label>
+			<label index="tx_bib_references_hidden">Versteckt</label>
+			<label index="tx_bib_references_pid">Ablage Ordner</label>
+			<label index="tx_bib_references_uid">uid</label>
 		</languageKey>
 		<languageKey index="it" type="array">
 			<label index="editor_btn_cancel">Annulla</label>
@@ -109,8 +109,8 @@
 			<label index="editor_title_new">Crea un nuovo record</label>
 			<label index="editor_title_view">Visualizzazione record</label>
 			<label index="editor_yes">Sì</label>
-			<label index="tx_sevenpack_references_hidden">Nascosto</label>
-			<label index="tx_sevenpack_references_pid">Cartella di sistema</label>
+			<label index="tx_bib_references_hidden">Nascosto</label>
+			<label index="tx_bib_references_pid">Cartella di sistema</label>
 		</languageKey>
 	</data>
 </T3locallang>

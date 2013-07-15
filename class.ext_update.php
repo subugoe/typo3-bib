@@ -42,11 +42,11 @@ class ext_update {
 		$num = -1;
 		$query = '
 			SELECT count(*)
-			FROM tx_sevenpack_authorships 
-			LEFT JOIN tx_sevenpack_references ON
-			tx_sevenpack_authorships.pub_id = tx_sevenpack_references.uid
+			FROM tx_bib_authorships
+			LEFT JOIN tx_bib_references ON
+			tx_bib_authorships.pub_id = tx_bib_references.uid
 			WHERE
-			tx_sevenpack_authorships.pid != tx_sevenpack_references.pid
+			tx_bib_authorships.pid != tx_bib_references.pid
 			;
 		';
 		$res = $GLOBALS['TYPO3_DB']->sql_query ( $query );
@@ -62,13 +62,13 @@ class ext_update {
 	function fix_wrong_aship_pid ( ) {
 		$error = FALSE;
 		$query = '
-			UPDATE tx_sevenpack_authorships
-			LEFT JOIN tx_sevenpack_references ON
-			tx_sevenpack_authorships.pub_id = tx_sevenpack_references.uid
+			UPDATE tx_bib_authorships
+			LEFT JOIN tx_bib_references ON
+			tx_bib_authorships.pub_id = tx_bib_references.uid
 			SET
-			tx_sevenpack_authorships.pid = tx_sevenpack_references.pid
+			tx_bib_authorships.pid = tx_bib_references.pid
 			WHERE
-			tx_sevenpack_authorships.pid != tx_sevenpack_references.pid
+			tx_bib_authorships.pid != tx_bib_references.pid
 			;
 		';
 		$res = $GLOBALS['TYPO3_DB']->sql_query ( $query );
@@ -85,8 +85,8 @@ class ext_update {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/class.ext_update.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/class.ext_update.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/class.ext_update.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/class.ext_update.php"]);
 }
 
 ?>

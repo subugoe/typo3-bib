@@ -5,10 +5,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_exporter.php') );
+	'EXT:bib/pi1/class.tx_bib_exporter.php') );
 
 
-class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
+class tx_bib_exporter_bibtex extends tx_bib_exporter {
 
 	public $bt; // Bibtex translator
 
@@ -17,7 +17,7 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 
 		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.bib';
 
-		$this->bt = t3lib_div::makeInstance ( 'tx_sevenpack_PRegExp_Translator' );
+		$this->bt = t3lib_div::makeInstance ( 'tx_bib_PRegExp_Translator' );
 		$bt =& $this->bt;
 
 		$bt->push ( '/\\\\/', '\\\\textbackslash' );
@@ -203,7 +203,7 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 		// Convert characters to html sequences
 		$charset = $this->pi1->extConf['charset']['upper'];
 		// Replace illegal html ampersands with &amp;
-		$value = tx_sevenpack_utility::fix_html_ampersand ( $value );
+		$value = tx_bib_utility::fix_html_ampersand ( $value );
 		// Replaces &amp; with &amp;amp;
 		$value = htmlentities ( $value, ENT_QUOTES, $charset );
 		// Replaces &amp;amp; with &amp;
@@ -277,8 +277,8 @@ class tx_sevenpack_exporter_bibtex extends tx_sevenpack_exporter {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_exporter_bibtex.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/pi1/class.tx_sevenpack_exporter_bibtex.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_bibtex.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_bibtex.php"]);
 }
 
 ?>

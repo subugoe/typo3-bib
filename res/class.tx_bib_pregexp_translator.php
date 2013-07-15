@@ -3,13 +3,13 @@
 if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
-class tx_sevenpack_PRegExp_Translator {
+class tx_bib_PRegExp_Translator {
 
 	var $pat;
 	var $rep;
 
 
-	function tx_sevenpack_PRegExp_Translator ( ) {
+	function tx_bib_PRegExp_Translator ( ) {
 		$this->clear ( );
 	}
 
@@ -31,8 +31,8 @@ class tx_sevenpack_PRegExp_Translator {
 	}
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/class.tx_sevenpack_pregexp_translator.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/class.tx_sevenpack_pregexp_translator.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_pregexp_translator.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_pregexp_translator.php"]);
 }
 
 ?>

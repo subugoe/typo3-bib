@@ -5,10 +5,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:sevenpack/pi1/class.tx_sevenpack_navi.php') );
+	'EXT:bib/pi1/class.tx_bib_navi.php') );
 
 
-class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
+class tx_bib_navi_author extends tx_bib_navi  {
 
 	public $extConf;
 
@@ -418,7 +418,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		);
 		if ( strlen ( $cfg['select_class'] ) > 0 )
 			$attribs['class'] = $cfg['select_class'];
-		$btn = tx_sevenpack_utility::html_select_input ( 
+		$btn = tx_bib_utility::html_select_input (
 			$pairs, $sel_name, $attribs );
 
 		$btn = $cObj->stdWrap ( $btn, $cfg['select.'] );
@@ -428,7 +428,7 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 		$attribs = array ();
 		if ( strlen ( $cfg['go_btn_class'] ) > 0 )
 			$attribs['class'] =  $cfg['go_btn_class'];
-		$btn = tx_sevenpack_utility::html_submit_input ( 
+		$btn = tx_bib_utility::html_submit_input (
 			$this->pi1->prefix_pi1.'[action][select_author]',
 			$this->pi1->get_ll ( 'button_go' ), $attribs );
 		$btn = $cObj->stdWrap ( $btn, $cfg['go_btn.'] );
@@ -517,8 +517,8 @@ class tx_sevenpack_navi_author extends tx_sevenpack_navi  {
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_author.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/sevenpack/pi1/class.tx_sevenpack_navi_author.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_author.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_author.php']);
 }
 
 ?>

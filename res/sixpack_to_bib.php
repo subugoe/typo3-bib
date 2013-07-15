@@ -3,10 +3,10 @@
 
 /*
  * This script converts publications in a sixpack database
- * to the sevenpack database.
+ * to the bib database.
  */
 
-class tx_sevenpack_normalization {
+class tx_bib_normalization {
 
 	var $db_link;
 	var $db_host;
@@ -28,7 +28,7 @@ class tx_sevenpack_normalization {
 	var $stats;
 	var $six_to_seven;
 
-	function tx_sevenpack_normalization ( )
+	function tx_bib_normalization ( )
 	{
 		# Database server info
 		$this->db_host   = 'localhost';
@@ -41,9 +41,9 @@ class tx_sevenpack_normalization {
 
 		$this->sixTable    = 'tx_sixpack_references';
 
-		$this->refTable    = 'tx_sevenpack_references';
-		$this->authorTable = 'tx_sevenpack_authors';
-		$this->aShipTable  = 'tx_sevenpack_authorships';
+		$this->refTable    = 'tx_bib_references';
+		$this->authorTable = 'tx_bib_authors';
+		$this->aShipTable  = 'tx_bib_authorships';
 		$this->authorFields = array (
 			'forename', 'surname'
 		);
@@ -261,7 +261,7 @@ class tx_sevenpack_normalization {
 		}
 
 		foreach ( $aPubs as $pub ) {
-			$this-> insert_sevenpack_pub ( $pub );
+			$this-> insert_bib_pub ( $pub );
 		}
 
 		$this->disconnect ( );
@@ -283,7 +283,7 @@ class tx_sevenpack_normalization {
 
 
 
-	function insert_sevenpack_pub ( $pub ) {
+	function insert_bib_pub ( $pub ) {
 
 		$i_authors =& $this->stats['authors']['inserted'];
 		$p_authors =& $this->stats['authors']['present'];
@@ -666,12 +666,12 @@ class tx_sevenpack_normalization {
 
 }
 
-$n = new tx_sevenpack_normalization();
+$n = new tx_bib_normalization();
 $n->normalize();
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/sixpack_to_sevenpack.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/sevenpack/res/sixpack_to_sevenpack.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/sixpack_to_bib.php"])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/sixpack_to_bib.php"]);
 }
 
 ?>
