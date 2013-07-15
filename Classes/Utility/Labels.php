@@ -14,7 +14,7 @@ class Tx_Bib_Utility_Labels {
 		$title = '';
 
 		if ( $item_id ) {
-			$item = t3lib_BEfunc::getRecord('tx_bib_authorships', $item_id);
+			$item = t3lib_BEfunc::getRecord('tx_bib_domain_model_authorships', $item_id);
 			
 			$author_id = $item['author_id'];
 			if ( $author_id ) {

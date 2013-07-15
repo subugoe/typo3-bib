@@ -89,9 +89,9 @@ CREATE TABLE tx_bib_domain_model_author (
 
 
 #
-# Table structure for table 'tx_bib_authorships'
+# Table structure for table 'tx_bib_domain_model_authorships'
 #
-CREATE TABLE tx_bib_authorships (
+CREATE TABLE tx_bib_domain_model_authorships (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,

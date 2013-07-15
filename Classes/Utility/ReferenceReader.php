@@ -21,7 +21,7 @@ class Tx_Bib_Utility_ReferenceReader {
 
 	public $refTable    = 'tx_bib_domain_model_reference';
 	public $authorTable = 'tx_bib_domain_model_author';
-	public $aShipTable  = 'tx_bib_authorships';
+	public $aShipTable  = 'tx_bib_domain_model_authorships';
 
 	public $refTableAlias    = 't_ref';
 	public $authorTableAlias = 't_authors';

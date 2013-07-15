@@ -4,16 +4,16 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-$TCA['tx_bib_authorships'] = array (
-	'ctrl' => $TCA['tx_bib_authorships']['ctrl'],
+$TCA['tx_bib_domain_model_authorships'] = array (
+	'ctrl' => $TCA['tx_bib_domain_model_authorships']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => $TCA['tx_bib_authorships']['feInterface']['fe_admin_fieldList']
+		'showRecordFieldList' => $TCA['tx_bib_domain_model_authorships']['feInterface']['fe_admin_fieldList']
 	),
 	'feInterface' => $TCA['tx_pmeightpack_authorships']['feInterface'],
 	'columns' => array (
 		'pub_id' => array (
 #      "exclude" => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authorships_pub_id',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_pub_id',
 			'config' => array (
 				'type' => 'group',
 				'internal_type' => 'db',
@@ -51,7 +51,7 @@ $TCA['tx_bib_authorships'] = array (
 		),
 		'author_id' => array (
 #      "exclude" => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authorships_author_id',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_author_id',
 			'config' => array (
 				'type' => 'group',
 				'internal_type' => 'db',
@@ -89,7 +89,7 @@ $TCA['tx_bib_authorships'] = array (
 		),
 		'sorting' => array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authorships_sorting',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_sorting',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '10',

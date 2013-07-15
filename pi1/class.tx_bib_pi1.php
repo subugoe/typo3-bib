@@ -3095,7 +3095,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		// Is FE-user editing only for own records enabled? (set via TS)
 		if ( isset ( $this->conf['FE_edit_own_records'] ) && $this->conf['FE_edit_own_records'] != 0 ) {
 			// query all authors of this publication
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery("fe_user_id", "tx_bib_domain_model_author as a,tx_bib_authorships as m", "a.uid=m.author_id AND m.pub_id=".$pub_id);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery("fe_user_id", "tx_bib_domain_model_author as a,tx_bib_domain_model_authorships as m", "a.uid=m.author_id AND m.pub_id=".$pub_id);
 			while ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res) ) {
 				// check if author == FE user and allow editing
 				if ( $row[0] == $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->userid_column] )

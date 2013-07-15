@@ -49,9 +49,9 @@ $TCA['tx_bib_domain_model_author'] = array (
 );
 
 
-$TCA['tx_bib_authorships'] = array (
+$TCA['tx_bib_domain_model_authorships'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authorships',
+		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships',
 		'label'     => 'pub_id',
 		'label_userFunc'    => "Tx_Bib_Utility_Labels->get_authorship_label",
 		'label_alt_force'   => 1,
@@ -70,7 +70,7 @@ $TCA['tx_bib_authorships'] = array (
 // Allow items on standard pages
 t3lib_extMgm::allowTableOnStandardPages('tx_bib_domain_model_reference');
 t3lib_extMgm::allowTableOnStandardPages('tx_bib_domain_model_author');
-t3lib_extMgm::allowTableOnStandardPages('tx_bib_authorships');
+t3lib_extMgm::allowTableOnStandardPages('tx_bib_domain_model_authorships');
 
 
 t3lib_div::loadTCA('tt_content');
