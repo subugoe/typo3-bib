@@ -27,10 +27,10 @@ plugin.tx_bib_pi1 {
 
 	# HTML template files
 	templates {
-		main = EXT:bib/res/templates/main.html
-		list_blocks = EXT:bib/res/templates/list_blocks.html
-		list_items = EXT:bib/res/templates/list_items.html
-		navi_misc = EXT:bib/res/templates/navi_misc.html
+		main = EXT:bib/Resources/Private/Templates/main.html
+		list_blocks = EXT:bib/Resources/Private/Templates/list_blocks.html
+		list_items = EXT:bib/Resources/Private/Templates/list_items.html
+		navi_misc = EXT:bib/Resources/Private/Templates/navi_misc.html
 	}
 
 	# Number of authors to display (0=all)
@@ -182,7 +182,7 @@ plugin.tx_bib_pi1 {
 
 	# Search navigation
 	searchNav {
-		template = EXT:bib/res/templates/navi_search.html
+		template = EXT:bib/Resources/Private/Templates/navi_search.html
 
 		# Year label wrap
 		label.wrap = |:
@@ -261,7 +261,7 @@ plugin.tx_bib_pi1 {
 
 	# Year navigation
 	yearNav {
-		template = EXT:bib/res/templates/navi_year.html
+		template = EXT:bib/Resources/Private/Templates/navi_year.html
 
 		# Year label wrap
 		label.wrap = |:
@@ -320,7 +320,7 @@ plugin.tx_bib_pi1 {
 		# Page label and wrap
 		label.wrap = |:
 
-		template = EXT:bib/res/templates/navi_author.html
+		template = EXT:bib/Resources/Private/Templates/navi_author.html
 
 		# Classes or the year selection form
 		form_class = tx_bib-author_select_form
@@ -386,7 +386,7 @@ plugin.tx_bib_pi1 {
 
 	# Preferences Navigation
 	prefNav {
-		template = EXT:bib/res/templates/navi_pref.html
+		template = EXT:bib/Resources/Private/Templates/navi_pref.html
 
 		# Page label and wrap
 		label.wrap = |:
@@ -432,7 +432,7 @@ plugin.tx_bib_pi1 {
 
 	# Page naviagation
 	pageNav {
-		template = EXT:bib/res/templates/navi_page.html
+		template = EXT:bib/Resources/Private/Templates/navi_page.html
 
 		# Page label wrap
 		label.wrap = |:
@@ -480,7 +480,7 @@ plugin.tx_bib_pi1 {
 
 	# Statistic
 	statNav {
-		template = EXT:bib/res/templates/navi_stat.html
+		template = EXT:bib/Resources/Private/Templates/navi_stat.html
 
 		mode = 0
 		label.wrap = |:
@@ -568,7 +568,7 @@ plugin.tx_bib_pi1 {
 	single_view {
 		title.wrap = <h2 style="display: none;">|</h2>
 
-		template = EXT:bib/res/templates/single_view.html
+		template = EXT:bib/Resources/Private/Templates/single_view.html
 		dont_show = pid,uid,reviewed,in_library,borrowed_by,citeid
 
 		all_labels.wrap = |:
