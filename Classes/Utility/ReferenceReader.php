@@ -165,7 +165,7 @@ class Tx_Bib_Utility_ReferenceReader {
 	 *
 	 * @return void
 	 */
-	function Tx_Bib_Utility_ReferenceReader ( ) {
+	public function __construct() {
 		$this->dbRes = NULL;
 		$this->filters = array();
 		$this->clear_cache = FALSE;

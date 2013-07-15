@@ -5,7 +5,7 @@ class Tx_Bib_Utility_PRegExpTranslator {
 	var $pat;
 	var $rep;
 
-	function Tx_Bib_Utility_PRegExpTranslator () {
+	public function __construct() {
 		$this->clear ( );
 	}
 

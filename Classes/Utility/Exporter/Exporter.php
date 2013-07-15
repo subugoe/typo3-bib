@@ -26,7 +26,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *
 	 * @return void
 	 */
-	function initialize ( $pi1 ) {
+	function initialize ($pi1) {
 		$this->pi1 =& $pi1;
 		$this->ref_read  =& $pi1->ref_read;
 
@@ -40,7 +40,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 
 		// Setup export file path and name
 		$this->file_path = $this->pi1->conf['export.']['path'];
-		if ( !strlen($this->file_path) ) 
+		if (!strlen($this->file_path))
 			$this->file_path = 'uploads/tx_bib';
 
 		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.dat';
@@ -49,12 +49,6 @@ class Tx_Bib_Utility_Exporter_Exporter {
 		// Disable dynamic
 		$this->dynamic = FALSE;
 		$this->data = '';
-
-		$_EXTKEY = $this->pi1->extKey;
-		include ( $GLOBALS['TSFE']->tmpl->getFileName ( 'EXT:bib/ext_emconf.php' ) );
-		if ( is_array ( $EM_CONF ) ) {
-			$this->EM_CONF = $EM_CONF[$this->pi1->extKey];
-		}
 	}
 
 

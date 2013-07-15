@@ -368,8 +368,11 @@ class tx_bib_pi1 extends tslib_pibase {
 			// Acquire export modes
 			$modes = $this->conf['export.']['enable_export'];
 			if ( strlen ( $modes ) > 0 ) {
-				$modes = Tx_Bib_Utility_Utility::explode_trim_lower (
-					',', $modes, TRUE );
+				$modes = Tx_Bib_Utility_Utility::explode_trim_lower(
+					',',
+					$modes,
+					TRUE
+				);
 			}
 
 			// Add export modes
