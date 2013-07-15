@@ -5,7 +5,7 @@ require_once(t3lib_extMgm::extPath($_EXTKEY).'res/class.tx_bib_labels.php');
 
 $TCA['tx_bib_references'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:bib/locallang_db.xml:tx_bib_references',
+		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references',
 		'label'     => 'citeid',
 		'label_alt' => 'title,bibtype',
 		'label_alt_force'   => 1,
@@ -29,7 +29,7 @@ $TCA['tx_bib_references'] = array (
 
 $TCA['tx_bib_authors'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authors',
+		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authors',
 		'label'     => 'surname',
 		'label_alt' => 'forename',
     'label_alt_force'   => 1,
@@ -49,7 +49,7 @@ $TCA['tx_bib_authors'] = array (
 
 $TCA['tx_bib_authorships'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:bib/locallang_db.xml:tx_bib_authorships',
+		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authorships',
 		'label'     => 'pub_id',
 		'label_userFunc'    => "tx_bib_labels->get_authorship_label",
 		'label_alt_force'   => 1,
@@ -77,11 +77,12 @@ t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
 $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi1']='pi_flexform';
 
-t3lib_extMgm::addPlugin(array('LLL:EXT:bib/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
-t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:bib/pi1/flexform_ds.xml');
+t3lib_extMgm::addPlugin(array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
+t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:bib/Configuration/FlexForms/flexform_ds.xml');
 
-t3lib_extMgm::addStaticFile($_EXTKEY, 'pi1/static/default', 'Publication list defaults');
-t3lib_extMgm::addStaticFile($_EXTKEY, 'pi1/static/default_style', 'Publication list CSS');
+
+t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript/default', 'Publication list defaults');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript/default_style', 'Publication list CSS');
 
 
 ?>

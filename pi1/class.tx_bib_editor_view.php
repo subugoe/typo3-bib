@@ -82,7 +82,7 @@ class tx_bib_editor_view {
 
 	function get_db_ll ( $key, $alt = '', $hsc = FALSE )
 	{
-		$key = str_replace ( 'LLL:EXT:bib/locallang_db.xml:', '', $key );
+		$key = str_replace ( 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:', '', $key );
 		return $this->pi1->get_ll ( $key, $alt, $hsc );
 	}
 

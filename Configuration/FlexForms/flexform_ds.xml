@@ -516,79 +516,79 @@
 						<type>select</type>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_1</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_1</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_2</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_2</numIndex>
 								<numIndex index="1">2</numIndex>
 							</numIndex>
 							<numIndex index="2" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_3</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_3</numIndex>
 								<numIndex index="1">3</numIndex>
 							</numIndex>
 							<numIndex index="3" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_4</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_4</numIndex>
 								<numIndex index="1">4</numIndex>
 							</numIndex>
 							<numIndex index="4" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_5</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_5</numIndex>
 								<numIndex index="1">5</numIndex>
 							</numIndex>
 							<numIndex index="5" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_6</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_6</numIndex>
 								<numIndex index="1">6</numIndex>
 							</numIndex>
 							<numIndex index="6" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_7</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_7</numIndex>
 								<numIndex index="1">7</numIndex>
 							</numIndex>
 							<numIndex index="7" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_8</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_8</numIndex>
 								<numIndex index="1">8</numIndex>
 							</numIndex>
 							<numIndex index="8" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_9</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_9</numIndex>
 								<numIndex index="1">9</numIndex>
 							</numIndex>
 							<numIndex index="9" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_10</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_10</numIndex>
 								<numIndex index="1">10</numIndex>
 							</numIndex>
 							<numIndex index="10" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_11</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_11</numIndex>
 								<numIndex index="1">11</numIndex>
 							</numIndex>
 							<numIndex index="11" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_12</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_12</numIndex>
 								<numIndex index="1">12</numIndex>
 							</numIndex>
 							<numIndex index="12" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_13</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_13</numIndex>
 								<numIndex index="1">13</numIndex>
 							</numIndex>
 							<numIndex index="13" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_14</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_14</numIndex>
 								<numIndex index="1">14</numIndex>
 							</numIndex>
 							<numIndex index="14" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_15</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_15</numIndex>
 								<numIndex index="1">15</numIndex>
 							</numIndex>
 							<numIndex index="15" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_16</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_16</numIndex>
 								<numIndex index="1">16</numIndex>
 							</numIndex>
 							<numIndex index="16" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_17</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_17</numIndex>
 								<numIndex index="1">17</numIndex>
 							</numIndex>
 							<numIndex index="17" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_18</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_18</numIndex>
 								<numIndex index="1">18</numIndex>
 							</numIndex>
 							<numIndex index="18" type="array">
-								<numIndex index="0">LLL:EXT:bib/locallang_db.xml:tx_bib_references_bibtype_I_19</numIndex>
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references_bibtype_I_19</numIndex>
 								<numIndex index="1">19</numIndex>
 							</numIndex>
 						</items>
