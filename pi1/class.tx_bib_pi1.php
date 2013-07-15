@@ -2123,7 +2123,7 @@ class tx_bib_pi1 extends tslib_pibase {
 	 *
 	 * @return void
 	 */
-	function get_item_authors_html ( $authors ) {
+	function get_item_authors_html (& $authors ) {
 		
 /*
 		echo '<pre>';
@@ -2992,8 +2992,6 @@ class tx_bib_pi1 extends tslib_pibase {
 		}
 
 		// Create instance
-		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:'.$this->extKey.'/pi1/class.' . $eclass . '.php' ) );
 		$exp = t3lib_div::makeInstance ( $eclass );
 		$label = $this->get_ll ( $label, $label, TRUE );
 
