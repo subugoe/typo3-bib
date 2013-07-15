@@ -43,10 +43,10 @@ class ext_update {
 		$query = '
 			SELECT count(*)
 			FROM tx_bib_authorships
-			LEFT JOIN tx_bib_references ON
-			tx_bib_authorships.pub_id = tx_bib_references.uid
+			LEFT JOIN tx_bib_domain_model_reference ON
+			tx_bib_authorships.pub_id = tx_bib_domain_model_reference.uid
 			WHERE
-			tx_bib_authorships.pid != tx_bib_references.pid
+			tx_bib_authorships.pid != tx_bib_domain_model_reference.pid
 			;
 		';
 		$res = $GLOBALS['TYPO3_DB']->sql_query ( $query );
@@ -63,12 +63,12 @@ class ext_update {
 		$error = FALSE;
 		$query = '
 			UPDATE tx_bib_authorships
-			LEFT JOIN tx_bib_references ON
-			tx_bib_authorships.pub_id = tx_bib_references.uid
+			LEFT JOIN tx_bib_domain_model_reference ON
+			tx_bib_authorships.pub_id = tx_bib_domain_model_reference.uid
 			SET
-			tx_bib_authorships.pid = tx_bib_references.pid
+			tx_bib_authorships.pid = tx_bib_domain_model_reference.pid
 			WHERE
-			tx_bib_authorships.pid != tx_bib_references.pid
+			tx_bib_authorships.pid != tx_bib_domain_model_reference.pid
 			;
 		';
 		$res = $GLOBALS['TYPO3_DB']->sql_query ( $query );

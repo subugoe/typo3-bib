@@ -5,9 +5,9 @@ if (!defined ('TYPO3_MODE')) {
 
 require_once(t3lib_extMgm::extPath($_EXTKEY).'Classes/Utility/Labels.php');
 
-$TCA['tx_bib_references'] = array (
+$TCA['tx_bib_domain_model_reference'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_references',
+		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference',
 		'label'     => 'citeid',
 		'label_alt' => 'title,bibtype',
 		'label_alt_force'   => 1,
@@ -21,7 +21,7 @@ $TCA['tx_bib_references'] = array (
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY) . 'Configuration/Tca/References.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',
@@ -29,9 +29,9 @@ $TCA['tx_bib_references'] = array (
 );
 
 
-$TCA['tx_bib_authors'] = array (
+$TCA['tx_bib_domain_model_author'] = array (
 	'ctrl' => array (
-		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authors',
+		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author',
 		'label'     => 'surname',
 		'label_alt' => 'forename',
     'label_alt_force'   => 1,
@@ -41,7 +41,7 @@ $TCA['tx_bib_authors'] = array (
 		'default_sortby' => 'ORDER BY surname',	
 		'delete' => 'deleted',	
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'Configuration/Tca/Authors.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'surname,forename,url',
@@ -58,7 +58,7 @@ $TCA['tx_bib_authorships'] = array (
 		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',
 		'delete' => 'deleted',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'Configuration/Tca/Authorships.php',
-		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_references.png',
+		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY) . 'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
 		//'hideTable' => true
 	),
 	'feInterface' => array (
@@ -68,8 +68,8 @@ $TCA['tx_bib_authorships'] = array (
 
 
 // Allow items on standard pages
-t3lib_extMgm::allowTableOnStandardPages('tx_bib_references');
-t3lib_extMgm::allowTableOnStandardPages('tx_bib_authors');
+t3lib_extMgm::allowTableOnStandardPages('tx_bib_domain_model_reference');
+t3lib_extMgm::allowTableOnStandardPages('tx_bib_domain_model_author');
 t3lib_extMgm::allowTableOnStandardPages('tx_bib_authorships');
 
 

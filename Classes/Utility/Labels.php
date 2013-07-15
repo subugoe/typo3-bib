@@ -18,13 +18,13 @@ class Tx_Bib_Utility_Labels {
 			
 			$author_id = $item['author_id'];
 			if ( $author_id ) {
-				$author = t3lib_BEfunc::getRecord('tx_bib_authors', $author_id);
+				$author = t3lib_BEfunc::getRecord('tx_bib_domain_model_author', $author_id);
 				$title .= $author['surname'] . ', ' . $author['forename'];
 			}
 
 			$pub_id = $item['pub_id'];
 			if ( $pub_id ) {
-				$pub = t3lib_BEfunc::getRecord('tx_bib_references', $pub_id);
+				$pub = t3lib_BEfunc::getRecord('tx_bib_domain_model_reference', $pub_id);
 				$title .= ' [' . $pub['title'] . ']';
 			}
 		}

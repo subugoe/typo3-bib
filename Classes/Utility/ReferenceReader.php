@@ -19,8 +19,8 @@ class Tx_Bib_Utility_ReferenceReader {
 	public $pid_list;
 	public $show_hidden; // Show hidden references
 
-	public $refTable    = 'tx_bib_references';
-	public $authorTable = 'tx_bib_authors';
+	public $refTable    = 'tx_bib_domain_model_reference';
+	public $authorTable = 'tx_bib_domain_model_author';
 	public $aShipTable  = 'tx_bib_authorships';
 
 	public $refTableAlias    = 't_ref';

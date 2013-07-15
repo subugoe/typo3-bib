@@ -1,7 +1,7 @@
 #
-# Table structure for table 'tx_bib_references'
+# Table structure for table 'tx_bib_domain_model_reference'
 #
-CREATE TABLE tx_bib_references (
+CREATE TABLE tx_bib_domain_model_reference (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
@@ -68,9 +68,9 @@ CREATE TABLE tx_bib_references (
 
 
 #
-# Table structure for table 'tx_bib_authors'
+# Table structure for table 'tx_bib_domain_model_author'
 #
-CREATE TABLE tx_bib_authors (
+CREATE TABLE tx_bib_domain_model_author (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,

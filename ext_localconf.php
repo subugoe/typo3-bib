@@ -5,7 +5,7 @@ if (!defined ('TYPO3_MODE')) {
 }
 
 t3lib_extMgm::addUserTSConfig('
-	options.saveDocNew.tx_bib_references=1
+	options.saveDocNew.tx_bib_domain_model_reference=1
 ');
 
 // Extending TypoScript from static template uid=43 to set up userdefined tag:
@@ -30,8 +30,8 @@ t3lib_extMgm::addTypoScript(
 	$_EXTKEY,
 	'setup',
 		'
-	tt_content.shortcut.20.0.conf.tx_bib_references = < plugin.' . t3lib_extMgm::getCN($_EXTKEY) . '_pi1
-	tt_content.shortcut.20.0.conf.tx_bib_references.CMD = singleView
+	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference = < plugin.' . t3lib_extMgm::getCN($_EXTKEY) . '_pi1
+	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference.CMD = singleView
 '
 	,43
 );

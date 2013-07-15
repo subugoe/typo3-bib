@@ -4,16 +4,16 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-$TCA['tx_bib_authors'] = array (
-	'ctrl' => $TCA['tx_bib_authors']['ctrl'],
+$TCA['tx_bib_domain_model_author'] = array (
+	'ctrl' => $TCA['tx_bib_domain_model_author']['ctrl'],
 	'interface' => array (
-		'showRecordFieldList' => $TCA['tx_bib_authors']['feInterface']['fe_admin_fieldList']
+		'showRecordFieldList' => $TCA['tx_bib_domain_model_author']['feInterface']['fe_admin_fieldList']
 	),
-	'feInterface' => $TCA['tx_bib_authors']['feInterface'],
+	'feInterface' => $TCA['tx_bib_domain_model_author']['feInterface'],
 	'columns' => array (
 		'surname' => array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authors_surname',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_surname',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -23,7 +23,7 @@ $TCA['tx_bib_authors'] = array (
 		),
 		'forename' => array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authors_forename',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_forename',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -33,7 +33,7 @@ $TCA['tx_bib_authors'] = array (
 		),
 		'url' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authors_url',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_url',
 			'config' => Array (
 				'type' => 'input',
 				'size' => '48',
@@ -53,7 +53,7 @@ $TCA['tx_bib_authors'] = array (
 		),
 		'fe_user_id' => Array (
 #			'exclude' => 1,
-			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authors_fe_user_id',
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_fe_user_id',
 			'config' => Array (
 				'type' => 'group',
 				'size' => 1,
