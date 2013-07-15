@@ -64,7 +64,7 @@ class tx_bib_utility {
 
 	/**
 	 * Fixes illegal occurences of ampersands (&) in html strings
-	 * Well Typo3 seems to handle this as well
+	 * Well TYPO3 seems to handle this as well
 	 *
 	 * @return The string filtered for html output
 	 */

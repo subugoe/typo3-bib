@@ -7,9 +7,6 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_pregexp_translator.php' ) );
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:bib/Classes/Utility/class.tx_bib_utility.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (

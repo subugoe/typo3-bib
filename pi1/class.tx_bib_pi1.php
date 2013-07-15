@@ -124,7 +124,7 @@ class tx_bib_pi1 extends tslib_pibase {
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
-		$this->ref_read = t3lib_div::makeInstance ( 'tx_bib_reference_reader' );
+		$this->ref_read = t3lib_div::makeInstance ( 'Tx_Bib_Utility_ReferenceReader' );
 		$this->ref_read->set_cObj ( $this->cObj );
 
 		// Initialize current configuration

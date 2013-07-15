@@ -22,7 +22,7 @@
 			<label index="editor_fields_optional">Optional fields</label>
 			<label index="editor_fields_other">Other fields</label>
 			<label index="editor_fields_required">Required fields</label>
-			<label index="editor_fields_typo3">Typo3 fields</label>
+			<label index="editor_fields_typo3">TYPO3 fields</label>
 			<label index="editor_no">No</label>
 			<label index="editor_title_confirm_delete">Really delete this record?</label>
 			<label index="editor_title_confirm_erase">Really erase this record?</label>
@@ -62,7 +62,7 @@
 			<label index="editor_fields_optional">Optionale Felder</label>
 			<label index="editor_fields_other">Weitere Felder</label>
 			<label index="editor_fields_required">Notwendige Felder</label>
-			<label index="editor_fields_typo3">Typo3 Felder</label>
+			<label index="editor_fields_typo3">TYPO3 Felder</label>
 			<label index="editor_no">Nein</label>
 			<label index="editor_title_confirm_delete">Diesen Eintrag wirklich löschen?</label>
 			<label index="editor_title_confirm_erase">Diesen Eintrag wirklich entfernen?</label>
@@ -100,7 +100,7 @@
 			<label index="editor_fields_optional">Campi opzionali</label>
 			<label index="editor_fields_other">Altri campi </label>
 			<label index="editor_fields_required">Campi obbligatori</label>
-			<label index="editor_fields_typo3">Campi Typo3</label>
+			<label index="editor_fields_typo3">Campi TYPO3</label>
 			<label index="editor_no">No</label>
 			<label index="editor_title_confirm_delete">Confermi l'eliminazione di questo record?</label>
 			<label index="editor_title_confirm_erase">Confermi la cancellazione di questo record?</label>

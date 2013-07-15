@@ -9,7 +9,7 @@ if ( !isset($GLOBALS['TSFE']) )
  *
  * @author Sebastian Holtermann
  */
-class tx_bib_reference_reader {
+class Tx_Bib_Utility_ReferenceReader {
 
 	protected $filter;
 	protected $cObj;
@@ -38,7 +38,7 @@ class tx_bib_reference_reader {
 	/**
 	 * These are the author relevant fields 
 	 * that can be found in the reference table $this->authorTable.
-	 * Typo3 special fields like pid or uid are not listed here
+	 * TYPO3 special fields like pid or uid are not listed here
 	 */
 	public $authorFields = array (
 		'surname', 'forename', 'url', 'fe_user_id'
@@ -50,7 +50,7 @@ class tx_bib_reference_reader {
 	/**
 	 * These are the publication relevant fields 
 	 * that can be found in the reference table $this->refTable.
-	 * Typo3 special fields like pid or uid are not listed here
+	 * TYPO3 special fields like pid or uid are not listed here
 	 */
 	public $refFields = array (
 		'bibtype', 
@@ -106,7 +106,7 @@ class tx_bib_reference_reader {
 	/**
 	 * These are the publication relevant fields 
 	 * that can be found in the reference table $this->refTable.
-	 * including the important Typo3 specific fields
+	 * including the important TYPO3 specific fields
 	 */
 	public $refAllFields;
 
@@ -114,7 +114,7 @@ class tx_bib_reference_reader {
 	/**
 	 * These are the publication relevant fields 
 	 * that can be found in a php publication array.
-	 * Typo3 special fields like pid or uid are not listed here
+	 * TYPO3 special fields like pid or uid are not listed here
 	 */
 	public $pubFields;
 
@@ -122,7 +122,7 @@ class tx_bib_reference_reader {
 	/**
 	 * These are the publication relevant fields 
 	 * that can be found in a php publication array.
-	 * This includes Typo3 variables (pid,uid, etc.)
+	 * This includes TYPO3 variables (pid,uid, etc.)
 	 */
 	public $pubAllFields;
 
@@ -165,7 +165,7 @@ class tx_bib_reference_reader {
 	 *
 	 * @return void
 	 */
-	function tx_bib_reference_reader ( ) {
+	function Tx_Bib_Utility_ReferenceReader ( ) {
 		$this->dbRes = NULL;
 		$this->filters = array();
 		$this->clear_cache = FALSE;
@@ -1421,8 +1421,8 @@ class tx_bib_reference_reader {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_reader.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_reference_reader.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceReader.php"]) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceReader.php"]);
 }
 
 ?>

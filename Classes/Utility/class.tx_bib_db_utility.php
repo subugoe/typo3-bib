@@ -2,10 +2,6 @@
 if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is not meant to be executed');
 
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_reference_reader.php' ) );
-
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:bib/Classes/Utility/class.tx_bib_utility.php' ) );
 
@@ -37,7 +33,7 @@ class tx_bib_db_utility {
 		if ( is_object ( $ref_read ) ) {
 			$this->ref_read =& $ref_read;
 		} else {
-			$this->ref_read = t3lib_div::makeInstance ( 'tx_bib_reference_reader' );
+			$this->ref_read = t3lib_div::makeInstance ('Tx_Bib_Utility_ReferenceReader' );
 		}
 
 		$this->charset = 'UTF-8';

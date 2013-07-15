@@ -148,7 +148,7 @@ class tx_bib_reference_writer {
 			}
 		}
 
-		// Add Typo3 fields
+		// Add TYPO3 fields
 		$refRow['pid']    = intval ( $pub['pid'] );
 		$refRow['tstamp'] = time();
 		$refRow['hidden'] = intval ( $pub['hidden'] );

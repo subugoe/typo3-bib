@@ -3,9 +3,6 @@
 if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/Classes/Utility/class.tx_bib_pregexp_translator.php') );
-
 class tx_bib_exporter {
 
 	public $pi1;
@@ -202,7 +199,7 @@ class tx_bib_exporter {
 
 		$num = intval ( $infoArr['pubNum'] );
 
-		$str .= 'This file was created by the Typo3 extension' . "\n";
+		$str .= 'This file was created by the TYPO3 extension' . "\n";
 		$str .= $this->pi1->extKey;
 		if ( is_array ( $this->EM_CONF ) ) {
 			$str .= ' version ' . $this->EM_CONF['version'] . "\n";
