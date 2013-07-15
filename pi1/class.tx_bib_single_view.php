@@ -23,7 +23,7 @@ class tx_bib_single_view {
 		$this->conf =& $pi1->conf['single_view.'];
 		$this->ref_read =& $pi1->ref_read;
 		// Load editor language data
-		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/pi1/locallang_editor.xml' );
+		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/Resources/Private/Language/locallang_editor.xml' );
 	}
 
 

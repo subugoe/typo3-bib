@@ -450,7 +450,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$GLOBALS['TSFE']->set_no_cache();
 
 			// Load edit labels
-			$this->extend_ll ( 'EXT:'.$this->extKey.'/pi1/locallang_editor.xml' );
+			$this->extend_ll ( 'EXT:'.$this->extKey.'/Resources/Private/Language/locallang_editor.xml' );
 
 			// Do an action type evaluation
 			if ( is_array ( $this->piVars['action'] ) ) {
