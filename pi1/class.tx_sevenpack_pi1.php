@@ -1894,11 +1894,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Check restrictions
+/*
 			if ( $this->check_field_restriction ( 'ref', $f, $val, $show_hidden ) ) {
 				$pdata[$f] = '';
 				continue;
 			}
-
+*/
 			// Treat some fields
 			switch ( $f ) {
 				case 'file_url':
@@ -1944,6 +1945,26 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 		// Format the author string
 		$pdata['authors'] = $this->get_item_authors_html ( $pdata['authors'] );
 
+#echo '<pre>';
+#print_r($pdata['authors']);
+#echo '</pre>';
+
+		// Format the author string
+		$pdata['authors'] = $this->get_item_authors_html ( $pdata['authors'] );
+
+			#nkw
+/*
+			echo "<pre>";
+			print_r($pdata['editor']);
+			echo "</pre>";
+*/
+			
+			#nkw
+			# hier merken wir uns wie die editoren aussehen, bevor die ext damit sachen macht, die wir nicht wollen
+			# siehe auch: https://develop.sub.uni-goettingen.de/jira/browse/ADWD-631
+			$cleanEditors = $pdata['editor'];
+			#nkw end
+
 		// Editors
 		if ( strlen ( $pdata['editor'] ) > 0 ) {
 			$editors = tx_sevenpack_utility::explode_author_str ( $pdata['editor'] );
@@ -1959,6 +1980,13 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
 			$pdata['editor'] = tx_sevenpack_utility::implode_and_last (
 				$lst, ', ', $and );
+
+			#nkw
+			# nachdem die ext hier dinge mit den editoren macht, die wir nicht brauchen setzen wir das einfach mal wieder zur�ck.
+			# siehe auch: https://develop.sub.uni-goettingen.de/jira/browse/ADWD-631
+			$pdata['editor'] = $cleanEditors;
+			#nkw end
+			
 		}
 
 		// Automatic url
@@ -2101,6 +2129,12 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 	 * @return void
 	 */
 	function get_item_authors_html ( $authors ) {
+		
+/*
+		echo '<pre>';
+		print_r($authors);
+		echo '</pre>';
+*/
 		$res = '';
 		$charset = $this->extConf['charset']['upper'];
 
@@ -2110,6 +2144,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Format the author string$this->
 		$and = ' '.$this->get_ll ( 'label_and', 'and', TRUE ).' ';
+
+		$and = ';';
 
 		$max_authors = abs ( intval ( $this->extConf['max_authors'] ) );
 		$last_author = sizeof ( $authors ) - 1;
@@ -2193,9 +2229,15 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 			}
 
 			// Compose names
+/*
 			$a_str = str_replace (
 				array ( '###FORENAME###', '###SURNAME###', '###URL_ICON###' ),
 				array ( $a_fn, $a_sn, $a_icon ), $a_tmpl );
+*/
+
+			$a_str = str_replace (
+				array ( '###SURNAME###', '###FORENAME###', '###URL_ICON###' ),
+				array ( $a_sn, $a_fn, $a_icon ), $a_tmpl );
 
  			// apply stdWrap
 			$stdWrap = $this->conf['field.']['author.'];
@@ -2217,8 +2259,16 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 				}
 			}
 
+			/* print_r($a_sn . ', ' . $a_fn); */
+
 			// Append author name
-			$elements[] = $a_str;
+			#$elements[] = $a_str;
+
+			if ( !empty($a_sn) ) {
+				$elements[] = $a_sn . ', ' . $a_fn;
+			}
+			
+			
 
 			// Append 'et al.'
 			if ( $cut_authors && ( $i_a == $last_author ) ) {
@@ -2262,6 +2312,8 @@ class tx_sevenpack_pi1 extends tslib_pibase {
 
 		// Restore cObj data
 		$cObj->data = $cObj_restore;
+
+		/* print_r($res); */
 
 		return $res;
 	}
