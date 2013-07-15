@@ -11,11 +11,11 @@
 ########################################################################
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Sevenpack bibliography manager',
+	'title' => 'Bib - bibliography manager',
 	'description' => 'A customizable bibliography and publication reference manager with a convenient frontend editor and import/export functionality.',
 	'category' => 'plugin',
 	'shy' => 0,
-	'version' => '0.7.16',
+	'version' => '1.0.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -27,8 +27,8 @@ $EM_CONF[$_EXTKEY] = array(
 	'modify_tables' => '',
 	'clearcacheonload' => 1,
 	'lockType' => '',
-	'author' => 'Sebastian Holtermann',
-	'author_email' => 'sebholt@web.de',
+	'author' => 'Ingo Pfennigstorf, initially developed by Sebastian Holtermann,',
+	'author_email' => 'i.pfennigstorf@gmail.com',
 	'author_company' => '',
 	'CGLcompliance' => '',
 	'CGLcompliance_note' => '',
