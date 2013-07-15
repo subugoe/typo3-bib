@@ -1,7 +1,9 @@
 <?php
-if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
+if (!defined ('TYPO3_MODE')) {
+	die ('Access denied.');
+}
 
-require_once(t3lib_extMgm::extPath($_EXTKEY).'res/class.tx_bib_labels.php');
+require_once(t3lib_extMgm::extPath($_EXTKEY).'Classes/Utility/class.tx_bib_labels.php');
 
 $TCA['tx_bib_references'] = array (
 	'ctrl' => array (
@@ -57,7 +59,7 @@ $TCA['tx_bib_authorships'] = array (
 		'delete' => 'deleted',
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_bib_references.png',
-		#'hideTable' => true
+		//'hideTable' => true
 	),
 	'feInterface' => array (
 		'fe_admin_fieldList' => 'pub_id,author_id,sorting',
@@ -77,12 +79,31 @@ t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
 $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi1']='pi_flexform';
 
-t3lib_extMgm::addPlugin(array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
-t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:bib/Configuration/FlexForms/flexform_ds.xml');
+t3lib_extMgm::addPlugin(
+	array(
+		'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tt_content.list_type_pi1',
+		$_EXTKEY . '_pi1'
+	),
+	'list_type'
+);
+
+t3lib_extMgm::addPiFlexFormValue(
+	$_EXTKEY . '_pi1',
+	'FILE:EXT:bib/Configuration/FlexForms/flexform_ds.xml'
+);
 
 
-t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript/default', 'Publication list defaults');
-t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript/default_style', 'Publication list CSS');
+t3lib_extMgm::addStaticFile(
+	$_EXTKEY,
+	'Configuration/TypoScript/default',
+	'Publication list defaults'
+);
+
+t3lib_extMgm::addStaticFile(
+	$_EXTKEY,
+	'Configuration/TypoScript/default_style',
+	'Publication list CSS'
+);
 
 
 ?>

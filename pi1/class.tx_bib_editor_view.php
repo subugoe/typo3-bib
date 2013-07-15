@@ -7,10 +7,10 @@ require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
 	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_reference_writer.php' ) );
+	'EXT:bib/Classes/Utility/class.tx_bib_reference_writer.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_db_utility.php' ) );
+	'EXT:bib/Classes/Utility/class.tx_bib_db_utility.php' ) );
 
 
 class tx_bib_editor_view {

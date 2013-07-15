@@ -34,10 +34,10 @@
 require_once ( PATH_tslib.'class.tslib_pibase.php' );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_reference_reader.php' ) );
+	'EXT:bib/Classes/Utility/class.tx_bib_reference_reader.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_utility.php' ) );
+	'EXT:bib/Classes/Utility/class.tx_bib_utility.php' ) );
 
 class tx_bib_pi1 extends tslib_pibase {
 
@@ -2905,7 +2905,7 @@ class tx_bib_pi1 extends tslib_pibase {
 	function hide_publication ( $hide = TRUE )
 	{
 		require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-			'EXT:bib/res/class.tx_bib_reference_writer.php' ) );
+			'EXT:bib/Classes/Utility/class.tx_bib_reference_writer.php' ) );
 
 		$ref_write = t3lib_div::makeInstance ( 'tx_bib_reference_writer' );
 		$ref_write->initialize( $this->ref_read );

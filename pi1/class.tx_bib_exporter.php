@@ -4,7 +4,7 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_pregexp_translator.php') );
+	'EXT:bib/Classes/Utility/class.tx_bib_pregexp_translator.php') );
 
 class tx_bib_exporter {
 

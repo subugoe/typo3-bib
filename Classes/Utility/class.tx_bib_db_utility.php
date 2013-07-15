@@ -4,10 +4,10 @@ if ( !isset($GLOBALS['TSFE']) )
 
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_reference_reader.php' ) );
+	'EXT:bib/Classes/Utility/class.tx_bib_reference_reader.php' ) );
 
 require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/res/class.tx_bib_utility.php' ) );
+	'EXT:bib/Classes/Utility/class.tx_bib_utility.php' ) );
 
 
 /**
