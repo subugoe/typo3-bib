@@ -1,6 +1,6 @@
 <?php
 
-class tx_bib_citeid_generator_ext extends Tx_Bib_Utility_Generator_CiteIdGenerator {
+class Tx_Bib_Utility_Generator_AuthorsCiteIdGenerator extends Tx_Bib_Utility_Generator_CiteIdGenerator {
 
 	function generateBasicId ( $row ) {
 		$authors = $row['authors'];

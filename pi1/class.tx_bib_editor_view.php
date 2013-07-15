@@ -56,7 +56,7 @@ class tx_bib_editor_view {
 			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName ( $this->conf['citeid_generator_file'] );
 			if ( file_exists ( $ext_file ) ) {
 				require_once ( $ext_file );
-				$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator_ext' );
+				$this->idGenerator = t3lib_div::makeInstance ( 'Tx_Bib_Utility_Generator_AuthorsCiteIdGenerator' );
 			}
 		} else {
 			$this->idGenerator = t3lib_div::makeInstance ( 'Tx_Bib_Utility_Generator_CiteIdGenerator' );
