@@ -42,7 +42,7 @@ class tx_bib_citeid_generator {
 
 	function generateBasicId ( $row ) {
 		$authors = $row['authors'];
-		$editors = tx_bib_utility::explode_author_str ( $row['editor'] );
+		$editors = Tx_Bib_Utility_Utility::explode_author_str ( $row['editor'] );
 
 		$persons = array ( $authors, $editors );
 

@@ -136,7 +136,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 			} else {
 				// Explode search string
 				$sep = $sconf['all_sep'][$sep];
-				$strings = tx_bib_utility::explode_trim (
+				$strings = Tx_Bib_Utility_Utility::explode_trim (
 					$sep, $sconf['string'], TRUE );
 			}
 		}
@@ -215,7 +215,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		if ( strlen ( $this->extConf['string'] ) > 0 ) {
 			$value = htmlspecialchars ( $extConf['string'], ENT_QUOTES, $charset );
 		}
-		$btn = tx_bib_utility::html_text_input (
+		$btn = Tx_Bib_Utility_Utility::html_text_input (
 			$this->pi1->prefix_pi1.'[search][text]', $value, $attribs
 		);
 		$btn = $cObj->stdWrap ( $btn, $lcfg['input.'] );
@@ -227,7 +227,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		$attribs = array ();
 		if ( strlen ( $lcfg['search_btn_class'] ) > 0 )
 			$attribs['class'] = $lcfg['search_btn_class'];
-		$btn = tx_bib_utility::html_submit_input (
+		$btn = Tx_Bib_Utility_Utility::html_submit_input (
 			$this->pi1->prefix_pi1.'[action][search]', $txt, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['search_btn.'] );
 		$sea .= $btn;
@@ -239,7 +239,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		$attribs = array ();
 		if ( strlen ( $lcfg['clear_btn_class'] ) > 0 )
 			$attribs['class'] = $lcfg['clear_btn_class'];
-		$btn = tx_bib_utility::html_submit_input (
+		$btn = Tx_Bib_Utility_Utility::html_submit_input (
 			$this->pi1->prefix_pi1.'[action][clear_search]', $txt, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['clear_btn.'] );
 		$sea .= $btn;
@@ -260,7 +260,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		);
 		if ( strlen ( $lcfg['btn_class'] ) > 0 )
 			$attribs['class'] = $lcfg['btn_class'];
-		$btn = tx_bib_utility::html_check_input (
+		$btn = Tx_Bib_Utility_Utility::html_check_input (
 			$this->pi1->prefix_pi1.'[search][extra]', '1', $extConf['extra'], $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
 
@@ -316,7 +316,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		);
 		if ( strlen ( $lcfg['btn_class'] ) > 0 )
 			$attribs['class'] =  $lcfg['btn_class'];
-		$btn = tx_bib_utility::html_check_input (
+		$btn = Tx_Bib_Utility_Utility::html_check_input (
 			$this->pi1->prefix_pi1.'[search][abstracts]', '1', 
 			$extConf['abstracts'], $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
@@ -336,7 +336,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		);
 		if ( strlen ( $lcfg['btn_class'] ) > 0 )
 			$attribs['class'] =  $lcfg['btn_class'];
-		$btn = tx_bib_utility::html_check_input (
+		$btn = Tx_Bib_Utility_Utility::html_check_input (
 			$this->pi1->prefix_pi1.'[search][full_text]', '1', 
 			$extConf['full_text'], $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
@@ -367,7 +367,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		);
 		if ( strlen ( $lcfg['select_class'] ) > 0 )
 			$attribs['class'] = $lcfg['select_class'];
-		$btn = tx_bib_utility::html_select_input (
+		$btn = Tx_Bib_Utility_Utility::html_select_input (
 			$pairs, $extConf['sep'], $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['select.'] );
 
@@ -393,7 +393,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		$lbl = $this->pi1->get_ll ( 'searchNav_OR' );
 		$lbl = $cObj->stdWrap ( $lbl, $lcfg['btn_label.'] );
 		$checked = ( $extConf['rule'] == 'OR' );
-		$btn = tx_bib_utility::html_radio_input (
+		$btn = Tx_Bib_Utility_Utility::html_radio_input (
 			$name, 'OR', $checked, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
 		$rule .= $lbl . $btn;
@@ -402,7 +402,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 		$lbl = $this->pi1->get_ll ( 'searchNav_AND' );
 		$lbl = $cObj->stdWrap ( $lbl, $lcfg['btn_label.'] );
 		$checked = ($extConf['rule'] == 'AND' );
-		$btn = tx_bib_utility::html_radio_input (
+		$btn = Tx_Bib_Utility_Utility::html_radio_input (
 			$name, 'AND', $checked, $attribs );
 		$btn = $cObj->stdWrap ( $btn, $lcfg['btn.'] );
 
@@ -422,7 +422,7 @@ class tx_bib_navi_search extends tx_bib_navi  {
 
 	function append_hidden ( $key, $val ) {
 		if ( is_bool ( $val ) ) $val = $val ? '1' : '0';
-		$this->hidden_input[] = tx_bib_utility::html_hidden_input (
+		$this->hidden_input[] = Tx_Bib_Utility_Utility::html_hidden_input (
 			$this->pi1->prefix_pi1.'[search]['.$key.']', $val );
 	}
 

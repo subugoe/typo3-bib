@@ -222,10 +222,10 @@ class tx_bib_pi1 extends tslib_pibase {
 		//
 		$pid_list = array();
 		if ( isset ( $this->conf['pid_list'] ) ) {
-			$pid_list = tx_bib_utility::explode_intval ( ',', $this->conf['pid_list'] );
+			$pid_list = Tx_Bib_Utility_Utility::explode_intval ( ',', $this->conf['pid_list'] );
 		}
 		if ( isset ( $this->cObj->data['pages'] ) ) {
-			$tmp = tx_bib_utility::explode_intval ( ',', $this->cObj->data['pages'] );
+			$tmp = Tx_Bib_Utility_Utility::explode_intval ( ',', $this->cObj->data['pages'] );
 			$pid_list = array_merge ( $pid_list, $tmp );
 		}
 
@@ -246,7 +246,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$extConf['recursive'] = intval ( $extConf['recursive'] );
 
 			$pid_list = $this->pi_getPidList ( implode ( ',', $pid_list ), $extConf['recursive'] );
-			$pid_list = tx_bib_utility::explode_intval ( ',', $pid_list );
+			$pid_list = Tx_Bib_Utility_Utility::explode_intval ( ',', $pid_list );
 			$pid_list = array_reverse ( $pid_list ); // Due to how recursive prepends the folders
 
 			$extConf['pid_list'] = $pid_list;
@@ -356,14 +356,14 @@ class tx_bib_pi1 extends tslib_pibase {
 			$groups = $this->conf['export.']['FE_groups_only'];
 			$fe_ok = TRUE;
 			if ( strlen ( $groups ) > 0 ) {
-				$fe_ok = tx_bib_utility::check_fe_user_groups ( $groups );
+				$fe_ok = Tx_Bib_Utility_Utility::check_fe_user_groups ( $groups );
 			}
 			//t3lib_div::debug ( array ( $groups, $fe_ok ) );
 
 			// Acquire export modes
 			$modes = $this->conf['export.']['enable_export'];
 			if ( strlen ( $modes ) > 0 ) {
-				$modes = tx_bib_utility::explode_trim_lower (
+				$modes = Tx_Bib_Utility_Utility::explode_trim_lower (
 					',', $modes, TRUE );
 			}
 
@@ -402,7 +402,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		$fe_ok = FALSE;
 		if ( !$be_ok && isset ( $this->conf['FE_edit_groups'] ) ) {
 			$groups = $this->conf['FE_edit_groups'];
-			if ( tx_bib_utility::check_fe_user_groups ( $groups ) )
+			if ( Tx_Bib_Utility_Utility::check_fe_user_groups ( $groups ) )
 				$fe_ok = TRUE;
 		}
 
@@ -591,7 +591,7 @@ class tx_bib_pi1 extends tslib_pibase {
 
 			// The selected year has no publications so select the closest year
 			if ( ( $this->stat['num_all'] > 0 ) && is_numeric ( $ecYear ) ) {
-				$ecYear = tx_bib_utility::find_nearest_int (
+				$ecYear = Tx_Bib_Utility_Utility::find_nearest_int (
 					$ecYear, $this->stat['years'] );
 			}
 			// Append default link variable
@@ -628,7 +628,7 @@ class tx_bib_pi1 extends tslib_pibase {
 
 		if ( $iPP > 0 ) {
 			$subPage['max']     = floor ( ( $this->stat['num_page']-1 ) / $iPP );
-			$subPage['current'] = tx_bib_utility::crop_to_range (
+			$subPage['current'] = Tx_Bib_Utility_Utility::crop_to_range (
 				$this->piVars['page'], 0, $subPage['max'] );
 		}
 
@@ -839,13 +839,13 @@ class tx_bib_pi1 extends tslib_pibase {
 				$all = ( $rcfg['hide_all'] != 0 );
 
 				// Hide on string extensions
-				$ext = tx_bib_utility::explode_trim_lower (
+				$ext = Tx_Bib_Utility_Utility::explode_trim_lower (
 					',', $rcfg['hide_file_ext'], TRUE );
 
 				// Reveal on FE user groups
 				$groups = strtolower ( $rcfg['FE_user_groups'] );
 				if ( strpos ( $groups, 'all' ) === FALSE ) {
-					$groups = tx_bib_utility::explode_intval ( ',', $groups );
+					$groups = Tx_Bib_Utility_Utility::explode_intval ( ',', $groups );
 				} else {
 					$groups = 'all';
 				}
@@ -901,14 +901,14 @@ class tx_bib_pi1 extends tslib_pibase {
 			$f['years'] = array();
 			$f['ranges'] = array();
 			$ffStr = $this->pi_getFFvalue ( $ff, 'years', $fSheet );
-			$arr = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ffStr, TRUE );
+			$arr = Tx_Bib_Utility_Utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ffStr, TRUE );
 			foreach ( $arr as $y ) {
 				if ( strpos ( $y, '-' ) === FALSE ) {
 					if ( is_numeric ( $y ) )
 						$f['years'][] = intval ( $y );
 				} else {
 					$range = array();
-					$elms = tx_bib_utility::explode_trim ( '-', $y, FALSE );
+					$elms = Tx_Bib_Utility_Utility::explode_trim ( '-', $y, FALSE );
 					if ( is_numeric ( $elms[0] ) )
 						$range['from'] = intval ( $elms[0] );
 					if ( is_numeric ( $elms[1] ) )
@@ -932,7 +932,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 
 			$authors = $this->pi_getFFvalue ( $ff, 'authors', $fSheet );
-			$authors = tx_bib_utility::multi_explode_trim ( array ( "\r" , "\n" ), $authors, TRUE );
+			$authors = Tx_Bib_Utility_Utility::multi_explode_trim ( array ( "\r" , "\n" ), $authors, TRUE );
 			foreach ( $authors as $a ) {
 				$parts = t3lib_div::trimExplode ( ',', $a );
 				$author = array();
@@ -1015,7 +1015,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$f = array();
 			$ids = $this->pi_getFFvalue ( $ff, 'citeids', $fSheet);
 			if ( strlen ( $ids ) > 0 ) {
-				$ids = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
+				$ids = Tx_Bib_Utility_Utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $ids, TRUE );
 				$f['ids'] = array_unique ( $ids );
 				$filter['citeid'] = $f;
 			}
@@ -1028,7 +1028,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'tags', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$words = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = Tx_Bib_Utility_Utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
 					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
@@ -1044,7 +1044,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'keywords', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$words = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = Tx_Bib_Utility_Utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
 					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
@@ -1060,7 +1060,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			$f['rule'] = intval ( $f['rule'] );
 			$kw = $this->pi_getFFvalue ( $ff, 'search_all', $fSheet);
 			if ( strlen ( $kw ) > 0 ) {
-				$words = tx_bib_utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
+				$words = Tx_Bib_Utility_Utility::multi_explode_trim ( array ( ',', "\r" , "\n" ), $kw, TRUE );
 				foreach ( $words as &$word ) {
 					$word = $this->ref_read->search_word ( $word, $this->extConf['charset']['upper'] );
 				}
@@ -1091,7 +1091,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		// Publication ids
 		if ( is_string ( $this->piVars['search']['ref_ids'] ) ) {
 			$ids = $this->piVars['search']['ref_ids'];
-			$ids = tx_bib_utility::explode_intval ( ',', $ids );
+			$ids = Tx_Bib_Utility_Utility::explode_intval ( ',', $ids );
 
 			if( sizeof ( $ids ) > 0 ) {
 				$filter['uid'] = $ids;
@@ -1101,7 +1101,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		// General search
 		if ( is_string ( $this->piVars['search']['all'] ) ) {
 			$words = $this->piVars['search']['all'];
-			$words = tx_bib_utility::explode_trim ( ',', $words, TRUE );
+			$words = Tx_Bib_Utility_Utility::explode_trim ( ',', $words, TRUE );
 			if ( sizeof ( $words ) > 0 ) {
 				$filter['all']['words'] = $words;
 				$filter['all']['rule'] = 1; // AND
@@ -1444,7 +1444,7 @@ class tx_bib_pi1 extends tslib_pibase {
 
 		// Handle illegal ampersands
 		if ( !( strpos ( $str, '&' ) === FALSE ) ) {
-			$str = tx_bib_utility::fix_html_ampersand ( $str );
+			$str = Tx_Bib_Utility_Utility::fix_html_ampersand ( $str );
 		}
 
 		$str = $this->filter_pub_html ( $str, $hsc );
@@ -1814,7 +1814,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		// File url
 		// Check file existance
 		$file_url = trim ( strval ( $pub['file_url'] ) );
-		if ( tx_bib_utility::check_file_nexist ( $file_url ) ) {
+		if ( Tx_Bib_Utility_Utility::check_file_nexist ( $file_url ) ) {
 			$pdata['file_url'] = '';
 			$pdata['_file_nexist'] = TRUE;
 		} else {
@@ -1895,9 +1895,9 @@ class tx_bib_pi1 extends tslib_pibase {
 				case 'file_url':
 				case 'web_url':
 				case 'web_url2':
-					$pdata[$f] = tx_bib_utility::fix_html_ampersand ( $val );
-					$val = tx_bib_utility::crop_middle ( $val, $url_max, $charset );
-					$pdata[$f.'_short'] = tx_bib_utility::fix_html_ampersand ( $val );
+					$pdata[$f] = Tx_Bib_Utility_Utility::fix_html_ampersand ( $val );
+					$val = Tx_Bib_Utility_Utility::crop_middle ( $val, $url_max, $charset );
+					$pdata[$f.'_short'] = Tx_Bib_Utility_Utility::fix_html_ampersand ( $val );
 					break;
 				case 'DOI':
 					$pdata[$f] = $val;
@@ -1957,7 +1957,7 @@ class tx_bib_pi1 extends tslib_pibase {
 
 		// Editors
 		if ( strlen ( $pdata['editor'] ) > 0 ) {
-			$editors = tx_bib_utility::explode_author_str ( $pdata['editor'] );
+			$editors = Tx_Bib_Utility_Utility::explode_author_str ( $pdata['editor'] );
 			$lst = array();
 			foreach ( $editors as $ed ) {
 				$app = '';
@@ -1968,7 +1968,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			}
 
 			$and = ' ' . $this->get_ll ( 'label_and', 'and', TRUE ) . ' ';
-			$pdata['editor'] = tx_bib_utility::implode_and_last (
+			$pdata['editor'] = Tx_Bib_Utility_Utility::implode_and_last (
 				$lst, ', ', $and );
 
 			#nkw
@@ -1980,9 +1980,9 @@ class tx_bib_pi1 extends tslib_pibase {
 		}
 
 		// Automatic url
-		$order = tx_bib_utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
+		$order = Tx_Bib_Utility_Utility::explode_trim ( ',', $this->conf['auto_url_order'], TRUE );
 		$pdata['auto_url'] = $this->get_auto_url ( $pdata, $order );
-		$pdata['auto_url_short'] = tx_bib_utility::crop_middle (
+		$pdata['auto_url_short'] = Tx_Bib_Utility_Utility::crop_middle (
 			$pdata['auto_url'], $url_max, $charset );
 
 		// Do data checks
@@ -2298,7 +2298,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		}
 
 		//t3lib_div::debug ( $elements );
-		$res = tx_bib_utility::implode_and_last ( $elements, $a_sep, $and );
+		$res = Tx_Bib_Utility_Utility::implode_and_last ( $elements, $a_sep, $and );
 
 		// Restore cObj data
 		$cObj->data = $cObj_restore;
@@ -2337,7 +2337,7 @@ class tx_bib_pi1 extends tslib_pibase {
 		$this->extConf['author_lfields'] = 'url';
 		if ( isset ( $conf['authors.']['url_icon_fields'] ) ) {
 			$this->extConf['author_lfields'] =
-				tx_bib_utility::explode_trim ( ',',
+				Tx_Bib_Utility_Utility::explode_trim ( ',',
 					$conf['authors.']['url_icon_fields'], TRUE );
 		}
 
@@ -2539,7 +2539,7 @@ class tx_bib_pi1 extends tslib_pibase {
 					$subst_sub = array ( '', '' );
 					$manip_all[] = $this->get_edit_manipulator ( $pub );
 					$manip_all[] = $this->get_hide_manipulator ( $pub );
-					$manip_all = tx_bib_utility::html_layout_table ( array ( $manip_all ) );
+					$manip_all = Tx_Bib_Utility_Utility::html_layout_table ( array ( $manip_all ) );
 
 					$translator['###MANIPULATORS###'] = $cObj->stdWrap (
 						$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
@@ -2739,7 +2739,7 @@ class tx_bib_pi1 extends tslib_pibase {
 			// Enable if usergroup matches
 			if ( !$show && isset ( $rcfg['fe_groups'] ) ) {
 				$groups = $rcfg['fe_groups'];
-				if ( tx_bib_utility::check_fe_user_groups ( $groups ) )
+				if ( Tx_Bib_Utility_Utility::check_fe_user_groups ( $groups ) )
 					$show = TRUE;
 			}
 

@@ -94,7 +94,7 @@ class tx_bib_single_view {
 
 		// The filed list
 		$fields = $this->ref_read->pubAllFields;
-		$dont_show = tx_bib_utility::explode_trim ( ',', $conf['dont_show'], TRUE );
+		$dont_show = Tx_Bib_Utility_Utility::explode_trim ( ',', $conf['dont_show'], TRUE );
 
 		// Remove condition fields and setup the translator
 		foreach ( $fields as $field ) {

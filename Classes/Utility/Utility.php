@@ -7,7 +7,7 @@ if ( !isset($GLOBALS['TSFE']) )
  *
  * @author Sebastian Holtermann
  */
-class tx_bib_utility {
+class Tx_Bib_Utility_Utility {
 
 
 	/**
@@ -36,7 +36,7 @@ class tx_bib_utility {
 		$titles = array();
 		foreach ( $uids as $uid ) {
 			$uid = intval ( $uid );
-			$title = tx_bib_utility::get_page_title ( $uid );
+			$title = Tx_Bib_Utility_Utility::get_page_title ( $uid );
 			if ( $title ) {
 				$titles[$uid] = $title;
 			}
@@ -103,10 +103,10 @@ class tx_bib_utility {
 				$groups = strtolower ( $groups );
 				if ( !( strpos ( $groups, 'all' ) === FALSE ) )
 					return TRUE;
-				$groups = tx_bib_utility::explode_intval ( ',', $groups );
+				$groups = Tx_Bib_Utility_Utility::explode_intval ( ',', $groups );
 			}
 			$cur =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
-			if ( tx_bib_utility::intval_list_check ( $groups, $cur ) ) {
+			if ( Tx_Bib_Utility_Utility::intval_list_check ( $groups, $cur ) ) {
 				return TRUE;
 			}
 		}
@@ -144,7 +144,7 @@ class tx_bib_utility {
 	function html_check_input ( $name, $value, $checked, $attribs = array() ) {
 		if ( $checked )
 			$attribs['checked'] = 'checked';
-		return tx_bib_utility::html_input (
+		return Tx_Bib_Utility_Utility::html_input (
 			'checkbox', $name, $value, $attribs );
 	}
 
@@ -157,7 +157,7 @@ class tx_bib_utility {
 	function html_radio_input ( $name, $value, $checked, $attribs = array() ) {
 		if ( $checked )
 			$attribs['checked'] = 'checked';
-		return tx_bib_utility::html_input (
+		return Tx_Bib_Utility_Utility::html_input (
 			'radio', $name, $value, $attribs );
 	}
 
@@ -167,7 +167,7 @@ class tx_bib_utility {
 	 * @return The submit input element
 	 */
 	function html_submit_input ( $name, $value, $attribs = array() ) {
-		return tx_bib_utility::html_input (
+		return Tx_Bib_Utility_Utility::html_input (
 			'submit', $name, $value, $attribs );
 	}
 
@@ -179,7 +179,7 @@ class tx_bib_utility {
 	 */
 	function html_image_input ( $name, $value, $src, $attribs = array() ) {
 		$attribs = array_merge ( $attribs, array ( 'src'=>$src ) );
-		return tx_bib_utility::html_input (
+		return Tx_Bib_Utility_Utility::html_input (
 			'image', $name, $value, $attribs );
 	}
 
@@ -190,7 +190,7 @@ class tx_bib_utility {
 	 * @return The hidden input element
 	 */
 	function html_hidden_input ( $name, $value, $attribs = array() ) {
-		return tx_bib_utility::html_input (
+		return Tx_Bib_Utility_Utility::html_input (
 			'hidden', $name, $value, $attribs );
 	}
 
@@ -201,7 +201,7 @@ class tx_bib_utility {
 	 * @return The text input element
 	 */
 	function html_text_input ( $name, $value, $attribs = array() ) {
-		return tx_bib_utility::html_input (
+		return Tx_Bib_Utility_Utility::html_input (
 			'text', $name, $value, $attribs );
 	}
 
@@ -327,9 +327,9 @@ class tx_bib_utility {
 	 */
 	function intval_list_check ( $allowed, $current ) {
 		if ( !is_array ( $allowed ) )
-			$allowed = tx_bib_utility::explode_intval ( ',', strval ( $allowed ) );
+			$allowed = Tx_Bib_Utility_Utility::explode_intval ( ',', strval ( $allowed ) );
 		if ( !is_array ( $current ) )
-			$current = tx_bib_utility::explode_intval ( ',', strval ( $current ) );
+			$current = Tx_Bib_Utility_Utility::explode_intval ( ',', strval ( $current ) );
 
 		foreach ( $current as $cur ) {
 			if ( in_array ( $cur, $allowed ) )
@@ -366,7 +366,7 @@ class tx_bib_utility {
 					$res[] = strval ( intval ( $val ) );
 			}
 		} else {
-			$res = tx_bib_utility::intval_array ( $list );
+			$res = Tx_Bib_Utility_Utility::intval_array ( $list );
 		}
 
 		return implode ( $sep, $res );
@@ -388,7 +388,7 @@ class tx_bib_utility {
 					$res[] = intval ( $val );
 			}
 		} else {
-			$res = tx_bib_utility::intval_array ( $list );
+			$res = Tx_Bib_Utility_Utility::intval_array ( $list );
 		}
 		return $res;
 	}
@@ -464,7 +464,7 @@ class tx_bib_utility {
 		} else {
 			$sep = strval ( $seps );
 		}
-		return tx_bib_utility::explode_trim ( $sep, $str, $noEmpty );
+		return Tx_Bib_Utility_Utility::explode_trim ( $sep, $str, $noEmpty );
 	}
 
 
@@ -478,7 +478,7 @@ class tx_bib_utility {
 		$lst = explode ( ' and ', $str );
 		foreach ( $lst as $a_str ) {
 			$name = array();
-			$parts = tx_bib_utility::explode_trim ( ',', $a_str, TRUE );
+			$parts = Tx_Bib_Utility_Utility::explode_trim ( ',', $a_str, TRUE );
 			if ( sizeof ( $parts ) > 1 ) {
 				$name['forename'] = $parts[1];
 			}

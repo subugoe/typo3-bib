@@ -84,7 +84,7 @@ class tx_bib_importer {
 		$title = FALSE;
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( 'title', 'pages', 'uid='.intval( $uid ) );
 		$p_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc ( $res );
-		$charset = $pi1->extConf['charset']['upper'];
+		$charset = $this->pi1->extConf['charset']['upper'];
 		if ( is_array ( $p_row ) ) {
 			$title = htmlspecialchars ( $p_row['title'], ENT_NOQUOTES, $charset );
 			$title .= ' (' . strval ( $uid ) . ')';
@@ -127,12 +127,12 @@ class tx_bib_importer {
 
 		if ( sizeof ( $pids ) > 1 ) {
 			// Fetch page titles
-			$pages = tx_bib_utility::get_page_titles ( $pids );
+			$pages = Tx_Bib_Utility_Utility::get_page_titles ( $pids );
 
 			$val = $this->pi1->get_ll ( 'import_storage_info', 'import_storage_info', TRUE );
 			$con .= '<p>' . $val . '</p>' . "\n";
 
-			$val = tx_bib_utility::html_select_input (
+			$val = Tx_Bib_Utility_Utility::html_select_input (
 				$pages, $default_pid,
 				array ( 'name' => $this->pi1->prefixId . '[import_pid]' )
 			);
@@ -262,7 +262,7 @@ class tx_bib_importer {
 
 		// The submit button
 		$val = $this->pi1->get_ll ( 'import_file', 'import_file', TRUE );
-		$btn = tx_bib_utility::html_submit_input ( 'submit', $val, $btn_attribs );
+		$btn = Tx_Bib_Utility_Utility::html_submit_input ( 'submit', $val, $btn_attribs );
 		$con .= '<p>' . $btn . '</p>' . "\n";
 
 		$con .= '</form>';
@@ -363,7 +363,7 @@ class tx_bib_importer {
 
 		if ( is_array ( $stat['warnings'] ) && ( count ( $stat['warnings'] ) > 0 ) ) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = tx_bib_utility::string_counter ( $stat['warnings'] );
+			$messages = Tx_Bib_Utility_Utility::string_counter ( $stat['warnings'] );
 			foreach ( $messages as $msg => $count ) {
 				$str = $this->message_times_str ( $msg, $count );
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -375,7 +375,7 @@ class tx_bib_importer {
 
 		if ( is_array ( $stat['errors'] ) && ( count ( $stat['errors'] ) > 0 ) ) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = tx_bib_utility::string_counter ( $stat['errors'] );
+			$messages = Tx_Bib_Utility_Utility::string_counter ( $stat['errors'] );
 			foreach ( $messages as $msg => $count ) {
 				$str = $this->message_times_str ( $msg, $count );
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -394,7 +394,7 @@ class tx_bib_importer {
 
 
 	function message_times_str ( $msg, $count ) {
-		$charset = $pi1->extConf['charset']['upper'];
+		$charset = $this->pi1->extConf['charset']['upper'];
 		$res = htmlspecialchars ( $msg, ENT_QUOTES, $charset );
 		if ( $count > 1 ) {
 			$res .= ' (' . strval ( $count );

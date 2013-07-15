@@ -71,7 +71,7 @@ class tx_bib_db_utility {
 
 		$count = sizeof ( $uids );
 		if ( $count > 0 ) {
-			$csv = tx_bib_utility::implode_intval ( ',', $uids  );
+			$csv = Tx_Bib_Utility_Utility::implode_intval ( ',', $uids  );
 			//t3lib_div::debug ( $csv );
 	
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery ( $aT,
@@ -122,7 +122,7 @@ class tx_bib_db_utility {
 		$WC = array();
 
 		if ( sizeof ( $this->ref_read->pid_list ) > 0 ) {
-			$csv = tx_bib_utility::implode_intval ( ',', $this->ref_read->pid_list );
+			$csv = Tx_Bib_Utility_Utility::implode_intval ( ',', $this->ref_read->pid_list );
 			$WC[] = 'pid IN ('.$csv.')';
 		}
 		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';

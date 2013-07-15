@@ -203,7 +203,7 @@ class tx_bib_exporter_bibtex extends tx_bib_exporter {
 		// Convert characters to html sequences
 		$charset = $this->pi1->extConf['charset']['upper'];
 		// Replace illegal html ampersands with &amp;
-		$value = tx_bib_utility::fix_html_ampersand ( $value );
+		$value = Tx_Bib_Utility_Utility::fix_html_ampersand ( $value );
 		// Replaces &amp; with &amp;amp;
 		$value = htmlentities ( $value, ENT_QUOTES, $charset );
 		// Replaces &amp;amp; with &amp;

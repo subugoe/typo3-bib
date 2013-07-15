@@ -8,7 +8,6 @@ class Tx_Bib_Utility_PRegExpTanslator {
 	var $pat;
 	var $rep;
 
-
 	function Tx_Bib_Utility_PRegExpTanslator () {
 		$this->clear ( );
 	}
