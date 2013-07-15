@@ -2,11 +2,11 @@
 
 class ext_update {
 
-
-	function main ( ) {
+	public function main ( ) {
 		$num = $this->num_wrong_aship_pid ( );
+		$res = '';
+
 		if ( $num > 0 ) {
-			$res = '';
 			$res .= '<h3>Missing authorship pids</h3>';
 			$res .= '<p>';
 			$res .= 'Found ' . $num . ' authorships with missing pid';

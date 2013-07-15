@@ -113,25 +113,8 @@ class tx_bib_pi1 extends tslib_pibase {
 	public $label_translator = array();
 
 
-	/**
-	 * The main function merges all configuration options and
-	 * switches to the appropriate request handler
-	 *
-	 * @return The plugin HTML content
-	 */
-	function main($content, $conf) {
-		$this->conf = $conf;
-		$this->extConf = array();
-		$this->pi_setPiVarDefaults();
-		$this->pi_loadLL();
-		$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_db.xml');
-		$this->pi_initPIflexForm();
-
-		// Create some configuration shortcuts
-		$extConf =& $this->extConf;
-		$this->ref_read = t3lib_div::makeInstance('Tx_Bib_Utility_ReferenceReader');
-		$this->ref_read->set_cObj($this->cObj);
-
+	protected function getExtensionConfiguration() {
+		$extConf = array();
 		// Initialize current configuration
 		$extConf['link_vars'] = array();
 		$extConf['sub_page'] = array();
@@ -160,8 +143,15 @@ class tx_bib_pi1 extends tslib_pibase {
 
 		$show_fields = $this->pi_getFFvalue($ff, 'show_textfields', $fSheet);
 		$show_fields = explode(',', $show_fields);
-		$extConf['hide_fields'] = array('abstract' => 1, 'annotation' => 1,
-			'note' => 1, 'keywords' => 1, 'tags' => 1);
+
+		$extConf['hide_fields'] = array(
+			'abstract' => 1,
+			'annotation' => 1,
+			'note' => 1,
+			'keywords' => 1,
+			'tags' => 1
+		);
+
 		foreach ($show_fields as $f) {
 			$field = FALSE;
 			switch ($f) {
@@ -181,8 +171,37 @@ class tx_bib_pi1 extends tslib_pibase {
 					$field = 'tags';
 					break;
 			}
-			if ($field) $extConf['hide_fields'][$field] = 0;
+			if ($field) {
+				$extConf['hide_fields'][$field] = 0;
+			}
 		}
+
+		return $extConf;
+	}
+
+	/**
+	 * The main function merges all configuration options and
+	 * switches to the appropriate request handler
+	 *
+	 * @return The plugin HTML content
+	 */
+	function main($content, $conf) {
+		$this->conf = $conf;
+		$this->extConf = array();
+		$this->pi_setPiVarDefaults();
+		$this->pi_loadLL();
+		$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_db.xml');
+		$this->pi_initPIflexForm();
+
+		// Create some configuration shortcuts
+		$extConf =& $this->extConf;
+		$this->ref_read = t3lib_div::makeInstance('Tx_Bib_Utility_ReferenceReader');
+		$this->ref_read->set_cObj($this->cObj);
+
+		$extConf = t3lib_div::array_merge_recursive_overrule($this->getExtensionConfiguration(), $extConf);
+
+
+
 		//t3lib_div::debug ( $extConf['hide_fields'] );
 
 		// Configuration by TypoScript selected
@@ -1680,8 +1699,12 @@ class tx_bib_pi1 extends tslib_pibase {
 				if (in_array($mod, $extConf['modes'])) {
 					$title = $this->get_ll('export_' . $mod . 'LinkTitle', $mod, TRUE);
 					$txt = $this->get_ll('export_' . $mod);
-					$link = $this->get_link($txt, array('export' => $mod),
-						FALSE, array('title' => $title));
+					$link = $this->get_link(
+						$txt,
+						array('export' => $mod),
+						FALSE,
+						array('title' => $title)
+					);
 					$link = $this->cObj->stdWrap($link, $cfg[$mod . '.']);
 					$exports[] = $link;
 				}
