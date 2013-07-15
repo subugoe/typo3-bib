@@ -3049,14 +3049,10 @@ class tx_bib_pi1 extends tslib_pibase {
 
 			switch ( $mode ) {
 				case $this->IMP_BIBTEX:
-					require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-						'EXT:'.$this->extKey.'/pi1/class.tx_bib_importer_bibtex.php' ) );
-					$importer = t3lib_div::makeInstance ( 'tx_bib_importer_bibtex' );
+					$importer = t3lib_div::makeInstance ('Tx_Bib_Utility_Importer_BibTexImporter');
 					break;
 				case $this->IMP_XML:
-					require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-						'EXT:'.$this->extKey.'/pi1/class.tx_bib_importer_xml.php' ) );
-					$importer = t3lib_div::makeInstance ( 'tx_bib_importer_xml' );
+					$importer = t3lib_div::makeInstance ( 'Tx_Bib_Utility_Importer_XmlImporter' );
 					break;
 			}
 			$importer->initialize ( $this );

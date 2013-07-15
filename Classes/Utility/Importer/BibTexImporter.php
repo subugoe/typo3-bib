@@ -1,13 +1,5 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/pi1/class.tx_bib_importer.php') );
-
-
 class tx_bib_Parser_Exception extends Exception {
 }
 
@@ -19,7 +11,7 @@ class tx_bib_Translator_Exception extends Exception {
  * This parser follows the bibtex format described here
  * http://artis.imag.fr/~Xavier.Decoret/resources/xdkbibtex/bibtex_summary.html
  */
-class tx_bib_importer_bibtex extends tx_bib_importer {
+class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Importer {
 
 	/**
 	 * Bibtex translator
@@ -745,12 +737,6 @@ class tx_bib_importer_bibtex extends tx_bib_importer {
 		);
 	}
 
-
 }
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer_bibtex.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer_bibtex.php"]);
-}
-
 
 ?>

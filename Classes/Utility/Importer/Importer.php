@@ -1,9 +1,6 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-class tx_bib_importer {
+class Tx_Bib_Utility_Importer_Importer {
 
 	public $pi1;
 	public $ref_read;
@@ -444,12 +441,6 @@ class tx_bib_importer {
 		return $str;
 	}
 
-
 }
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_importer.php"]);
-}
-
 
 ?>
