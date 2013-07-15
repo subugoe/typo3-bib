@@ -1,14 +1,11 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-class Tx_Bib_Utility_PRegExpTanslator {
+class Tx_Bib_Utility_PRegExpTranslator {
 
 	var $pat;
 	var $rep;
 
-	function Tx_Bib_Utility_PRegExpTanslator () {
+	function Tx_Bib_Utility_PRegExpTranslator () {
 		$this->clear ( );
 	}
 
@@ -28,10 +25,6 @@ class Tx_Bib_Utility_PRegExpTanslator {
 	function translate($str) {
 		return preg_replace( $this->pat, $this->rep, $str);
 	}
-}
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/Tx_Bib_Utility_PRegExpTanslator.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/Tx_Bib_Utility_PRegExpTanslator.php"]);
 }
 
 ?>

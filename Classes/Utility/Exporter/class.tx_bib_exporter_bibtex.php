@@ -17,7 +17,7 @@ class tx_bib_exporter_bibtex extends tx_bib_exporter {
 
 		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.bib';
 
-		$this->bt = t3lib_div::makeInstance ( 'tx_bib_PRegExp_Translator' );
+		$this->bt = t3lib_div::makeInstance ( 'Tx_Bib_Utility_PRegExpTranslator' );
 		$bt =& $this->bt;
 
 		$bt->push ( '/\\\\/', '\\\\textbackslash' );

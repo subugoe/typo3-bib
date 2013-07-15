@@ -21,7 +21,11 @@ class tx_bib_Translator_Exception extends Exception {
  */
 class tx_bib_importer_bibtex extends tx_bib_importer {
 
-	public $bt; // Bibtex translator
+	/**
+	 * Bibtex translator
+	 *
+	 * @var Tx_Bib_Utility_PRegExpTranslator
+	 */
 
 	// The parser state
 	public $pstate;
@@ -61,10 +65,10 @@ class tx_bib_importer_bibtex extends tx_bib_importer {
 
 		$this->import_type = $pi1->IMP_BIBTEX;
 
-		$this->bt = t3lib_div::makeInstance ( 'tx_bib_PRegExp_Translator' );
+		$this->bt = t3lib_div::makeInstance ( 'Tx_Bib_Utility_PRegExpTranslator' );
 		$bt =& $this->bt;
 
-		$bt = t3lib_div::makeInstance ( 'tx_bib_PRegExp_Translator' );
+		$bt = t3lib_div::makeInstance ( 'Tx_Bib_Utility_PRegExpTranslator' );
 
 		// Local characters
 		$replace = array (
