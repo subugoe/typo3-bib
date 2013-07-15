@@ -35,7 +35,7 @@ class tx_bib_pi1 extends tslib_pibase {
 	public $scriptRelPath = 'pi1/class.tx_bib_pi1.php';	// Path to this script relative to the extension dir.
 	public $extKey = 'bib';	// The extension key.
 
-	public $pi_checkCHash = TRUE;
+	public $pi_checkCHash = FALSE;
 
 	public $prefixShort = 'tx_bib';	// Get/Post variable prefix.
 	public $prefix_pi1 = 'tx_bib_pi1';		// pi1 prefix id
