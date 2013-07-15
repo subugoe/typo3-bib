@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'sevenpack'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="editor_btn_cancel">Cancel</label>
+			<label index="editor_btn_delete">Delete</label>
+			<label index="editor_btn_edit">Edit</label>
+			<label index="editor_btn_erase">Erase</label>
+			<label index="editor_btn_generate_id">Generate new id</label>
+			<label index="editor_btn_save">Save</label>
+			<label index="editor_btn_syntax_help">Syntax help</label>
+			<label index="editor_btn_update_form">Update form</label>
+			<label index="editor_error_empty_fields">The following required fields are empty</label>
+			<label index="editor_error_file_nexist">The local file %f does not exist</label>
+			<label index="editor_error_id_exists">The cite id allready exists</label>
+			<label index="editor_error_title">Warning</label>
+			<label index="editor_fields_library">Library fields</label>
+			<label index="editor_fields_optional">Optional fields</label>
+			<label index="editor_fields_other">Other fields</label>
+			<label index="editor_fields_required">Required fields</label>
+			<label index="editor_fields_typo3">Typo3 fields</label>
+			<label index="editor_no">No</label>
+			<label index="editor_title_confirm_delete">Really delete this record?</label>
+			<label index="editor_title_confirm_erase">Really erase this record?</label>
+			<label index="editor_title_confirm_save">Really save this record?</label>
+			<label index="editor_title_edit">Record editing</label>
+			<label index="editor_title_new">Create a new record</label>
+			<label index="editor_title_view">Record view</label>
+			<label index="editor_yes">Yes</label>
+			<label index="olabel_conference_date">Conference date</label>
+			<label index="olabel_conference_name">Conference name</label>
+			<label index="olabel_conference_place">Conference place</label>
+			<label index="olabel_doc_number">Document number</label>
+			<label index="olabel_issue">Issue</label>
+			<label index="olabel_report_number">Report number</label>
+			<label index="olabel_report_type">Report type</label>
+			<label index="olabel_thesis_type">Thesis type</label>
+			<label index="olabel_university">University</label>
+			<label index="olabel_year_month_day">Date (Y-M-D)</label>
+			<label index="tx_sevenpack_references_hidden">Hidden</label>
+			<label index="tx_sevenpack_references_pid">Storage folder</label>
+			<label index="tx_sevenpack_references_uid">uid</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="editor_btn_cancel">Abbruch</label>
+			<label index="editor_btn_delete">Löschen</label>
+			<label index="editor_btn_edit">Bearbeiten</label>
+			<label index="editor_btn_erase">Entfernen</label>
+			<label index="editor_btn_generate_id">Neue Id erzeugen</label>
+			<label index="editor_btn_save">Speichern</label>
+			<label index="editor_btn_syntax_help">Syntax Hilfe</label>
+			<label index="editor_btn_update_form">Maske erneuern</label>
+			<label index="editor_error_empty_fields">Die folgenden benötigten Felder sind leer</label>
+			<label index="editor_error_file_nexist">Die lokale Datei %f existiert nicht</label>
+			<label index="editor_error_id_exists">Die Zitations Id existiert bereits</label>
+			<label index="editor_error_title">Warnung</label>
+			<label index="editor_fields_library">Bibliotheks Felder</label>
+			<label index="editor_fields_optional">Optionale Felder</label>
+			<label index="editor_fields_other">Weitere Felder</label>
+			<label index="editor_fields_required">Notwendige Felder</label>
+			<label index="editor_fields_typo3">Typo3 Felder</label>
+			<label index="editor_no">Nein</label>
+			<label index="editor_title_confirm_delete">Diesen Eintrag wirklich löschen?</label>
+			<label index="editor_title_confirm_erase">Diesen Eintrag wirklich entfernen?</label>
+			<label index="editor_title_confirm_save">Diesen Eintrag wirklich speichern?</label>
+			<label index="editor_title_edit">Eintrag bearbeiten</label>
+			<label index="editor_title_new">Einen neuen Eintrag erstellen</label>
+			<label index="editor_title_view">Eintrag Ansicht</label>
+			<label index="editor_yes">Ja</label>
+			<label index="olabel_conference_date">Konferenz Datum</label>
+			<label index="olabel_conference_name">Konferenz Name</label>
+			<label index="olabel_conference_place">Konferenz Ort</label>
+			<label index="olabel_doc_number">Dokument Nummer</label>
+			<label index="olabel_issue">Ausgabe</label>
+			<label index="olabel_report_number">Report Nummer</label>
+			<label index="olabel_report_type">Report Typ</label>
+			<label index="olabel_thesis_type">Thesen Typ</label>
+			<label index="olabel_university">Universität</label>
+			<label index="olabel_year_month_day">Datum (J-M-T)</label>
+			<label index="tx_sevenpack_references_hidden">Versteckt</label>
+			<label index="tx_sevenpack_references_pid">Ablage Ordner</label>
+			<label index="tx_sevenpack_references_uid">uid</label>
+		</languageKey>
+		<languageKey index="it" type="array">
+			<label index="editor_btn_cancel">Annulla</label>
+			<label index="editor_btn_delete">Elimina</label>
+			<label index="editor_btn_edit">Modifica</label>
+			<label index="editor_btn_erase">Cancella</label>
+			<label index="editor_btn_generate_id">genera un id</label>
+			<label index="editor_btn_save">Salva</label>
+			<label index="editor_btn_syntax_help">Aiuto sulla sintassi</label>
+			<label index="editor_btn_update_form">Aggiorna modulo</label>
+			<label index="editor_error_empty_fields">Il seguente campo obblitgatorio è vuoto</label>
+			<label index="editor_error_id_exists">L'id della citazione esiste già</label>
+			<label index="editor_error_title">Vi sono errori nei dati:</label>
+			<label index="editor_fields_optional">Campi opzionali</label>
+			<label index="editor_fields_other">Altri campi </label>
+			<label index="editor_fields_required">Campi obbligatori</label>
+			<label index="editor_fields_typo3">Campi Typo3</label>
+			<label index="editor_no">No</label>
+			<label index="editor_title_confirm_delete">Confermi l'eliminazione di questo record?</label>
+			<label index="editor_title_confirm_erase">Confermi la cancellazione di questo record?</label>
+			<label index="editor_title_confirm_save">Confermi salvataggio record?</label>
+			<label index="editor_title_edit">Modifica record</label>
+			<label index="editor_title_new">Crea un nuovo record</label>
+			<label index="editor_title_view">Visualizzazione record</label>
+			<label index="editor_yes">Sì</label>
+			<label index="tx_sevenpack_references_hidden">Nascosto</label>
+			<label index="tx_sevenpack_references_pid">Cartella di sistema</label>
+		</languageKey>
+	</data>
+</T3locallang>

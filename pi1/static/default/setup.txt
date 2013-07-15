@@ -1,0 +1,772 @@
+plugin.tx_sevenpack_pi1 {
+
+	pid_list = {$plugin.tx_sevenpack_pi1.pid_list}
+	debug = {$plugin.tx_sevenpack_pi1.debug}
+
+	# Character set used by some functions
+	charset = UTF-8
+
+	# Links link to the content element (e.g. http://bla.html#c1234)
+	ce_links = 1
+
+	# url related values
+	auto_url_order = file_url,web_url,DOI
+	max_url_string_length = 50
+
+	# The list display mode (simple)
+	display_mode = 0
+
+	# Date sorting (descending)
+	date_sorting = 0
+
+	# Enumeration style (Count all)
+	enum_style = 0
+
+	# Maximal number references per page (0=all)
+	items_per_page = 12
+
+	# HTML template files
+	templates {
+		main = EXT:sevenpack/res/templates/main.html
+		list_blocks = EXT:sevenpack/res/templates/list_blocks.html
+		list_items = EXT:sevenpack/res/templates/list_items.html
+		navi_misc = EXT:sevenpack/res/templates/navi_misc.html
+	}
+
+	# Number of authors to display (0=all)
+	max_authors = 0
+	authors {
+		template = ###FORENAME######SURNAME### ###URL_ICON###
+
+		forename.wrap = |
+
+		surname.noTrimWrap = | ||
+
+		# Fields that must be set for a link creation
+		url_icon_fields = url
+
+		url_icon_file = EXT:t3skin/icons/gfx/i/be_users_admin.gif
+		url_icon_class = tx_sevenpack-person_icon
+		url_icon.noTrimWrap = | ||
+		url_icon.typolink {
+			parameter.field = url
+			extTarget = _blank
+		}
+
+		separator = ,
+		separator.noTrimWrap = || |
+
+		et_al.noTrimWrap = | ||
+
+		highlight.wrap = <span class="tx_sevenpack-author_high">|</span>
+	}
+
+	# List view
+	enum {
+		page = ###I_PAGE###
+		page.wrap = |.
+		all = ###I_ALL###
+		all.wrap = |.
+		bullet = &bull;
+		#bullet.wrap = |
+		#empty = &nbsp;
+		#empty.wrap = |
+		file_icon = ###FILE_URL_ICON###
+		file_icon.wrap = <div class="tx_sevenpack-file_url_icon">|</div>
+
+		# These are wraps for special items
+		file_icon_class = tx_sevenpack-file_icon
+		file_icon_image.typolink {
+			parameter.field = file_url
+			target = _blank
+			extTarget = _blank
+		}
+	}
+
+	# Label wraps
+	label {
+		bibtype.wrap = <h4>|:</h4>
+		year.wrap = <h3>|</h3>
+
+		abstract.wrap = <strong>|:</strong>
+		annotation.wrap = <strong>|:</strong>
+		chapter.wrap = |
+		editor.wrap = |
+		ISBN.wrap = |
+		keywords.wrap = <strong>|:</strong>
+		tags.wrap = <strong>|:</strong>
+		no_items.wrap = <h3>|.</h3>
+		note.wrap = <strong>|:</strong>
+		publisher.wrap = |:
+	}
+
+	# Field wraps
+	field {
+
+		# Author
+		#author.typolink {
+		#	parameter.field = url
+		#	extTarget = _blank
+		#}
+		author.wrap = <span class="tx_sevenpack-author">|</span>
+
+		auto_url.typolink {
+			parameter.field = auto_url
+			extTarget = _blank
+		}
+
+		auto_url_short.typolink {
+			parameter.field = auto_url
+			extTarget = _blank
+		}
+
+		# DOI
+		DOI.typolink {
+			parameter.field = DOI_url
+			extTarget = _blank
+		}
+
+		# Editor
+		editor_each.wrap = <span class="tx_sevenpack-author">|</span>
+
+		# File URL
+		file_url.typolink {
+			parameter.field = file_url
+			extTarget = _blank
+		}
+		file_url_short.typolink {
+			parameter.field = file_url
+			extTarget = _blank
+		}
+
+		# Month
+		month.strftime = %B
+
+		# Title
+		#title.typolink {
+		#	parameter.field = auto_url
+		#	extTarget = _blank
+		#}
+
+		# Type
+		type.wrap = <span class="tx_sevenpack-type">|</span>
+		incollection.type.wrap = <span class="tx_sevenpack-type">|</span>,
+
+		# Web URL
+		web_url.typolink {
+			parameter.field = web_url
+			extTarget = _blank
+		}
+		web_url_short.typolink {
+			parameter.field = web_url
+			extTarget = _blank
+		}
+
+		web_url2.typolink {
+			parameter.field = web_url2
+			extTarget = _blank
+		}
+		web_url2_short.typolink {
+			parameter.field = web_url2
+			extTarget = _blank
+		}
+	}
+
+
+	# CSS classes
+	classes {
+		even = tx_sevenpack-item_even
+		odd = tx_sevenpack-item_odd
+	}
+
+
+	# Search navigation
+	searchNav {
+		template = EXT:sevenpack/res/templates/navi_search.html
+
+		# Year label wrap
+		label.wrap = |:
+
+		# Classes or the year selection form
+		form_class = tx_sevenpack-search_form
+
+		#form.wrap = |
+		search {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			input.wrap = |&nbsp;
+			input_size = 42
+			input_maxlength = 2048
+			search_btn_class = tx_sevenpack-button
+			#search_btn.wrap = |
+			clear_btn_class = tx_sevenpack-button
+			#clear_btn.wrap = |
+		}
+
+		# Show details default
+		extra {
+			def = 0
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			btn.wrap = |
+		}
+
+		# Search in abstracts
+		abstracts {
+			def = 0
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			btn.wrap = |
+		}
+
+		# Search in full_text
+		full_text {
+			def = 0
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			btn.wrap = |
+		}
+
+		# Separator selection
+		separator {
+			def = space
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+			select_class = tx_sevenpack-select
+			select.wrap = |
+		}
+
+		# Rule selection
+		rule {
+			def = AND
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+			btn_label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			btn.wrap = |
+		}
+
+		# Clear results if no string is given
+		clear_start = 0
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_search_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_search_bottom">|</div>
+	}
+
+
+	# Year navigation
+	yearNav {
+		template = EXT:sevenpack/res/templates/navi_year.html
+
+		# Year label wrap
+		label.wrap = |:
+
+		# Classes or the year selection form
+		form_class = tx_sevenpack-year_select_form
+		go_btn_class = tx_sevenpack-button
+		select_class = tx_sevenpack-select
+
+		#form.wrap = |
+		#select.wrap = |
+		go_btn.wrap = |
+
+		# Year selection
+		selection {
+			# The maximum number of years to show
+			years = 3
+
+			# Year separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Separator between ALL and list
+			all_sep = ::
+			all_sep.noTrimWrap  = | | |
+
+			# Show year split labels if 'all' is selected
+			all_year_split = 1
+
+			# Wraps for the current year and the years below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
+
+			# Strings and wraps for indicators for more years
+			more_below = ...
+			more_below.noTrimWrap = | | |
+			more_above = ...
+			more_above.noTrimWrap = | | |
+
+			#all_wrap.wrap = |
+		}
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_year_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_year_bottom">|</div>
+	}
+
+
+	# Preferences Navigation
+	authorNav {
+		# Page label and wrap
+		label.wrap = |:
+
+		template = EXT:sevenpack/res/templates/navi_author.html
+
+		# Classes or the year selection form
+		form_class = tx_sevenpack-author_select_form
+		select_class = tx_sevenpack-select
+		go_btn_class = tx_sevenpack-button
+
+		#form.wrap = |
+		#go_btn.wrap = |
+		#select.wrap = |
+
+		# Letter selection
+		letters {
+			# Letter separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Separator between ALL and list
+			all_sep = ::
+			all_sep.noTrimWrap  = | | |
+
+			# Wraps for the current letter and the pages below and above
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+
+			#all_wrap.wrap = |
+		}
+
+		# Author selection
+		selection {
+			# The maximum number of pages to show
+			authors = 3
+
+			# Page separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Separator between ALL and list
+			all_sep = ::
+			all_sep.noTrimWrap  = | | |
+
+			# Wraps for the current page and the pages below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
+
+			# Strings and wraps for indicators for more pages
+			more_below = ...
+			more_below.noTrimWrap = | | |
+			more_above = ...
+			more_above.noTrimWrap = | | |
+
+			#all_wrap.wrap = |
+		}
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_author_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_author_bottom">|</div>
+	}
+
+
+	# Preferences Navigation
+	prefNav {
+		template = EXT:sevenpack/res/templates/navi_pref.html
+
+		# Page label and wrap
+		label.wrap = |:
+
+		ipp {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|:</span>
+			select_class = tx_sevenpack-select
+			#select.wrap = |
+		}
+
+		abstract {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			#btn.wrap = |
+		}
+
+		keywords {
+			widget.wrap = <span class="tx_sevenpack-navi_widget">|</span>
+			label.wrap = <span class="tx_sevenpack-navi_label">|</span>
+			btn_class = tx_sevenpack-check
+			#btn.wrap = |
+		}
+
+		# Classes or the ipp selection form
+		form_class = tx_sevenpack-navi_pref_form
+		go_btn_class = tx_sevenpack-button
+
+		#go_btn.wrap = |
+
+		# Item per page values
+		ipp_values  = 5,10,20,30,40,50
+		ipp_default = 10
+
+		top_disable = 0
+		bottom_disable = 1
+
+		top.wrap = <div class="tx_sevenpack-navi_pref_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_pref_bottom">|</div>
+	}
+
+
+	# Page naviagation
+	pageNav {
+		template = EXT:sevenpack/res/templates/navi_page.html
+
+		# Page label wrap
+		label.wrap = |:
+
+		# Page selection
+		selection {
+			# The maximum number of pages to show
+			pages = 5
+
+			# Page separator
+			separator = ,
+			separator.noTrimWrap  = || |
+
+			# Wraps for the current page and the pages below and above
+			first.wrap = <span class="tx_sevenpack-navi_first">|</span>
+			below.wrap = |
+			current.wrap = <span class="tx_sevenpack-navi_current">|</span>
+			above.wrap = |
+			last.wrap = <span class="tx_sevenpack-navi_last">|</span>
+
+			# Strings and wraps for indicators for more pages
+			more_below = ...
+			more_below.noTrimWrap = | | |
+			more_above = ...
+			more_above.noTrimWrap = | | |
+		}
+
+		# First, previous, next, last page selection
+		navigation {
+			separator = |
+			separator.wrap = <span class="tx_sevenpack-navi_separator">|</span>
+			separator.noTrimWrap = | | |
+
+			previous.wrap = |###SEPARATOR###
+			next.wrap = ###SEPARATOR###|
+		}
+
+		top_disable = 1
+		bottom_disable = 0
+
+		top.wrap = <div class="tx_sevenpack-navi_page_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_page_bottom">|</div>
+	}
+
+
+	# Statistic
+	statNav {
+		template = EXT:sevenpack/res/templates/navi_stat.html
+
+		mode = 0
+		label.wrap = |:
+		values.wrap = |
+
+		value_year.wrap = |
+		value_total.wrap = |
+
+		top_disable = 1
+		bottom_disable = 0
+
+		top.wrap = <div class="tx_sevenpack-navi_author_top">|</div>
+		bottom.wrap = <div class="tx_sevenpack-navi_author_bottom">|</div>
+	}
+
+
+	# File icons
+	file_icons {
+		# Icon for empty fields
+		empty_default = EXT:cms/tslib/media/fileicons/default.gif
+
+		# Icon for unknown file type
+		default = EXT:cms/tslib/media/fileicons/default.gif
+
+		# Icons for unknown file extensions
+		doc = EXT:cms/tslib/media/fileicons/doc.gif
+		pdf = EXT:cms/tslib/media/fileicons/pdf.gif
+	}
+
+
+	# Edit icons
+	edit_icons {
+		new_record = EXT:t3skin/icons/gfx/new_record.gif
+		edit = EXT:t3skin/icons/gfx/edit2.gif
+		hide = EXT:t3skin/icons/gfx/button_hide.gif
+		reveal = EXT:t3skin/icons/gfx/button_unhide.gif
+
+		up = EXT:t3skin/icons/gfx/button_up.gif
+		down = EXT:t3skin/icons/gfx/button_down.gif
+	}
+
+
+	# Export
+	export {
+		# Available export
+		enable_export = bibtex,xml
+
+		# The export label wrap
+		label = export_label
+		label.wrap = <span class="tx_sevenpack-export_label">|:</span>
+
+		# Dynamic - Export will be generated on the fly
+		dynamic = 1
+
+		# The export path
+		path = uploads/tx_sevenpack
+
+		# Wraps for export mode links
+		bibtex.wrap = |
+		xml.wrap = |
+
+		# Export mode links separators
+		separator = ,
+		separator.noTrimWrap = || |
+	}
+
+
+	# Import
+	import {
+		# The export label wrap
+		label = import_label
+		label.wrap = <span class="tx_sevenpack-import_label">|:</span>
+
+		# Wraps for export mode links
+		bibtex.wrap = |
+		xml.wrap = |
+
+		# Export mode links separators
+		separator = ,
+		separator.noTrimWrap = || |
+	}
+
+
+	# Single View
+	single_view {
+		title.wrap = <h2 style="display: none;">|</h2>
+
+		template = EXT:sevenpack/res/templates/single_view.html
+		dont_show = pid,uid,reviewed,in_library,borrowed_by,citeid
+
+		all_labels.wrap = |:
+
+		field_wrap {
+			#title.wrap = |
+		}
+
+		#pre_text = Some pre text
+		pre_text.wrap = |
+		#post_text = Some post text
+		post_text.wrap = |
+	}
+
+
+	# Frontend editor
+	editor {
+
+		# Full text configuration
+		full_text {
+			update = 0
+			max_num = 100
+			max_sec = 5
+			pdftotext_bin = /usr/bin/pdftotext
+			tmp_dir = /tmp
+		}
+
+		# Warnings during list view
+		list {
+
+			# Manipulator configuration
+			manipulators {
+				all.wrap  = <div class="tx_sevenpack-manipulator_block">|</div>
+				hide.wrap = <div class="tx_sevenpack-manip">|</div>
+				edit.wrap = <div class="tx_sevenpack-manip">|</div>
+				new.wrap  = <div class="tx_sevenpack-manip">|</div>
+			}
+
+			# Wrap hidden references that are displayed anyway
+			hidden.wrap = <div class="tx_sevenpack-editor_hidden">|</div>
+
+			# Data checks
+			warnings {
+				file_nexist = 1
+			}
+
+			warn_box {
+				msg.wrap = <p>|</p>
+				all_wrap.wrap = <div class="tx_sevenpack-warning_box">|</div>
+			}
+		}
+
+		# Minimum number of authors to display
+		numAuthors = 5
+
+		# Minimum number of authors to display
+		input_size {
+			default = 60
+			author = 24
+			citeid = 30
+		}
+
+		field_labels.wrap = |:
+		field_widgets.wrap = |
+
+		# Warnings in the editor  view
+		warnings {
+			# Required fields missing
+			empty_fields = 1
+
+			# Double citeid
+			double_citeid = 1
+
+			# Local file does not exist
+			file_nexist = 1
+		}
+
+		warn_box {
+			title.wrap = <h3 class="tx_sevenpack-warning_title">|</h3>
+			msg.wrap = <p>|</p>
+			all_wrap.wrap = <div class="tx_sevenpack-warning_box">|</div>
+		}
+
+		# Deletes authors that have no publications on save/delete
+		delete_no_ref_authors = 1
+
+		# Fields that are not allowed to be edited
+		no_edit {
+			citeid = 0
+		}
+
+		# Overwrite labels
+		olabel {
+			article {
+				number = olabel_issue
+			}
+			thesis {
+				school = olabel_university
+				type = olabel_thesis_type
+			}
+			conference {
+				event_name = olabel_conference_name
+				event_place = olabel_conference_place
+				event_date = olabel_conference_date
+			}
+			report {
+				type = olabel_report_type
+				number = olabel_doc_number
+				number2 = olabel_report_number
+			}
+		}
+
+		groups {
+			all {
+				required = state
+				optional = abstract,keywords,tags,file_url,web_url,web_url2,language,affiliation,note,misc,misc2
+				library = extern,reviewed,in_library,borrowed_by
+			}
+
+			article {
+				required = citeid,authors,title,journal,year
+				optional = volume,number,pages,month,abstract,ISSN,DOI
+			}
+			book {
+				required = citeid,authors|editor,title,publisher,year
+				optional = volume,series,edition,abstract,address,month,ISBN,DOI
+			}
+			inbook {
+				required = citeid,authors|editor,title,chapter,pages,publisher,year
+				optional = volume,series,edition,abstract,address,month,ISBN,type,DOI
+			}
+			booklet {
+				required = citeid,title
+				optional = authors,howpublished,address,month,year,ISBN
+			}
+			conference {
+				required = citeid,authors,title,booktitle,year
+				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization,DOI
+			}
+			incollection {
+				required = citeid,authors,title,booktitle,year
+				optional = editor,volume,series,type,chapter,pages,address,edition,month,organization,publisher
+			}
+			proceedings {
+				required = citeid,title,year
+				optional = authors,event_name,event_place,event_date,editor,publisher,address,ISBN,pages,volume,series,month,organization,DOI
+			}
+			inproceedings {
+				required = citeid,authors,title,booktitle,year
+				optional = event_name,event_place,event_date,editor,volume,series,pages,address,month,organization,publisher,DOI
+			}
+			manual {
+				required = citeid,title
+				optional = authors,organization,address,edition,editor,month,year
+			}
+			mastersthesis {
+				required = citeid,authors,title,school,year
+				optional = type,address,month
+			}
+			phdthesis {
+				required = citeid,authors,title,school,year
+				optional = type,address,month
+			}
+			techreport {
+				required = citeid,authors,title,institution,year
+				optional = type,number,address,month
+			}
+			unpublished {
+				required = citeid,authors,title
+				optional = month,year
+			}
+			miscellaneous {
+				required = citeid
+				optional = authors,title,howpublished,month,year
+			}
+			string {
+				required = citeid,misc
+				optional =
+			}
+			poster {
+				required = citeid,authors
+				optional = title,editor,organization,publisher,address,year,month,day
+			}
+			thesis {
+				required = citeid,authors,title,type,school,year
+				optional = institute,abstract,address,month
+			}
+			manuscript {
+				required = citeid,title,authors,year
+				optional = type,abstract
+			}
+			report {
+				required = citeid,title,authors,type,year
+				optional = number,institution,institute,abstract,publisher,address,number2
+			}
+		}
+
+	}
+}
+
+
