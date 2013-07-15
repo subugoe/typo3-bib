@@ -8,6 +8,9 @@
  */
 class Tx_Bib_Utility_DbUtility {
 
+	/**
+	 * @var Tx_Bib_Utility_ReferenceReader
+	 */
 	public $ref_read;
 	public $charset;
 
@@ -104,7 +107,7 @@ class Tx_Bib_Utility_DbUtility {
 	 *
 	 * @return An array with some statistical data
 	 */
-	function update_full_text_all ( $force = FALSE ) {
+	public function update_full_text_all($force = FALSE) {
 		$rT =& $this->ref_read->refTable;
 		$stat = array();
 		$stat['updated'] = array();

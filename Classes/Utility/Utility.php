@@ -32,7 +32,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The title string or FALSE
 	 */
-	function get_page_titles ( $uids ) {
+	static public function get_page_titles ( $uids ) {
 		$titles = array();
 		foreach ( $uids as $uid ) {
 			$uid = intval ( $uid );
@@ -211,7 +211,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The select element
 	 */
-	function html_select_input ( $pairs, $value, $attribs = array() ) {
+	static public function html_select_input ( $pairs, $value, $attribs = array() ) {
 		$value = strval ( $value );
 		$con .= '<select';
 		foreach ( $attribs as $a_key => $a_value ) {

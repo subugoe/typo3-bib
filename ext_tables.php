@@ -3,7 +3,7 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-require_once(t3lib_extMgm::extPath($_EXTKEY).'Classes/Utility/class.tx_bib_labels.php');
+require_once(t3lib_extMgm::extPath($_EXTKEY).'Classes/Utility/Labels.php');
 
 $TCA['tx_bib_references'] = array (
 	'ctrl' => array (
@@ -53,7 +53,7 @@ $TCA['tx_bib_authorships'] = array (
 	'ctrl' => array (
 		'title'     => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_authorships',
 		'label'     => 'pub_id',
-		'label_userFunc'    => "tx_bib_labels->get_authorship_label",
+		'label_userFunc'    => "Tx_Bib_Utility_Labels->get_authorship_label",
 		'label_alt_force'   => 1,
 		'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',
 		'delete' => 'deleted',

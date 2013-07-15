@@ -4,14 +4,14 @@ if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
 
-class tx_bib_citeid_generator {
+class Tx_Bib_Utility_Generator_CiteIdGenerator {
 
 	public $pi1;
 	public $ref_read;
 	public $charset;
 
 
-	function initialize ( $pi1 ) {
+	function initialize ($pi1) {
 		$this->ref_read =& $pi1->ref_read;
 		$this->charset = $pi1->extConf['charset']['upper'];
 	}
@@ -110,10 +110,6 @@ class tx_bib_citeid_generator {
 		return $tmpId;
 	}
 
-}
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_citeid_generator.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_citeid_generator.php"]);
 }
 
 ?>

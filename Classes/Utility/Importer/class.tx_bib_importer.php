@@ -3,15 +3,19 @@
 if ( !isset($GLOBALS['TSFE']) )
 	die ('This file is no meant to be executed');
 
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
-
 class tx_bib_importer {
 
 	public $pi1;
 	public $ref_read;
+
+	/**
+	 * @var Tx_Bib_Utility_ReferenceWriter
+	 */
 	public $ref_write;
 
+	/**
+	 * @var Tx_Bib_Utility_DbUtility
+	 */
 	public $db_utility;
 
 	public $storage_pid;
@@ -24,6 +28,10 @@ class tx_bib_importer {
 
 	// Utility
 	public $code_trans_tbl;
+
+	/**
+	 * @var bool|Tx_Bib_Utility_Generator_CiteIdGenerator
+	 */
 	public $idGenerator = FALSE;
 
 
@@ -36,7 +44,7 @@ class tx_bib_importer {
 		$this->pi1 =& $pi1;
 		$this->ref_read =& $pi1->ref_read;
 
-		$this->ref_write = t3lib_div::makeInstance ( 'Tx_Bib_Utility_ReferenceWriter' );
+		$this->ref_write = t3lib_div::makeInstance ('Tx_Bib_Utility_ReferenceWriter');
 		$this->ref_write->initialize( $this->ref_read );
 
 		$this->storage_pid = 0;
@@ -59,7 +67,7 @@ class tx_bib_importer {
 				$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator_ext' );
 			}
 		} else {
-			$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator' );
+			$this->idGenerator = t3lib_div::makeInstance ( 'Tx_Bib_Utility_Generator_CiteIdGenerator' );
 		}
 		$this->idGenerator->initialize ( $pi1 );
 	}
@@ -123,8 +131,9 @@ class tx_bib_importer {
 			$con .= '<p>' . $val . '</p>' . "\n";
 
 			$val = Tx_Bib_Utility_Utility::html_select_input (
-				$pages, $default_pid,
-				array ( 'name' => $this->pi1->prefixId . '[import_pid]' )
+				$pages,
+				$default_pid,
+				array('name' => $this->pi1->prefixId . '[import_pid]')
 			);
 			$con .= '<p>' . "\n" . $val . '</p>' . "\n";
 		}
@@ -155,7 +164,7 @@ class tx_bib_importer {
 	 *
 	 * @return void
 	 */
-	function save_publication ( $pub ) {
+	public function save_publication ( $pub ) {
 		$stat =& $this->stat;
 		$res = FALSE;
 
@@ -183,7 +192,7 @@ class tx_bib_importer {
 		// Save publications
 		if ( $s_ok ) {
 			//t3lib_div::debug ( $pub );
-			$s_fail = $this->ref_write->save_publication ( $pub );
+			$s_fail = $this->ref_write->save_publication( $pub );
 
 			if ( $s_fail ) {
 				$stat['failed']++;

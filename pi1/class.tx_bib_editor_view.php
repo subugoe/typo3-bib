@@ -1,20 +1,23 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/pi1/class.tx_bib_citeid_generator.php' ) );
-
-
 class tx_bib_editor_view {
 
 	public $pi1; // Plugin 1
 	public $conf; // configuration array
 	public $ref_read;  // Reference reader
 	public $ref_write;  // Reference writer
-	public $db_utility;  // Databse utility
+	/**
+	 * Database Utility
+	 *
+	 * @var Tx_Bib_Utility_DbUtility
+	 */
+	public $db_utility;
+
 	public $LLPrefix = 'editor_';
+
+	/**
+	 * @var Tx_Bib_Utility_Generator_CiteIdGenerator|bool
+	 */
 	public $idGenerator = FALSE;
 
 	public $is_new = FALSE;
@@ -38,7 +41,7 @@ class tx_bib_editor_view {
 		$this->ref_read =& $pi1->ref_read;
 		$this->ref_read->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
 		// Load editor language data
-		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/pi1/locallang_editor.xml' );
+		$this->pi1->extend_ll ( 'EXT:'.$this->pi1->extKey.'/Resources/Private/Language/locallang_editor.xml' );
 
 
 		// setup db_utility
@@ -56,7 +59,7 @@ class tx_bib_editor_view {
 				$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator_ext' );
 			}
 		} else {
-			$this->idGenerator = t3lib_div::makeInstance ( 'tx_bib_citeid_generator' );
+			$this->idGenerator = t3lib_div::makeInstance ( 'Tx_Bib_Utility_Generator_CiteIdGenerator' );
 		}
 		$this->idGenerator->initialize ( $pi1 );
 	}
@@ -1040,8 +1043,8 @@ class tx_bib_editor_view {
 		}
 
 		if ( $pub['year'] == 0 ) {
-			if ( is_numeric ( $pi1->extConf['year'] ) )
-				$pub['year'] = intval ( $pi1->extConf['year'] );
+			if ( is_numeric ( $this->pi1->extConf['year'] ) )
+				$pub['year'] = intval ( $this->pi1->extConf['year'] );
 			else
 				$pub['year'] = intval ( date ( 'Y' ) );
 		}

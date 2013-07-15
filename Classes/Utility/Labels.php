@@ -2,7 +2,7 @@
 
 require_once(PATH_t3lib.'class.t3lib_befunc.php');
 
-class tx_bib_labels {
+class Tx_Bib_Utility_Labels {
 
 	/**
 	 * Returns label of an authorship
@@ -36,10 +36,6 @@ class tx_bib_labels {
 		$params['title'] = $title;
 	}
 
-}
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_labels.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/res/class.tx_bib_labels.php"]);
 }
 
 ?>

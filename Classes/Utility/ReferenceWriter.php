@@ -95,7 +95,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 	 * 
 	 * @return TRUE on error FALSE otherwise
 	 */
-	function save_publication ( $pub ) {
+	public function save_publication ( $pub ) {
 		if ( !is_array ( $pub ) )
 			return TRUE;
 
