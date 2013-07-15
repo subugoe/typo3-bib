@@ -1,14 +1,6 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
-
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/pi1/class.tx_bib_exporter.php') );
-
-
-class tx_bib_exporter_xml extends tx_bib_exporter {
+class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Exporter {
 
 	// Pattern replacements
 	public $pat;
@@ -142,10 +134,6 @@ class tx_bib_exporter_xml extends tx_bib_exporter {
 		return $str;
 	}
 
-}
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_xml.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_xml.php"]);
 }
 
 ?>

@@ -1,15 +1,10 @@
 <?php
 
-if ( !isset($GLOBALS['TSFE']) )
-	die ('This file is no meant to be executed');
+class Tx_Bib_Utility_Exporter_BibTexExporter extends Tx_Bib_Utility_Exporter_Exporter {
 
-
-require_once ( $GLOBALS['TSFE']->tmpl->getFileName (
-	'EXT:bib/pi1/class.tx_bib_exporter.php') );
-
-
-class tx_bib_exporter_bibtex extends tx_bib_exporter {
-
+	/**
+	 * @var Tx_Bib_Utility_PRegExpTranslator
+	 */
 	public $bt; // Bibtex translator
 
 	function initialize ( $pi1 ) {
@@ -275,10 +270,6 @@ class tx_bib_exporter_bibtex extends tx_bib_exporter {
 		return $str;
 	}
 
-}
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_bibtex.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_exporter_bibtex.php"]);
 }
 
 ?>

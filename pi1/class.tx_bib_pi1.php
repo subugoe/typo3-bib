@@ -98,7 +98,12 @@ class tx_bib_pi1 extends tslib_pibase {
 	// These are derived/extra configuration values
 	public $extConf;
 
-	public $ref_read;  // The reference database reader
+	/**
+	 * The reference database reader
+	 *
+	 * @var Tx_Bib_Utility_ReferenceReader
+	 */
+	public $ref_read;
 	public $fetchRes;
 	public $icon_src = array();
 
@@ -2975,11 +2980,11 @@ class tx_bib_pi1 extends tslib_pibase {
 		$eclass = '';
 		switch ( $mode ) {
 			case 'bibtex':
-				$eclass = 'tx_bib_exporter_bibtex';
+				$eclass = 'Tx_Bib_Utility_Exporter_BibTexExporter';
 				$label = 'export_bibtex';
 				break;
 			case 'xml':
-				$eclass = 'tx_bib_exporter_xml';
+				$eclass = 'Tx_Bib_Utility_Exporter_XmlExporter';
 				$label = 'export_xml';
 				break;
 			default:

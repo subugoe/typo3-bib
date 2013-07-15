@@ -68,7 +68,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The string filtered for html output
 	 */
-	function fix_html_ampersand ( $str ) {
+	static public function fix_html_ampersand ( $str ) {
 		//t3lib_div::debug ( array( 'pre: ' => $str ) );
 		
 		$pattern = '/&(([^;]|$){8})/';
@@ -378,7 +378,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The exploded string
 	 */
-	function explode_intval ( $sep, $str, $noEmpty = TRUE ) {
+	static public function explode_intval ( $sep, $str, $noEmpty = TRUE ) {
 		$res = array();
 		$list = explode ( $sep, $str );
 		if ( $noEmpty ) {
