@@ -1,9 +1,7 @@
 <?php
+namespace Ipf\Bib\Utility\Importer;
 
-class tx_bib_Parser_Exception extends Exception {
-}
-
-class tx_bib_Translator_Exception extends Exception {
+class tx_bib_Translator_Exception extends \Exception {
 }
 
 
@@ -11,33 +9,35 @@ class tx_bib_Translator_Exception extends Exception {
  * This parser follows the bibtex format described here
  * http://artis.imag.fr/~Xavier.Decoret/resources/xdkbibtex/bibtex_summary.html
  */
-class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Importer {
+class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 
 	/**
 	 * Bibtex translator
 	 *
 	 * @var Tx_Bib_Utility_PRegExpTranslator
 	 */
+	public $bt;
 
 	// The parser state
-	public $pstate;
+	public $parserState;
 	public $pline;
 
-	// Parser states ( S: Search, R: Read )
-	public $P_S_Ref = 1; // Search reference
-	public $P_R_Ref_Type = 2; // Read reference type
-	public $P_S_Ref_Beg = 3; // Search reference begin brace
+	// Parser states
+	const PARSER_SEARCH_REFERENCE = 1;
+	const PARSER_READ_REFERENCE_TYPE = 2;
+	const PARSER_SEARCH_REFERENCE_BEGIN = 3;
 
-	public $P_S_Id = 4; // Search citeid
-	public $P_R_Id = 5; // Read citeid
+	const PARSER_SEARCH_CITE_ID = 4;
+	const PARSER_READ_CITE_ID = 5;
 
-	public $P_S_Comma = 6; // Search Comma
-	public $P_S_Pair_Name = 7; // Search Name
+	const PARSER_SEARCH_COMMA = 6;
+	const PARSER_SEARCH_PAIR_NAME = 7;
 
-	public $P_R_Pair_Name = 8; // Read name
-	public $P_S_Assign = 9; // Search =
-	public $P_S_Pair_Value = 10; // Search value
-	public $P_R_Pair_Value = 11; // Search value
+	const PARSER_READ_PAIR_NAME = 8;
+
+	const PARSER_SEARCH_ASSIGN = 9;
+	const PARSER_SEARCH_PAIR_VALUE = 10;
+	const PARSER_READ_PAIR_VALUE = 11;
 
 	// A value buffer
 	public $pair_name;
@@ -52,10 +52,13 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 	public $pubKeys;
 	public $pubKeyMap;
 
-	function initialize($pi1) {
+	/**
+	 * @param tx_bib_pi1 $pi1
+	 */
+	public function initialize($pi1) {
 		parent::initialize($pi1);
 
-		$this->import_type = $pi1->IMP_BIBTEX;
+		$this->import_type = $pi1::IMP_BIBTEX;
 
 		$this->bt = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_PRegExpTranslator');
 		$bt =& $this->bt;
@@ -244,8 +247,6 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 					}
 			}
 		}
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'pubKeys' => $this->pubKeys) );
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'pubKeys' => $this->pubKeyMap) );
 	}
 
 
@@ -291,7 +292,7 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 		$stat['warnings'] = array();
 
 		$this->pline = 1;
-		$this->pstate = $this->P_S_Ref;
+		$this->parserState = self::PARSER_SEARCH_REFERENCE;
 		$this->clear_raw_ref();
 		$this->raw_refs = array();
 
@@ -301,8 +302,6 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 				$buffer = fread($handle, $buff_size);
 
 				$buffer = str_replace("\r", ' ', $buffer);
-				//$buffer = preg_replace ( '\s+', ' ', $buffer );
-				//$buffer = str_replace ( "\n", ' ', $buffer );
 
 				// Split lines
 				$buff_arr = explode("\n", $buffer);
@@ -316,8 +315,8 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 						$this->pline += 1;
 				}
 			}
-		} catch (tx_bib_Parser_Exception $exc) {
-			$stat['errors'][] = 'Line ' . strval($this->pline) . ': ' . $exc->getMessage();
+		} catch (\Ipf\Bib\Exception\ParserException $parserException) {
+			$stat['errors'][] = 'Line ' . strval($this->pline) . ': ' . $parserException->getMessage();
 		}
 
 		fclose($handle);
@@ -328,9 +327,9 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 			try {
 				$pub = $this->translate_raw_ref($raw);
 				$save_ok = true;
-			} catch (tx_bib_Translator_Exception $exc) {
+			} catch (\Ipf\Bib\Exception\TranslatorException $translatorException) {
 				$stat['failed']++;
-				$stat['errors'][] = $exc->getMessage();
+				$stat['errors'][] = $translatorException->getMessage();
 				$save_ok = false;
 			}
 
@@ -380,22 +379,22 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 		// Parse buffer chunk
 		while (strlen($this->buffer) > 0) {
 
-			switch ($this->pstate) {
+			switch ($this->parserState) {
 
-				case $this->P_S_Ref:
-					//$this->debug( 'Searching reference' );
+				case self::PARSER_SEARCH_REFERENCE:
+
 					$pos = strpos($this->buffer, '@');
 					if ($pos === FALSE) {
 						$this->buffer = '';
 					} else {
-						$this->pstate = $this->P_R_Ref_Type;
+						$this->parserState = self::PARSER_READ_REFERENCE_TYPE;
 						$this->raw_ref['type'] = '';
 						$this->buffer = substr($this->buffer, $pos + 1);
 					}
 					break;
 
-				case $this->P_R_Ref_Type:
-					//$this->debug( 'Reading reference type' );
+				case self::PARSER_READ_REFERENCE_TYPE:
+
 					$matches = array();
 					$type = '';
 					if (preg_match('/^([^,\s{]+)/', $this->buffer, $matches) > 0) {
@@ -404,39 +403,39 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 						$this->buffer = substr($this->buffer, strlen($type));
 					} else {
 						if (strlen($this->raw_ref['type']) == 0) {
-							throw new tx_bib_Parser_Exception ('Empty bibliography type');
+							throw new \Ipf\Bib\Exception\ParserException ('Empty bibliography type');
 						}
 						//$this->debug( 'Found reference type: ' . $this->raw_ref['type'] );
-						$this->pstate = $this->P_S_Ref_Beg;
+						$this->parserState = self::PARSER_SEARCH_REFERENCE_BEGIN;
 					}
 					break;
 
-				case $this->P_S_Ref_Beg:
+				case self::PARSER_SEARCH_REFERENCE_BEGIN:
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						if (substr($this->buffer, 0, 1) == "{") {
 							//$this->debug( 'Found reference begin' );
 							$this->buffer = substr($this->buffer, 1);
-							$this->pstate = $this->P_S_Id;
+							$this->parserState = self::PARSER_SEARCH_CITE_ID;
 						} else {
-							throw new tx_bib_Parser_Exception ('Expected an {');
+							throw new \Ipf\Bib\Exception\ParserException('Expected an {');
 						}
 					}
 					break;
 
-				case $this->P_S_Id:
+				case self::PARSER_SEARCH_CITE_ID:
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						if (preg_match('/^[^,\s]+/', $this->buffer) > 0) {
 							//$this->debug( 'Found citeid begin' );
-							$this->pstate = $this->P_R_Id;
+							$this->parserState = self::PARSER_READ_CITE_ID;
 						} else {
-							throw new tx_bib_Parser_Exception ('Invalid citeid beginning');
+							throw new \Ipf\Bib\Exception\ParserException ('Invalid citeid beginning');
 						}
 					}
 					break;
 
-				case $this->P_R_Id:
+				case self::PARSER_READ_CITE_ID:
 					$matches = array();
 					$id = '';
 					if (preg_match('/^([^,\s]+)/', $this->buffer, $matches) > 0) {
@@ -445,52 +444,52 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 						$this->buffer = substr($this->buffer, strlen($id));
 					} else {
 						if (strlen($this->raw_ref['citeid']) == 0) {
-							throw new tx_bib_Parser_Exception ('Empty citeid');
+							throw new \Ipf\Bib\Exception\ParserException ('Empty citeid');
 						}
-						//$this->debug( 'Found citeid: ' . $this->raw_ref['citeid'] );
-						$this->pstate = $this->P_S_Comma;
+
+						$this->parserState = self::PARSER_SEARCH_COMMA;
 					}
 					break;
 
-				case $this->P_S_Comma:
+				case self::PARSER_SEARCH_COMMA:
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						$char = substr($this->buffer, 0, 1);
 						if ($char == ",") {
-							//$this->debug( 'Found Comma' );
+
 							$this->buffer = substr($this->buffer, 1);
-							$this->pstate = $this->P_S_Pair_Name;
+							$this->parserState = self::PARSER_SEARCH_PAIR_NAME;
 						} else if ($char == "}") {
-							//$this->debug( 'Found reference end' );
+
 							$this->buffer = substr($this->buffer, 1);
 							$this->push_raw_ref();
-							$this->pstate = $this->P_S_Ref;
+							$this->parserState = self::PARSER_SEARCH_REFERENCE;
 						} else {
-							throw new tx_bib_Parser_Exception ('Expected , or } but found: ' . $char);
+							throw new \Ipf\Bib\Exception\ParserException ('Expected , or } but found: ' . $char);
 						}
 					}
 					break;
 
-				case $this->P_S_Pair_Name:
+				case self::PARSER_SEARCH_PAIR_NAME:
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						$char = substr($this->buffer, 0, 1);
 						if (preg_match('/^[a-zA-Z_0-9]/', $char) > 0) {
-							//$this->debug( 'Found pair name begin' );
+
 							$this->pair_name = '';
-							$this->pstate = $this->P_R_Pair_Name;
+							$this->parserState = self::PARSER_READ_PAIR_NAME;
 						} else if ($char == "}") {
-							//$this->debug( 'Found reference end' );
+
 							$this->buffer = substr($this->buffer, 1);
 							$this->push_raw_ref();
-							$this->pstate = $this->P_S_Ref;
+							$this->parserState = self::PARSER_SEARCH_REFERENCE;
 						} else {
-							throw new tx_bib_Parser_Exception ('Found illegal pair name characer: ' . $char);
+							throw new \Ipf\Bib\Exception\ParserException ('Found illegal pair name characer: ' . $char);
 						}
 					}
 					break;
 
-				case $this->P_R_Pair_Name:
+				case self::PARSER_READ_PAIR_NAME:
 					$matches = array();
 					$str = '';
 					if (preg_match('/^([a-zA-Z_0-9]+)/', $this->buffer, $matches) > 0) {
@@ -499,27 +498,27 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 						$this->buffer = substr($this->buffer, strlen($str));
 					} else {
 						if (strlen($this->pair_name) == 0) {
-							throw new tx_bib_Parser_Exception ('Empty value name');
+							throw new \Ipf\Bib\Exception\ParserException ('Empty value name');
 						}
-						//$this->debug( 'Found pair name: ' . $this->pair_name );
-						$this->pstate = $this->P_S_Assign;
+
+						$this->parserState = self::PARSER_SEARCH_ASSIGN;
 					}
 					break;
 
-				case $this->P_S_Assign:
+				case self::PARSER_SEARCH_ASSIGN:
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						$char = substr($this->buffer, 0, 1);
 						if ($char == "=") {
 							//$this->debug( 'Found Assignment' );
 							$this->buffer = substr($this->buffer, 1);
-							$this->pstate = $this->P_S_Pair_Value;
+							$this->parserState = self::PARSER_SEARCH_PAIR_VALUE;
 						} else {
-							throw new tx_bib_Parser_Exception ('Expected = but found ' . $char);
+							throw new \Ipf\Bib\Exception\ParserException ('Expected = but found ' . $char);
 						}
 					}
 
-				case $this->P_S_Pair_Value:
+				case self::PARSER_SEARCH_PAIR_VALUE:
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						$char = substr($this->buffer, 0, 1);
@@ -534,15 +533,15 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 							}
 							$this->pair_brace = 0;
 							$this->buffer = substr($this->buffer, 1);
-							$this->pstate = $this->P_R_Pair_Value;
+							$this->parserState = self::PARSER_READ_PAIR_VALUE;
 						} else {
-							throw new tx_bib_Parser_Exception ('Found illegal pair value begin characer: ' . $char);
+							throw new \Ipf\Bib\Exception\ParserException ('Found illegal pair value begin characer: ' . $char);
 						}
 					}
 					break;
 
-				case $this->P_R_Pair_Value:
-					//$this->debug( 'Reading pair value' );
+				case self::PARSER_READ_PAIR_VALUE:
+
 					$go_on = true;
 					$ii = 0;
 					$last = 0;
@@ -559,7 +558,7 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 							case "'":
 								if (($prev_char != "\\") && ($this->pair_start == $char)) {
 									if ($this->pair_braces != 0) {
-										throw new tx_bib_Parser_Exception ('Unbalanced brace count');
+										throw new \Ipf\Bib\Exception\ParserException ('Unbalanced brace count');
 									}
 									$go_on = false;
 								} else {
@@ -583,7 +582,7 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 										if ($this->pair_start == "{") {
 											$go_on = false;
 										} else {
-											throw new tx_bib_Parser_Exception ('Unbalanced brace count');
+											throw new \Ipf\Bib\Exception\ParserException ('Unbalanced brace count');
 										}
 									}
 								}
@@ -606,7 +605,7 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 						if (!$go_on) {
 							//$this->debug( 'Found pair value end: ' . $char );
 							$this->push_raw_pair();
-							$this->pstate = $this->P_S_Comma;
+							$this->parserState = self::PARSER_SEARCH_COMMA;
 						} else {
 							if ($ii < strlen($this->buffer)) {
 								$ii++;
@@ -616,11 +615,11 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 						}
 					}
 					$this->buffer = substr($this->buffer, $last + 1);
-					//throw new tx_bib_Parser_Exception ( 'Stopping here');
+
 					break;
 
 				default:
-					throw new tx_bib_Parser_Exception ('Illegal BibTeX parser state: ' . strval($this->pstate));
+					throw new \Ipf\Bib\Exception\ParserException ('Illegal BibTeX parser state: ' . strval($this->parserState));
 					break;
 			}
 		}
@@ -638,7 +637,7 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 		if (in_array($raw_val, $this->ref_read->allBibTypes)) {
 			$pub['bibtype'] = array_search($raw_val, $this->ref_read->allBibTypes);
 		} else {
-			throw new tx_bib_Translator_Exception ('Unknown bibtype: ' . strval($raw_val));
+			throw new \Ipf\Bib\Exception\TranslatorException ('Unknown bibtype: ' . strval($raw_val));
 		}
 
 		// Citeid
@@ -646,9 +645,9 @@ class Tx_Bib_Utility_Importer_BibTexImporter extends Tx_Bib_Utility_Importer_Imp
 
 		// Iterate through all raw values
 		foreach ($raw['values'] as $r_key => $r_val) {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'pre_trans' => $r_val) );
+
 			$r_val = $this->translate_raw_string($r_val);
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'post_trans' => $r_val) );
+
 			$r_key = strtolower($r_key);
 			switch ($r_key) {
 				case 'author':

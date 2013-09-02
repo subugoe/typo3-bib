@@ -68,8 +68,7 @@ class Tx_Bib_Utility_DbUtility {
 
 		$count = sizeof($uids);
 		if ($count > 0) {
-			$csv = Tx_Bib_Utility_Utility::implode_intval(',', $uids);
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $csv );
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $uids);
 
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($aT,
 					'uid IN ( ' . $csv . ')', array('deleted' => '1'));
@@ -119,7 +118,7 @@ class Tx_Bib_Utility_DbUtility {
 		$WC = array();
 
 		if (sizeof($this->ref_read->pid_list) > 0) {
-			$csv = Tx_Bib_Utility_Utility::implode_intval(',', $this->ref_read->pid_list);
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->ref_read->pid_list);
 			$WC[] = 'pid IN (' . $csv . ')';
 		}
 		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';

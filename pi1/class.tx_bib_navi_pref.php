@@ -31,7 +31,7 @@ class tx_bib_navi_pref extends tx_bib_navi {
 		$iPP =& $extConf['sub_page']['ipp'];
 
 		// Available ipp values
-		$this->extConf['pref_ipps'] = Tx_Bib_Utility_Utility::explode_intval(
+		$this->extConf['pref_ipps'] = \Ipf\Bib\Utility\Utility::explode_intval(
 			',', $this->conf['ipp_values']);
 
 		// Default ipp value
@@ -116,7 +116,7 @@ class tx_bib_navi_pref extends tx_bib_navi {
 		);
 		if (strlen($lcfg['select_class']) > 0)
 			$attribs['class'] = $lcfg['select_class'];
-		$btn = Tx_Bib_Utility_Utility::html_select_input(
+		$btn = \Ipf\Bib\Utility\Utility::html_select_input(
 			$pairs, $this->pi1->extConf['sub_page']['ipp'], $attribs);
 		$btn = $cObj->stdWrap($btn, $lcfg['select.']);
 		$ipp_sel = $cObj->stdWrap($lbl . $btn, $lcfg['widget.']);
@@ -132,7 +132,7 @@ class tx_bib_navi_pref extends tx_bib_navi {
 		$lbl = $this->pi1->get_ll('prefNav_show_abstracts');
 		$lbl = $cObj->stdWrap($lbl, $lcfg['label.']);
 		$check = $this->pi1->extConf['hide_fields']['abstract'] ? FALSE : TRUE;
-		$btn = Tx_Bib_Utility_Utility::html_check_input(
+		$btn = \Ipf\Bib\Utility\Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[show_abstracts]', '1', $check, $attribs);
 		$btn = $cObj->stdWrap($btn, $lcfg['btn.']);
 		$chk_abstr = $cObj->stdWrap($lbl . $btn, $lcfg['widget.']);
@@ -148,7 +148,7 @@ class tx_bib_navi_pref extends tx_bib_navi {
 		$lbl = $this->pi1->get_ll('prefNav_show_keywords');
 		$lbl = $cObj->stdWrap($lbl, $lcfg['label.']);
 		$check = $this->pi1->extConf['hide_fields']['keywords'] ? FALSE : TRUE;
-		$btn = Tx_Bib_Utility_Utility::html_check_input(
+		$btn = \Ipf\Bib\Utility\Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[show_keywords]', '1', $check, $attribs);
 		$btn = $cObj->stdWrap($btn, $lcfg['btn.']);
 		$chk_keys = $cObj->stdWrap($lbl . $btn, $lcfg['widget.']);
@@ -159,7 +159,7 @@ class tx_bib_navi_pref extends tx_bib_navi {
 		$attribs = array();
 		if (strlen($cfg['go_btn_class']) > 0)
 			$attribs['class'] = $cfg['go_btn_class'];
-		$widget = Tx_Bib_Utility_Utility::html_submit_input(
+		$widget = \Ipf\Bib\Utility\Utility::html_submit_input(
 			$this->pi1->prefix_pi1 . '[action][eval_pref]',
 			$this->pi1->get_ll('button_go'), $attribs);
 		$go_btn = $cObj->stdWrap($widget, $cfg['go_btn.']);

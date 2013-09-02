@@ -537,7 +537,7 @@ class tx_bib_editor_view {
 		// Invisible 'uid' and 'mod_key' field
 		if (!$this->isNew) {
 			if (isset ($publicationData['mod_key'])) {
-				$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 					$prefixId . '[DATA][pub][mod_key]',
 					htmlspecialchars($publicationData['mod_key'], ENT_QUOTES));
 				$content .= "\n";
@@ -624,7 +624,7 @@ class tx_bib_editor_view {
 			if (is_array($cfg_arr)) {
 				foreach ($all_types as $type) {
 					$cfg_fields[$group][$type] = array();
-					$ff = Tx_Bib_Utility_Utility::multi_explode_trim(
+					$ff = \Ipf\Bib\Utility\Utility::multi_explode_trim(
 						array(',', '|'), $cfg_arr[$type], TRUE);
 					//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $ff );
 					$cfg_fields[$group][$type] = $ff;
@@ -756,7 +756,7 @@ class tx_bib_editor_view {
 					$size = $isize;
 				$attrs['size'] = strval($size);
 
-				$content .= Tx_Bib_Utility_Utility::html_text_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_text_input(
 					$fieldAttr, $htmlValue, $attrs);
 
 				break;
@@ -785,13 +785,13 @@ class tx_bib_editor_view {
 					$pairs[$p_val] = $p_desc;
 				}
 
-				$content .= Tx_Bib_Utility_Utility::html_select_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_select_input(
 					$pairs, $value, $attrs);
 
 				break;
 
 			case 'check' :
-				$content .= Tx_Bib_Utility_Utility::html_check_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_check_input(
 					$fieldAttr, '1', ($value == 1), $attrs);
 
 				break;
@@ -816,7 +816,7 @@ class tx_bib_editor_view {
 
 		$content = '';
 		if ($mode == self::WIDGET_SHOW) {
-			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 				$fieldAttr, $htmlValue);
 
 			switch ($widgetType) {
@@ -842,7 +842,7 @@ class tx_bib_editor_view {
 
 		} else if ($mode == self::WIDGET_SILENT) {
 
-			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 				$fieldAttr, $htmlValue);
 
 		}
@@ -890,28 +890,28 @@ class tx_bib_editor_view {
 
 				$row_con[0] = strval($i + 1);
 				if ($mode == self::WIDGET_SHOW) {
-					$row_con[1] = Tx_Bib_Utility_Utility::html_hidden_input(
+					$row_con[1] = \Ipf\Bib\Utility\Utility::html_hidden_input(
 						$key_data . '[' . $i . '][forename]', $fn);
 					$row_con[1] .= $fn;
 
-					$row_con[2] = Tx_Bib_Utility_Utility::html_hidden_input(
+					$row_con[2] = \Ipf\Bib\Utility\Utility::html_hidden_input(
 						$key_data . '[' . $i . '][surname]', $sn);
 					$row_con[2] .= $sn;
 
 				} else if ($mode == self::WIDGET_EDIT) {
 
-					$lowerBtn = Tx_Bib_Utility_Utility::html_image_input(
+					$lowerBtn = \Ipf\Bib\Utility\Utility::html_image_input(
 						$key_action . '[lower_author]',
 						strval($i), $pi1->icon_src['down']);
-					$raiseBtn = Tx_Bib_Utility_Utility::html_image_input(
+					$raiseBtn = \Ipf\Bib\Utility\Utility::html_image_input(
 						$key_action . '[raise_author]',
 						strval($i), $pi1->icon_src['up']);
 
-					$row_con[1] = Tx_Bib_Utility_Utility::html_text_input(
+					$row_con[1] = \Ipf\Bib\Utility\Utility::html_text_input(
 						$key_data . '[' . $i . '][forename]', $fn,
 						array('size' => $isize, 'maxlength' => 255, 'class' => $cclass));
 
-					$row_con[2] .= Tx_Bib_Utility_Utility::html_text_input(
+					$row_con[2] .= \Ipf\Bib\Utility\Utility::html_text_input(
 						$key_data . '[' . $i . '][surname]', $sn,
 						array('size' => $isize, 'maxlength' => 255, 'class' => $cclass));
 
@@ -963,11 +963,11 @@ class tx_bib_editor_view {
 			// Bottom buttons
 			if ($mode == self::WIDGET_EDIT) {
 				$content .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">' . "\n";
-				$content .= Tx_Bib_Utility_Utility::html_submit_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_submit_input(
 					$key_action . '[more_authors]', '+'
 				);
 				$content .= ' ';
-				$content .= Tx_Bib_Utility_Utility::html_submit_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_submit_input(
 					$key_action . '[less_authors]', '-'
 				);
 				$content .= '</div>' . "\n";
@@ -978,9 +978,9 @@ class tx_bib_editor_view {
 			for ($i = 0; $i < sizeof($authors); $i++) {
 				$fn = $pi1->filter_pub_html($authors[$i]['forename'], TRUE);
 				$sn = $pi1->filter_pub_Html($authors[$i]['surname'], TRUE);
-				$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 					$key_data . '[' . $i . '][forename]', $fn);
-				$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+				$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 					$key_data . '[' . $i . '][surname]', $sn);
 			}
 
@@ -1009,20 +1009,20 @@ class tx_bib_editor_view {
 		$attrs['class'] = $pi1->prefixShort . '-editor_input';
 
 		// Fetch page titles
-		$pages = Tx_Bib_Utility_Utility::get_page_titles($pids);
+		$pages = \Ipf\Bib\Utility\Utility::get_page_titles($pids);
 
 		if ($mode == self::WIDGET_SHOW) {
-			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 				$fieldAttr, $value);
 			$content .= strval($pages[$value]);
 
 		} else if ($mode == self::WIDGET_EDIT) {
 			$attrs['name'] = $fieldAttr;
-			$content .= Tx_Bib_Utility_Utility::html_select_input(
+			$content .= \Ipf\Bib\Utility\Utility::html_select_input(
 				$pages, $value, $attrs);
 
 		} else if ($mode == self::WIDGET_SILENT) {
-			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
 				$fieldAttr, $value);
 
 		}
@@ -1214,7 +1214,7 @@ class tx_bib_editor_view {
 	 */
 	function post_db_write_message_items($messages) {
 		$content = '';
-		$messages = Tx_Bib_Utility_Utility::string_counter($messages);
+		$messages = \Ipf\Bib\Utility\Utility::string_counter($messages);
 		$content .= '<ul>' . "\n";
 		foreach ($messages as $msg => $count) {
 			$msg = htmlspecialchars($msg, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
@@ -1321,10 +1321,10 @@ class tx_bib_editor_view {
 		$fields = $this->get_edit_fields($bib_str, TRUE);
 
 		$cond = array();
-		$parts = Tx_Bib_Utility_Utility::explode_trim(',', $this->conf['groups.'][$bib_str . '.']['required']);
+		$parts = \Ipf\Bib\Utility\Utility::explode_trim(',', $this->conf['groups.'][$bib_str . '.']['required']);
 		foreach ($parts as $part) {
 			if (!(strpos($part, '|') === FALSE)) {
-				$cond[] = Tx_Bib_Utility_Utility::explode_trim('|', $part);
+				$cond[] = \Ipf\Bib\Utility\Utility::explode_trim('|', $part);
 			}
 		}
 
@@ -1402,7 +1402,7 @@ class tx_bib_editor_view {
 		$type = 'file_nexist';
 		if ($warn[$type]) {
 			$file = $pub['file_url'];
-			if (Tx_Bib_Utility_Utility::check_file_nexist($file)) {
+			if (\Ipf\Bib\Utility\Utility::check_file_nexist($file)) {
 				$message = $this->get_ll('editor_error_file_nexist');
 				$message = str_replace('%f', $file, $message);
 				$d_err[] = array('type' => $type, 'msg' => $message);

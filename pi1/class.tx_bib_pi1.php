@@ -238,10 +238,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function getStoragePid() {
 		$pidList = array();
 		if (isset ($this->conf['pid_list'])) {
-			$this->pidList = Tx_Bib_Utility_Utility::explode_intval(',', $this->conf['pid_list']);
+			$this->pidList = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->conf['pid_list']);
 		}
 		if (isset ($this->cObj->data['pages'])) {
-			$tmp = Tx_Bib_Utility_Utility::explode_intval(',', $this->cObj->data['pages']);
+			$tmp = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->cObj->data['pages']);
 			$this->pidList = array_merge($pidList, $tmp);
 		}
 	}
@@ -430,14 +430,14 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$groups = $this->conf['export.']['FE_groups_only'];
 			$validFrontendUser = TRUE;
 			if (strlen($groups) > 0) {
-				$validFrontendUser = Tx_Bib_Utility_Utility::check_fe_user_groups($groups);
+				$validFrontendUser = \Ipf\Bib\Utility\Utility::check_fe_user_groups($groups);
 			}
 			//GeneralUtiliy::debug ( array ( $groups, $fe_ok ) );
 
 			// Acquire export modes
 			$modes = $this->conf['export.']['enable_export'];
 			if (strlen($modes) > 0) {
-				$modes = Tx_Bib_Utility_Utility::explode_trim_lower(
+				$modes = \Ipf\Bib\Utility\Utility::explode_trim_lower(
 					',',
 					$modes,
 					TRUE
@@ -479,7 +479,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$validFrontendUser = FALSE;
 		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
 			$groups = $this->conf['FE_edit_groups'];
-			if (Tx_Bib_Utility_Utility::check_fe_user_groups($groups))
+			if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
 				$validFrontendUser = TRUE;
 		}
 
@@ -667,7 +667,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			// The selected year has no publications so select the closest year
 			if (($this->stat['num_all'] > 0) && is_numeric($yearNavigationConfiguration)) {
-				$yearNavigationConfiguration = Tx_Bib_Utility_Utility::find_nearest_int(
+				$yearNavigationConfiguration = \Ipf\Bib\Utility\Utility::find_nearest_int(
 					$yearNavigationConfiguration, $this->stat['years']);
 			}
 			// Append default link variable
@@ -704,7 +704,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		if ($iPP > 0) {
 			$subPage['max'] = floor(($this->stat['num_page'] - 1) / $iPP);
-			$subPage['current'] = Tx_Bib_Utility_Utility::crop_to_range(
+			$subPage['current'] = \Ipf\Bib\Utility\Utility::crop_to_range(
 				$this->piVars['page'], 0, $subPage['max']);
 		}
 
@@ -912,13 +912,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$all = ($rcfg['hide_all'] != 0);
 
 				// Hide on string extensions
-				$ext = Tx_Bib_Utility_Utility::explode_trim_lower(
+				$ext = \Ipf\Bib\Utility\Utility::explode_trim_lower(
 					',', $rcfg['hide_file_ext'], TRUE);
 
 				// Reveal on FE user groups
 				$groups = strtolower($rcfg['FE_user_groups']);
 				if (strpos($groups, 'all') === FALSE) {
-					$groups = Tx_Bib_Utility_Utility::explode_intval(',', $groups);
+					$groups = \Ipf\Bib\Utility\Utility::explode_intval(',', $groups);
 				} else {
 					$groups = 'all';
 				}
@@ -972,14 +972,14 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['years'] = array();
 			$flexFormFilter['ranges'] = array();
 			$ffStr = $this->pi_getFFvalue($flexForm, 'years', $flexFormSheet);
-			$arr = Tx_Bib_Utility_Utility::multi_explode_trim(array(',', "\r", "\n"), $ffStr, TRUE);
+			$arr = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $ffStr, TRUE);
 			foreach ($arr as $y) {
 				if (strpos($y, '-') === FALSE) {
 					if (is_numeric($y))
 						$flexFormFilter['years'][] = intval($y);
 				} else {
 					$range = array();
-					$elms = Tx_Bib_Utility_Utility::explode_trim('-', $y, FALSE);
+					$elms = \Ipf\Bib\Utility\Utility::explode_trim('-', $y, FALSE);
 					if (is_numeric($elms[0]))
 						$range['from'] = intval($elms[0]);
 					if (is_numeric($elms[1]))
@@ -1003,7 +1003,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
 
 			$authors = $this->pi_getFFvalue($flexForm, 'authors', $flexFormSheet);
-			$authors = Tx_Bib_Utility_Utility::multi_explode_trim(array("\r", "\n"), $authors, TRUE);
+			$authors = \Ipf\Bib\Utility\Utility::multi_explode_trim(array("\r", "\n"), $authors, TRUE);
 			foreach ($authors as $a) {
 				$parts = GeneralUtiliy::trimExplode(',', $a);
 				$author = array();
@@ -1086,7 +1086,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter = array();
 			$ids = $this->pi_getFFvalue($flexForm, 'citeids', $flexFormSheet);
 			if (strlen($ids) > 0) {
-				$ids = Tx_Bib_Utility_Utility::multi_explode_trim(array(',', "\r", "\n"), $ids, TRUE);
+				$ids = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $ids, TRUE);
 				$flexFormFilter['ids'] = array_unique($ids);
 				$filter['citeid'] = $flexFormFilter;
 			}
@@ -1099,7 +1099,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
 			$kw = $this->pi_getFFvalue($flexForm, 'tags', $flexFormSheet);
 			if (strlen($kw) > 0) {
-				$words = Tx_Bib_Utility_Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
+				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
 				foreach ($words as &$word) {
 					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
 				}
@@ -1115,7 +1115,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
 			$kw = $this->pi_getFFvalue($flexForm, 'keywords', $flexFormSheet);
 			if (strlen($kw) > 0) {
-				$words = Tx_Bib_Utility_Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
+				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
 				foreach ($words as &$word) {
 					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
 				}
@@ -1131,7 +1131,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
 			$kw = $this->pi_getFFvalue($flexForm, 'search_all', $flexFormSheet);
 			if (strlen($kw) > 0) {
-				$words = Tx_Bib_Utility_Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
+				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
 				foreach ($words as &$word) {
 					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
 				}
@@ -1158,7 +1158,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Publication ids
 		if (is_string($this->piVars['search']['ref_ids'])) {
 			$ids = $this->piVars['search']['ref_ids'];
-			$ids = Tx_Bib_Utility_Utility::explode_intval(',', $ids);
+			$ids = \Ipf\Bib\Utility\Utility::explode_intval(',', $ids);
 
 			if (sizeof($ids) > 0) {
 				$filter['uid'] = $ids;
@@ -1168,7 +1168,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// General search
 		if (is_string($this->piVars['search']['all'])) {
 			$words = $this->piVars['search']['all'];
-			$words = Tx_Bib_Utility_Utility::explode_trim(',', $words, TRUE);
+			$words = \Ipf\Bib\Utility\Utility::explode_trim(',', $words, TRUE);
 			if (sizeof($words) > 0) {
 				$filter['all']['words'] = $words;
 				$filter['all']['rule'] = 1; // AND
@@ -1497,7 +1497,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Handle illegal ampersands
 		if (!(strpos($str, '&') === FALSE)) {
-			$str = Tx_Bib_Utility_Utility::fix_html_ampersand($str);
+			$str = \Ipf\Bib\Utility\Utility::fix_html_ampersand($str);
 		}
 
 		$str = $this->filter_pub_html($str, $hsc);
@@ -1860,7 +1860,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// File url
 		// Check file existance
 		$file_url = trim(strval($pub['file_url']));
-		if (Tx_Bib_Utility_Utility::check_file_nexist($file_url)) {
+		if (\Ipf\Bib\Utility\Utility::check_file_nexist($file_url)) {
 			$pdata['file_url'] = '';
 			$pdata['_file_nexist'] = TRUE;
 		} else {
@@ -1941,9 +1941,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				case 'file_url':
 				case 'web_url':
 				case 'web_url2':
-					$pdata[$f] = Tx_Bib_Utility_Utility::fix_html_ampersand($val);
-					$val = Tx_Bib_Utility_Utility::crop_middle($val, $url_max, $charset);
-					$pdata[$f . '_short'] = Tx_Bib_Utility_Utility::fix_html_ampersand($val);
+					$pdata[$f] = \Ipf\Bib\Utility\Utility::fix_html_ampersand($val);
+					$val = \Ipf\Bib\Utility\Utility::crop_middle($val, $url_max, $charset);
+					$pdata[$f . '_short'] = \Ipf\Bib\Utility\Utility::fix_html_ampersand($val);
 					break;
 				case 'DOI':
 					$pdata[$f] = $val;
@@ -2003,7 +2003,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Editors
 		if (strlen($pdata['editor']) > 0) {
-			$editors = Tx_Bib_Utility_Utility::explode_author_str($pdata['editor']);
+			$editors = \Ipf\Bib\Utility\Utility::explode_author_str($pdata['editor']);
 			$lst = array();
 			foreach ($editors as $ed) {
 				$app = '';
@@ -2014,7 +2014,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 
 			$and = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
-			$pdata['editor'] = Tx_Bib_Utility_Utility::implode_and_last(
+			$pdata['editor'] = \Ipf\Bib\Utility\Utility::implode_and_last(
 				$lst, ', ', $and);
 
 			#nkw
@@ -2026,9 +2026,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Automatic url
-		$order = Tx_Bib_Utility_Utility::explode_trim(',', $this->conf['auto_url_order'], TRUE);
+		$order = \Ipf\Bib\Utility\Utility::explode_trim(',', $this->conf['auto_url_order'], TRUE);
 		$pdata['auto_url'] = $this->getAutoUrl($pdata, $order);
-		$pdata['auto_url_short'] = Tx_Bib_Utility_Utility::crop_middle(
+		$pdata['auto_url_short'] = \Ipf\Bib\Utility\Utility::crop_middle(
 			$pdata['auto_url'], $url_max, $charset);
 
 		// Do data checks
@@ -2324,7 +2324,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 		}
 
-		$res = Tx_Bib_Utility_Utility::implode_and_last($elements, $a_sep, $and);
+		$res = \Ipf\Bib\Utility\Utility::implode_and_last($elements, $a_sep, $and);
 
 		// Restore cObj data
 		$cObj->data = $contentObjectBackup;
@@ -2360,7 +2360,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['author_lfields'] = 'url';
 		if (isset ($conf['authors.']['url_icon_fields'])) {
 			$this->extConf['author_lfields'] =
-					Tx_Bib_Utility_Utility::explode_trim(',',
+					\Ipf\Bib\Utility\Utility::explode_trim(',',
 						$conf['authors.']['url_icon_fields'], TRUE);
 		}
 
@@ -2562,7 +2562,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					$subst_sub = array('', '');
 					$manip_all[] = $this->get_edit_manipulator($pub);
 					$manip_all[] = $this->get_hide_manipulator($pub);
-					$manip_all = Tx_Bib_Utility_Utility::html_layout_table(array($manip_all));
+					$manip_all = \Ipf\Bib\Utility\Utility::html_layout_table(array($manip_all));
 
 					$translator['###MANIPULATORS###'] = $cObj->stdWrap(
 						$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
@@ -2762,7 +2762,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// Enable if usergroup matches
 			if (!$show && isset ($restrictionConfiguration['fe_groups'])) {
 				$groups = $restrictionConfiguration['fe_groups'];
-				if (Tx_Bib_Utility_Utility::check_fe_user_groups($groups))
+				if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
 					$show = TRUE;
 			}
 
@@ -2990,11 +2990,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$exporterClass = '';
 		switch ($mode) {
 			case 'bibtex':
-				$exporterClass = 'Tx_Bib_Utility_Exporter_BibTexExporter';
+				$exporterClass = 'Ipf\\Bib\\Utility\\Exporter\\BibTexExporter';
 				$label = 'export_bibtex';
 				break;
 			case 'xml':
-				$exporterClass = 'Tx_Bib_Utility_Exporter_XmlExporter';
+				$exporterClass = 'Ipf\\Bib\\Utility\\Exporter\\XmlExporter';
 				$label = 'export_xml';
 				break;
 			default:
@@ -3061,10 +3061,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			switch ($mode) {
 				case self::IMP_BIBTEX:
-					$importer = GeneralUtility::makeInstance('Tx_Bib_Utility_Importer_BibTexImporter');
+					$importer = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Importer\\BibTexImporter');
 					break;
 				case self::IMP_XML:
-					$importer = GeneralUtility::makeInstance('Tx_Bib_Utility_Importer_XmlImporter');
+					$importer = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Importer\\XmlImporter');
 					break;
 			}
 			$importer->initialize($this);

@@ -82,7 +82,7 @@ class tx_bib_navi_year extends tx_bib_navi {
 			);
 			if (strlen($cfg['select_class']) > 0)
 				$attribs['class'] = $cfg['select_class'];
-			$btn = Tx_Bib_Utility_Utility::html_select_input(
+			$btn = \Ipf\Bib\Utility\Utility::html_select_input(
 				$pairs, $year, $attribs);
 			$btn = $cObj->stdWrap($btn, $cfg['select.']);
 			$sel .= $btn;
@@ -90,7 +90,7 @@ class tx_bib_navi_year extends tx_bib_navi {
 			$attribs = array();
 			if (strlen($cfg['go_btn_class']) > 0)
 				$attribs['class'] = $cfg['go_btn_class'];
-			$btn = Tx_Bib_Utility_Utility::html_submit_input(
+			$btn = \Ipf\Bib\Utility\Utility::html_submit_input(
 				$this->pi1->prefix_pi1 . '[action][select_year]',
 				$this->pi1->get_ll('button_go'), $attribs);
 			$btn = $cObj->stdWrap($btn, $cfg['go_btn.']);

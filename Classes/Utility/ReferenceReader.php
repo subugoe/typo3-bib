@@ -517,13 +517,13 @@ class Tx_Bib_Utility_ReferenceReader {
 
 		// Filter by UID
 		if (is_array($filter['uid']) && (sizeof($filter['uid']) > 0)) {
-			$csv = Tx_Bib_Utility_Utility::implode_intval(',', $filter['uid']);
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['uid']);
 			$WC[] = $rta . '.uid IN (' . $csv . ')';
 		}
 
 		// Filter by storage PID
 		if (is_array($filter['pid']) && (sizeof($filter['pid']) > 0)) {
-			$csv = Tx_Bib_Utility_Utility::implode_intval(',', $filter['pid']);
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['pid']);
 			$WC[] = $rta . '.pid IN (' . $csv . ')';
 		}
 
@@ -533,7 +533,7 @@ class Tx_Bib_Utility_ReferenceReader {
 			$wca = '';
 			// years
 			if (is_array($f['years']) && (sizeof($f['years']) > 0)) {
-				$csv = Tx_Bib_Utility_Utility::implode_intval(',', $f['years']);
+				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['years']);
 				$wca .= ' ' . $rta . '.year IN (' . $csv . ')' . "\n";
 			}
 			// ranges
@@ -623,7 +623,7 @@ class Tx_Bib_Utility_ReferenceReader {
 		if (is_array($filter['bibtype']) && (sizeof($filter['bibtype']) > 0)) {
 			$f =& $filter['bibtype'];
 			if (is_array($f['types']) && (sizeof($f['types']) > 0)) {
-				$csv = Tx_Bib_Utility_Utility::implode_intval(',', $f['types']);
+				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['types']);
 				$WC[] = $rta . '.bibtype IN (' . $csv . ')';
 			}
 		}
@@ -632,7 +632,7 @@ class Tx_Bib_Utility_ReferenceReader {
 		if (is_array($filter['state']) && (sizeof($filter['state']) > 0)) {
 			$f =& $filter['state'];
 			if (is_array($f['states']) && (sizeof($f['states']) > 0)) {
-				$csv = Tx_Bib_Utility_Utility::implode_intval(',', $f['states']);
+				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['states']);
 				$WC[] = $rta . '.state IN (' . $csv . ')';
 			}
 		}
@@ -990,7 +990,7 @@ class Tx_Bib_Utility_ReferenceReader {
 			$WC[] = 'uid!=' . "'" . intval($uid) . "'";
 		}
 		if (sizeof($this->pid_list) > 0) {
-			$csv = Tx_Bib_Utility_Utility::implode_intval(',', $this->pid_list);
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->pid_list);
 			$WC[] = 'pid IN (' . $csv . ')';
 		}
 		$WC = implode(' AND ', $WC);
@@ -1131,7 +1131,7 @@ class Tx_Bib_Utility_ReferenceReader {
 		}
 		$WC[] = '(' . implode(' OR ', $wca) . ')';
 		if (is_array($pids)) {
-			$csv = Tx_Bib_Utility_Utility::implode_intval(',', $pids);
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $pids);
 			$WC[] = 'pid IN (' . $csv . ')';
 		} else {
 			$WC[] = 'pid=' . intval($pids);

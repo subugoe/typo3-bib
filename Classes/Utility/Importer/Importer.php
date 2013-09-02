@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Utility\Importer;
 
-class Tx_Bib_Utility_Importer_Importer {
+class Importer {
 
 	public $pi1;
 	public $ref_read;
@@ -122,12 +123,12 @@ class Tx_Bib_Utility_Importer_Importer {
 
 		if (sizeof($pids) > 1) {
 			// Fetch page titles
-			$pages = Tx_Bib_Utility_Utility::get_page_titles($pids);
+			$pages = \Ipf\Bib\Utility\Utility::get_page_titles($pids);
 
 			$val = $this->pi1->get_ll('import_storage_info', 'import_storage_info', TRUE);
 			$con .= '<p>' . $val . '</p>' . "\n";
 
-			$val = Tx_Bib_Utility_Utility::html_select_input(
+			$val = \Ipf\Bib\Utility\Utility::html_select_input(
 				$pages,
 				$default_pid,
 				array('name' => $this->pi1->prefixId . '[import_pid]')
@@ -258,7 +259,7 @@ class Tx_Bib_Utility_Importer_Importer {
 
 		// The submit button
 		$val = $this->pi1->get_ll('import_file', 'import_file', TRUE);
-		$btn = Tx_Bib_Utility_Utility::html_submit_input('submit', $val, $btn_attribs);
+		$btn = \Ipf\Bib\Utility\Utility::html_submit_input('submit', $val, $btn_attribs);
 		$con .= '<p>' . $btn . '</p>' . "\n";
 
 		$con .= '</form>';
@@ -359,7 +360,7 @@ class Tx_Bib_Utility_Importer_Importer {
 
 		if (is_array($stat['warnings']) && (count($stat['warnings']) > 0)) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = Tx_Bib_Utility_Utility::string_counter($stat['warnings']);
+			$messages = \Ipf\Bib\Utility\Utility::string_counter($stat['warnings']);
 			foreach ($messages as $msg => $count) {
 				$str = $this->message_times_str($msg, $count);
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -371,7 +372,7 @@ class Tx_Bib_Utility_Importer_Importer {
 
 		if (is_array($stat['errors']) && (count($stat['errors']) > 0)) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = Tx_Bib_Utility_Utility::string_counter($stat['errors']);
+			$messages = \Ipf\Bib\Utility\Utility::string_counter($stat['errors']);
 			foreach ($messages as $msg => $count) {
 				$str = $this->message_times_str($msg, $count);
 				$val .= '<li>' . $str . '</li>' . "\n";

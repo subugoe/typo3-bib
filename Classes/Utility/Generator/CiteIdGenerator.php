@@ -56,7 +56,7 @@ class Tx_Bib_Utility_Generator_CiteIdGenerator {
 	 */
 	function generateBasicId($row) {
 		$authors = $row['authors'];
-		$editors = Tx_Bib_Utility_Utility::explode_author_str($row['editor']);
+		$editors = \Ipf\Bib\Utility\Utility::explode_author_str($row['editor']);
 
 		$persons = array($authors, $editors);
 

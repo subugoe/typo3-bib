@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Utility\Exporter;
 
-class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Exporter {
+class XmlExporter extends Exporter {
 
 	// Pattern replacements
 	public $pat;
@@ -34,13 +35,13 @@ class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Export
 		$charset = $pi1->extConf['charset']['lower'];
 		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $charset );
 		if ($charset != 'utf-8') {
-			$pub = $this->ref_read->change_pub_charset($pub, $charset, 'utf-8');
+			$pub = $this->referenceReader->change_pub_charset($pub, $charset, 'utf-8');
 		}
 
 		$str .= '<reference>' . "\n";
 
 		$entries = array();
-		foreach ($this->ref_read->pubFields as $key) {
+		foreach ($this->referenceReader->pubFields as $key) {
 			$value = '';
 			$append = TRUE;
 
@@ -99,11 +100,11 @@ class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Export
 				}
 				break;
 			case 'bibtype':
-				$value = $this->ref_read->allBibTypes[$value];
+				$value = $this->referenceReader->allBibTypes[$value];
 				$value = $this->xml_format_string($value);
 				break;
 			case 'state':
-				$value = $this->ref_read->allStates[$value];
+				$value = $this->referenceReader->allStates[$value];
 				$value = $this->xml_format_string($value);
 				break;
 			default:

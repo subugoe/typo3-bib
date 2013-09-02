@@ -1,9 +1,17 @@
 <?php
+namespace Ipf\Bib\Utility\Exporter;
 
-class Tx_Bib_Utility_Exporter_Exporter {
+class Exporter {
 
+	/**
+	 * @var tx_bib_pi1
+	 */
 	public $pi1;
-	public $ref_read;
+
+	/**
+	 * @var Tx_Bib_Utility_ReferenceReader
+	 */
+	public $referenceReader;
 	public $filters;
 	public $filter_key;
 	public $page_mode;
@@ -24,11 +32,12 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	/**
 	 * Initializes the export. The argument must be the plugin class
 	 *
+	 * @param tx_bib_pi1 $pi1
 	 * @return void
 	 */
 	function initialize($pi1) {
 		$this->pi1 =& $pi1;
-		$this->ref_read =& $pi1->ref_read;
+		$this->referenceReader =& $pi1->$referenceReader;
 
 		// Setup filters
 		$this->filters = $this->pi1->extConf['filters'];
@@ -55,7 +64,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	/**
 	 * Returns the composed path/file name
 	 *
-	 * @return The file address
+	 * @return String The file address
 	 */
 	function get_file_rel() {
 		return $this->file_path . '/' . $this->file_name;
@@ -65,7 +74,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	/**
 	 * Returns absolute system file path
 	 *
-	 * @return The absolute file path
+	 * @return String The absolute file path
 	 */
 	function get_file_abs() {
 		return PATH_site . $this->get_file_rel();
@@ -76,11 +85,12 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 * Checks if the file exists and is newer than
 	 * the latest change (tstamp) in the publication database
 	 *
-	 * @return TRUE if file exists and is newer than the
+	 * @param String $file
+	 * @return bool TRUE if file exists and is newer than the
 	 *         database content, FALSE otherwise.
 	 */
 	function file_is_newer($file) {
-		$db_time = $this->ref_read->fetch_max_tstamp();
+		$db_time = $this->referenceReader->fetch_max_tstamp();
 
 		if (file_exists($file)) {
 			$ft = filemtime($file);
@@ -111,12 +121,12 @@ class Tx_Bib_Utility_Exporter_Exporter {
 		} else if ($ret == 0) {
 
 			// Initialize db access
-			$this->ref_read->set_filters($this->filters);
-			$this->ref_read->mFetch_initialize();
+			$this->referenceReader->set_filters($this->filters);
+			$this->referenceReader->mFetch_initialize();
 
 			// Setup info array
 			$infoArr = array();
-			$infoArr['pubNum'] = $this->ref_read->mFetch_num();
+			$infoArr['pubNum'] = $this->referenceReader->mFetch_num();
 			$infoArr['index'] = -1;
 
 			// Write pre data
@@ -124,7 +134,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 			$this->sink_write($data);
 
 			// Write publications
-			while ($pub = $this->ref_read->mFetch()) {
+			while ($pub = $this->referenceReader->mFetch()) {
 				$infoArr['index']++;
 				$data = $this->export_format_publication($pub, $infoArr);
 				$this->sink_write($data);
@@ -135,7 +145,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 			$this->sink_write($data);
 
 			// Clean up db access
-			$this->ref_read->mFetch_finish();
+			$this->referenceReader->mFetch_finish();
 
 			$this->info = $infoArr;
 		}
@@ -223,10 +233,8 @@ class Tx_Bib_Utility_Exporter_Exporter {
 			if ($this->file_is_newer($file_abs)
 					&& !$this->pi1->extConf['debug']
 			) {
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'File exists '.$file_abs );
 				return -1;
 			} else {
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Opening file '.$file_abs );
 			}
 
 			$this->file_res = fopen($file_abs, 'w');
@@ -234,7 +242,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 			if ($this->file_res) {
 				$this->file_new = TRUE;
 			} else {
-				$this->error = $this->pi1->extKey . ' error: Could not open file for writing.';
+				$this->error = $this->pi1->extKey . ' error: Could not open file ' . $file_abs . ' for writing.';
 				return 1;
 			}
 		}

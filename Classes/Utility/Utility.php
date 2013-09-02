@@ -1,11 +1,13 @@
 <?php
+namespace Ipf\Bib\Utility;
+
 
 /**
  * This class provides some utility methods and acts mainly a a namespace
  *
  * @author Sebastian Holtermann
  */
-class Tx_Bib_Utility_Utility {
+class Utility {
 
 
 	/**
@@ -34,7 +36,7 @@ class Tx_Bib_Utility_Utility {
 		$titles = array();
 		foreach ($uids as $uid) {
 			$uid = intval($uid);
-			$title = Tx_Bib_Utility_Utility::get_page_title($uid);
+			$title = \Ipf\Bib\Utility\Utility::get_page_title($uid);
 			if ($title) {
 				$titles[$uid] = $title;
 			}
@@ -101,10 +103,10 @@ class Tx_Bib_Utility_Utility {
 				$groups = strtolower($groups);
 				if (!(strpos($groups, 'all') === FALSE))
 					return TRUE;
-				$groups = Tx_Bib_Utility_Utility::explode_intval(',', $groups);
+				$groups = \Ipf\Bib\Utility\Utility::explode_intval(',', $groups);
 			}
 			$cur =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
-			if (Tx_Bib_Utility_Utility::intval_list_check($groups, $cur)) {
+			if (\Ipf\Bib\Utility\Utility::intval_list_check($groups, $cur)) {
 				return TRUE;
 			}
 		}
@@ -142,7 +144,7 @@ class Tx_Bib_Utility_Utility {
 	function html_check_input($name, $value, $checked, $attribs = array()) {
 		if ($checked)
 			$attribs['checked'] = 'checked';
-		return Tx_Bib_Utility_Utility::html_input(
+		return \Ipf\Bib\Utility\Utility::html_input(
 			'checkbox', $name, $value, $attribs);
 	}
 
@@ -155,7 +157,7 @@ class Tx_Bib_Utility_Utility {
 	function html_radio_input($name, $value, $checked, $attribs = array()) {
 		if ($checked)
 			$attribs['checked'] = 'checked';
-		return Tx_Bib_Utility_Utility::html_input(
+		return \Ipf\Bib\Utility\Utility::html_input(
 			'radio', $name, $value, $attribs);
 	}
 
@@ -165,7 +167,7 @@ class Tx_Bib_Utility_Utility {
 	 * @return The submit input element
 	 */
 	static public function html_submit_input($name, $value, $attribs = array()) {
-		return Tx_Bib_Utility_Utility::html_input(
+		return \Ipf\Bib\Utility\Utility::html_input(
 			'submit', $name, $value, $attribs);
 	}
 
@@ -177,7 +179,7 @@ class Tx_Bib_Utility_Utility {
 	 */
 	static public function html_image_input($name, $value, $src, $attribs = array()) {
 		$attribs = array_merge($attribs, array('src' => $src));
-		return Tx_Bib_Utility_Utility::html_input(
+		return \Ipf\Bib\Utility\Utility::html_input(
 			'image', $name, $value, $attribs);
 	}
 
@@ -188,7 +190,7 @@ class Tx_Bib_Utility_Utility {
 	 * @return The hidden input element
 	 */
 	static public function html_hidden_input($name, $value, $attribs = array()) {
-		return Tx_Bib_Utility_Utility::html_input(
+		return \Ipf\Bib\Utility\Utility::html_input(
 			'hidden', $name, $value, $attribs);
 	}
 
@@ -199,7 +201,7 @@ class Tx_Bib_Utility_Utility {
 	 * @return The text input element
 	 */
 	static public function html_text_input($name, $value, $attribs = array()) {
-		return Tx_Bib_Utility_Utility::html_input(
+		return \Ipf\Bib\Utility\Utility::html_input(
 			'text', $name, $value, $attribs);
 	}
 
@@ -323,9 +325,9 @@ class Tx_Bib_Utility_Utility {
 	 */
 	static public function intval_list_check($allowed, $current) {
 		if (!is_array($allowed))
-			$allowed = Tx_Bib_Utility_Utility::explode_intval(',', strval($allowed));
+			$allowed = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($allowed));
 		if (!is_array($current))
-			$current = Tx_Bib_Utility_Utility::explode_intval(',', strval($current));
+			$current = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($current));
 
 		foreach ($current as $cur) {
 			if (in_array($cur, $allowed))
@@ -362,7 +364,7 @@ class Tx_Bib_Utility_Utility {
 					$res[] = strval(intval($val));
 			}
 		} else {
-			$res = Tx_Bib_Utility_Utility::intval_array($list);
+			$res = \Ipf\Bib\Utility\Utility::intval_array($list);
 		}
 
 		return implode($sep, $res);
@@ -384,7 +386,7 @@ class Tx_Bib_Utility_Utility {
 					$res[] = intval($val);
 			}
 		} else {
-			$res = Tx_Bib_Utility_Utility::intval_array($list);
+			$res = \Ipf\Bib\Utility\Utility::intval_array($list);
 		}
 		return $res;
 	}
@@ -460,7 +462,7 @@ class Tx_Bib_Utility_Utility {
 		} else {
 			$sep = strval($seps);
 		}
-		return Tx_Bib_Utility_Utility::explode_trim($sep, $str, $noEmpty);
+		return \Ipf\Bib\Utility\Utility::explode_trim($sep, $str, $noEmpty);
 	}
 
 
@@ -474,7 +476,7 @@ class Tx_Bib_Utility_Utility {
 		$lst = explode(' and ', $str);
 		foreach ($lst as $a_str) {
 			$name = array();
-			$parts = Tx_Bib_Utility_Utility::explode_trim(',', $a_str, TRUE);
+			$parts = \Ipf\Bib\Utility\Utility::explode_trim(',', $a_str, TRUE);
 			if (sizeof($parts) > 1) {
 				$name['forename'] = $parts[1];
 			}
