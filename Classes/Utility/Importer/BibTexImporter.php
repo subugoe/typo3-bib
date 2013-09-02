@@ -410,7 +410,7 @@ class BibTexImporter extends Importer {
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						if (substr($this->buffer, 0, 1) == "{") {
-							//$this->debug( 'Found reference begin' );
+
 							$this->buffer = substr($this->buffer, 1);
 							$this->parserState = self::PARSER_SEARCH_CITE_ID;
 						} else {
@@ -423,7 +423,7 @@ class BibTexImporter extends Importer {
 					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
 					if (strlen($this->buffer) > 0) {
 						if (preg_match('/^[^,\s]+/', $this->buffer) > 0) {
-							//$this->debug( 'Found citeid begin' );
+
 							$this->parserState = self::PARSER_READ_CITE_ID;
 						} else {
 							throw new ParserException ('Invalid citeid beginning');
@@ -506,7 +506,7 @@ class BibTexImporter extends Importer {
 					if (strlen($this->buffer) > 0) {
 						$char = substr($this->buffer, 0, 1);
 						if ($char == "=") {
-							//$this->debug( 'Found Assignment' );
+
 							$this->buffer = substr($this->buffer, 1);
 							$this->parserState = self::PARSER_SEARCH_PAIR_VALUE;
 						} else {

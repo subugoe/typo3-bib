@@ -28,7 +28,7 @@ class PRegExpTranslator {
 	}
 
 
-	protected function translate($str) {
+	public function translate($str) {
 		return preg_replace($this->pattern, $this->replacement, $str);
 	}
 }
