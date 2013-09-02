@@ -4,12 +4,12 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-t3lib_extMgm::addUserTSConfig('
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addUserTSConfig('
 	options.saveDocNew.tx_bib_domain_model_reference=1
 ');
 
 // Extending TypoScript from static template uid=43 to set up userdefined tag:
-t3lib_extMgm::addTypoScript(
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
 	$_EXTKEY,
 	'editorcfg',
 	'
@@ -18,7 +18,7 @@ t3lib_extMgm::addTypoScript(
 	43
 );
 
-t3lib_extMgm::addPItoST43(
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPItoST43(
 	$_EXTKEY,
 	'pi1/class.tx_bib_pi1.php',
 	'_pi1',
@@ -26,11 +26,11 @@ t3lib_extMgm::addPItoST43(
 	1
 );
 
-t3lib_extMgm::addTypoScript(
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
 	$_EXTKEY,
 	'setup',
 		'
-	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference = < plugin.' . t3lib_extMgm::getCN($_EXTKEY) . '_pi1
+	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference = < plugin.' . \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getCN($_EXTKEY) . '_pi1
 	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference.CMD = singleView
 '
 	,43

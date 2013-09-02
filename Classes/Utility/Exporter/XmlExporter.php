@@ -4,10 +4,10 @@ class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Export
 
 	// Pattern replacements
 	public $pat;
-	public $rep; 
+	public $rep;
 
-	function initialize ( $pi1 ) {
-		parent::initialize( $pi1 );
+	function initialize($pi1) {
+		parent::initialize($pi1);
 
 		$this->pat = array();
 		$this->rep = array();
@@ -15,47 +15,49 @@ class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Export
 		$pat =& $this->pat;
 		$rep =& $this->rep;
 
-		$pat[] = '/&/'; $rep[] = '&amp;';
-		$pat[] = '/</'; $rep[] = '&lt;';
-		$pat[] = '/>/'; $rep[] = '&gt;';
+		$pat[] = '/&/';
+		$rep[] = '&amp;';
+		$pat[] = '/</';
+		$rep[] = '&lt;';
+		$pat[] = '/>/';
+		$rep[] = '&gt;';
 
-		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.xml';
+		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.xml';
 	}
 
 
-	function export_format_publication ( $pub, $infoArr = array() )
-	{
+	function export_format_publication($pub, $infoArr = array()) {
 		$str = '';
 
 		$pi1 =& $this->pi1;
 
 		$charset = $pi1->extConf['charset']['lower'];
-		//t3lib_div::debug ( $charset );
-		if ( $charset != 'utf-8' ) {
-			$pub = $this->ref_read->change_pub_charset ( $pub, $charset, 'utf-8' );
+		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $charset );
+		if ($charset != 'utf-8') {
+			$pub = $this->ref_read->change_pub_charset($pub, $charset, 'utf-8');
 		}
 
 		$str .= '<reference>' . "\n";
 
 		$entries = array();
-		foreach ( $this->ref_read->pubFields as $key ) {
+		foreach ($this->ref_read->pubFields as $key) {
 			$value = '';
 			$append = TRUE;
 
-			switch ( $key ) {
+			switch ($key) {
 				case 'authors':
 					$value = $pub['authors'];
-					if ( sizeof ( $value ) == 0 )
+					if (sizeof($value) == 0)
 						$append = FALSE;
 					break;
 				default:
-					$value = trim ( $pub[$key] );
-					if ( ( strlen ( $value ) == 0 ) || ( $value == '0' ) )
+					$value = trim($pub[$key]);
+					if ((strlen($value) == 0) || ($value == '0'))
 						$append = FALSE;
 			}
 
-			if ( $append ) {
-				$str .= $this->xml_format_field ( $key, $value );
+			if ($append) {
+				$str .= $this->xml_format_field($key, $value);
 			}
 		}
 
@@ -65,72 +67,68 @@ class Tx_Bib_Utility_Exporter_XmlExporter extends Tx_Bib_Utility_Exporter_Export
 	}
 
 
-	function xml_format_string ( $value )
-	{
-		$value = preg_replace ( $this->pat, $this->rep, $value );
+	function xml_format_string($value) {
+		$value = preg_replace($this->pat, $this->rep, $value);
 		return $value;
 	}
 
 
-	function xml_format_field ( $key, $value )
-	{
+	function xml_format_field($key, $value) {
 		$str = '';
-		switch ( $key ) {
+		switch ($key) {
 			case 'authors':
-				$authors = is_array ( $value ) ? $value : explode ( ' and ', $value );
+				$authors = is_array($value) ? $value : explode(' and ', $value);
 				$value = '';
-				$aXML = array ( );
-				foreach ( $authors as $a ) {
+				$aXML = array();
+				foreach ($authors as $a) {
 					$a_str = '';
-					$fn = $this->xml_format_string ( $a['forename'] );
-					$sn = $this->xml_format_string ( $a['surname'] );
-					if ( strlen($fn) )
-						$a_str .= '<fn>'.$fn.'</fn>';
-					if ( strlen($sn) )
-						$a_str .= '<sn>'.$sn.'</sn>';
-					if ( strlen($a_str) )
+					$fn = $this->xml_format_string($a['forename']);
+					$sn = $this->xml_format_string($a['surname']);
+					if (strlen($fn))
+						$a_str .= '<fn>' . $fn . '</fn>';
+					if (strlen($sn))
+						$a_str .= '<sn>' . $sn . '</sn>';
+					if (strlen($a_str))
 						$aXML[] = $a_str;
 				}
-				if ( sizeof($aXML) ) {
+				if (sizeof($aXML)) {
 					$value .= "\n";
-					foreach ( $aXML as $a ) {
-						$value .= '<person>'.$a.'</person>'."\n";
+					foreach ($aXML as $a) {
+						$value .= '<person>' . $a . '</person>' . "\n";
 					}
 				}
 				break;
 			case 'bibtype':
 				$value = $this->ref_read->allBibTypes[$value];
-				$value = $this->xml_format_string ( $value );
+				$value = $this->xml_format_string($value);
 				break;
 			case 'state':
 				$value = $this->ref_read->allStates[$value];
-				$value = $this->xml_format_string ( $value );
+				$value = $this->xml_format_string($value);
 				break;
 			default:
-				$value = $this->xml_format_string ( $value );
+				$value = $this->xml_format_string($value);
 		}
-		$str .= '<'.$key.'>'.$value.'</'.$key.'>'."\n";
+		$str .= '<' . $key . '>' . $value . '</' . $key . '>' . "\n";
 
 		return $str;
 	}
 
 
-	function file_intro ( $infoArr = array() )
-	{
-		$str  = '';
-		$str .= '<?xml version="1.0" encoding="utf-8"?>'."\n";
-		$str .= '<bib>'."\n";
-		$str .= '<comment>'."\n";
-		$str .= $this->xml_format_string ( $this->info_text ( $infoArr ) );
-		$str .= '</comment>'."\n";
-		return $str;
-	}
-
-
-	function file_outtro ( $infoArr = array() )
-	{
+	function file_intro($infoArr = array()) {
 		$str = '';
-		$str .= '</bib>'."\n";
+		$str .= '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+		$str .= '<bib>' . "\n";
+		$str .= '<comment>' . "\n";
+		$str .= $this->xml_format_string($this->info_text($infoArr));
+		$str .= '</comment>' . "\n";
+		return $str;
+	}
+
+
+	function file_outtro($infoArr = array()) {
+		$str = '';
+		$str .= '</bib>' . "\n";
 		return $str;
 	}
 

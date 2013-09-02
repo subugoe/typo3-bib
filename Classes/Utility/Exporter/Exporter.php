@@ -26,24 +26,24 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *
 	 * @return void
 	 */
-	function initialize ($pi1) {
+	function initialize($pi1) {
 		$this->pi1 =& $pi1;
-		$this->ref_read  =& $pi1->ref_read;
+		$this->ref_read =& $pi1->ref_read;
 
 		// Setup filters
 		$this->filters = $this->pi1->extConf['filters'];
-		unset ( $this->filters['br_page'] );
+		unset ($this->filters['br_page']);
 
 		// The filter key is used for the filename
-		//$this->filter_key = t3lib_div::shortMD5 ( serialize ( $this->filters ) );
-		$this->filter_key = 'export' . strval ( $GLOBALS['TSFE']->id );
+		//$this->filter_key = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5 ( serialize ( $this->filters ) );
+		$this->filter_key = 'export' . strval($GLOBALS['TSFE']->id);
 
 		// Setup export file path and name
 		$this->file_path = $this->pi1->conf['export.']['path'];
 		if (!strlen($this->file_path))
 			$this->file_path = 'uploads/tx_bib';
 
-		$this->file_name = $this->pi1->extKey.'_'.$this->filter_key.'.dat';
+		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.dat';
 		$this->file_new = FALSE;
 
 		// Disable dynamic
@@ -79,12 +79,12 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 * @return TRUE if file exists and is newer than the
 	 *         database content, FALSE otherwise.
 	 */
-	function file_is_newer ( $file ) {
-		$db_time = $this->ref_read->fetch_max_tstamp ( );
+	function file_is_newer($file) {
+		$db_time = $this->ref_read->fetch_max_tstamp();
 
-		if ( file_exists ( $file ) ) {
-			$ft = filemtime ( $file );
-			if ( !($ft === FALSE) && ($db_time < $ft) ) {
+		if (file_exists($file)) {
+			$ft = filemtime($file);
+			if (!($ft === FALSE) && ($db_time < $ft)) {
 				return TRUE;
 			}
 		}
@@ -93,26 +93,26 @@ class Tx_Bib_Utility_Exporter_Exporter {
 
 
 	/**
-	 * This writes the filtered database content 
+	 * This writes the filtered database content
 	 * to the export file
 	 *
 	 * @return TRUE ond error, FALSE otherwise
 	 */
-	function export ( ) {
+	function export() {
 		$this->file_new = FALSE;
 
 		// Initialize sink
-		$ret = $this->sink_init ( );
-		
-		if ( $ret == 1 ) {
+		$ret = $this->sink_init();
+
+		if ($ret == 1) {
 			return TRUE; // Error
-		} else if ( $ret == -1 ) {
+		} else if ($ret == -1) {
 			return FALSE; // Up to date
-		} else if ( $ret == 0 ) {
+		} else if ($ret == 0) {
 
 			// Initialize db access
-			$this->ref_read->set_filters ( $this->filters );
-			$this->ref_read->mFetch_initialize ();
+			$this->ref_read->set_filters($this->filters);
+			$this->ref_read->mFetch_initialize();
 
 			// Setup info array
 			$infoArr = array();
@@ -120,19 +120,19 @@ class Tx_Bib_Utility_Exporter_Exporter {
 			$infoArr['index'] = -1;
 
 			// Write pre data
-			$data = $this->file_intro ( $infoArr );
-			$this->sink_write ( $data );
+			$data = $this->file_intro($infoArr);
+			$this->sink_write($data);
 
 			// Write publications
-			while ( $pub =  $this->ref_read->mFetch() )  {
+			while ($pub = $this->ref_read->mFetch()) {
 				$infoArr['index']++;
-				$data = $this->export_format_publication ( $pub, $infoArr );
-				$this->sink_write ( $data );
+				$data = $this->export_format_publication($pub, $infoArr);
+				$this->sink_write($data);
 			}
 
 			// Write post data
-			$data = $this->file_outtro ( $infoArr );
-			$this->sink_write ( $data );
+			$data = $this->file_outtro($infoArr);
+			$this->sink_write($data);
 
 			// Clean up db access
 			$this->ref_read->mFetch_finish();
@@ -141,7 +141,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 		}
 
 		// Clean up sink
-		$this->sink_finish ( );
+		$this->sink_finish();
 
 		return FALSE;
 	}
@@ -152,8 +152,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *
 	 * @return The export string
 	 */
-	function export_format_publication ( $pub, $infoArr = array() )
-	{
+	function export_format_publication($pub, $infoArr = array()) {
 		return '';
 	}
 
@@ -163,8 +162,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *
 	 * @return The file header string
 	 */
-	function file_intro ( $infoArr = array() )
-	{
+	function file_intro($infoArr = array()) {
 		return '';
 	}
 
@@ -174,8 +172,7 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *
 	 * @return The file header string
 	 */
-	function file_outtro ( $infoArr = array() )
-	{
+	function file_outtro($infoArr = array()) {
 		return '';
 	}
 
@@ -185,14 +182,14 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *
 	 * @return A filter information string
 	 */
-	function info_text ( $infoArr = array() ) {
+	function info_text($infoArr = array()) {
 		$str = '';
 
-		$num = intval ( $infoArr['pubNum'] );
+		$num = intval($infoArr['pubNum']);
 
 		$str .= 'This file was created by the TYPO3 extension' . "\n";
 		$str .= $this->pi1->extKey;
-		if ( is_array ( $this->EM_CONF ) ) {
+		if (is_array($this->EM_CONF)) {
 			$str .= ' version ' . $this->EM_CONF['version'] . "\n";
 		}
 		$str .= "\n";
@@ -200,10 +197,10 @@ class Tx_Bib_Utility_Exporter_Exporter {
 		$str .= 'Creation date: ' . date('Y-m-d') . "\n";
 		$str .= 'Creation time: ' . date('H-i-s') . "\n";
 
-		if ( $num >= 0 ) {
-			$str .= '--- Number of references'."\n";
-			$str .= ''.$num."\n";
-			$str .= ''."\n";
+		if ($num >= 0) {
+			$str .= '--- Number of references' . "\n";
+			$str .= '' . $num . "\n";
+			$str .= '' . "\n";
 		}
 
 		return $str;
@@ -216,28 +213,28 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	 *  1 - Sink failed
 	 * -1 - Sink is up to date
 	 */
-	function sink_init ( ) {
-		if ( $this->dynamic ) {
+	function sink_init() {
+		if ($this->dynamic) {
 			$this->data = '';
 		} else {
 			// Open file
-			$file_abs = $this->get_file_abs ( );
-	
-			if ( $this->file_is_newer ( $file_abs ) 
-				&& !$this->pi1->extConf['debug'] ) 
-			{
-				//t3lib_div::debug ( 'File exists '.$file_abs );
+			$file_abs = $this->get_file_abs();
+
+			if ($this->file_is_newer($file_abs)
+					&& !$this->pi1->extConf['debug']
+			) {
+				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'File exists '.$file_abs );
 				return -1;
 			} else {
-				//t3lib_div::debug ( 'Opening file '.$file_abs );
+				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Opening file '.$file_abs );
 			}
-	
-			$this->file_res = fopen ( $file_abs, 'w' );
-	
-			if ( $this->file_res ) {
+
+			$this->file_res = fopen($file_abs, 'w');
+
+			if ($this->file_res) {
 				$this->file_new = TRUE;
 			} else {
-				$this->error = $this->pi1->extKey.' error: Could not open file for writing.';
+				$this->error = $this->pi1->extKey . ' error: Could not open file for writing.';
 				return 1;
 			}
 		}
@@ -246,21 +243,21 @@ class Tx_Bib_Utility_Exporter_Exporter {
 	}
 
 
-	function sink_write ( $data ) {
-		if ( $this->dynamic ) {
+	function sink_write($data) {
+		if ($this->dynamic) {
 			$this->data .= $data;
 		} else {
-			fwrite ( $this->file_res, $data );
+			fwrite($this->file_res, $data);
 		}
 	}
 
 
 	function sink_finish() {
-		if ( $this->dynamic ) {
+		if ($this->dynamic) {
 			// Nothing
 		} else {
-			if ( $this->file_res ) {
-				fclose ( $this->file_res );
+			if ($this->file_res) {
+				fclose($this->file_res);
 				$this->file_res = FALSE;
 			}
 		}

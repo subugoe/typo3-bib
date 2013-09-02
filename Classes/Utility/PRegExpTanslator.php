@@ -6,11 +6,11 @@ class Tx_Bib_Utility_PRegExpTranslator {
 	var $rep;
 
 	public function __construct() {
-		$this->clear ( );
+		$this->clear();
 	}
 
 
-	function clear () {
+	function clear() {
 		$this->pat = array();
 		$this->rep = array();
 	}
@@ -23,7 +23,7 @@ class Tx_Bib_Utility_PRegExpTranslator {
 
 
 	function translate($str) {
-		return preg_replace( $this->pat, $this->rep, $str);
+		return preg_replace($this->pat, $this->rep, $str);
 	}
 }
 

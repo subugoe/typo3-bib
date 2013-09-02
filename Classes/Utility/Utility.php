@@ -67,7 +67,7 @@ class Tx_Bib_Utility_Utility {
 	 * @return The string filtered for html output
 	 */
 	static public function fix_html_ampersand($str) {
-		//t3lib_div::debug ( array( 'pre: ' => $str ) );
+		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'pre: ' => $str ) );
 
 		$pattern = '/&(([^;]|$){8})/';
 		while (preg_match($pattern, $str)) {
@@ -79,7 +79,7 @@ class Tx_Bib_Utility_Utility {
 		};
 		$str = str_replace('&;', '&amp;;', $str);
 
-		//t3lib_div::debug ( array( 'post: ' => $str ) );
+		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'post: ' => $str ) );
 		return $str;
 	}
 
@@ -513,7 +513,7 @@ class Tx_Bib_Utility_Utility {
 	 * @return FALSE if the file exists TRUE if it does not exist
 	 */
 	static public function check_file_nexist($file) {
-		//t3lib_div::debug ( array ( 'check_file_nexist ' => $file ) );
+		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'check_file_nexist ' => $file ) );
 		if ((strlen($file) > 0) &&
 				(substr($file, 0, 10) == 'fileadmin/')
 		) {
