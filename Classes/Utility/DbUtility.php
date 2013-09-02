@@ -1,24 +1,44 @@
 <?php
+namespace Ipf\Bib\Utility;
 
 /**
  * This class provides the reference database interface
  * and some utility methods
  *
  * @author Sebastian Holtermann
+ * @author Ingo Pfennigstorf
  */
-class Tx_Bib_Utility_DbUtility {
+class DbUtility {
 
 	/**
-	 * @var Tx_Bib_Utility_ReferenceReader
+	 * @var \Ipf\Bib\Utility\ReferenceReader
 	 */
-	public $ref_read;
-	public $charset;
+	public $referenceReader;
 
-	// Full text caching variables
-	public $ft_max_num;
-	public $ft_max_sec;
-	public $pdftotext_bin;
-	public $tmp_dir;
+	/**
+	 * @var String
+	 */
+	public $charset = 'UTF-8';
+
+	/**
+	 * @var int
+	 */
+	public $ft_max_num = 100;
+
+	/**
+	 * @var int
+	 */
+	public $ft_max_sec = 3;
+
+	/**
+	 * @var string
+	 */
+	public $pdftotext_bin = 'pdftotext';
+
+	/**
+	 * @var string
+	 */
+	public $tmp_dir = '/tmp';
 
 
 	/**
@@ -26,19 +46,12 @@ class Tx_Bib_Utility_DbUtility {
 	 *
 	 * @return void
 	 */
-	function initialize($ref_read = FALSE) {
-		if (is_object($ref_read)) {
-			$this->ref_read =& $ref_read;
+	function initialize($referenceReader = FALSE) {
+		if (is_object($referenceReader)) {
+			$this->referenceReader =& $referenceReader;
 		} else {
-			$this->ref_read = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_ReferenceReader');
+			$this->referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		}
-
-		$this->charset = 'UTF-8';
-
-		$this->ft_max_num = 100;
-		$this->ft_max_sec = 3;
-		$this->pdftotext_bin = 'pdftotext';
-		$this->tmp_dir = '/tmp';
 	}
 
 
@@ -48,20 +61,20 @@ class Tx_Bib_Utility_DbUtility {
 	 * @return The number of deleted authors
 	 */
 	function delete_no_ref_authors() {
-		$aT =& $this->ref_read->authorTable;
-		$sT =& $this->ref_read->aShipTable;
+		$authorTable =& $this->referenceReader->authorTable;
+		$authorshipTable =& $this->referenceReader->aShipTable;
 		$count = 0;
 
-		$sel = 'SELECT t_au.uid' . "\n";
-		$sel .= ' FROM ' . $aT . ' AS t_au';
-		$sel .= ' LEFT OUTER JOIN ' . $sT . ' AS t_as ' . "\n";
-		$sel .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
-		$sel .= ' WHERE t_au.deleted = 0 ' . "\n";
-		$sel .= ' GROUP BY t_au.uid ' . "\n";
-		$sel .= ' HAVING count(t_as.uid) = 0;' . "\n";
+		$selectQuery = 'SELECT t_au.uid' . "\n";
+		$selectQuery .= ' FROM ' . $authorTable . ' AS t_au';
+		$selectQuery .= ' LEFT OUTER JOIN ' . $authorshipTable . ' AS t_as ' . "\n";
+		$selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
+		$selectQuery .= ' WHERE t_au.deleted = 0 ' . "\n";
+		$selectQuery .= ' GROUP BY t_au.uid ' . "\n";
+		$selectQuery .= ' HAVING count(t_as.uid) = 0;' . "\n";
 
 		$uids = array();
-		$res = $GLOBALS['TYPO3_DB']->sql_query($sel);
+		$res = $GLOBALS['TYPO3_DB']->sql_query($selectQuery);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$uids[] = $row['uid'];
 		}
@@ -70,7 +83,7 @@ class Tx_Bib_Utility_DbUtility {
 		if ($count > 0) {
 			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $uids);
 
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($aT,
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($authorTable,
 					'uid IN ( ' . $csv . ')', array('deleted' => '1'));
 		}
 		return $count;
@@ -80,22 +93,23 @@ class Tx_Bib_Utility_DbUtility {
 	/**
 	 * Reads the full text generation configuration
 	 *
+	 * @param array $configuration
 	 * @return void
 	 */
-	function read_full_text_conf($cfg) {
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $cfg );
-		if (is_array($cfg)) {
-			if (isset ($cfg['max_num'])) {
-				$this->ft_max_num = intval($cfg['max_num']);
+	public function read_full_text_conf($configuration) {
+
+		if (is_array($configuration)) {
+			if (isset ($configuration['max_num'])) {
+				$this->ft_max_num = intval($configuration['max_num']);
 			}
-			if (isset ($cfg['max_sec'])) {
-				$this->ft_max_sec = intval($cfg['max_sec']);
+			if (isset ($configuration['max_sec'])) {
+				$this->ft_max_sec = intval($configuration['max_sec']);
 			}
-			if (isset ($cfg['pdftotext_bin'])) {
-				$this->pdftotext_bin = trim($cfg['pdftotext_bin']);
+			if (isset ($configuration['pdftotext_bin'])) {
+				$this->pdftotext_bin = trim($configuration['pdftotext_bin']);
 			}
-			if (isset ($cfg['tmp_dir'])) {
-				$this->tmp_dir = trim($cfg['tmp_dir']);
+			if (isset ($configuration['tmp_dir'])) {
+				$this->tmp_dir = trim($configuration['tmp_dir']);
 			}
 		}
 	}
@@ -107,7 +121,7 @@ class Tx_Bib_Utility_DbUtility {
 	 * @return An array with some statistical data
 	 */
 	public function update_full_text_all($force = FALSE) {
-		$rT =& $this->ref_read->refTable;
+		$rT =& $this->referenceReader->refTable;
 		$stat = array();
 		$stat['updated'] = array();
 		$stat['errors'] = array();
@@ -117,14 +131,14 @@ class Tx_Bib_Utility_DbUtility {
 
 		$WC = array();
 
-		if (sizeof($this->ref_read->pid_list) > 0) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->ref_read->pid_list);
+		if (sizeof($this->referenceReader->pid_list) > 0) {
+			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->referenceReader->pid_list);
 			$WC[] = 'pid IN (' . $csv . ')';
 		}
 		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
 		$WC = implode(' AND ', $WC);
-		$WC .= $this->ref_read->enable_fields($rT);
+		$WC .= $this->referenceReader->enable_fields($rT);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $rT, $WC);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$uids[] = intval($row['uid']);
@@ -162,7 +176,7 @@ class Tx_Bib_Utility_DbUtility {
 	 * @return Not defined
 	 */
 	function update_full_text($uid, $force = FALSE) {
-		$rT =& $this->ref_read->refTable;
+		$rT =& $this->referenceReader->refTable;
 		$db =& $GLOBALS['TYPO3_DB'];
 
 		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'Updating full text' => $uid ) );
@@ -180,9 +194,7 @@ class Tx_Bib_Utility_DbUtility {
 		$file_start = substr($file, 0, 9);
 		$file_end = substr($file_low, -4, 4);
 		$file_exists = FALSE;
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'file' => $file ) );
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'file_start' => $file_start ) );
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'file_end' => $file_end ) );
+
 		if ((strlen($file) > 0)
 				&& ($file_start == 'fileadmin')
 				&& ($file_end == '.pdf')
@@ -215,10 +227,10 @@ class Tx_Bib_Utility_DbUtility {
 			}
 
 			if ($clear) {
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Clearing full_text_cache for ' . $WC );
+
 				$db_update = TRUE;
 			} else {
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Keeping full_text_cache for ' . $WC );
+
 				return FALSE;
 			}
 		}
@@ -244,7 +256,6 @@ class Tx_Bib_Utility_DbUtility {
 				$err['msg'] = 'Could not create temporary file in ' . strval($this->tmp_dir);
 				return $err;
 			}
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'tmp_dir' => $this->tmp_dir, 'target' => $target ) );
 
 			// Compose and execute command
 			$charset = strtoupper($this->charset);
@@ -257,7 +268,6 @@ class Tx_Bib_Utility_DbUtility {
 			}
 			$cmd .= ' ' . $file_shell;
 			$cmd .= ' ' . $target_shell;
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'cmd' => $cmd ) );
 
 			$cmd_txt = array();
 			$retval = FALSE;
@@ -276,15 +286,13 @@ class Tx_Bib_Utility_DbUtility {
 			// Delete temporary text file
 			unlink($target);
 
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $full_text );
-
 			$db_update = TRUE;
 			$db_data['full_text'] = $full_text;
 			$db_data['full_text_file_url'] = $pub['file_url'];
 		}
 
 		if ($db_update) {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Updating full_text_cache ' );
+
 			$ret = $db->exec_UPDATEquery($rT, $WC, $db_data);
 			if ($ret == FALSE) {
 				$err = array();
@@ -300,9 +308,8 @@ class Tx_Bib_Utility_DbUtility {
 }
 
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.Tx_Bib_Utility_DbUtility.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/res/class.Tx_Bib_Utility_DbUtility.php']);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']);
 }
-
 
 ?>

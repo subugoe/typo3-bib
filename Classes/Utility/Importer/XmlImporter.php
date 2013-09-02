@@ -1,28 +1,39 @@
 <?php
+namespace Ipf\Bib\Utility\Importer;
 
-class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Importer {
+class XmlImporter extends Importer {
 
-	function initialize($pi1) {
+	/**
+	 * @param \tx_bib_pi1 $pi1
+	 */
+	public function initialize($pi1) {
+
 		parent::initialize($pi1);
-		$this->import_type = $pi1->IMP_XML;
+
+		$this->import_type = $pi1::IMP_XML;
 	}
 
-	function import_pre_info() {
-		$res = '';
+	/**
+	 * @return string
+	 */
+	protected function import_pre_info() {
+		$content = '';
 
 		$val = $this->pi1->get_ll('import_xml_title', 'import_xml_title', TRUE);
-		$res .= '<p>' . $val . '</p>' . "\n";
+		$content .= '<p>' . $val . '</p>' . "\n";
 
-		return $res;
+		return $content;
 	}
 
-
-	function import_state_2() {
-		$stat =& $this->stat;
+	/**
+	 * @return string
+	 */
+	protected function import_state_2() {
+		$stat =& $this->statistics;
 		$action = $this->pi1->get_link_url(array('import_state' => 2));
-		$con = '';
+		$content = '';
 
-		$stat =& $this->stat;
+		$stat =& $this->statistics;
 		$stat['file_name'] = $_FILES['ImportFile']['name'];
 		$stat['file_size'] = $_FILES['ImportFile']['size'];
 
@@ -44,28 +55,28 @@ class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Import
 				$this->save_publication($pub);
 			}
 		}
-		return $con;
+		return $content;
 	}
 
-
-	function parse_xml_pubs($str) {
+	/**
+	 * @param $xmlPublications
+	 * @return array|string
+	 */
+	protected function parse_xml_pubs($xmlPublications) {
 		$parser = xml_parser_create();
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
-		$parse_ret = xml_parse_into_struct($parser, $str, $tags);
+		$parse_ret = xml_parse_into_struct($parser, $xmlPublications, $tags);
 		xml_parser_free($parser);
 
 		if ($parse_ret == 0) {
 			return 'File is not valid XML';
 		}
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $tags );
-
 		$refFields = array();
-		foreach ($this->ref_read->refFields as $field) {
+		foreach ($this->referenceReader->refFields as $field) {
 			$refFields[] = strtolower($field);
 		}
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $refFields );
 
 		$pubs = array();
 		$startlevel = 0;
@@ -110,7 +121,7 @@ class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Import
 								if ($type == 'complete') {
 									switch ($tag_low) {
 										case 'bibtype':
-											foreach ($this->ref_read->allBibTypes as $ii => $bib) {
+											foreach ($this->referenceReader->allBibTypes as $ii => $bib) {
 												if (strtolower($value) == $bib) {
 													$value = $ii;
 													break;
@@ -118,7 +129,7 @@ class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Import
 											}
 											break;
 										case 'state':
-											foreach ($this->ref_read->allStates as $ii => $state) {
+											foreach ($this->referenceReader->allStates as $ii => $state) {
 												if (strtolower($value) == $state) {
 													$value = $ii;
 													break;
@@ -128,10 +139,10 @@ class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Import
 										default:
 									}
 									// Apply value
-									if (in_array($tag_low, $this->ref_read->refFields)) {
+									if (in_array($tag_low, $this->referenceReader->refFields)) {
 										$pub[$tag_low] = $value;
 									} else {
-										if (in_array($tag_up, $this->ref_read->refFields)) {
+										if (in_array($tag_up, $this->referenceReader->refFields)) {
 											$pub[$tag_up] = $value;
 										} else {
 											$pub[$tag] = $value;
@@ -139,7 +150,7 @@ class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Import
 									}
 								} else {
 									// Unknown field
-									$this->stat['warnings'][] = 'Ignored field: ' . $tag;
+									$this->statistics['warnings'][] = 'Ignored field: ' . $tag;
 								}
 							} else
 								if (($tag == 'reference') && ($type == 'close')) {
@@ -148,7 +159,7 @@ class Tx_Bib_Utility_Importer_XmlImporter extends Tx_Bib_Utility_Importer_Import
 									$pubs[] = $pub;
 								} else {
 									// Unknown field
-									$this->stat['warnings'][] = 'Ignored field: ' . $tag;
+									$this->statistics['warnings'][] = 'Ignored field: ' . $tag;
 								}
 					} else {
 						// In authors

@@ -13,7 +13,7 @@ class tx_bib_editor_view {
 	public $conf;
 
 	/**
-	 * @var Tx_Bib_Utility_ReferenceReader
+	 * @var \Ipf\Bib\Utility\ReferenceReader
 	 */
 	public $referenceReader;
 

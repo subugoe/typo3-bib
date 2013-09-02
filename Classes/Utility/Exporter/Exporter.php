@@ -4,14 +4,18 @@ namespace Ipf\Bib\Utility\Exporter;
 class Exporter {
 
 	/**
-	 * @var tx_bib_pi1
+	 * @var \tx_bib_pi1
 	 */
 	public $pi1;
 
 	/**
-	 * @var Tx_Bib_Utility_ReferenceReader
+	 * @var \Ipf\Bib\Utility\ReferenceReader
 	 */
 	public $referenceReader;
+
+	/**
+	 * @var array
+	 */
 	public $filters;
 	public $filter_key;
 	public $page_mode;
@@ -27,24 +31,23 @@ class Exporter {
 	public $info;
 	public $error;
 
-	public $EM_CONF;
+	public $extensionManagerConfiguration;
 
 	/**
 	 * Initializes the export. The argument must be the plugin class
 	 *
-	 * @param tx_bib_pi1 $pi1
+	 * @param \tx_bib_pi1 $pi1
 	 * @return void
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		$this->pi1 =& $pi1;
-		$this->referenceReader =& $pi1->$referenceReader;
+		$this->referenceReader =& $pi1->referenceReader;
 
 		// Setup filters
 		$this->filters = $this->pi1->extConf['filters'];
 		unset ($this->filters['br_page']);
 
 		// The filter key is used for the filename
-		//$this->filter_key = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5 ( serialize ( $this->filters ) );
 		$this->filter_key = 'export' . strval($GLOBALS['TSFE']->id);
 
 		// Setup export file path and name
@@ -106,7 +109,7 @@ class Exporter {
 	 * This writes the filtered database content
 	 * to the export file
 	 *
-	 * @return TRUE ond error, FALSE otherwise
+	 * @return bool TRUE ond error, FALSE otherwise
 	 */
 	function export() {
 		$this->file_new = FALSE;
@@ -160,7 +163,7 @@ class Exporter {
 	/**
 	 * Formats one publication for the export
 	 *
-	 * @return The export string
+	 * @return string The export string
 	 */
 	function export_format_publication($pub, $infoArr = array()) {
 		return '';
@@ -170,7 +173,7 @@ class Exporter {
 	/**
 	 * Returns the file intro
 	 *
-	 * @return The file header string
+	 * @return string The file header string
 	 */
 	function file_intro($infoArr = array()) {
 		return '';
@@ -180,7 +183,7 @@ class Exporter {
 	/**
 	 * Returns the file outtro
 	 *
-	 * @return The file header string
+	 * @return string The file header string
 	 */
 	function file_outtro($infoArr = array()) {
 		return '';
@@ -190,32 +193,31 @@ class Exporter {
 	/**
 	 * Returns a general information text for the exported dataset
 	 *
-	 * @return A filter information string
+	 * @return string A filter information string
 	 */
 	function info_text($infoArr = array()) {
-		$str = '';
+		$content = '';
 
 		$num = intval($infoArr['pubNum']);
 
-		$str .= 'This file was created by the TYPO3 extension' . "\n";
-		$str .= $this->pi1->extKey;
-		if (is_array($this->EM_CONF)) {
-			$str .= ' version ' . $this->EM_CONF['version'] . "\n";
+		$content .= 'This file was created by the TYPO3 extension' . "\n";
+		$content .= $this->pi1->extKey;
+		if (is_array($this->extensionManagerConfiguration)) {
+			$content .= ' version ' . $this->extensionManagerConfiguration['version'] . "\n";
 		}
-		$str .= "\n";
-		$str .= '--- Timezone: ' . date('T') . "\n";
-		$str .= 'Creation date: ' . date('Y-m-d') . "\n";
-		$str .= 'Creation time: ' . date('H-i-s') . "\n";
+		$content .= "\n";
+		$content .= '--- Timezone: ' . date('T') . "\n";
+		$content .= 'Creation date: ' . date('Y-m-d') . "\n";
+		$content .= 'Creation time: ' . date('H-i-s') . "\n";
 
 		if ($num >= 0) {
-			$str .= '--- Number of references' . "\n";
-			$str .= '' . $num . "\n";
-			$str .= '' . "\n";
+			$content .= '--- Number of references' . "\n";
+			$content .= '' . $num . "\n";
+			$content .= '' . "\n";
 		}
 
-		return $str;
+		return $content;
 	}
-
 
 	/*
 	 * Return codes
@@ -250,7 +252,6 @@ class Exporter {
 		return 0;
 	}
 
-
 	function sink_write($data) {
 		if ($this->dynamic) {
 			$this->data .= $data;
@@ -258,7 +259,6 @@ class Exporter {
 			fwrite($this->file_res, $data);
 		}
 	}
-
 
 	function sink_finish() {
 		if ($this->dynamic) {

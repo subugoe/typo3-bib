@@ -1,22 +1,21 @@
 <?php
 namespace Ipf\Bib\Utility\Importer;
 
-class tx_bib_Translator_Exception extends \Exception {
-}
-
+use \Ipf\Bib\Exception\ParserException;
+use \Ipf\Bib\Exception\TranslatorException;
 
 /**
  * This parser follows the bibtex format described here
  * http://artis.imag.fr/~Xavier.Decoret/resources/xdkbibtex/bibtex_summary.html
  */
-class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
+class BibTexImporter extends Importer {
 
 	/**
 	 * Bibtex translator
 	 *
-	 * @var Tx_Bib_Utility_PRegExpTranslator
+	 * @var \Ipf\Bib\Utility\PRegExpTranslator
 	 */
-	public $bt;
+	public $pRegExpTranslator;
 
 	// The parser state
 	public $parserState;
@@ -49,21 +48,22 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 	public $raw_ref;
 	public $raw_refs;
 
-	public $pubKeys;
+	/**
+	 * @var array
+	 */
+	public $pubKeys =  array();
 	public $pubKeyMap;
 
 	/**
-	 * @param tx_bib_pi1 $pi1
+	 * @param \tx_bib_pi1 $pi1
 	 */
 	public function initialize($pi1) {
+
 		parent::initialize($pi1);
 
 		$this->import_type = $pi1::IMP_BIBTEX;
 
-		$this->bt = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_PRegExpTranslator');
-		$bt =& $this->bt;
-
-		$bt = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_PRegExpTranslator');
+		$pRegExpTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
 
 		// Local characters
 		$replace = array(
@@ -75,31 +75,31 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 		);
 
 		foreach ($replace as $key => $val) {
-			$bt->push('/\\\\' . $key . '\{(\w)\}' . '/', $val);
-			$bt->push('/\{\\\\' . $key . '(\w)\}' . '/', $val);
-			$bt->push('/\\\\' . $key . '(\w)' . '/', $val);
+			$pRegExpTranslator->push('/\\\\' . $key . '\{(\w)\}' . '/', $val);
+			$pRegExpTranslator->push('/\{\\\\' . $key . '(\w)\}' . '/', $val);
+			$pRegExpTranslator->push('/\\\\' . $key . '(\w)' . '/', $val);
 		}
 
-		$bt->push('/\\\\c\\{([cC])\\}/', '&\\1cedil;');
+		$pRegExpTranslator->push('/\\\\c\\{([cC])\\}/', '&\\1cedil;');
 
-		$bt->push('/{\\\\ss}/', '&szlig;');
-		$bt->push('/\\\\ss([^\w]|$)/', '&szlig;\\1');
+		$pRegExpTranslator->push('/{\\\\ss}/', '&szlig;');
+		$pRegExpTranslator->push('/\\\\ss([^\w]|$)/', '&szlig;\\1');
 
-		$bt->push('/\{\\\\(ae|AE)\}/', '&\\1lig;');
-		$bt->push('/\\\\(ae|AE)([^\w]|$)/', '&\\1lig;\\2');
+		$pRegExpTranslator->push('/\{\\\\(ae|AE)\}/', '&\\1lig;');
+		$pRegExpTranslator->push('/\\\\(ae|AE)([^\w]|$)/', '&\\1lig;\\2');
 
-		$bt->push('/\{\\\\([a-zA-Z])\\1\}/', '&\\1ring;');
-		$bt->push('/\\\\([a-zA-Z])\\1([^\w]|$)/', '&\\1ring;\\2');
+		$pRegExpTranslator->push('/\{\\\\([a-zA-Z])\\1\}/', '&\\1ring;');
+		$pRegExpTranslator->push('/\\\\([a-zA-Z])\\1([^\w]|$)/', '&\\1ring;\\2');
 
-		$bt->push('/\{\\\\([oO])\}/', '&\\1slash;');
-		$bt->push('/\\\\([oO])([^\w]|$)/', '&\\1slash;\\2');
+		$pRegExpTranslator->push('/\{\\\\([oO])\}/', '&\\1slash;');
+		$pRegExpTranslator->push('/\\\\([oO])([^\w]|$)/', '&\\1slash;\\2');
 
 
-		$bt->push('/\{\\\\euro\}/', '&euro;');
-		$bt->push('/\\\\euro([^\w]|$)/', '&euro;\\1');
+		$pRegExpTranslator->push('/\{\\\\euro\}/', '&euro;');
+		$pRegExpTranslator->push('/\\\\euro([^\w]|$)/', '&euro;\\1');
 
-		$bt->push('/\{\\\\pounds\}/', '&pound;');
-		$bt->push('/\\\\pounds([^\w]|$)/', '&pound;\\1');
+		$pRegExpTranslator->push('/\{\\\\pounds\}/', '&pound;');
+		$pRegExpTranslator->push('/\\\\pounds([^\w]|$)/', '&pound;\\1');
 
 
 		// Greek characters
@@ -141,24 +141,24 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 		);
 
 		foreach ($replace as $key => $val) {
-			$bt->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
+			$pRegExpTranslator->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
 		}
 
 		// Lesser, greater, amp
-		$bt->push('/\\\\\&/', '&amp;');
-		$bt->push('/</', '&lt;');
-		$bt->push('/>/', '&gt;');
+		$pRegExpTranslator->push('/\\\\\&/', '&amp;');
+		$pRegExpTranslator->push('/</', '&lt;');
+		$pRegExpTranslator->push('/>/', '&gt;');
 
 		// Environments
-		$bt->push('/\\\\emph\{([^\{]+)\}/', '<em>\\1</em>');
+		$pRegExpTranslator->push('/\\\\emph\{([^\{]+)\}/', '<em>\\1</em>');
 
 		// Mathematics
 
 		// Math expressions
-		$bt->push('/([^\\\\])\\^\{\\\\circ\}/', '\\1&deg;');
-		$bt->push('/\\\\sqrt([^\w]|$)/', '&radic;\\1');
-		$bt->push('/([^\\\\])\\^\{([^\{]+)\}/', '\\1<sup>\\2</sup>');
-		$bt->push('/([^\\\\])\\_\{([^\{]+)\}/', '\\1<sub>\\2</sub>');
+		$pRegExpTranslator->push('/([^\\\\])\\^\{\\\\circ\}/', '\\1&deg;');
+		$pRegExpTranslator->push('/\\\\sqrt([^\w]|$)/', '&radic;\\1');
+		$pRegExpTranslator->push('/([^\\\\])\\^\{([^\{]+)\}/', '\\1<sup>\\2</sup>');
+		$pRegExpTranslator->push('/([^\\\\])\\_\{([^\{]+)\}/', '\\1<sub>\\2</sub>');
 
 
 		$replace = array(
@@ -198,43 +198,42 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 		);
 
 		foreach ($replace as $key => $val) {
-			$bt->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
+			$pRegExpTranslator->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
 		}
 
 		// Environment markers
-		$bt->push('/\\\\\(/', '');
-		$bt->push('/\\\\\)/', '');
+		$pRegExpTranslator->push('/\\\\\(/', '');
+		$pRegExpTranslator->push('/\\\\\)/', '');
 
-		$bt->push('/(^|[^\\\\])\$\$/', '\\1');
-		$bt->push('/(^|[^\\\\])\$/', '\\1');
+		$pRegExpTranslator->push('/(^|[^\\\\])\$\$/', '\\1');
+		$pRegExpTranslator->push('/(^|[^\\\\])\$/', '\\1');
 
 		// Miscellaneous
-		$bt->push('/\\\\verb(.)([^\1]?+)\1/', '\2');
+		$pRegExpTranslator->push('/\\\\verb(.)([^\1]?+)\1/', '\2');
 
-		$bt->push('/\\\\%/', '%');
-		$bt->push('/\\\\\$/', '$');
-		$bt->push('/\\\\#/', '#');
-		//$bt->push ( '/\\\\_/',  '_' );
-		$bt->push('/\\\\~/', '~');
-		$bt->push('/\\\\\^/', '^');
-		$bt->push('/\\\\{/', '{');
-		$bt->push('/\\\\}/', '}');
+		$pRegExpTranslator->push('/\\\\%/', '%');
+		$pRegExpTranslator->push('/\\\\\$/', '$');
+		$pRegExpTranslator->push('/\\\\#/', '#');
+		//$pRegExpTranslator->push ( '/\\\\_/',  '_' );
+		$pRegExpTranslator->push('/\\\\~/', '~');
+		$pRegExpTranslator->push('/\\\\\^/', '^');
+		$pRegExpTranslator->push('/\\\\{/', '{');
+		$pRegExpTranslator->push('/\\\\}/', '}');
 
-		$bt->push('/\'\'/', '&quot;');
+		$pRegExpTranslator->push('/\'\'/', '&quot;');
 
 		// Protected parts
-		$bt->push('/\{([^\{]+)\}/', '<prt>\\1</prt>');
+		$pRegExpTranslator->push('/\{([^\{]+)\}/', '<prt>\\1</prt>');
 
-		$bt->push('/\\\\textbackslash/', '\\');
+		$pRegExpTranslator->push('/\\\\textbackslash/', '\\');
 
 		// Remove multi spaces
-		$bt->push('/\s{2,}/', ' ');
-		$bt->push('/^\s+/', '');
-		$bt->push('/\s+$/', '');
+		$pRegExpTranslator->push('/\s{2,}/', ' ');
+		$pRegExpTranslator->push('/^\s+/', '');
+		$pRegExpTranslator->push('/\s+$/', '');
 
 		// Setup publication fields
-		$this->pubKeys = array();
-		foreach ($this->ref_read->pubFields as $field) {
+		foreach ($this->referenceReader->pubFields as $field) {
 			$lfield = strtolower($field);
 			switch ($lfield) {
 				case 'bibtype':
@@ -247,41 +246,44 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 					}
 			}
 		}
+		$this->bt = $pRegExpTranslator;
 	}
 
-
-	function import_pre_info() {
-		$res = '';
+	/**
+	 * @return string $content
+	 */
+	protected function import_pre_info() {
+		$content = '';
 
 		$val = $this->pi1->get_ll('import_bibtex_title', 'import_bibtex_title', TRUE);
-		$res .= '<p>' . $val . '</p>' . "\n";
+		$content .= '<p>' . $val . '</p>' . "\n";
 
-		$res .= '<ul>' . "\n";
-		$res .= '<li>';
-		$res .= 'The BibTeX format is not strictly defined anywhere. ';
-		$res .= 'Therefore this parser merely tries to get the best out of it. <br/>';
-		$res .= 'If in doubt try it on an empty storage folder first.';
-		$res .= '</li>' . "\n";
-		$res .= '<li>';
-		$res .= 'Non ASCII characters should be encoded in TeX syntax (e.g. \\"u for &uuml;)<br/>';
-		$res .= 'Everything else may cause unexpected behaviour.' . "\n";
-		$res .= '</li>' . "\n";
-		$res .= '<li>';
-		$res .= '@String( var = "some text" ) placeholders are not supported';
-		$res .= '</li>' . "\n";
-		$res .= '</ul>' . "\n";
-		return $res;
+		$content .= '<ul>' . "\n";
+		$content .= '<li>';
+		$content .= 'The BibTeX format is not strictly defined anywhere. ';
+		$content .= 'Therefore this parser merely tries to get the best out of it. <br/>';
+		$content .= 'If in doubt try it on an empty storage folder first.';
+		$content .= '</li>' . "\n";
+		$content .= '<li>';
+		$content .= 'Non ASCII characters should be encoded in TeX syntax (e.g. \\"u for &uuml;)<br/>';
+		$content .= 'Everything else may cause unexpected behaviour.' . "\n";
+		$content .= '</li>' . "\n";
+		$content .= '<li>';
+		$content .= '@String( var = "some text" ) placeholders are not supported';
+		$content .= '</li>' . "\n";
+		$content .= '</ul>' . "\n";
+		return $content;
 	}
 
 
-	function import_state_2() {
-		$stat =& $this->stat;
+	protected function import_state_2() {
+		$stat =& $this->statistics;
 		$action = $this->pi1->get_link_url(array('import_state' => 2));
 		$buff_size = 1024;
 		//$buff_size = 10;
 		$con = '';
 
-		$stat =& $this->stat;
+		$stat =& $this->statistics;
 
 		$stat['file_name'] = $_FILES['ImportFile']['name'];
 		$stat['file_size'] = $_FILES['ImportFile']['size'];
@@ -315,7 +317,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 						$this->pline += 1;
 				}
 			}
-		} catch (\Ipf\Bib\Exception\ParserException $parserException) {
+		} catch (ParserException $parserException) {
 			$stat['errors'][] = 'Line ' . strval($this->pline) . ': ' . $parserException->getMessage();
 		}
 
@@ -327,7 +329,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 			try {
 				$pub = $this->translate_raw_ref($raw);
 				$save_ok = true;
-			} catch (\Ipf\Bib\Exception\TranslatorException $translatorException) {
+			} catch (TranslatorException $translatorException) {
 				$stat['failed']++;
 				$stat['errors'][] = $translatorException->getMessage();
 				$save_ok = false;
@@ -359,7 +361,6 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 	 */
 	function push_raw_pair() {
 		$this->raw_ref['values'][$this->pair_name] = $this->pair_value;
-		//$this->debug( 'Pushed raw pair: ' . $this->pair_name . ' => ' . $this->pair_value );
 	}
 
 
@@ -403,9 +404,8 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 						$this->buffer = substr($this->buffer, strlen($type));
 					} else {
 						if (strlen($this->raw_ref['type']) == 0) {
-							throw new \Ipf\Bib\Exception\ParserException ('Empty bibliography type');
+							throw new ParserException ('Empty bibliography type');
 						}
-						//$this->debug( 'Found reference type: ' . $this->raw_ref['type'] );
 						$this->parserState = self::PARSER_SEARCH_REFERENCE_BEGIN;
 					}
 					break;
@@ -418,7 +418,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							$this->buffer = substr($this->buffer, 1);
 							$this->parserState = self::PARSER_SEARCH_CITE_ID;
 						} else {
-							throw new \Ipf\Bib\Exception\ParserException('Expected an {');
+							throw new ParserException('Expected an {');
 						}
 					}
 					break;
@@ -430,7 +430,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							//$this->debug( 'Found citeid begin' );
 							$this->parserState = self::PARSER_READ_CITE_ID;
 						} else {
-							throw new \Ipf\Bib\Exception\ParserException ('Invalid citeid beginning');
+							throw new ParserException ('Invalid citeid beginning');
 						}
 					}
 					break;
@@ -444,7 +444,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 						$this->buffer = substr($this->buffer, strlen($id));
 					} else {
 						if (strlen($this->raw_ref['citeid']) == 0) {
-							throw new \Ipf\Bib\Exception\ParserException ('Empty citeid');
+							throw new ParserException ('Empty citeid');
 						}
 
 						$this->parserState = self::PARSER_SEARCH_COMMA;
@@ -465,7 +465,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							$this->push_raw_ref();
 							$this->parserState = self::PARSER_SEARCH_REFERENCE;
 						} else {
-							throw new \Ipf\Bib\Exception\ParserException ('Expected , or } but found: ' . $char);
+							throw new ParserException ('Expected , or } but found: ' . $char);
 						}
 					}
 					break;
@@ -484,7 +484,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							$this->push_raw_ref();
 							$this->parserState = self::PARSER_SEARCH_REFERENCE;
 						} else {
-							throw new \Ipf\Bib\Exception\ParserException ('Found illegal pair name characer: ' . $char);
+							throw new ParserException ('Found illegal pair name characer: ' . $char);
 						}
 					}
 					break;
@@ -498,7 +498,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 						$this->buffer = substr($this->buffer, strlen($str));
 					} else {
 						if (strlen($this->pair_name) == 0) {
-							throw new \Ipf\Bib\Exception\ParserException ('Empty value name');
+							throw new ParserException ('Empty value name');
 						}
 
 						$this->parserState = self::PARSER_SEARCH_ASSIGN;
@@ -514,7 +514,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							$this->buffer = substr($this->buffer, 1);
 							$this->parserState = self::PARSER_SEARCH_PAIR_VALUE;
 						} else {
-							throw new \Ipf\Bib\Exception\ParserException ('Expected = but found ' . $char);
+							throw new ParserException ('Expected = but found ' . $char);
 						}
 					}
 
@@ -523,7 +523,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 					if (strlen($this->buffer) > 0) {
 						$char = substr($this->buffer, 0, 1);
 						if (preg_match('/^[^}=]/', $char) > 0) {
-							//$this->debug( 'Found pair value begin: ' . $char );
+
 							if (($char == "{") || ($char == "'") || ($char == "\"")) {
 								$this->pair_start = $char;
 								$this->pair_value = '';
@@ -535,7 +535,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							$this->buffer = substr($this->buffer, 1);
 							$this->parserState = self::PARSER_READ_PAIR_VALUE;
 						} else {
-							throw new \Ipf\Bib\Exception\ParserException ('Found illegal pair value begin characer: ' . $char);
+							throw new ParserException ('Found illegal pair value begin characer: ' . $char);
 						}
 					}
 					break;
@@ -558,7 +558,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							case "'":
 								if (($prev_char != "\\") && ($this->pair_start == $char)) {
 									if ($this->pair_braces != 0) {
-										throw new \Ipf\Bib\Exception\ParserException ('Unbalanced brace count');
+										throw new ParserException('Unbalanced brace count');
 									}
 									$go_on = false;
 								} else {
@@ -582,7 +582,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 										if ($this->pair_start == "{") {
 											$go_on = false;
 										} else {
-											throw new \Ipf\Bib\Exception\ParserException ('Unbalanced brace count');
+											throw new ParserException('Unbalanced brace count');
 										}
 									}
 								}
@@ -603,7 +603,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 
 						// Increment character position counter
 						if (!$go_on) {
-							//$this->debug( 'Found pair value end: ' . $char );
+
 							$this->push_raw_pair();
 							$this->parserState = self::PARSER_SEARCH_COMMA;
 						} else {
@@ -619,7 +619,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 					break;
 
 				default:
-					throw new \Ipf\Bib\Exception\ParserException ('Illegal BibTeX parser state: ' . strval($this->parserState));
+					throw new ParserException ('Illegal BibTeX parser state: ' . strval($this->parserState));
 					break;
 			}
 		}
@@ -634,10 +634,10 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 
 		// Bibtype
 		$raw_val = strtolower($raw['type']);
-		if (in_array($raw_val, $this->ref_read->allBibTypes)) {
-			$pub['bibtype'] = array_search($raw_val, $this->ref_read->allBibTypes);
+		if (in_array($raw_val, $this->referenceReader->allBibTypes)) {
+			$pub['bibtype'] = array_search($raw_val, $this->referenceReader->allBibTypes);
 		} else {
-			throw new \Ipf\Bib\Exception\TranslatorException ('Unknown bibtype: ' . strval($raw_val));
+			throw new TranslatorException ('Unknown bibtype: ' . strval($raw_val));
 		}
 
 		// Citeid
@@ -654,7 +654,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 					$pub['authors'] = $this->translate_raw_authors($r_val);
 					break;
 				case 'state':
-					foreach ($this->ref_read->allStates as $ii => $state) {
+					foreach ($this->referenceReader->allStates as $ii => $state) {
 						if (strtolower($r_val) == $state) {
 							$r_val = $ii;
 							break;
@@ -672,7 +672,7 @@ class BibTexImporter extends \Ipf\Bib\Utility\Importer\Importer {
 							$r_key = $this->pubKeyMap[$r_key];
 						$pub[$r_key] = $r_val;
 					} else {
-						$this->stat['warnings'][] = 'Ignored field: ' . $r_key;
+						$this->statistics['warnings'][] = 'Ignored field: ' . $r_key;
 					}
 			}
 		}

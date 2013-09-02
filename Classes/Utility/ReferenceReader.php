@@ -1,4 +1,6 @@
 <?php
+namespace Ipf\Bib\Utility;
+
 if (!isset($GLOBALS['TSFE']))
 	die ('This file is not meant to be executed');
 
@@ -9,7 +11,7 @@ if (!isset($GLOBALS['TSFE']))
  *
  * @author Sebastian Holtermann
  */
-class Tx_Bib_Utility_ReferenceReader {
+class ReferenceReader {
 
 	protected $filter;
 	protected $cObj;
@@ -496,8 +498,6 @@ class Tx_Bib_Utility_ReferenceReader {
 	 * @return The WHERE clause parts in an array
 	 */
 	function get_filter_wc_parts($filter, &$runvar) {
-
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'filter' => $filter ) );
 
 		$rT = $this->refTable;
 		$sT = $this->aShipTable;

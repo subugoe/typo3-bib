@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Utility\Generator;
 
-class Tx_Bib_Utility_Generator_AuthorsCiteIdGenerator extends Tx_Bib_Utility_Generator_CiteIdGenerator {
+class AuthorsCiteIdGenerator extends CiteIdGenerator {
 
 	function generateBasicId($row) {
 		$authors = $row['authors'];

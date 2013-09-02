@@ -13,14 +13,14 @@ class tx_bib_single_view {
 	public $conf;
 
 	/**
-	 * @var Tx_Bib_Utility_ReferenceReader
+	 * @var \Ipf\Bib\Utility\ReferenceReader
 	 */
 	public $referenceReader;
 
 	/**
-	 * @var Tx_Bib_Utility_DbUtility
+	 * @var \Ipf\Bib\Utility\DbUtility
 	 */
-	public $db_utility;
+	public $databaseUtility;
 
 	/**
 	 * @var string

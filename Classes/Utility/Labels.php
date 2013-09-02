@@ -1,8 +1,7 @@
 <?php
+namespace Ipf\Bib\Utility;
 
-require_once(PATH_t3lib . 'class.t3lib_befunc.php');
-
-class Tx_Bib_Utility_Labels {
+class Labels {
 
 	/**
 	 * Returns label of an authorship

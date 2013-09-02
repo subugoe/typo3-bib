@@ -108,7 +108,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * The reference database reader
 	 *
-	 * @var Tx_Bib_Utility_ReferenceReader
+	 * @var \Ipf\Bib\Utility\ReferenceReader
 	 */
 	public $referenceReader;
 
@@ -267,7 +267,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
-		$this->referenceReader = GeneralUtility::makeInstance('Tx_Bib_Utility_ReferenceReader');
+		$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		$this->referenceReader->set_cObj($this->cObj);
 
 		$extConf = GeneralUtility::array_merge_recursive_overrule($this->getExtensionConfiguration(), $extConf);
@@ -783,7 +783,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		//
 		// Initialize the html templates
 		//
-		$error = $this->init_template();
+		$error = $this->initializeHtmlTemplate();
 		if (sizeof($error) > 0) {
 			$bad = '';
 			foreach ($error as $msg)
@@ -1187,7 +1187,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 *
 	 * @return TRUE on error, FALSE otherwise
 	 */
-	function init_template() {
+	protected function initializeHtmlTemplate() {
 		$error = array();
 
 		// Allready initialized?
@@ -2256,7 +2256,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 
 			// Compose names
-
 			$a_str = str_replace(
 				array('###SURNAME###', '###FORENAME###', '###URL_ICON###'),
 				array($authorSurname, $authorForename, $authorIcon), $authorTemplate);
@@ -2911,8 +2910,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return void
 	 */
 	protected function hidePublication($hide = TRUE) {
-		/** @var Tx_Bib_Utility_ReferenceWriter $referenceWriter */
-		$referenceWriter = GeneralUtility::makeInstance('Tx_Bib_Utility_ReferenceWriter');
+		/** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
+		$referenceWriter = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
 		$referenceWriter->initialize($this->referenceReader);
 		$referenceWriter->hide_publication($this->piVars['uid'], $hide);
 	}
@@ -2961,7 +2960,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$content .= $this->importDialog();
 				break;
 			default :
-				/** @var tx_bib_editor_view $editorView */
+				/** @var \tx_bib_editor_view $editorView */
 				$editorView = GeneralUtility::makeInstance('tx_bib_editor_view');
 				$editorView->initialize($this);
 				$content .= $editorView->dialog_view();
@@ -3001,12 +3000,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				return $this->errorMessage('Unknown export mode');
 		}
 
-		// Create instance
+		/** @var \Ipf\Bib\Utility\Exporter\Exporter $exporter */
 		$exporter = GeneralUtility::makeInstance($exporterClass);
 		$label = $this->get_ll($label, $label, TRUE);
 
-		if (is_object($exporter)) {
-			$exporter->initialize($this);
+		if ($exporter instanceof \Ipf\Bib\Utility\Exporter\Exporter) {
+			try {
+				$exporter->initialize($this);
+			} catch (\Exception $e) {
+				$e->getMessage();
+			}
 
 			$dynamic = $this->conf['export.']['dynamic'] ? TRUE : FALSE;
 			if ($this->extConf['dynamic'])
@@ -3058,7 +3061,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (($mode == self::IMP_BIBTEX) || ($mode == self::IMP_XML)) {
 
 			$importer = FALSE;
-
 			switch ($mode) {
 				case self::IMP_BIBTEX:
 					$importer = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Importer\\BibTexImporter');

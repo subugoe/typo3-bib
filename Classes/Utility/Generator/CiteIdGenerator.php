@@ -1,14 +1,15 @@
 <?php
+namespace Ipf\Bib\Utility\Generator;
 
-class Tx_Bib_Utility_Generator_CiteIdGenerator {
+class CiteIdGenerator {
 
 	/**
-	 * @var tx_bib_pi1
+	 * @var \tx_bib_pi1
 	 */
 	public $pi1;
 
 	/**
-	 * @var Tx_Bib_Utility_ReferenceReader
+	 * @var \Ipf\Bib\Utility\ReferenceReader
 	 */
 	public $referenceReader;
 
@@ -19,7 +20,7 @@ class Tx_Bib_Utility_Generator_CiteIdGenerator {
 
 
 	/**
-	 * @param tx_bib_pi1 $pi1
+	 * @param \tx_bib_pi1 $pi1
 	 */
 	function initialize($pi1) {
 		$this->referenceReader =& $pi1->referenceReader;

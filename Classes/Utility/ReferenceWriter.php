@@ -1,12 +1,14 @@
 <?php
+namespace Ipf\Bib\Utility;
 
 /**
  * This class provides functions to write or manipulate
  * publication reference entries
  *
  * @author Sebastian Holtermann
+ * @author Ingo Pfennigstorf
  */
-class Tx_Bib_Utility_ReferenceWriter {
+class ReferenceWriter {
 
 	public $ref_read;
 	public $clear_cache;
@@ -19,7 +21,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 	 *
 	 * @return void
 	 */
-	function initialize($ref_read) {
+	public function initialize($ref_read) {
 		$this->ref_read =& $ref_read;
 		$this->clear_cache = FALSE;
 		$this->error = FALSE;
@@ -58,7 +60,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 	 */
 	function clear_page_cache() {
 		if ($this->clear_cache) {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Clearing cache' );
+			/** @var t3lib_TCEmain $tce */
 			$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_TCEmain');
 			$clear_cache = array();
 
@@ -83,7 +85,6 @@ class Tx_Bib_Utility_ReferenceWriter {
 				$tce->clear_cacheCmd($cache);
 			}
 		} else {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Not clearing cache' );
 		}
 	}
 
@@ -152,7 +153,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 		$query = '';
 		if ($uid >= 0) {
 			if ($pub['mod_key'] == $pub_db['mod_key']) {
-				// \TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('updating'=>$refRow ));
+
 				$WC = 'uid=' . intval($uid);
 				$ret = $db->exec_UPDATEquery($rT, $WC, $refRow);
 				if ($ret == FALSE) {
@@ -169,7 +170,6 @@ class Tx_Bib_Utility_ReferenceWriter {
 			}
 		} else {
 			$new = TRUE;
-			// \TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'saving' => $refRow ) );
 
 			// Creation user id if available
 			$cruser_id = 0;
@@ -183,7 +183,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 			$db->exec_INSERTquery($rT, $refRow);
 			$uid = $db->sql_insert_id();
 			if ($uid > 0) {
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('Inserted publication'=>$refRow ) );
+
 			} else {
 				$this->error = 'A publication reference could not be inserted into the database';
 				$this->log($this->error, 2);
@@ -213,8 +213,6 @@ class Tx_Bib_Utility_ReferenceWriter {
 	 * @return The uid of the inserted author
 	 */
 	function save_publication_authors($pub_uid, $pid, $authors) {
-		$db =& $GLOBALS['TYPO3_DB'];
-
 		// Fetches missing author uids and
 		// inserts new authors on demand
 		$sort = 0;
@@ -225,7 +223,6 @@ class Tx_Bib_Utility_ReferenceWriter {
 
 			if (!is_numeric($author['uid'])) {
 				$uids = $this->ref_read->fetch_author_uids($author, $pid);
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('author'=>$author, 'uids'=>$uids ) );
 
 				if (sizeof($uids) > 0) {
 					$author['uid'] = $uids[0]['uid'];
@@ -236,7 +233,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 
 					$author['uid'] = $this->insert_author($ia);
 					if ($author['uid'] > 0) {
-						//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('Inserted author'=>$author ) );
+
 					} else {
 						$this->error = 'An author could not be inserted into the database';
 						$this->log($this->error, 1);
@@ -256,10 +253,10 @@ class Tx_Bib_Utility_ReferenceWriter {
 			for ($ii = 0; $ii < $as_new; $ii++) {
 				$as_delete[] = $db_aships[$ii]['uid'];
 			}
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('as_delete'=>$as_delete ) );
+
 			$this->delete_authorships($as_delete);
 			$db_aships = array_slice($db_aships, $as_new);
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('db_aships'=>$db_aships ) );
+
 			$as_new = 0;
 		}
 		$as_present = sizeof($authors) - $as_new;
@@ -277,7 +274,7 @@ class Tx_Bib_Utility_ReferenceWriter {
 				if ($ii < $as_present) {
 					// There are present authorships - Update authorship
 					$as_uid = $db_aships[$ii]['uid'];
-					$ret = $db->exec_UPDATEquery($this->ref_read->aShipTable, 'uid=' . intval($as_uid), $as);
+					$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->ref_read->aShipTable, 'uid=' . intval($as_uid), $as);
 					if ($ret == FALSE) {
 						$this->error = 'An authorship could not be updated uid=' . strval($as_uid);
 						$this->log($this->error, 1);
@@ -285,9 +282,9 @@ class Tx_Bib_Utility_ReferenceWriter {
 					}
 				} else {
 					// No more present authorships - Insert authorship
-					$as_uid = $db->exec_INSERTquery($this->ref_read->aShipTable, $as);
+					$as_uid = $GLOBALS['TYPO3_DB']->exec_INSERTquery($this->ref_read->aShipTable, $as);
 					if ($as_uid > 0) {
-						//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('Inserted authorship'=>$as ) );
+
 					} else {
 						$this->error = 'An authorship could not be inserted into the database';
 						$this->log($this->error, 1);
@@ -323,8 +320,6 @@ class Tx_Bib_Utility_ReferenceWriter {
 		$ia['crdate'] = time();
 		$ia['cruser_id'] = $cruser_id;
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug( array ( 'insert author ' => $ia ) );
-
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->ref_read->authorTable, $ia);
 		$a_uid = $GLOBALS['TYPO3_DB']->sql_insert_id();
 		return $a_uid;
@@ -336,7 +331,6 @@ class Tx_Bib_Utility_ReferenceWriter {
 	 *
 	 */
 	function delete_authorship($uid) {
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ('Deleting authorship: '=>$as_id ) );
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->ref_read->aShipTable,
 				'uid=' . intval($uid) . ' AND deleted=0', array('deleted' => 1));
 	}

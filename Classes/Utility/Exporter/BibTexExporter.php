@@ -4,16 +4,16 @@ namespace Ipf\Bib\Utility\Exporter;
 class BibTexExporter extends Exporter {
 
 	/**
-	 * @var Tx_Bib_Utility_PRegExpTranslator
+	 * @var \Ipf\Bib\Utility\PRegExpTranslator
 	 */
-	public $bibTexTranslator; // Bibtex translator
+	public $bibTexTranslator;
 
 	function initialize($pi1) {
 		parent::initialize($pi1);
 
 		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.bib';
 
-		$this->bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_PRegExpTranslator');
+		$this->bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
 		$bibTexTranslator =& $this->bibTexTranslator;
 
 		$bibTexTranslator->push('/\\\\/', '\\\\textbackslash');
@@ -208,7 +208,7 @@ class BibTexExporter extends Exporter {
 		// Recognize protected tag
 		$tmp = explode('<prt>', $value);
 		if (sizeof($tmp) > 1) {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ('Found prt tag');
+
 			$value = '';
 			$first = TRUE;
 			foreach ($tmp as $v) {
@@ -217,7 +217,7 @@ class BibTexExporter extends Exporter {
 					$value .= $v;
 				} else {
 					$tmp2 = explode('</prt>', $v);
-					//$value .= preg_replace('/([ABCDEFGHIJKLMNOPQRSTUVWXYZ])/', '{${1}}', $tmp2[0]);
+
 					$value .= '{' . $tmp2[0] . '}';
 					for ($i = 1; $i < sizeof($tmp2); $i++) {
 						$value .= $tmp2[$i];
