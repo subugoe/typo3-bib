@@ -75,31 +75,26 @@ class BibTexImporter extends Importer {
 		);
 
 		foreach ($replace as $key => $val) {
-			$pRegExpTranslator->push('/\\\\' . $key . '\{(\w)\}' . '/', $val);
-			$pRegExpTranslator->push('/\{\\\\' . $key . '(\w)\}' . '/', $val);
-			$pRegExpTranslator->push('/\\\\' . $key . '(\w)' . '/', $val);
+			$pRegExpTranslator
+					->push('/\\\\' . $key . '\{(\w)\}' . '/', $val)
+					->push('/\{\\\\' . $key . '(\w)\}' . '/', $val)
+					->push('/\\\\' . $key . '(\w)' . '/', $val);
 		}
 
-		$pRegExpTranslator->push('/\\\\c\\{([cC])\\}/', '&\\1cedil;');
-
-		$pRegExpTranslator->push('/{\\\\ss}/', '&szlig;');
-		$pRegExpTranslator->push('/\\\\ss([^\w]|$)/', '&szlig;\\1');
-
-		$pRegExpTranslator->push('/\{\\\\(ae|AE)\}/', '&\\1lig;');
-		$pRegExpTranslator->push('/\\\\(ae|AE)([^\w]|$)/', '&\\1lig;\\2');
-
-		$pRegExpTranslator->push('/\{\\\\([a-zA-Z])\\1\}/', '&\\1ring;');
-		$pRegExpTranslator->push('/\\\\([a-zA-Z])\\1([^\w]|$)/', '&\\1ring;\\2');
-
-		$pRegExpTranslator->push('/\{\\\\([oO])\}/', '&\\1slash;');
-		$pRegExpTranslator->push('/\\\\([oO])([^\w]|$)/', '&\\1slash;\\2');
-
-
-		$pRegExpTranslator->push('/\{\\\\euro\}/', '&euro;');
-		$pRegExpTranslator->push('/\\\\euro([^\w]|$)/', '&euro;\\1');
-
-		$pRegExpTranslator->push('/\{\\\\pounds\}/', '&pound;');
-		$pRegExpTranslator->push('/\\\\pounds([^\w]|$)/', '&pound;\\1');
+		$pRegExpTranslator
+				->push('/\\\\c\\{([cC])\\}/', '&\\1cedil;')
+				->push('/{\\\\ss}/', '&szlig;')
+				->push('/\\\\ss([^\w]|$)/', '&szlig;\\1')
+				->push('/\{\\\\(ae|AE)\}/', '&\\1lig;')
+				->push('/\\\\(ae|AE)([^\w]|$)/', '&\\1lig;\\2')
+				->push('/\{\\\\([a-zA-Z])\\1\}/', '&\\1ring;')
+				->push('/\\\\([a-zA-Z])\\1([^\w]|$)/', '&\\1ring;\\2')
+				->push('/\{\\\\([oO])\}/', '&\\1slash;')
+				->push('/\\\\([oO])([^\w]|$)/', '&\\1slash;\\2')
+				->push('/\{\\\\euro\}/', '&euro;')
+				->push('/\\\\euro([^\w]|$)/', '&euro;\\1')
+				->push('/\{\\\\pounds\}/', '&pound;')
+				->push('/\\\\pounds([^\w]|$)/', '&pound;\\1');
 
 
 		// Greek characters
@@ -145,9 +140,10 @@ class BibTexImporter extends Importer {
 		}
 
 		// Lesser, greater, amp
-		$pRegExpTranslator->push('/\\\\\&/', '&amp;');
-		$pRegExpTranslator->push('/</', '&lt;');
-		$pRegExpTranslator->push('/>/', '&gt;');
+		$pRegExpTranslator
+				->push('/\\\\\&/', '&amp;')
+				->push('/</', '&lt;')
+				->push('/>/', '&gt;');
 
 		// Environments
 		$pRegExpTranslator->push('/\\\\emph\{([^\{]+)\}/', '<em>\\1</em>');
@@ -155,10 +151,11 @@ class BibTexImporter extends Importer {
 		// Mathematics
 
 		// Math expressions
-		$pRegExpTranslator->push('/([^\\\\])\\^\{\\\\circ\}/', '\\1&deg;');
-		$pRegExpTranslator->push('/\\\\sqrt([^\w]|$)/', '&radic;\\1');
-		$pRegExpTranslator->push('/([^\\\\])\\^\{([^\{]+)\}/', '\\1<sup>\\2</sup>');
-		$pRegExpTranslator->push('/([^\\\\])\\_\{([^\{]+)\}/', '\\1<sub>\\2</sub>');
+		$pRegExpTranslator
+				->push('/([^\\\\])\\^\{\\\\circ\}/', '\\1&deg;')
+				->push('/\\\\sqrt([^\w]|$)/', '&radic;\\1')
+				->push('/([^\\\\])\\^\{([^\{]+)\}/', '\\1<sup>\\2</sup>')
+				->push('/([^\\\\])\\_\{([^\{]+)\}/', '\\1<sub>\\2</sub>');
 
 
 		$replace = array(
@@ -202,35 +199,34 @@ class BibTexImporter extends Importer {
 		}
 
 		// Environment markers
-		$pRegExpTranslator->push('/\\\\\(/', '');
-		$pRegExpTranslator->push('/\\\\\)/', '');
-
-		$pRegExpTranslator->push('/(^|[^\\\\])\$\$/', '\\1');
-		$pRegExpTranslator->push('/(^|[^\\\\])\$/', '\\1');
+		$pRegExpTranslator
+				->push('/\\\\\(/', '')
+				->push('/\\\\\)/', '')
+				->push('/(^|[^\\\\])\$\$/', '\\1')
+				->push('/(^|[^\\\\])\$/', '\\1');
 
 		// Miscellaneous
-		$pRegExpTranslator->push('/\\\\verb(.)([^\1]?+)\1/', '\2');
-
-		$pRegExpTranslator->push('/\\\\%/', '%');
-		$pRegExpTranslator->push('/\\\\\$/', '$');
-		$pRegExpTranslator->push('/\\\\#/', '#');
-		//$pRegExpTranslator->push ( '/\\\\_/',  '_' );
-		$pRegExpTranslator->push('/\\\\~/', '~');
-		$pRegExpTranslator->push('/\\\\\^/', '^');
-		$pRegExpTranslator->push('/\\\\{/', '{');
-		$pRegExpTranslator->push('/\\\\}/', '}');
-
-		$pRegExpTranslator->push('/\'\'/', '&quot;');
+		$pRegExpTranslator
+				->push('/\\\\verb(.)([^\1]?+)\1/', '\2')
+				->push('/\\\\%/', '%')
+				->push('/\\\\\$/', '$')
+				->push('/\\\\#/', '#')
+				->push('/\\\\~/', '~')
+				->push('/\\\\\^/', '^')
+				->push('/\\\\{/', '{')
+				->push('/\\\\}/', '}')
+				->push('/\'\'/', '&quot;');
 
 		// Protected parts
-		$pRegExpTranslator->push('/\{([^\{]+)\}/', '<prt>\\1</prt>');
-
-		$pRegExpTranslator->push('/\\\\textbackslash/', '\\');
+		$pRegExpTranslator
+				->push('/\{([^\{]+)\}/', '<prt>\\1</prt>')
+				->push('/\\\\textbackslash/', '\\');
 
 		// Remove multi spaces
-		$pRegExpTranslator->push('/\s{2,}/', ' ');
-		$pRegExpTranslator->push('/^\s+/', '');
-		$pRegExpTranslator->push('/\s+$/', '');
+		$pRegExpTranslator
+				->push('/\s{2,}/', ' ')
+				->push('/^\s+/', '')
+				->push('/\s+$/', '');
 
 		// Setup publication fields
 		foreach ($this->referenceReader->pubFields as $field) {
