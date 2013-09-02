@@ -164,7 +164,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The submit input element
 	 */
-	function html_submit_input($name, $value, $attribs = array()) {
+	static public function html_submit_input($name, $value, $attribs = array()) {
 		return Tx_Bib_Utility_Utility::html_input(
 			'submit', $name, $value, $attribs);
 	}
@@ -175,7 +175,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The image input element
 	 */
-	function html_image_input($name, $value, $src, $attribs = array()) {
+	static public function html_image_input($name, $value, $src, $attribs = array()) {
 		$attribs = array_merge($attribs, array('src' => $src));
 		return Tx_Bib_Utility_Utility::html_input(
 			'image', $name, $value, $attribs);
@@ -187,7 +187,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The hidden input element
 	 */
-	function html_hidden_input($name, $value, $attribs = array()) {
+	static public function html_hidden_input($name, $value, $attribs = array()) {
 		return Tx_Bib_Utility_Utility::html_input(
 			'hidden', $name, $value, $attribs);
 	}
@@ -198,7 +198,7 @@ class Tx_Bib_Utility_Utility {
 	 *
 	 * @return The text input element
 	 */
-	function html_text_input($name, $value, $attribs = array()) {
+	static public function html_text_input($name, $value, $attribs = array()) {
 		return Tx_Bib_Utility_Utility::html_input(
 			'text', $name, $value, $attribs);
 	}

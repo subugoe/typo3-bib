@@ -2,20 +2,34 @@
 
 class Tx_Bib_Utility_Generator_CiteIdGenerator {
 
+	/**
+	 * @var tx_bib_pi1
+	 */
 	public $pi1;
-	public $ref_read;
+
+	/**
+	 * @var Tx_Bib_Utility_ReferenceReader
+	 */
+	public $referenceReader;
+
+	/**
+	 * @var String
+	 */
 	public $charset;
 
 
+	/**
+	 * @param tx_bib_pi1 $pi1
+	 */
 	function initialize($pi1) {
-		$this->ref_read =& $pi1->ref_read;
+		$this->referenceReader =& $pi1->referenceReader;
 		$this->charset = $pi1->extConf['charset']['upper'];
 	}
-
 
 	/**
 	 * Generates a cite id for the publication in piVars['DATA']
 	 *
+	 * @param array $row
 	 * @return The generated id
 	 */
 	function generateId($row) {
@@ -27,7 +41,7 @@ class Tx_Bib_Utility_Generator_CiteIdGenerator {
 			$uid = intval($row['uid']);
 
 		$num = 1;
-		while ($this->ref_read->citeid_exists($tmpId, $uid)) {
+		while ($this->referenceReader->citeid_exists($tmpId, $uid)) {
 			$num++;
 			$tmpId = $id . '_' . $num;
 		}
@@ -36,13 +50,15 @@ class Tx_Bib_Utility_Generator_CiteIdGenerator {
 	}
 
 
+	/**
+	 * @param array $row
+	 * @return String
+	 */
 	function generateBasicId($row) {
 		$authors = $row['authors'];
 		$editors = Tx_Bib_Utility_Utility::explode_author_str($row['editor']);
 
 		$persons = array($authors, $editors);
-
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $persons );
 
 		$id = '';
 		foreach ($persons as $list) {
@@ -93,7 +109,6 @@ class Tx_Bib_Utility_Generator_CiteIdGenerator {
 		$id = htmlentities($id, ENT_QUOTES, $this->charset);
 		$id = str_replace('&amp;', '&', $id);
 		$id = preg_replace('/&(\w)\w{1,7};/', '$1', $id);
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $id );
 
 		// Replace remaining special characters with ASCII characters
 		$tmpId = '';

@@ -2,26 +2,57 @@
 
 class tx_bib_single_view {
 
-	public $pi1; // Plugin 1
-	public $conf; // configuration array
-	public $ref_read; // Reference accessor
-	public $db_utility; // Reference accessor
+	/**
+	 * @var tx_bib_pi1
+	 */
+	public $pi1;
+
+	/**
+	 * @var array
+	 */
+	public $conf;
+
+	/**
+	 * @var Tx_Bib_Utility_ReferenceReader
+	 */
+	public $referenceReader;
+
+	/**
+	 * @var Tx_Bib_Utility_DbUtility
+	 */
+	public $db_utility;
+
+	/**
+	 * @var string
+	 */
 	public $LLPrefix = 'editor_';
+
+	/**
+	 * @var bool
+	 */
 	public $idGenerator = FALSE;
 
-	public $is_new = FALSE;
-	public $is_new_first = FALSE;
+	/**
+	 * @var bool
+	 */
+	public $isNew = FALSE;
+
+	/**
+	 * @var bool
+	 */
+	public $isNewFirst = FALSE;
 
 
 	/**
 	 * Initializes this class
 	 *
+	 * @param tx_bib_pi1
 	 * @return void
 	 */
 	function initialize($pi1) {
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['single_view.'];
-		$this->ref_read =& $pi1->ref_read;
+		$this->referenceReader =& $pi1->referenceReader;
 		// Load editor language data
 		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
 	}
@@ -30,33 +61,37 @@ class tx_bib_single_view {
 	/**
 	 * Returns the single view
 	 *
-	 * @return Not defined
+	 * @return string
 	 */
 	function single_view() {
 		$pi1 =& $this->pi1;
-		$con = '';
+		$content = '';
 
 		$uid = intval($pi1->extConf['single_view']['uid']);
-		$ref = $this->ref_read->fetch_db_pub($uid);
+		$ref = $this->referenceReader->fetch_db_pub($uid);
+
 		if (is_array($ref)) {
-			$con .= $this->type_reference($ref);
+			$content .= $this->type_reference($ref);
 		} else {
-			$con .= '<p>';
-			$con .= 'No publication with uid ' . strval($uid);
-			$con .= '</p>' . "\n";
+			$content .= '<p>';
+			$content .= 'No publication with uid ' . $uid;
+			$content .= '</p>' . "\n";
 		}
 
-		$con .= '<p>';
-		$con .= $pi1->get_link($pi1->get_ll('link_back_to_list'));
-		$con .= '</p>' . "\n";
+		$content .= '<p>';
+		$content .= $pi1->get_link($pi1->get_ll('link_back_to_list'));
+		$content .= '</p>' . "\n";
 
 		// remove multiple line breaks
-		$con = preg_replace("/\n+/", "\n", $con);
+		$content = preg_replace("/\n+/", "\n", $content);
 
-		return $con;
+		return $content;
 	}
 
-
+	/**
+	 * @param $ref
+	 * @return string
+	 */
 	function type_reference($ref) {
 		$pi1 =& $this->pi1;
 		$conf =& $this->conf;
@@ -64,32 +99,32 @@ class tx_bib_single_view {
 
 		$warnings = array();
 
-		$tmpl_file = $conf['template'];
-		$templ = $cObj->fileResource($tmpl_file);
-		if (strlen($templ) == 0) {
-			$err = 'The HTML single view template file \'' . $tmpl_file . '\' is not readable or empty';
+		$templateFile = $conf['template'];
+		$template = $cObj->fileResource($templateFile);
+		if (strlen($template) == 0) {
+			$err = 'The HTML single view template file \'' . $templateFile . '\' is not readable or empty';
 			return $err;
 		}
 
-		$templ = $cObj->getSubpart($templ, '##SINGLE_VIEW###');
+		$template = $cObj->getSubpart($template, '##SINGLE_VIEW###');
 
 
 		// Store the cObj Data for later recovery
-		$stor_data = $cObj->data;
+		$contentObjectBackup = $cObj->data;
 
 		// Prepare the publication data and environment
-		$pi1->prepare_item_setup();
+		$pi1->prepareItemSetup();
 		$pdata = $pi1->prepare_pub_display($ref, $warnings, true);
 		$pi1->prepare_pub_cObj_data($pdata);
 
 		$bib_str = $pdata['bibtype_short'];
 
 		// The translator array
-		$trans = array();
+		$translator = array();
 
 		// The filed list
-		$fields = $this->ref_read->pubAllFields;
-		$dont_show = Tx_Bib_Utility_Utility::explode_trim(',', $conf['dont_show'], TRUE);
+		$fields = $this->referenceReader->pubAllFields;
+		$dont_show = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $conf['dont_show'], TRUE);
 
 		// Remove condition fields and setup the translator
 		foreach ($fields as $field) {
@@ -116,51 +151,52 @@ class tx_bib_single_view {
 					$value = $cObj->stdWrap($value, $stdWrap);
 
 
-					$trans['###' . $field_up . '###'] = $value;
-					$trans['###FL_' . $field_up . '###'] = $label;
+					$translator['###' . $field_up . '###'] = $value;
+					$translator['###FL_' . $field_up . '###'] = $label;
 				}
 			}
-			$templ = $cObj->substituteSubpart($templ, '###HAS_' . $field_up . '###', $has_str);
+			$template = $cObj->substituteSubpart($template, '###HAS_' . $field_up . '###', $has_str);
 		}
 
 		// Insert field data
-		$templ = $cObj->substituteMarkerArrayCached($templ, $trans);
+		$template = $cObj->substituteMarkerArrayCached($template, $translator);
 
 		// Single view title
 		$title = $pi1->get_ll('single_view_title');
 		$title = $pi1->cObj->stdWrap($title, $this->conf['title.']);
-		$templ = $cObj->substituteMarker($templ, '###SINGLE_VIEW_TITLE###', $title);
+		$template = $cObj->substituteMarker($template, '###SINGLE_VIEW_TITLE###', $title);
 
 		// Pre and post text
 		$txt = strval($this->conf['pre_text']);
 		$txt = $pi1->cObj->stdWrap($txt, $this->conf['pre_text.']);
-		$templ = $cObj->substituteMarker($templ, '###PRE_TEXT###', $txt);
+		$template = $cObj->substituteMarker($template, '###PRE_TEXT###', $txt);
 
 		$txt = strval($this->conf['post_text']);
 		$txt = $pi1->cObj->stdWrap($txt, $this->conf['post_text.']);
-		$templ = $cObj->substituteMarker($templ, '###POST_TEXT###', $txt);
+		$template = $cObj->substituteMarker($template, '###POST_TEXT###', $txt);
 
 
 		// Restore cObj data
-		$pi1->cObj->data = $stor_data;
+		$pi1->cObj->data = $contentObjectBackup;
 
-		return $templ;
+		return $template;
 	}
 
 
 	/**
 	 * Depending on the bibliography type this function returns
 	 * The label for a field
+	 *
 	 * @param field The field
 	 * @param bib_str The bibtype identifier string
 	 */
 	function field_label($field, $bib_str) {
 		$pi1 =& $this->pi1;
-		$label = $this->ref_read->refTable . '_' . $field;
+		$label = $this->referenceReader->refTable . '_' . $field;
 
 		switch ($field) {
 			case 'authors':
-				$label = $this->ref_read->authorTable . '_' . $field;
+				$label = $this->referenceReader->authorTable . '_' . $field;
 				break;
 		}
 

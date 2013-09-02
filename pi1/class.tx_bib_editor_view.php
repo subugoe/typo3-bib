@@ -2,17 +2,35 @@
 
 class tx_bib_editor_view {
 
-	public $pi1; // Plugin 1
-	public $conf; // configuration array
-	public $ref_read; // Reference reader
-	public $ref_write; // Reference writer
+	/**
+	 * @var tx_bib_pi1
+	 */
+	public $pi1;
+
+	/**
+	 * @var array
+	 */
+	public $conf;
+
+	/**
+	 * @var Tx_Bib_Utility_ReferenceReader
+	 */
+	public $referenceReader;
+
+	/**
+	 * @var Tx_Bib_Utility_ReferenceWriter
+	 */
+	public $referenceWriter;
 	/**
 	 * Database Utility
 	 *
 	 * @var Tx_Bib_Utility_DbUtility
 	 */
-	public $db_utility;
+	public $dbUtility;
 
+	/**
+	 * @var string
+	 */
 	public $LLPrefix = 'editor_';
 
 	/**
@@ -20,35 +38,45 @@ class tx_bib_editor_view {
 	 */
 	public $idGenerator = FALSE;
 
-	public $is_new = FALSE;
-	public $is_first_edit = FALSE;
+	/**
+	 * @var bool
+	 */
+	public $isNew = FALSE;
+
+	/**
+	 * @var bool
+	 */
+	public $isFirstEdit = FALSE;
 
 	// Widget modes
-	public $W_SHOW = 0; // Show and pass value
-	public $W_EDIT = 1; // Edit and pass value
-	public $W_SILENT = 2; // Don't show but pass value
-	public $W_HIDDEN = 3; // Don't show and don't pass value
+	const WIDGET_SHOW = 0; // Show and pass value
+	const WIDGET_EDIT = 1; // Edit and pass value
+	const WIDGET_SILENT = 2; // Don't show but pass value
+	const WIDGET_HIDDEN = 3; // Don't show and don't pass value
 
 
 	/**
 	 * Initializes this class
 	 *
-	 * @return Not defined
+	 * @param tx_bib_pi1 $pi1
+	 * @return void
 	 */
 	function initialize($pi1) {
+
+		/** @var tx_bib_pi1 pi1 */
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['editor.'];
-		$this->ref_read =& $pi1->ref_read;
-		$this->ref_read->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
+		$this->referenceReader =& $pi1->referenceReader;
+		$this->referenceReader->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
 		// Load editor language data
 		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
 
 
 		// setup db_utility
-		$this->db_utility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_DbUtility');
-		$this->db_utility->initialize($pi1->ref_read);
-		$this->db_utility->charset = $pi1->extConf['charset']['upper'];
-		$this->db_utility->read_full_text_conf($this->conf['full_text.']);
+		$this->dbUtility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_DbUtility');
+		$this->dbUtility->initialize($pi1->referenceReader);
+		$this->dbUtility->charset = $pi1->extConf['charset']['upper'];
+		$this->dbUtility->read_full_text_conf($this->conf['full_text.']);
 
 
 		// Create an instance of the citeid generator
@@ -69,7 +97,11 @@ class tx_bib_editor_view {
 	 * Get the string in the local language to a given key from
 	 * the database language file
 	 *
-	 * @return The string in the local language
+	 * @param String $key
+	 * @param String $alt
+	 * @param bool $hsc
+	 *
+	 * @return String The string in the local language
 	 */
 	function get_ll($key, $alt = '', $hsc = FALSE) {
 		return $this->pi1->get_ll($key, $alt, $hsc);
@@ -86,54 +118,52 @@ class tx_bib_editor_view {
 	 * The editor shows a single publication entry
 	 * and allows to edit, delete or save it.
 	 *
-	 * @return A publication editor
+	 * @return String A publication editor
 	 */
 	function editor_view() {
 		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ($GLOBALS["HTTP_POST_VARS"]);
+		$content = '';
 
-		// --- check whether the BE user is authorized
+		// check whether the BE user is authorized
 		if (!$this->pi1->extConf['edit_mode']) {
-			$con .= 'ERROR: You are not authorized to edit the publication database.';
-			return $con;
+			$content .= 'ERROR: You are not authorized to edit the publication database.';
+			return $content;
 		}
 
+		/** @var tx_bib_pi1 $pi1 */
 		$pi1 =& $this->pi1;
-		$editor_mode = $pi1->extConf['editor_mode'];
-		$preId =& $pi1->prefix_pi1;
-		$preSh =& $pi1->prefixShort;
+		$editorMode = $pi1->extConf['editor_mode'];
+		$prefixId =& $pi1->prefix_pi1;
+		$prefixShort =& $pi1->prefixShort;
 		$edConf =& $this->conf;
-		$edExtConf =& $pi1->extConf['editor'];
+		$editorConfiguration =& $pi1->extConf['editor'];
 
 		$pub_http = $this->get_ref_http();
 		$pub_db = array();
-		$pub = array(); // The publication data
-		$con = ''; // Content
-		$preCon = ''; // Pre content
+		$publicationData = array();
+		$preContent = '';
 		$uid = -1;
 		$dataValid = TRUE;
-		$btn_class = $preSh . '-editor_button';
-		$btn_del_class = $preSh . '-delete_button';
+		$buttonClass = $prefixShort . '-editor_button';
+		$buttonDeleteClass = $prefixShort . '-delete_button';
 
 		// Determine widget mode
-		switch ($editor_mode) {
-			case $pi1->EDIT_SHOW :
-				$w_mode = $this->W_SHOW;
+		switch ($editorMode) {
+			case $pi1::EDIT_SHOW :
+				$widgetMode = self::WIDGET_SHOW;
 				break;
-			case $pi1->EDIT_EDIT :
-			case $pi1->EDIT_NEW :
-				$w_mode = $this->W_EDIT;
+			case $pi1::EDIT_EDIT :
+			case $pi1::EDIT_NEW :
+				$widgetMode = self::WIDGET_EDIT;
 				break;
-			case $pi1->EDIT_CONFIRM_SAVE :
-			case $pi1->EDIT_CONFIRM_DELETE :
-			case $pi1->EDIT_CONFIRM_ERASE :
-				$w_mode = $this->W_SHOW;
+			case $pi1::EDIT_CONFIRM_SAVE :
+			case $pi1::EDIT_CONFIRM_DELETE :
+			case $pi1::EDIT_CONFIRM_ERASE :
+				$widgetMode = self::WIDGET_SHOW;
 				break;
 			default :
-				$w_mode = $this->W_SHOW;
+				$widgetMode = self::WIDGET_SHOW;
 		}
-
-		// include $TCA
-		\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($this->ref_read->refTable);
 
 		// determine entry uid
 		if (array_key_exists('uid', $pi1->piVars)) {
@@ -142,32 +172,32 @@ class tx_bib_editor_view {
 			}
 		}
 
-		$this->is_new = TRUE;
+		$this->isNew = TRUE;
 		if ($uid >= 0) {
-			$this->is_new = FALSE;
+			$this->isNew = FALSE;
 			$pub_http['uid'] = $uid;
 		}
 
-		$this->is_first_edit = TRUE;
+		$this->isFirstEdit = TRUE;
 		if (is_array($pi1->piVars['DATA']['pub'])) {
-			$this->is_first_edit = FALSE;
+			$this->isFirstEdit = FALSE;
 		}
 
 		$title = $this->LLPrefix;
-		switch ($editor_mode) {
-			case $pi1->EDIT_SHOW :
+		switch ($editorMode) {
+			case $pi1::EDIT_SHOW :
 				$title .= 'title_view';
 				break;
-			case $pi1->EDIT_EDIT :
+			case $pi1::EDIT_EDIT :
 				$title .= 'title_edit';
 				break;
-			case $pi1->EDIT_NEW :
+			case $pi1::EDIT_NEW :
 				$title .= 'title_new';
 				break;
-			case $pi1->EDIT_CONFIRM_DELETE :
+			case $pi1::EDIT_CONFIRM_DELETE :
 				$title .= 'title_confirm_delete';
 				break;
-			case $pi1->EDIT_CONFIRM_ERASE :
+			case $pi1::EDIT_CONFIRM_ERASE :
 				$title .= 'title_confirm_erase';
 				break;
 			default:
@@ -177,31 +207,31 @@ class tx_bib_editor_view {
 		$title = $this->get_ll($title);
 
 		// Load default data
-		if ($this->is_first_edit) {
-			if ($this->is_new) {
+		if ($this->isFirstEdit) {
+			if ($this->isNew) {
 				// Load defaults for a new publication 
-				$pub = $this->get_ref_default();
+				$publicationData = $this->get_ref_default();
 			} else {
 				if ($uid < 0) {
-					return $pi1->error_msg('No publication id given');
+					return $pi1->errorMessage('No publication id given');
 				}
 
 				// Load publication data from database
-				$pub_db = $this->ref_read->fetch_db_pub($uid);
+				$pub_db = $this->referenceReader->fetch_db_pub($uid);
 				if ($pub_db) {
-					$pub = array_merge($pub, $pub_db);
+					$publicationData = array_merge($publicationData, $pub_db);
 				} else {
-					return $pi1->error_msg('No publication with uid: ' . $uid);
+					return $pi1->errorMessage('No publication with uid: ' . $uid);
 				}
 			}
 		}
 
 		// Merge in data from HTTP request
-		$pub = array_merge($pub, $pub_http);
+		$publicationData = array_merge($publicationData, $pub_http);
 
 		// Generate cite id if requested
-		$genID = FALSE;
-		$genIDRequest = FALSE;
+		$generateCiteId = FALSE;
+		$generateCiteIdRequest = FALSE;
 
 		// Evaluate actions
 		if (is_array($pi1->piVars['action'])) {
@@ -210,26 +240,26 @@ class tx_bib_editor_view {
 
 			// Generate cite id
 			if (array_key_exists('generate_id', $actions)) {
-				$genIDRequest = TRUE;
+				$generateCiteIdRequest = TRUE;
 			}
 
 			// Raise author
 			if (is_numeric($actions['raise_author'])) {
 				$num = intval($actions['raise_author']);
-				if (($num > 0) && ($num < sizeof($pub['authors']))) {
-					$tmp = $pub['authors'][$num - 1];
-					$pub['authors'][$num - 1] = $pub['authors'][$num];
-					$pub['authors'][$num] = $tmp;
+				if (($num > 0) && ($num < sizeof($publicationData['authors']))) {
+					$tmp = $publicationData['authors'][$num - 1];
+					$publicationData['authors'][$num - 1] = $publicationData['authors'][$num];
+					$publicationData['authors'][$num] = $tmp;
 				}
 			}
 
 			// Lower author
 			if (is_numeric($actions['lower_author'])) {
 				$num = intval($actions['lower_author']);
-				if (($num >= 0) && ($num < (sizeof($pub['authors']) - 1))) {
-					$tmp = $pub['authors'][$num + 1];
-					$pub['authors'][$num + 1] = $pub['authors'][$num];
-					$pub['authors'][$num] = $tmp;
+				if (($num >= 0) && ($num < (sizeof($publicationData['authors']) - 1))) {
+					$tmp = $publicationData['authors'][$num + 1];
+					$publicationData['authors'][$num + 1] = $publicationData['authors'][$num];
+					$publicationData['authors'][$num] = $tmp;
 				}
 			}
 
@@ -242,64 +272,64 @@ class tx_bib_editor_view {
 		}
 
 		// Generate cite id on demand
-		if ($this->is_new) {
+		if ($this->isNew) {
 			// Generate cite id for new entries
-			switch ($edExtConf['citeid_gen_new']) {
-				case $pi1->AUTOID_FULL:
-					$genID = TRUE;
+			switch ($editorConfiguration['citeid_gen_new']) {
+				case $pi1::AUTOID_FULL:
+					$generateCiteId = TRUE;
 					break;
-				case $pi1->AUTOID_HALF:
-					if ($genIDRequest)
-						$genID = TRUE;
+				case $pi1::AUTOID_HALF:
+					if ($generateCiteIdRequest)
+						$generateCiteId = TRUE;
 					break;
 				default:
 					break;
 			}
 		} else {
 			// Generate cite id for already existing (old) entries
-			$auto_id = $edExtConf['citeid_gen_old'];
-			if (($genIDRequest && ($auto_id == $pi1->AUTOID_HALF))
-					|| (strlen($pub['citeid']) == 0)
+			$auto_id = $editorConfiguration['citeid_gen_old'];
+			if (($generateCiteIdRequest && ($auto_id == $pi1::AUTOID_HALF))
+					|| (strlen($publicationData['citeid']) == 0)
 			) {
-				$genID = TRUE;
+				$generateCiteId = TRUE;
 			}
 		}
-		if ($genID) {
-			$pub['citeid'] = $this->idGenerator->generateId($pub);
+		if ($generateCiteId) {
+			$publicationData['citeid'] = $this->idGenerator->generateId($publicationData);
 		}
 
 		// Determine the number of authors
 		$pi1->piVars['editor']['numAuthors'] = max(
 			$pi1->piVars['editor']['numAuthors'], $edConf['numAuthors'],
-			sizeof($pub['authors']), 1);
+			sizeof($publicationData['authors']), 1);
 
 		// Edit button
-		$btn_edit = '';
-		if ($editor_mode == $pi1->EDIT_CONFIRM_SAVE) {
-			$btn_edit = '<input type="submit" ';
-			if ($this->is_new)
-				$btn_edit .= 'name="' . $preId . '[action][new]" ';
+		$editButton = '';
+		if ($editorMode == $pi1::EDIT_CONFIRM_SAVE) {
+			$editButton = '<input type="submit" ';
+			if ($this->isNew)
+				$editButton .= 'name="' . $prefixId . '[action][new]" ';
 			else
-				$btn_edit .= 'name="' . $preId . '[action][edit]" ';
-			$btn_edit .= 'value="' . $this->get_ll($this->LLPrefix . 'btn_edit') .
-					'" class="' . $btn_class . '"/>';
+				$editButton .= 'name="' . $prefixId . '[action][edit]" ';
+			$editButton .= 'value="' . $this->get_ll($this->LLPrefix . 'btn_edit') .
+					'" class="' . $buttonClass . '"/>';
 		}
 
 		// Syntax help button
-		$btn_help = '';
-		if ($w_mode == $this->W_EDIT) {
+		$helpButton = '';
+		if ($widgetMode == self::WIDGET_EDIT) {
 			$url = $GLOBALS['TSFE']->tmpl->getFileName(
 				'EXT:bib/doc/syntax.xhtml');
-			$btn_help = '<span class="' . $btn_class . '">' .
+			$helpButton = '<span class="' . $buttonClass . '">' .
 					'<a href="' . $url . '" target="_blank">' .
 					$this->get_ll($this->LLPrefix . 'btn_syntax_help') . '</a></span>';
 		}
 
-		$fields = $this->get_edit_fields($pub['bibtype']);
+		$fields = $this->get_edit_fields($publicationData['bibtype']);
 
 		// Data validation
-		if ($editor_mode == $pi1->EDIT_CONFIRM_SAVE) {
-			$d_err = $this->validate_data($pub);
+		if ($editorMode == $pi1::EDIT_CONFIRM_SAVE) {
+			$d_err = $this->validate_data($publicationData);
 			$title = $this->get_ll($this->LLPrefix . 'title_confirm_save');
 
 			if (sizeof($d_err) > 0) {
@@ -308,101 +338,99 @@ class tx_bib_editor_view {
 				$txt = $this->get_ll($this->LLPrefix . 'error_title');
 				$box = $pi1->cObj->stdWrap($txt, $cfg['title.']) . "\n";
 				$box .= $this->validation_error_string($d_err);
-				$box .= $btn_edit;
+				$box .= $editButton;
 				$box = $pi1->cObj->stdWrap($box, $cfg['all_wrap.']) . "\n";
-				$preCon .= $box;
+				$preContent .= $box;
 			}
 		}
 
 		// Cancel button
-		$btn_cancel = '<span class="' . $btn_class . '">' . $pi1->get_link(
+		$cancelButton = '<span class="' . $buttonClass . '">' . $pi1->get_link(
 					$this->get_ll($this->LLPrefix . 'btn_cancel')) . '</span>';
 
 		// Generate Citeid button
-		$btn_gen_id = '';
-		if ($w_mode == $this->W_EDIT) {
-			$btn_gen_id = '<input type="submit" ' .
-					'name="' . $preId . '[action][generate_id]" ' .
+		$citeIdeGeneratorButton = '';
+		if ($widgetMode == self::WIDGET_EDIT) {
+			$citeIdeGeneratorButton = '<input type="submit" ' .
+					'name="' . $prefixId . '[action][generate_id]" ' .
 					'value="' . $this->get_ll($this->LLPrefix . 'btn_generate_id') .
-					'" class="' . $btn_class . '"/>';
+					'" class="' . $buttonClass . '"/>';
 		}
 
 		// Update button
-		$btn_update = '';
-		$btn_update_name = $preId . '[action][update_form]';
-		$btn_update_value = $this->get_ll($this->LLPrefix . 'btn_update_form');
-		if ($w_mode == $this->W_EDIT) {
-			$btn_update = '<input type="submit"' .
-					' name="' . $btn_update_name . '"' .
-					' value="' . $btn_update_value . '"' .
-					' class="' . $btn_class . '"/>';
+		$updateButton = '';
+		$updateButtonName = $prefixId . '[action][update_form]';
+		$updateButtonValue = $this->get_ll($this->LLPrefix . 'btn_update_form');
+		if ($widgetMode == self::WIDGET_EDIT) {
+			$updateButton = '<input type="submit"' .
+					' name="' . $updateButtonName . '"' .
+					' value="' . $updateButtonValue . '"' .
+					' class="' . $buttonClass . '"/>';
 		}
 
 		// Save button
-		$btn_save = '';
-		//if ( $dataValid ) {
-		if ($w_mode == $this->W_EDIT)
-			$btn_save = '[action][confirm_save]';
-		if ($editor_mode == $pi1->EDIT_CONFIRM_SAVE)
-			$btn_save = '[action][save]';
-		if (strlen($btn_save) > 0) {
-			$btn_save = '<input type="submit" name="' . $preId . $btn_save . '" ' .
+		$saveButton = '';
+		if ($widgetMode == self::WIDGET_EDIT)
+			$saveButton = '[action][confirm_save]';
+		if ($editorMode == $pi1::EDIT_CONFIRM_SAVE)
+			$saveButton = '[action][save]';
+		if (strlen($saveButton) > 0) {
+			$saveButton = '<input type="submit" name="' . $prefixId . $saveButton . '" ' .
 					'value="' . $this->get_ll($this->LLPrefix . 'btn_save') .
-					'" class="' . $btn_class . '"/>';
+					'" class="' . $buttonClass . '"/>';
 		}
-		//}
 
 		// Delete button
-		$btn_delete = '';
-		if (!$this->is_new) {
-			if (($editor_mode != $pi1->EDIT_SHOW) &&
-					($editor_mode != $pi1->EDIT_CONFIRM_SAVE)
+		$deleteButton = '';
+		if (!$this->isNew) {
+			if (($editorMode != $pi1::EDIT_SHOW) &&
+					($editorMode != $pi1::EDIT_CONFIRM_SAVE)
 			)
-				$btn_delete = '[action][confirm_delete]';
-			if ($editor_mode == $pi1->EDIT_CONFIRM_DELETE)
-				$btn_delete = '[action][delete]';
-			if (strlen($btn_delete)) {
-				$btn_delete = '<input type="submit" name="' . $preId . $btn_delete . '" ' .
+				$deleteButton = '[action][confirm_delete]';
+			if ($editorMode == $pi1::EDIT_CONFIRM_DELETE)
+				$deleteButton = '[action][delete]';
+			if (strlen($deleteButton)) {
+				$deleteButton = '<input type="submit" name="' . $prefixId . $deleteButton . '" ' .
 						'value="' . $this->get_ll($this->LLPrefix . 'btn_delete') .
-						'" class="' . $btn_class . ' ' . $btn_del_class . '"/>';
+						'" class="' . $buttonClass . ' ' . $buttonDeleteClass . '"/>';
 			}
 		}
 
 		// Write title
-		$con .= '<h2>' . $title . '</h2>' . "\n";
+		$content .= '<h2>' . $title . '</h2>' . "\n";
 
 		// Write initial form tag
-		$form_name = $preId . '_ref_data_form';
-		$con .= '<form name="' . $form_name . '"';
-		$con .= ' action="' . $pi1->get_edit_link_url() . '" method="post"';
-		$con .= '>' . "\n";
-		$con .= $preCon;
+		$formName = $prefixId . '_ref_data_form';
+		$content .= '<form name="' . $formName . '"';
+		$content .= ' action="' . $pi1->get_edit_link_url() . '" method="post"';
+		$content .= '>' . "\n";
+		$content .= $preContent;
 
 		// Javascript for automatic submitting
-		$con .= '<script type="text/javascript">' . "\n";
-		$con .= '/* <![CDATA[ */' . "\n";
-		$con .= 'function click_update_button() {' . "\n";
-		//$con .= "  alert('click_update_button');" . "\n";
-		$con .= "  var btn = document.getElementsByName('" . $btn_update_name . "')[0];" . "\n";
-		//$con .= "  alert(btn);" . "\n";
-		$con .= '  btn.click();' . "\n";
-		$con .= '  return;' . "\n";
-		$con .= '}' . "\n";
-		$con .= '/* ]]> */' . "\n";
-		$con .= '</script>' . "\n";
+		$content .= '<script type="text/javascript">' . "\n";
+		$content .= '/* <![CDATA[ */' . "\n";
+		$content .= 'function click_update_button() {' . "\n";
+		//$content .= "  alert('click_update_button');" . "\n";
+		$content .= "  var btn = document.getElementsByName('" . $updateButtonName . "')[0];" . "\n";
+		//$content .= "  alert(btn);" . "\n";
+		$content .= '  btn.click();' . "\n";
+		$content .= '  return;' . "\n";
+		$content .= '}' . "\n";
+		$content .= '/* ]]> */' . "\n";
+		$content .= '</script>' . "\n";
 
 		// Begin of the editor box
-		$con .= '<div class="' . $preSh . '-editor">' . "\n";
+		$content .= '<div class="' . $prefixShort . '-editor">' . "\n";
 
 		// Top buttons
-		$con .= '<div class="' . $preSh . '-editor_button_box">' . "\n";
-		$con .= '<span class="' . $preSh . '-box_right">';
-		$con .= $btn_delete;
-		$con .= '</span>' . "\n";
-		$con .= '<span class="' . $preSh . '-box_left">';
-		$con .= $btn_save . $btn_edit . $btn_cancel . $btn_help;
-		$con .= '</span>' . "\n";
-		$con .= '</div>' . "\n";
+		$content .= '<div class="' . $prefixShort . '-editor_button_box">' . "\n";
+		$content .= '<span class="' . $prefixShort . '-box_right">';
+		$content .= $deleteButton;
+		$content .= '</span>' . "\n";
+		$content .= '<span class="' . $prefixShort . '-box_left">';
+		$content .= $saveButton . $editButton . $cancelButton . $helpButton;
+		$content .= '</span>' . "\n";
+		$content .= '</div>' . "\n";
 
 		$fieldGroups = array(
 			'required',
@@ -412,10 +440,10 @@ class tx_bib_editor_view {
 			'typo3');
 		array_unshift($fields['required'], 'bibtype');
 
-		$bib_str = $this->ref_read->allBibTypes[$pub['bibtype']];
+		$bib_str = $this->referenceReader->allBibTypes[$publicationData['bibtype']];
 
 		foreach ($fieldGroups as $fg) {
-			$class_str = ' class="' . $preSh . '-editor_' . $fg . '"';
+			$class_str = ' class="' . $prefixShort . '-editor_' . $fg . '"';
 
 			$rows_vis = "";
 			$rows_silent = "";
@@ -426,47 +454,47 @@ class tx_bib_editor_view {
 				$label = $this->field_label($ff, $bib_str);
 
 				// Adjust the widget mode on demand
-				$wm = $this->get_widget_mode($ff, $w_mode);
+				$wm = $this->get_widget_mode($ff, $widgetMode);
 
 				// Field value widget
 				$widget = '';
 				switch ($ff) {
 					case 'citeid':
-						if ($edExtConf['citeid_gen_new'] == $pi1->AUTOID_FULL) {
-							$widget .= $this->get_widget($ff, $pub[$ff], $wm);
+						if ($editorConfiguration['citeid_gen_new'] == $pi1::AUTOID_FULL) {
+							$widget .= $this->get_widget($ff, $publicationData[$ff], $wm);
 						} else {
-							$widget .= $this->get_widget($ff, $pub[$ff], $wm);
+							$widget .= $this->get_widget($ff, $publicationData[$ff], $wm);
 						}
 						// Add the id generation button
-						if ($this->is_new) {
-							if ($edExtConf['citeid_gen_new'] == $pi1->AUTOID_HALF)
-								$widget .= $btn_gen_id;
+						if ($this->isNew) {
+							if ($editorConfiguration['citeid_gen_new'] == $pi1::AUTOID_HALF)
+								$widget .= $citeIdeGeneratorButton;
 						} else {
-							if ($edExtConf['citeid_gen_old'] == $pi1->AUTOID_HALF)
-								$widget .= $btn_gen_id;
+							if ($editorConfiguration['citeid_gen_old'] == $pi1::AUTOID_HALF)
+								$widget .= $citeIdeGeneratorButton;
 						}
 						break;
 					case 'year':
-						$widget .= $this->get_widget('year', $pub['year'], $wm);
+						$widget .= $this->get_widget('year', $publicationData['year'], $wm);
 						$widget .= ' - ';
-						$widget .= $this->get_widget('month', $pub['month'], $wm);
+						$widget .= $this->get_widget('month', $publicationData['month'], $wm);
 						$widget .= ' - ';
-						$widget .= $this->get_widget('day', $pub['day'], $wm);
+						$widget .= $this->get_widget('day', $publicationData['day'], $wm);
 						break;
 					case 'month':
 					case 'day':
 						break;
 					default:
-						$widget .= $this->get_widget($ff, $pub[$ff], $wm);
+						$widget .= $this->get_widget($ff, $publicationData[$ff], $wm);
 				}
 				if ($ff == 'bibtype') {
-					$widget .= $btn_update;
+					$widget .= $updateButton;
 				}
 
 				if (strlen($widget) > 0) {
-					if ($wm == $this->W_SILENT) {
+					if ($wm == self::WIDGET_SILENT) {
 						$rows_silent .= $widget . "\n";
-					} else if ($wm == $this->W_HIDDEN) {
+					} else if ($wm == self::WIDGET_HIDDEN) {
 						$rows_hidden .= $widget . "\n";
 					} else {
 						$label = $pi1->cObj->stdWrap($label, $edConf['field_labels.']);
@@ -482,54 +510,54 @@ class tx_bib_editor_view {
 
 			# Append header and table it there're rows
 			if (strlen($rows_vis) > 0) {
-				$con .= '<h3>';
-				$con .= $this->get_ll($this->LLPrefix . 'fields_' . $fg);
-				$con .= '</h3>';
+				$content .= '<h3>';
+				$content .= $this->get_ll($this->LLPrefix . 'fields_' . $fg);
+				$content .= '</h3>';
 
-				$con .= '<table class="' . $preSh . '-editor_fields">' . "\n";
-				$con .= '<tbody>' . "\n";
+				$content .= '<table class="' . $prefixShort . '-editor_fields">' . "\n";
+				$content .= '<tbody>' . "\n";
 
-				$con .= $rows_vis . "\n";
+				$content .= $rows_vis . "\n";
 
-				$con .= '</tbody>' . "\n";
-				$con .= '</table>' . "\n";
+				$content .= '</tbody>' . "\n";
+				$content .= '</table>' . "\n";
 			}
 
 			if (strlen($rows_silent) > 0) {
-				$con .= "\n";
-				$con .= $rows_silent . "\n";
+				$content .= "\n";
+				$content .= $rows_silent . "\n";
 			}
 
 			if (strlen($rows_hidden) > 0) {
-				$con .= "\n";
-				$con .= $rows_hidden . "\n";
+				$content .= "\n";
+				$content .= $rows_hidden . "\n";
 			}
 		}
 
 		// Invisible 'uid' and 'mod_key' field
-		if (!$this->is_new) {
-			if (isset ($pub['mod_key'])) {
-				$con .= Tx_Bib_Utility_Utility::html_hidden_input(
-					$preId . '[DATA][pub][mod_key]',
-					htmlspecialchars($pub['mod_key'], ENT_QUOTES));
-				$con .= "\n";
+		if (!$this->isNew) {
+			if (isset ($publicationData['mod_key'])) {
+				$content .= Tx_Bib_Utility_Utility::html_hidden_input(
+					$prefixId . '[DATA][pub][mod_key]',
+					htmlspecialchars($publicationData['mod_key'], ENT_QUOTES));
+				$content .= "\n";
 			}
 		}
 
 		// Footer Buttons
-		$con .= '<div class="' . $preSh . '-editor_button_box">' . "\n";
-		$con .= '<span class="' . $preSh . '-box_right">';
-		$con .= $btn_delete;
-		$con .= '</span>' . "\n";
-		$con .= '<span class="' . $preSh . '-box_left">';
-		$con .= $btn_save . $btn_edit . $btn_cancel;
-		$con .= '</span>' . "\n";
-		$con .= '</div>' . "\n";
+		$content .= '<div class="' . $prefixShort . '-editor_button_box">' . "\n";
+		$content .= '<span class="' . $prefixShort . '-box_right">';
+		$content .= $deleteButton;
+		$content .= '</span>' . "\n";
+		$content .= '<span class="' . $prefixShort . '-box_left">';
+		$content .= $saveButton . $editButton . $cancelButton;
+		$content .= '</span>' . "\n";
+		$content .= '</div>' . "\n";
 
-		$con .= '</div>' . "\n";
-		$con .= '</form>' . "\n";
+		$content .= '</div>' . "\n";
+		$content .= '</form>' . "\n";
 
-		return $con;
+		return $content;
 	}
 
 
@@ -540,11 +568,11 @@ class tx_bib_editor_view {
 	 * @param bib_str The bibtype identifier string
 	 */
 	function field_label($field, $bib_str) {
-		$label = $this->ref_read->refTable . '_' . $field;
+		$label = $this->referenceReader->refTable . '_' . $field;
 
 		switch ($field) {
 			case 'authors':
-				$label = $this->ref_read->authorTable . '_' . $field;
+				$label = $this->referenceReader->authorTable . '_' . $field;
 				break;
 			case 'year':
 				$label = 'olabel_year_month_day';
@@ -582,7 +610,7 @@ class tx_bib_editor_view {
 		$fields = array();
 		$bib_str = $bibType;
 		if (is_numeric($bib_str)) {
-			$bib_str = $this->ref_read->allBibTypes[$bibType];
+			$bib_str = $this->referenceReader->allBibTypes[$bibType];
 		}
 
 		$all_groups = array('all', $bib_str);
@@ -605,7 +633,7 @@ class tx_bib_editor_view {
 		}
 
 		// Merge field lists
-		$pubFields = $this->ref_read->pubFields;
+		$pubFields = $this->referenceReader->pubFields;
 		unset ($pubFields[array_search('bibtype', $pubFields)]);
 		foreach ($all_types as $type) {
 			$fields[$type] = array();
@@ -642,24 +670,24 @@ class tx_bib_editor_view {
 
 		$wm = $mode;
 
-		if (($wm == $this->W_EDIT) && $edConf['no_edit.'][$field]) {
-			$wm = $this->W_SHOW;
+		if (($wm == self::WIDGET_EDIT) && $edConf['no_edit.'][$field]) {
+			$wm = self::WIDGET_SHOW;
 		}
 		if ($edConf['no_show.'][$field]) {
-			$wm = $this->W_HIDDEN;
+			$wm = self::WIDGET_HIDDEN;
 		}
 
 		if ($field == 'uid') {
-			if ($wm == $this->W_EDIT) {
-				$wm = $this->W_SHOW;
-			} else if ($wm == $this->W_HIDDEN) {
+			if ($wm == self::WIDGET_EDIT) {
+				$wm = self::WIDGET_SHOW;
+			} else if ($wm == self::WIDGET_HIDDEN) {
 				// uid must be passed always
-				$wm = $this->W_SILENT;
+				$wm = self::WIDGET_SILENT;
 			}
 		} else if ($field == 'pid') {
 			// pid must be passed always
-			if ($wm == $this->W_HIDDEN) {
-				$wm = $this->W_SILENT;
+			if ($wm == self::WIDGET_HIDDEN) {
+				$wm = self::WIDGET_SILENT;
 			}
 		}
 
@@ -673,33 +701,33 @@ class tx_bib_editor_view {
 	 * @return The field widget
 	 */
 	function get_widget($field, $value, $mode) {
-		$con = ''; // Content
+		$content = ''; // Content
 		$pi1 =& $this->pi1;
 
 		switch ($field) {
 			case 'authors':
-				$con .= $this->get_authors_widget($value, $mode);
+				$content .= $this->get_authors_widget($value, $mode);
 				break;
 			case 'pid':
-				$con .= $this->get_pid_widget($value, $mode);
+				$content .= $this->get_pid_widget($value, $mode);
 				break;
 			default:
-				if ($mode == $this->W_EDIT) {
-					$con .= $this->get_default_edit_widget($field, $value, $mode);
+				if ($mode == self::WIDGET_EDIT) {
+					$content .= $this->get_default_edit_widget($field, $value, $mode);
 				} else {
-					$con .= $this->get_default_static_widget($field, $value, $mode);
+					$content .= $this->get_default_static_widget($field, $value, $mode);
 				}
 		}
-		return $con;
+		return $content;
 	}
 
 
 	function get_default_edit_widget($field, $value, $mode) {
-		$cfg =& $GLOBALS['TCA'][$this->ref_read->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->referenceReader->refTable]['columns'][$field]['config'];
 		$pi1 =& $this->pi1;
 		$cclass = $pi1->prefixShort . '-editor_input';
 		$Iclass = ' class="' . $cclass . '"';
-		$con = ''; // Content
+		$content = ''; // Content
 
 		$isize = 60;
 		$all_size = array(
@@ -728,19 +756,19 @@ class tx_bib_editor_view {
 					$size = $isize;
 				$attrs['size'] = strval($size);
 
-				$con .= Tx_Bib_Utility_Utility::html_text_input(
+				$content .= Tx_Bib_Utility_Utility::html_text_input(
 					$fieldAttr, $htmlValue, $attrs);
 
 				break;
 
 			case 'text' :
-				$con .= '<textarea' . $nameAttr;
-				$con .= ' rows="' . $cfg['rows'] . '"';
-				$con .= ' cols="' . strval($isize) . '"';
-				$con .= $Iclass . '>';
-				$con .= $htmlValue;
-				$con .= '</textarea>';
-				$con .= "\n";
+				$content .= '<textarea' . $nameAttr;
+				$content .= ' rows="' . $cfg['rows'] . '"';
+				$content .= ' cols="' . strval($isize) . '"';
+				$content .= $Iclass . '>';
+				$content .= $htmlValue;
+				$content .= '</textarea>';
+				$content .= "\n";
 
 				break;
 
@@ -757,27 +785,27 @@ class tx_bib_editor_view {
 					$pairs[$p_val] = $p_desc;
 				}
 
-				$con .= Tx_Bib_Utility_Utility::html_select_input(
+				$content .= Tx_Bib_Utility_Utility::html_select_input(
 					$pairs, $value, $attrs);
 
 				break;
 
 			case 'check' :
-				$con .= Tx_Bib_Utility_Utility::html_check_input(
+				$content .= Tx_Bib_Utility_Utility::html_check_input(
 					$fieldAttr, '1', ($value == 1), $attrs);
 
 				break;
 
 			default :
-				$con .= 'Unknown edit widget: ' . $widgetType;
+				$content .= 'Unknown edit widget: ' . $widgetType;
 		}
 
-		return $con;
+		return $content;
 	}
 
 
 	function get_default_static_widget($field, $value, $mode) {
-		$cfg =& $GLOBALS['TCA'][$this->ref_read->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->referenceReader->refTable]['columns'][$field]['config'];
 		$pi1 =& $this->pi1;
 		$Iclass = ' class="' . $pi1->prefixShort . '-editor_input' . '"';
 
@@ -786,9 +814,9 @@ class tx_bib_editor_view {
 		$fieldAttr = $pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
 		$htmlValue = $pi1->filter_pub_html($value, TRUE);
 
-		$con = '';
-		if ($mode == $this->W_SHOW) {
-			$con .= Tx_Bib_Utility_Utility::html_hidden_input(
+		$content = '';
+		if ($mode == self::WIDGET_SHOW) {
+			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
 				$fieldAttr, $htmlValue);
 
 			switch ($widgetType) {
@@ -800,26 +828,26 @@ class tx_bib_editor_view {
 							break;
 						}
 					}
-					$con .= $name;
+					$content .= $name;
 					break;
 
 				case 'check':
-					$con .= $this->get_ll(
+					$content .= $this->get_ll(
 						($value == 0) ? 'editor_no' : 'editor_yes');
 					break;
 
 				default:
-					$con .= $htmlValue;
+					$content .= $htmlValue;
 			}
 
-		} else if ($mode == $this->W_SILENT) {
+		} else if ($mode == self::WIDGET_SILENT) {
 
-			$con .= Tx_Bib_Utility_Utility::html_hidden_input(
+			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
 				$fieldAttr, $htmlValue);
 
 		}
 
-		return $con;
+		return $content;
 	}
 
 
@@ -829,8 +857,10 @@ class tx_bib_editor_view {
 	 * @return The authors widget
 	 */
 	function get_authors_widget($value, $mode) {
-		$con = ''; // Content
+		$content = '';
 		$cclass = $this->pi1->prefixShort . '-editor_input';
+
+		/** @var tx_bib_pi1 $pi1 */
 		$pi1 =& $this->pi1;
 
 		$isize = 25;
@@ -847,10 +877,10 @@ class tx_bib_editor_view {
 		$edOpts['numAuthors'] = max($edOpts['numAuthors'],
 			sizeof($authors), $pi1->extConf['editor']['numAuthors'], 1);
 
-		if (($mode == $this->W_SHOW) || ($mode == $this->W_EDIT)) {
+		if (($mode == self::WIDGET_SHOW) || ($mode == self::WIDGET_EDIT)) {
 			$au_con = array();
 			for ($i = 0; $i < $edOpts['numAuthors']; $i++) {
-				if ($i > ($aNum - 1) && ($mode != $this->W_EDIT))
+				if ($i > ($aNum - 1) && ($mode != self::WIDGET_EDIT))
 					break;
 
 				$row_con = array();
@@ -859,7 +889,7 @@ class tx_bib_editor_view {
 				$sn = $pi1->filter_pub_Html($authors[$i]['surname'], TRUE);
 
 				$row_con[0] = strval($i + 1);
-				if ($mode == $this->W_SHOW) {
+				if ($mode == self::WIDGET_SHOW) {
 					$row_con[1] = Tx_Bib_Utility_Utility::html_hidden_input(
 						$key_data . '[' . $i . '][forename]', $fn);
 					$row_con[1] .= $fn;
@@ -868,7 +898,7 @@ class tx_bib_editor_view {
 						$key_data . '[' . $i . '][surname]', $sn);
 					$row_con[2] .= $sn;
 
-				} else if ($mode == $this->W_EDIT) {
+				} else if ($mode == self::WIDGET_EDIT) {
 
 					$lowerBtn = Tx_Bib_Utility_Utility::html_image_input(
 						$key_action . '[lower_author]',
@@ -892,69 +922,71 @@ class tx_bib_editor_view {
 				$au_con[] = $row_con;
 			}
 
-			$con .= '<table class="' . $pi1->prefixShort . '-editor_author">' . "\n";
-			$con .= '<tbody>' . "\n";
+			$content .= '<table class="' . $pi1->prefixShort . '-editor_author">' . "\n";
+			$content .= '<tbody>' . "\n";
 
 			// Head rows
-			$con .= '<tr><th></th>';
-			$con .= '<th>';
-			$con .= $this->get_ll($this->ref_read->authorTable . '_forename');
-			$con .= '</th>';
-			$con .= '<th>';
-			$con .= $this->get_ll($this->ref_read->authorTable . '_surname');
-			$con .= '</th>';
-			if ($mode == $this->W_EDIT) {
-				$con .= '<th></th><th></th>';
+			$content .= '<tr><th></th>';
+			$content .= '<th>';
+			$content .= $this->get_ll($this->referenceReader->authorTable . '_forename');
+			$content .= '</th>';
+			$content .= '<th>';
+			$content .= $this->get_ll($this->referenceReader->authorTable . '_surname');
+			$content .= '</th>';
+			if ($mode == self::WIDGET_EDIT) {
+				$content .= '<th></th><th></th>';
 			}
-			$con .= '</tr>' . "\n";
+			$content .= '</tr>' . "\n";
 
 			// Author data rows
 			foreach ($au_con as $row_con) {
-				$con .= '<tr>';
-				$con .= '<th class="' . $pi1->prefixShort . '-editor_author_num">';
-				$con .= $row_con[0];
-				$con .= '</th><td>';
-				$con .= $row_con[1];
-				$con .= '</td><td>';
-				$con .= $row_con[2];
+				$content .= '<tr>';
+				$content .= '<th class="' . $pi1->prefixShort . '-editor_author_num">';
+				$content .= $row_con[0];
+				$content .= '</th><td>';
+				$content .= $row_con[1];
+				$content .= '</td><td>';
+				$content .= $row_con[2];
 				if (sizeof($row_con) > 3) {
-					$con .= '</td><td style="padding: 1px;">';
-					$con .= $row_con[3];
-					$con .= '</td><td style="padding: 1px;">';
-					$con .= $row_con[4];
+					$content .= '</td><td style="padding: 1px;">';
+					$content .= $row_con[3];
+					$content .= '</td><td style="padding: 1px;">';
+					$content .= $row_con[4];
 				}
-				$con .= '</td>';
-				$con .= '</tr>' . "\n";
+				$content .= '</td>';
+				$content .= '</tr>' . "\n";
 			}
 
-			$con .= '</tbody>';
-			$con .= '</table>' . "\n";
+			$content .= '</tbody>';
+			$content .= '</table>' . "\n";
 
 			// Bottom buttons
-			if ($mode == $this->W_EDIT) {
-				$con .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">' . "\n";
-				$con .= Tx_Bib_Utility_Utility::html_submit_input(
-					$key_action . '[more_authors]', '+');
-				$con .= ' ';
-				$con .= Tx_Bib_Utility_Utility::html_submit_input(
-					$key_action . '[less_authors]', '-');
-				$con .= '</div>' . "\n";
+			if ($mode == self::WIDGET_EDIT) {
+				$content .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">' . "\n";
+				$content .= Tx_Bib_Utility_Utility::html_submit_input(
+					$key_action . '[more_authors]', '+'
+				);
+				$content .= ' ';
+				$content .= Tx_Bib_Utility_Utility::html_submit_input(
+					$key_action . '[less_authors]', '-'
+				);
+				$content .= '</div>' . "\n";
 			}
 
-		} else if ($mode == $this->W_SILENT) {
+		} else if ($mode == self::WIDGET_SILENT) {
 
 			for ($i = 0; $i < sizeof($authors); $i++) {
 				$fn = $pi1->filter_pub_html($authors[$i]['forename'], TRUE);
 				$sn = $pi1->filter_pub_Html($authors[$i]['surname'], TRUE);
-				$con .= Tx_Bib_Utility_Utility::html_hidden_input(
+				$content .= Tx_Bib_Utility_Utility::html_hidden_input(
 					$key_data . '[' . $i . '][forename]', $fn);
-				$con .= Tx_Bib_Utility_Utility::html_hidden_input(
+				$content .= Tx_Bib_Utility_Utility::html_hidden_input(
 					$key_data . '[' . $i . '][surname]', $sn);
 			}
 
 		}
 
-		return $con;
+		return $content;
 	}
 
 
@@ -964,6 +996,9 @@ class tx_bib_editor_view {
 	 * @return The pid widget
 	 */
 	function get_pid_widget($value, $mode) {
+
+		$content = ''; // Content
+
 		// Pid
 		$pi1 =& $this->pi1;
 		$pids = $pi1->extConf['pid_list'];
@@ -976,23 +1011,23 @@ class tx_bib_editor_view {
 		// Fetch page titles
 		$pages = Tx_Bib_Utility_Utility::get_page_titles($pids);
 
-		if ($mode == $this->W_SHOW) {
-			$con .= Tx_Bib_Utility_Utility::html_hidden_input(
+		if ($mode == self::WIDGET_SHOW) {
+			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
 				$fieldAttr, $value);
-			$con .= strval($pages[$value]);
+			$content .= strval($pages[$value]);
 
-		} else if ($mode == $this->W_EDIT) {
+		} else if ($mode == self::WIDGET_EDIT) {
 			$attrs['name'] = $fieldAttr;
-			$con .= Tx_Bib_Utility_Utility::html_select_input(
+			$content .= Tx_Bib_Utility_Utility::html_select_input(
 				$pages, $value, $attrs);
 
-		} else if ($mode == $this->W_SILENT) {
-			$con .= Tx_Bib_Utility_Utility::html_hidden_input(
+		} else if ($mode == self::WIDGET_SILENT) {
+			$content .= Tx_Bib_Utility_Utility::html_hidden_input(
 				$fieldAttr, $value);
 
 		}
 
-		return $con;
+		return $content;
 	}
 
 
@@ -1007,8 +1042,8 @@ class tx_bib_editor_view {
 		if (is_numeric($edConf['default_pid'])) {
 			$pid = intval($edConf['default_pid']);
 		}
-		if (!in_array($pid, $this->ref_read->pid_list)) {
-			$pid = intval($this->ref_read->pid_list[0]);
+		if (!in_array($pid, $this->referenceReader->pid_list)) {
+			$pid = intval($this->referenceReader->pid_list[0]);
 		}
 		return $pid;
 	}
@@ -1024,14 +1059,14 @@ class tx_bib_editor_view {
 		$pub = array();
 
 		if (is_array($edConf['field_default.'])) {
-			foreach ($this->ref_read->refFields as $field) {
+			foreach ($this->referenceReader->refFields as $field) {
 				if (array_key_exists($field, $edConf['field_default.']))
 					$pub[$field] = strval($edConf['field_default.'][$field]);
 			}
 		}
 
 		if ($pub['bibtype'] == 0) {
-			$pub['bibtype'] = array_search('article', $this->ref_read->allBibTypes);
+			$pub['bibtype'] = array_search('article', $this->referenceReader->allBibTypes);
 		}
 
 		if ($pub['year'] == 0) {
@@ -1041,7 +1076,7 @@ class tx_bib_editor_view {
 				$pub['year'] = intval(date('Y'));
 		}
 
-		if (!in_array($pub['pid'], $this->ref_read->pid_list)) {
+		if (!in_array($pub['pid'], $this->referenceReader->pid_list)) {
 			$pub['pid'] = $this->get_default_pid();
 		}
 
@@ -1059,7 +1094,7 @@ class tx_bib_editor_view {
 	function get_ref_http($hsc = FALSE) {
 		$pub = array();
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$fields = $this->ref_read->pubFields;
+		$fields = $this->referenceReader->pubFields;
 		$fields[] = 'uid';
 		$fields[] = 'pid';
 		$fields[] = 'hidden';
@@ -1112,7 +1147,7 @@ class tx_bib_editor_view {
 		$events = array();
 		$errors = array();
 		if ($this->conf['delete_no_ref_authors']) {
-			$count = $this->db_utility->delete_no_ref_authors();
+			$count = $this->dbUtility->delete_no_ref_authors();
 			if ($count > 0) {
 				$msg = $this->get_ll('msg_deleted_authors');
 				$msg = str_replace('%d', strval($count), $msg);
@@ -1120,7 +1155,7 @@ class tx_bib_editor_view {
 			}
 		}
 		if ($this->conf['full_text.']['update']) {
-			$stat = $this->db_utility->update_full_text_all();
+			$stat = $this->dbUtility->update_full_text_all();
 
 			$count = sizeof($stat['updated']);
 			if ($count > 0) {
@@ -1159,16 +1194,16 @@ class tx_bib_editor_view {
 	 * @return The html message string
 	 */
 	function post_db_write_message($messages) {
-		$con = '';
+		$content = '';
 		if (count($messages[0]) > 0) {
-			$con .= '<h4>' . $this->get_ll('msg_title_events') . '</h4>' . "\n";
-			$con .= $this->post_db_write_message_items($messages[0]);
+			$content .= '<h4>' . $this->get_ll('msg_title_events') . '</h4>' . "\n";
+			$content .= $this->post_db_write_message_items($messages[0]);
 		}
 		if (count($messages[1]) > 0) {
-			$con .= '<h4>' . $this->get_ll('msg_title_errors') . '</h4>' . "\n";
-			$con .= $this->post_db_write_message_items($messages[1]);
+			$content .= '<h4>' . $this->get_ll('msg_title_errors') . '</h4>' . "\n";
+			$content .= $this->post_db_write_message_items($messages[1]);
 		}
-		return $con;
+		return $content;
 	}
 
 
@@ -1178,21 +1213,21 @@ class tx_bib_editor_view {
 	 * @return The html message string
 	 */
 	function post_db_write_message_items($messages) {
-		$con = '';
+		$content = '';
 		$messages = Tx_Bib_Utility_Utility::string_counter($messages);
-		$con .= '<ul>' . "\n";
+		$content .= '<ul>' . "\n";
 		foreach ($messages as $msg => $count) {
 			$msg = htmlspecialchars($msg, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
-			$con .= '<li>';
-			$con .= $msg;
+			$content .= '<li>';
+			$content .= $msg;
 			if ($count > 1) {
 				$app = str_replace('%d', strval($count), $this->get_ll('msg_times'));
-				$con .= '(' . $app . ')';
+				$content .= '(' . $app . ')';
 			}
-			$con .= '</li>' . "\n";
+			$content .= '</li>' . "\n";
 		}
-		$con .= '</ul>' . "\n";
-		return $con;
+		$content .= '</ul>' . "\n";
+		return $content;
 	}
 
 
@@ -1202,19 +1237,19 @@ class tx_bib_editor_view {
 	 * @return The requested dialog
 	 */
 	function dialog_view() {
-		$con = '';
+		$content = '';
 		$pi1 =& $this->pi1;
 
-		$this->ref_write = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_ReferenceWriter');
-		$this->ref_write->initialize($this->ref_read);
+		$this->referenceWriter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_ReferenceWriter');
+		$this->referenceWriter->initialize($this->referenceReader);
 
 		switch ($pi1->extConf['dialog_mode']) {
 
-			case $pi1->DIALOG_SAVE_CONFIRMED :
+			case $pi1::DIALOG_SAVE_CONFIRMED :
 				$pub = $this->get_ref_http();
 
 				// Unset fields that should not be edited
-				$checkFields = $this->ref_read->refFields;
+				$checkFields = $this->referenceReader->refFields;
 				$checkFields[] = 'pid';
 				$checkFields[] = 'hidden';
 				foreach ($checkFields as $ff) {
@@ -1228,47 +1263,47 @@ class tx_bib_editor_view {
 					}
 				}
 
-				if ($this->ref_write->save_publication($pub)) {
-					$con .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
-					$con .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
-					$con .= '<p>' . $this->ref_write->html_error_message() . '</p>';
-					$con .= '</div>' . "\n";
+				if ($this->referenceWriter->save_publication($pub)) {
+					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
+					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
+					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
+					$content .= '</div>' . "\n";
 				} else {
-					$con .= '<p>' . $this->get_ll('msg_save_success') . '</p>';
+					$content .= '<p>' . $this->get_ll('msg_save_success') . '</p>';
 					$messages = $this->post_db_write();
-					$con .= $this->post_db_write_message($messages);
+					$content .= $this->post_db_write_message($messages);
 				}
 				break;
 
-			case $pi1->DIALOG_DELETE_CONFIRMED :
+			case $pi1::DIALOG_DELETE_CONFIRMED :
 				$pub = $this->get_ref_http();
-				if ($this->ref_write->delete_publication($pi1->piVars['uid'], $pub['mod_key'])) {
-					$con .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
-					$con .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
-					$con .= '<p>' . $this->ref_write->html_error_message() . '</p>';
-					$con .= '</div>' . "\n";
+				if ($this->referenceWriter->delete_publication($pi1->piVars['uid'], $pub['mod_key'])) {
+					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
+					$content .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
+					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
+					$content .= '</div>' . "\n";
 				} else {
-					$con .= '<p>' . $this->get_ll('msg_delete_success') . '</p>';
+					$content .= '<p>' . $this->get_ll('msg_delete_success') . '</p>';
 					$messages = $this->post_db_write();
-					$con .= $this->post_db_write_message($messages);
+					$content .= $this->post_db_write_message($messages);
 				}
 				break;
 
-			case $pi1->DIALOG_ERASE_CONFIRMED :
-				if ($this->ref_write->erase_publication($pi1->piVars['uid'])) {
-					$con .= '<p>' . $this->get_ll('msg_erase_fail') . '</p>';
+			case $pi1::DIALOG_ERASE_CONFIRMED :
+				if ($this->referenceWriter->erase_publication($pi1->piVars['uid'])) {
+					$content .= '<p>' . $this->get_ll('msg_erase_fail') . '</p>';
 				} else {
-					$con .= '<p>' . $this->get_ll('msg_erase_success') . '</p>';
+					$content .= '<p>' . $this->get_ll('msg_erase_success') . '</p>';
 					$messages = $this->post_db_write();
-					$con .= $this->post_db_write_message($messages);
+					$content .= $this->post_db_write_message($messages);
 				}
 				break;
 
 			default :
-				$con .= 'Unknown dialog mode: ' .
+				$content .= 'Unknown dialog mode: ' .
 						$pi1->extConf['dialog_mode'];
 		}
-		return $con;
+		return $content;
 	}
 
 
@@ -1281,7 +1316,7 @@ class tx_bib_editor_view {
 		$d_err = array();
 		$title = $this->get_ll($this->LLPrefix . 'title_confirm_save');
 
-		$bib_str = $this->ref_read->allBibTypes[$pub['bibtype']];
+		$bib_str = $this->referenceReader->allBibTypes[$pub['bibtype']];
 
 		$fields = $this->get_edit_fields($bib_str, TRUE);
 
@@ -1292,10 +1327,8 @@ class tx_bib_editor_view {
 				$cond[] = Tx_Bib_Utility_Utility::explode_trim('|', $part);
 			}
 		}
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $cond );
 
 		$warn =& $this->conf['warnings.'];
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $warn );
 
 		//
 		// Find empty required fields
@@ -1350,7 +1383,7 @@ class tx_bib_editor_view {
 				$err = array('type' => $type);
 				$err['msg'] = $this->get_ll($this->LLPrefix . 'error_empty_fields');
 				$err['list'] = array();
-				$bib_str = $this->ref_read->allBibTypes[$pub['bibtype']];
+				$bib_str = $this->referenceReader->allBibTypes[$pub['bibtype']];
 				foreach ($empty as $field) {
 					switch ($field) {
 						case 'authors':
@@ -1370,9 +1403,9 @@ class tx_bib_editor_view {
 		if ($warn[$type]) {
 			$file = $pub['file_url'];
 			if (Tx_Bib_Utility_Utility::check_file_nexist($file)) {
-				$msg = $this->get_ll('editor_error_file_nexist');
-				$msg = str_replace('%f', $file, $msg);
-				$d_err[] = array('type' => $type, 'msg' => $msg);
+				$message = $this->get_ll('editor_error_file_nexist');
+				$message = str_replace('%f', $file, $message);
+				$d_err[] = array('type' => $type, 'msg' => $message);
 			}
 		}
 
@@ -1381,7 +1414,7 @@ class tx_bib_editor_view {
 		if ($warn[$type] && !$this->conf['no_edit.']['citeid'] &&
 				!$this->conf['no_show.']['citeid']
 		) {
-			if ($this->ref_read->citeid_exists($pub['citeid'], $pub['uid'])) {
+			if ($this->referenceReader->citeid_exists($pub['citeid'], $pub['uid'])) {
 				$err = array('type' => $type);
 				$err['msg'] = $this->get_ll($this->LLPrefix . 'error_id_exists');
 				$d_err[] = $err;
