@@ -86,7 +86,7 @@ class ReferenceReader {
 
 	/**
 	 * These are the publication relevant fields
-	 * that can be found in the reference table $this->refTable.
+	 * that can be found in the reference table $this->referenceTable.
 	 * TYPO3 special fields like pid or uid are not listed here
 	 * @var array
 	 */
@@ -143,7 +143,7 @@ class ReferenceReader {
 
 	/**
 	 * These are the publication relevant fields
-	 * that can be found in the reference table $this->refTable.
+	 * that can be found in the reference table $this->referenceTable.
 	 * including the important TYPO3 specific fields
 	 */
 	public $refAllFields;

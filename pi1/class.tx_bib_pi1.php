@@ -742,7 +742,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if ($this->extConf['date_sorting'] == self::SORT_ASC) {
 			$defaultSorting = 'ASC';
 		}
-		$referenceTableAlias =& $this->referenceReader->refTableAlias;
+		$referenceTableAlias =& $this->referenceReader->referenceTableAlias;
 		$sortFilter = array(
 			array('field' => $referenceTableAlias . '.year', 'dir' => $defaultSorting),
 			array('field' => $referenceTableAlias . '.month', 'dir' => $defaultSorting),
