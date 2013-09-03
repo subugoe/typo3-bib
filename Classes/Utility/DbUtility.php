@@ -61,14 +61,12 @@ class DbUtility {
 	 *
 	 * @return The number of deleted authors
 	 */
-	function delete_no_ref_authors() {
-		$authorTable =& $this->referenceReader->authorTable;
-		$authorshipTable =& $this->referenceReader->authorshipTable;
+	function deleteAuthorsWithoutPublications() {
 		$count = 0;
 
 		$selectQuery = 'SELECT t_au.uid' . "\n";
-		$selectQuery .= ' FROM ' . $authorTable . ' AS t_au';
-		$selectQuery .= ' LEFT OUTER JOIN ' . $authorshipTable . ' AS t_as ' . "\n";
+		$selectQuery .= ' FROM ' . $this->referenceReader->authorTable . ' AS t_au';
+		$selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->authorshipTable . ' AS t_as ' . "\n";
 		$selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
 		$selectQuery .= ' WHERE t_au.deleted = 0 ' . "\n";
 		$selectQuery .= ' GROUP BY t_au.uid ' . "\n";
@@ -84,8 +82,13 @@ class DbUtility {
 		if ($count > 0) {
 			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $uids);
 
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery($authorTable,
-					'uid IN ( ' . $csv . ')', array('deleted' => '1'));
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				$this->referenceReader->authorTable,
+				'uid IN ( ' . $csv . ')',
+				array(
+					'deleted' => '1'
+				)
+			);
 		}
 		return $count;
 	}
@@ -123,7 +126,6 @@ class DbUtility {
 	 * @return array An array with some statistical data
 	 */
 	public function update_full_text_all($force = FALSE) {
-		$referenceTable =& $this->referenceReader->referenceTable;
 		$stat = array();
 		$stat['updated'] = array();
 		$stat['errors'] = array();
@@ -140,8 +142,13 @@ class DbUtility {
 		$whereClause[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
 		$whereClause = implode(' AND ', $whereClause);
-		$whereClause .= $this->referenceReader->enable_fields($referenceTable);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $referenceTable, $whereClause);
+		$whereClause .= $this->referenceReader->enable_fields($this->referenceReader->referenceTable);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'uid',
+			$this->referenceReader->referenceTable,
+			$whereClause
+		);
+
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$uids[] = intval($row['uid']);
 		}
@@ -178,10 +185,13 @@ class DbUtility {
 	 * @return Not defined
 	 */
 	function update_full_text($uid, $force = FALSE) {
-		$referenceTable =& $this->referenceReader->referenceTable;
 
 		$whereClause = 'uid=' . intval($uid);
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('file_url,full_text_tstamp,full_text_file_url', $referenceTable, $whereClause);
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+			'file_url,full_text_tstamp,full_text_file_url',
+			$this->referenceReader->referenceTable,
+			$whereClause
+		);
 		if (sizeof($rows) != 1) {
 			return FALSE;
 		}
@@ -292,7 +302,11 @@ class DbUtility {
 
 		if ($db_update) {
 
-			$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($referenceTable, $whereClause, $db_data);
+			$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				$this->referenceReader->referenceTable,
+				$whereClause,
+				$db_data
+			);
 			if ($ret == FALSE) {
 				$err = array();
 				$err['msg'] = 'Full text update failed: ' . $GLOBALS['TYPO3_DB']->sql_error();
@@ -305,7 +319,6 @@ class DbUtility {
 	}
 
 }
-
 
 if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']);

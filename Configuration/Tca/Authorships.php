@@ -9,7 +9,7 @@ $TCA['tx_bib_domain_model_authorships'] = array (
 	'interface' => array (
 		'showRecordFieldList' => $TCA['tx_bib_domain_model_authorships']['feInterface']['fe_admin_fieldList']
 	),
-	'feInterface' => $TCA['tx_pmeightpack_authorships']['feInterface'],
+	'feInterface' => $TCA['tx_bib_domain_model_authorships']['feInterface'],
 	'columns' => array (
 		'pub_id' => array (
 #      "exclude" => 1,

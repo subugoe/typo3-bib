@@ -17,7 +17,13 @@ class Utility {
 	 */
 	static public function get_page_title($uid) {
 		$title = FALSE;
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title', 'pages', 'uid=' . intval($uid));
+
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'title',
+			'pages',
+			'uid=' . intval($uid)
+		);
+
 		$p_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		if (is_array($p_row)) {
 			$title = htmlspecialchars($p_row['title'], TRUE);
@@ -69,7 +75,6 @@ class Utility {
 	 * @return The string filtered for html output
 	 */
 	static public function fix_html_ampersand($str) {
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'pre: ' => $str ) );
 
 		$pattern = '/&(([^;]|$){8})/';
 		while (preg_match($pattern, $str)) {

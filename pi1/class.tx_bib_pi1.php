@@ -1154,7 +1154,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * This initializes the selction filter array from the piVars
 	 *
-	 * @return FALSE or an error message
+	 * @return string|bool FALSE or an error message
 	 */
 	function init_selection_filter() {
 		if (!$this->conf['allow_selection']) {
@@ -1484,7 +1484,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Remove not allowed tags
 		// Keep the following tags
-		$tags =& $this->referenceReader->allowed_tags;
+		$tags =& $this->referenceReader->allowedTags;
 
 		$LE = '#LE' . $rand . 'LE#';
 		$GE = '#GE' . $rand . 'GE#';
@@ -1538,8 +1538,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Setup all publication items
 		$this->setupItems();
-
-		//GeneralUtiliy::debug ( $this->template['LIST_VIEW'] );
 
 		return $this->template['LIST_VIEW'];
 	}
@@ -1850,10 +1848,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Prepares database publication data for displaying
 	 *
-	 * @return The procesed publication data array
+	 * @return array The procesed publication data array
 	 */
 	function prepare_pub_display($pub, &$warnings = array(), $show_hidden = false) {
-		//GeneralUtiliy::debug ( array ( 'prepare_pub_display' => '' ) );
 
 		// The error list
 		$d_err = array();
@@ -2402,13 +2399,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$items = array();
 
 		// Aliases
-		$referenceReader =& $this->referenceReader;
-		$cObj =& $this->cObj;
 		$conf =& $this->conf;
 		$filters =& $this->extConf['filters'];
 
 		// Store cObj data
-		$contentObjectBackup = $cObj->data;
+		$contentObjectBackup = $this->cObj->data;
 
 		$this->prepareItemSetup();
 
@@ -2439,7 +2434,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		foreach ($labels as $label) {
 			$upperCaseLabel = strtoupper($label);
 			$labelValue = $this->get_ll('label_' . $label);
-			$labelValue = $cObj->stdWrap($labelValue, $conf['label.'][$label . '.']);
+			$labelValue = $this->cObj->stdWrap($labelValue, $conf['label.'][$label . '.']);
 			$labelTranslator['###LABEL_' . $upperCaseLabel . '###'] = $labelValue;
 		}
 
@@ -2477,7 +2472,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Database reading initialization
-		$referenceReader->mFetch_initialize();
+		$this->referenceReader->mFetch_initialize();
 
 		// Determine publication numbers
 		$publicationsBefore = 0;
@@ -2507,7 +2502,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$i_bibtype = 1;
 
 		// Start the fetch loop
-		while ($pub = $referenceReader->mFetch()) {
+		while ($pub = $this->referenceReader->mFetch()) {
 			// Get prepared publication data
 			$warnings = array();
 			$pdata = $this->prepare_pub_display($pub, $warnings);
@@ -2534,7 +2529,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$listViewTemplate = $this->template[$key];
 				if (strlen($listViewTemplate) == 0)
 					$data_block = $this->template['DEFAULT_DATA'];
-				$listViewTemplate = $cObj->substituteMarker($itemBlockTemplate,
+				$listViewTemplate = $this->cObj->substituteMarker($itemBlockTemplate,
 					'###ITEM_DATA###', $listViewTemplate);
 				$itemTemplate[$pdata['bibtype']] = $listViewTemplate;
 			}
@@ -2549,7 +2544,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$repl = $this->getFileUrlIcon($pub, $pdata);
 				$enum = str_replace('###FILE_URL_ICON###', $repl, $enum);
 			}
-			$translator['###ENUM_NUMBER###'] = $cObj->stdWrap($enum, $enumerationWrap);
+			$translator['###ENUM_NUMBER###'] = $this->cObj->stdWrap($enum, $enumerationWrap);
 
 			// Row classes
 			$eo = $evenOdd ? 'even' : 'odd';
@@ -2557,7 +2552,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$translator['###ROW_CLASS###'] = $conf['classes.'][$eo];
 
 			$translator['###NUMBER_CLASS###'] = $this->prefixShort . '-enum';
-			//$translator['###TITLECLASS###'] = $this->prefix_pi1.'-bibtitle';
 
 			// Manipulators
 			$translator['###MANIPULATORS###'] = '';
@@ -2572,28 +2566,28 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					$manip_all[] = $this->get_hide_manipulator($pub);
 					$manip_all = \Ipf\Bib\Utility\Utility::html_layout_table(array($manip_all));
 
-					$translator['###MANIPULATORS###'] = $cObj->stdWrap(
+					$translator['###MANIPULATORS###'] = $this->cObj->stdWrap(
 						$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
 					);
 				}
 			}
 
-			$listViewTemplate = $cObj->substituteSubpart($listViewTemplate, '###HAS_MANIPULATORS###', $subst_sub);
+			$listViewTemplate = $this->cObj->substituteSubpart($listViewTemplate, '###HAS_MANIPULATORS###', $subst_sub);
 
 			// Year separator label
 			if ($this->extConf['split_years'] && ($pub['year'] != $prevYear)) {
-				$yearStr = $cObj->stdWrap(strval($pub['year']), $conf['label.']['year.']);
-				$items[] = $cObj->substituteMarker($yearBlockTemplate, '###YEAR###', $yearStr);
+				$yearStr = $this->cObj->stdWrap(strval($pub['year']), $conf['label.']['year.']);
+				$items[] = $this->cObj->substituteMarker($yearBlockTemplate, '###YEAR###', $yearStr);
 				$prevBibType = -1;
 			}
 
 			// Bibtype separator label
 			if ($this->extConf['split_bibtypes'] && ($pub['bibtype'] != $prevBibType)) {
-				$bibStr = $cObj->stdWrap(
+				$bibStr = $this->cObj->stdWrap(
 					$this->get_ll('bibtype_plural_' . $pub['bibtype'], $pub['bibtype'], TRUE),
 					$conf['label.']['bibtype.']
 				);
-				$items[] = $cObj->substituteMarker($bibliographyTypeBlockTemplate, '###BIBTYPE###', $bibStr);
+				$items[] = $this->cObj->substituteMarker($bibliographyTypeBlockTemplate, '###BIBTYPE###', $bibStr);
 			}
 
 			// Append string for item data
@@ -2602,15 +2596,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$charset = $this->extConf['charset']['upper'];
 				foreach ($warnings as $err) {
 					$msg = htmlspecialchars($err['msg'], ENT_QUOTES, $charset);
-					$append .= $cObj->stdWrap($msg, $warningConfiguration['msg.']);
+					$append .= $this->cObj->stdWrap($msg, $warningConfiguration['msg.']);
 				}
-				$append = $cObj->stdWrap($append, $warningConfiguration['all_wrap.']);
+				$append = $this->cObj->stdWrap($append, $warningConfiguration['all_wrap.']);
 			}
 			$translator['###ITEM_APPEND###'] = $append;
 
 
 			// Apply translator
-			$listViewTemplate = $cObj->substituteMarkerArrayCached($listViewTemplate, $translator);
+			$listViewTemplate = $this->cObj->substituteMarkerArrayCached($listViewTemplate, $translator);
 
 			// Pass to item processor
 			$items[] = $this->get_item_html($pdata, $listViewTemplate);
@@ -2625,10 +2619,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// clean up
-		$referenceReader->mFetch_finish();
+		$this->referenceReader->mFetch_finish();
 
 		// Restore cObj data
-		$cObj->data = $contentObjectBackup;
+		$this->cObj->data = $contentObjectBackup;
 
 		$items = implode('', $items);
 
@@ -2641,14 +2635,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if (strlen($no_items) == 0) {
 				$no_items = $this->get_ll('label_no_items');
 			}
-			$no_items = $cObj->stdWrap($no_items, $conf['label.']['no_items.']);
+			$no_items = $this->cObj->stdWrap($no_items, $conf['label.']['no_items.']);
 		}
 
-		$listViewTemplate =& $this->template['LIST_VIEW'];
-		$listViewTemplate = $cObj->substituteSubpart($listViewTemplate, '###HAS_ITEMS###', $hasStr);
-		$listViewTemplate = $cObj->substituteMarkerArrayCached($listViewTemplate, $this->labelTranslator);
-		$listViewTemplate = $cObj->substituteMarker($listViewTemplate, '###NO_ITEMS###', $no_items);
-		$listViewTemplate = $cObj->substituteMarker($listViewTemplate, '###ITEMS###', $items);
+		$this->template['LIST_VIEW'] = $this->cObj->substituteSubpart($this->template['LIST_VIEW'], '###HAS_ITEMS###', $hasStr);
+		$this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $this->labelTranslator);
+		$this->template['LIST_VIEW'] = $this->cObj->substituteMarker($this->template['LIST_VIEW'], '###NO_ITEMS###', $no_items);
+		$this->template['LIST_VIEW'] = $this->cObj->substituteMarker($this->template['LIST_VIEW'], '###ITEMS###', $items);
 	}
 
 

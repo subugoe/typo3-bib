@@ -34,7 +34,7 @@ class tx_bib_editor_view {
 	public $LLPrefix = 'editor_';
 
 	/**
-	 * @var Tx_Bib_Utility_Generator_CiteIdGenerator|bool
+	 * @var \Ipf\Bib\Utility\Generator\CiteIdGenerator|bool
 	 */
 	public $idGenerator = FALSE;
 
@@ -1147,7 +1147,7 @@ class tx_bib_editor_view {
 		$events = array();
 		$errors = array();
 		if ($this->conf['delete_no_ref_authors']) {
-			$count = $this->dbUtility->delete_no_ref_authors();
+			$count = $this->dbUtility->deleteAuthorsWithoutPublications();
 			if ($count > 0) {
 				$msg = $this->get_ll('msg_deleted_authors');
 				$msg = str_replace('%d', strval($count), $msg);
@@ -1238,9 +1238,10 @@ class tx_bib_editor_view {
 	 */
 	function dialog_view() {
 		$content = '';
+
 		$pi1 =& $this->pi1;
 
-		$this->referenceWriter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_ReferenceWriter');
+		$this->referenceWriter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
 		$this->referenceWriter->initialize($this->referenceReader);
 
 		switch ($pi1->extConf['dialog_mode']) {
@@ -1257,7 +1258,6 @@ class tx_bib_editor_view {
 						if ($this->conf['no_edit.'][$ff] ||
 								$this->conf['no_show.'][$ff]
 						) {
-							//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( "Unsettig field " . $ff );
 							unset ($pub[$ff]);
 						}
 					}
