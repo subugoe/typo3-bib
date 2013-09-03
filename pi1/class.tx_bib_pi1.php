@@ -247,6 +247,70 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	}
 
 	/**
+	 * Builds the export navigation
+	 */
+	protected function getExportNavigation() {
+		$this->extConf['export_navi'] = array();
+
+		// Check group restrictions
+		$groups = $this->conf['export.']['FE_groups_only'];
+		$validFrontendUser = TRUE;
+		if (strlen($groups) > 0) {
+			$validFrontendUser = \Ipf\Bib\Utility\Utility::check_fe_user_groups($groups);
+		}
+
+		// Acquire export modes
+		$modes = $this->conf['export.']['enable_export'];
+		if (strlen($modes) > 0) {
+			$modes = \Ipf\Bib\Utility\Utility::explode_trim_lower(
+				',',
+				$modes,
+				TRUE
+			);
+		}
+
+		// Add export modes
+		$this->extConf['export_navi']['modes'] = array();
+		$exportModules =& $this->extConf['export_navi']['modes'];
+		if (is_array($modes) && $validFrontendUser) {
+			$availableExportModes = array('bibtex', 'xml');
+			$exportModules = array_intersect($availableExportModes, $modes);
+		}
+
+		if (sizeof($exportModules) == 0) {
+			$extConf['show_nav_export'] = FALSE;
+		} else {
+			$exportPluginVariables = trim($this->piVars['export']);
+			if ((strlen($exportPluginVariables) > 0) && in_array($exportPluginVariables, $exportModules)) {
+				$this->extConf['export_navi']['do'] = $exportPluginVariables;
+			}
+		}
+	}
+
+	/**
+	 * Determine whether a valid backend user with write access to the reference table is logged in
+	 *
+	 * @return bool
+	 */
+	protected function isValidBackendUser() {
+		if (is_object($GLOBALS['BE_USER'])) {
+			if ($GLOBALS['BE_USER']->isAdmin())
+				return TRUE;
+			else {
+				return $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->referenceTable);
+			}
+		}
+	}
+
+	protected function isValidFrontendUser($validBackendUser) {
+		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
+			$groups = $this->conf['FE_edit_groups'];
+			if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
+				return TRUE;
+		}
+	}
+
+	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
 	 *
@@ -418,72 +482,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$extConf['show_nav_stat'] = TRUE;
 		}
 
-
-		//
-		// Export navi
-		//
+		// Export navigation
 		if ($extConf['show_nav_export']) {
-			$extConf['export_navi'] = array();
-			$navigationExport =& $extConf['export_navi'];
-
-			// Check group restrictions
-			$groups = $this->conf['export.']['FE_groups_only'];
-			$validFrontendUser = TRUE;
-			if (strlen($groups) > 0) {
-				$validFrontendUser = \Ipf\Bib\Utility\Utility::check_fe_user_groups($groups);
-			}
-			//GeneralUtiliy::debug ( array ( $groups, $fe_ok ) );
-
-			// Acquire export modes
-			$modes = $this->conf['export.']['enable_export'];
-			if (strlen($modes) > 0) {
-				$modes = \Ipf\Bib\Utility\Utility::explode_trim_lower(
-					',',
-					$modes,
-					TRUE
-				);
-			}
-
-			// Add export modes
-			$navigationExport['modes'] = array();
-			$exportModules =& $navigationExport['modes'];
-			if (is_array($modes) && $validFrontendUser) {
-				$availableExportModes = array('bibtex', 'xml');
-				$exportModules = array_intersect($availableExportModes, $modes);
-			}
-
-			if (sizeof($exportModules) == 0) {
-				$extConf['show_nav_export'] = FALSE;
-			} else {
-				$exportPluginVariables = trim($this->piVars['export']);
-				if ((strlen($exportPluginVariables) > 0) && in_array($exportPluginVariables, $exportModules)) {
-					$navigationExport['do'] = $exportPluginVariables;
-				}
-			}
+			$this->getExportNavigation();
 		}
 
-
-		//
 		// Enable Enable the edit mode
-		// Check if this BE user has edit permissions
-		//
-		$validBackendUser = FALSE;
-		if (is_object($GLOBALS['BE_USER'])) {
-			if ($GLOBALS['BE_USER']->isAdmin())
-				$validBackendUser = TRUE;
-			else
-				$validBackendUser = $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->refTable);
-		}
+		$validBackendUser = $this->isValidBackendUser();
 
 		// allow FE-user editing from special groups (set via TS)
-		$validFrontendUser = FALSE;
-		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
-			$groups = $this->conf['FE_edit_groups'];
-			if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
-				$validFrontendUser = TRUE;
-		}
+		$validFrontendUser = $this->isValidFrontendUser($validBackendUser);
 
-		// debug( array ( 'Edit mode' => array ( 'BE' => $be_ok, 'FE' => $fe_ok ) ) );
 		$extConf['edit_mode'] = (($validBackendUser || $validFrontendUser) && $extConf['editor']['enabled']);
 
 		// Set the enumeration mode
@@ -634,12 +643,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		//
 		if ($extConf['show_nav_year']) {
 			// Fetch a year histogram
-			$hist = $this->referenceReader->fetch_histogram('year');
-			$this->stat['year_hist'] = $hist;
-			$this->stat['years'] = array_keys($hist);
+			$histogram = $this->referenceReader->fetch_histogram('year');
+			$this->stat['year_hist'] = $histogram;
+			$this->stat['years'] = array_keys($histogram);
 			sort($this->stat['years']);
 
-			$this->stat['num_all'] = array_sum($hist);
+			$this->stat['num_all'] = array_sum($histogram);
 			$this->stat['num_page'] = $this->stat['num_all'];
 
 			//
@@ -1870,7 +1879,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Bibtype
 		$pdata['bibtype_short'] = $this->referenceReader->allBibTypes[$pdata['bibtype']];
 		$pdata['bibtype'] = $this->get_ll(
-			$this->referenceReader->refTable . '_bibtype_I_' . $pdata['bibtype'],
+			$this->referenceReader->referenceTable . '_bibtype_I_' . $pdata['bibtype'],
 				'Unknown bibtype: ' . $pdata['bibtype'], TRUE);
 
 		// Extern
@@ -1898,7 +1907,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				break;
 			default :
 				$pdata['state'] = $this->get_ll(
-					$this->referenceReader->refTable . '_state_I_' . $pdata['state'],
+					$this->referenceReader->referenceTable . '_state_I_' . $pdata['state'],
 						'Unknown state: ' . $pdata['state'], TRUE);
 		}
 
@@ -3100,7 +3109,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (is_object($GLOBALS['BE_USER'])) {
 			if ($GLOBALS['BE_USER']->isAdmin())
 				return true;
-			else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->refTable))
+			else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->referenceTable))
 				return true;
 		}
 

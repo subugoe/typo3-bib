@@ -192,7 +192,7 @@ class tx_bib_single_view {
 	 */
 	function field_label($field, $bib_str) {
 		$pi1 =& $this->pi1;
-		$label = $this->referenceReader->refTable . '_' . $field;
+		$label = $this->referenceReader->referenceTable . '_' . $field;
 
 		switch ($field) {
 			case 'authors':

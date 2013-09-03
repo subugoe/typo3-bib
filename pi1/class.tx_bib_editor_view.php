@@ -568,7 +568,7 @@ class tx_bib_editor_view {
 	 * @param bib_str The bibtype identifier string
 	 */
 	function field_label($field, $bib_str) {
-		$label = $this->referenceReader->refTable . '_' . $field;
+		$label = $this->referenceReader->referenceTable . '_' . $field;
 
 		switch ($field) {
 			case 'authors':
@@ -723,7 +723,7 @@ class tx_bib_editor_view {
 
 
 	function get_default_edit_widget($field, $value, $mode) {
-		$cfg =& $GLOBALS['TCA'][$this->referenceReader->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->referenceReader->referenceTable]['columns'][$field]['config'];
 		$pi1 =& $this->pi1;
 		$cclass = $pi1->prefixShort . '-editor_input';
 		$Iclass = ' class="' . $cclass . '"';
@@ -805,7 +805,7 @@ class tx_bib_editor_view {
 
 
 	function get_default_static_widget($field, $value, $mode) {
-		$cfg =& $GLOBALS['TCA'][$this->referenceReader->refTable]['columns'][$field]['config'];
+		$cfg =& $GLOBALS['TCA'][$this->referenceReader->referenceTable]['columns'][$field]['config'];
 		$pi1 =& $this->pi1;
 		$Iclass = ' class="' . $pi1->prefixShort . '-editor_input' . '"';
 

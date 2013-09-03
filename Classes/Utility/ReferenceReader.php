@@ -10,6 +10,7 @@ if (!isset($GLOBALS['TSFE']))
  * and some utility methods
  *
  * @author Sebastian Holtermann
+ * @author Ingo Pfennigstorf
  */
 class ReferenceReader {
 
@@ -21,16 +22,49 @@ class ReferenceReader {
 	public $pid_list;
 	public $show_hidden; // Show hidden references
 
-	public $refTable = 'tx_bib_domain_model_reference';
+	/**
+	 * @var string
+	 */
+	public $referenceTable = 'tx_bib_domain_model_reference';
+
+	/**
+	 * @var string
+	 */
 	public $authorTable = 'tx_bib_domain_model_author';
-	public $aShipTable = 'tx_bib_domain_model_authorships';
 
-	public $refTableAlias = 't_ref';
+	/**
+	 * @var string
+	 */
+	public $authorshipTable = 'tx_bib_domain_model_authorships';
+
+	/**
+	 * @var string
+	 */
+	public $referenceTableAlias = 't_ref';
+
+	/**
+	 * @var string
+	 */
 	public $authorTableAlias = 't_authors';
-	public $aShipTableAlias = 't_aships';
 
+	/**
+	 * @var string
+	 */
+	public $authorshipTableAlias = 't_aships';
+
+	/**
+	 * @var array
+	 */
 	public $t_ref_default = array();
+
+	/**
+	 * @var array
+	 */
 	public $t_as_default = array();
+
+	/**
+	 * @var array
+	 */
 	public $t_au_default = array();
 
 	// The following tags are allowed in a reference string
@@ -41,6 +75,7 @@ class ReferenceReader {
 	 * These are the author relevant fields
 	 * that can be found in the reference table $this->authorTable.
 	 * TYPO3 special fields like pid or uid are not listed here
+	 * @var array
 	 */
 	public $authorFields = array(
 		'surname', 'forename', 'url', 'fe_user_id'
@@ -53,6 +88,7 @@ class ReferenceReader {
 	 * These are the publication relevant fields
 	 * that can be found in the reference table $this->refTable.
 	 * TYPO3 special fields like pid or uid are not listed here
+	 * @var array
 	 */
 	public $refFields = array(
 		'bibtype',
@@ -128,7 +164,9 @@ class ReferenceReader {
 	 */
 	public $pubAllFields;
 
-
+	/**
+	 * @var array
+	 */
 	public $allBibTypes = array(
 		0 => 'unknown',
 		1 => 'article',
@@ -152,7 +190,9 @@ class ReferenceReader {
 		19 => 'report'
 	);
 
-
+	/**
+	 * @var array
+	 */
 	public $allStates = array(
 		0 => 'published',
 		1 => 'accepted',
@@ -174,11 +214,11 @@ class ReferenceReader {
 		$this->pid_list = array();
 		$this->show_hidden = FALSE;
 
-		$this->t_ref_default['table'] = $this->refTable;
-		$this->t_ref_default['alias'] = $this->refTableAlias;
+		$this->t_ref_default['table'] = $this->referenceTable;
+		$this->t_ref_default['alias'] = $this->referenceTableAlias;
 
-		$this->t_as_default['table'] = $this->aShipTable;
-		$this->t_as_default['alias'] = $this->aShipTableAlias;
+		$this->t_as_default['table'] = $this->authorshipTable;
+		$this->t_as_default['alias'] = $this->authorshipTableAlias;
 
 		$this->t_au_default['table'] = $this->authorTable;
 		$this->t_au_default['alias'] = $this->authorTableAlias;
@@ -221,29 +261,29 @@ class ReferenceReader {
 	 */
 	function clear_page_cache() {
 		if ($this->clear_cache) {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Clearing cache' );
-			$tce = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_TCEmain');
+			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+			$dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 			$clear_cache = array();
 
-			$be_user = $GLOBALS['BE_USER'];
-			if (is_object($be_user) || is_array($be_user->user)) {
-				$tce->start(array(), array(), $be_user);
+			$backendUser = $GLOBALS['BE_USER'];
+			if (is_object($backendUser) || is_array($backendUser->user)) {
+				$dataHandler->start(array(), array(), $backendUser);
 				// Find storage cache clear requests
 				foreach ($this->pid_list as $pid) {
-					$tsc = $tce->getTCEMAIN_TSconfig($pid);
-					if (is_array($tsc) && isset ($tsc['clearCacheCmd'])) {
-						$clear_cache[] = $tsc['clearCacheCmd'];
+					$tSConfig = $dataHandler->getTCEMAIN_TSconfig($pid);
+					if (is_array($tSConfig) && isset ($tSConfig['clearCacheCmd'])) {
+						$clear_cache[] = $tSConfig['clearCacheCmd'];
 					}
 				}
 			} else {
-				$tce->admin = 1;
+				$dataHandler->admin = 1;
 			}
 
 			// Clear this page cache
 			$clear_cache[] = strval($GLOBALS['TSFE']->id);
 
 			foreach ($clear_cache as $cache) {
-				$tce->clear_cacheCmd($cache);
+				$dataHandler->clear_cacheCmd($cache);
 			}
 		} else {
 			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( 'Not clearing cache' );
@@ -302,7 +342,7 @@ class ReferenceReader {
 	 * This sets the filter which will be asked for most
 	 * query compositions
 	 *
-	 * @return Not defined
+	 * @return void
 	 */
 	function set_filter($filter) {
 		$this->filters = array();
@@ -314,7 +354,7 @@ class ReferenceReader {
 	 * This sets the filters which will be asked for most
 	 * query compositions
 	 *
-	 * @return Not defined
+	 * @return void
 	 */
 	function set_filters($filters) {
 		$this->filters = array();
@@ -327,20 +367,20 @@ class ReferenceReader {
 	/**
 	 * Returns the where clause part for a table
 	 *
-	 * @return The where clause part
+	 * @return string The where clause part
 	 */
-	function enable_fields($table, $alias = '', $show_hidden = FALSE) {
-		$ret = '';
+	public function enable_fields($table, $alias = '', $show_hidden = FALSE) {
+		$whereClause = '';
 		if (strlen($alias) == 0)
 			$alias = $table;
 		if (isset ($this->cObj)) {
-			$ret = $this->cObj->enableFields($table, $show_hidden ? 1 : 0);
+			$whereClause = $this->cObj->enableFields($table, $show_hidden ? 1 : 0);
 		} else {
-			$ret = ' AND ' . $table . '.deleted=0';
+			$whereClause = ' AND ' . $table . '.deleted=0';
 		}
 		if ($alias != $table)
-			$ret = str_replace($table, $alias, $ret);
-		return $ret;
+			$whereClause = str_replace($table, $alias, $whereClause);
+		return $whereClause;
 	}
 
 
@@ -351,35 +391,35 @@ class ReferenceReader {
 	 *
 	 * @return The SELECT clause beginning
 	 */
-	function select_clause_start($fields, $tables) {
-		$SC = '';
+	protected function select_clause_start($fields, $tables) {
+		$selectClause = '';
 		if (is_array($fields) && is_array($tables)) {
-			$rT =& $this->refTable;
-			$aT =& $this->authorTable;
-			$sT =& $this->aShipTable;
+			$referenceTable =& $this->referenceTable;
+			$authorTable =& $this->authorTable;
+			$authorshipTable =& $this->authorshipTable;
 
 			$base =& $tables[0];
 			$joins = '';
 			$aliases = array($base['alias']);
 			for ($i = 1; $i < sizeof($tables); $i++) {
-				$prev = $tables[$i - 1];
-				$cur = $tables[$i];
+				$previous = $tables[$i - 1];
+				$current = $tables[$i];
 
-				if ((($prev['table'] == $rT) && ($cur['table'] == $aT)) ||
-						(($prev['table'] == $aT) && ($cur['table'] == $rT))
+				if ((($previous['table'] == $referenceTable) && ($current['table'] == $authorTable)) ||
+						(($previous['table'] == $authorTable) && ($current['table'] == $referenceTable))
 				) {
-					$joins .= $this->get_sql_join($prev, $this->t_as_default, $aliases);
-					$joins .= $this->get_sql_join($this->t_as_default, $cur, $aliases);
+					$joins .= $this->get_sql_join($previous, $this->t_as_default, $aliases);
+					$joins .= $this->get_sql_join($this->t_as_default, $current, $aliases);
 				} else {
-					$joins .= $this->get_sql_join($prev, $cur, $aliases);
+					$joins .= $this->get_sql_join($previous, $current, $aliases);
 				}
 			}
 
-			$SC = 'SELECT ' . implode(',', $fields) . "\n";
-			$SC .= ' FROM ' . $base['table'] . ' ' . $base['alias'] . "\n";
-			$SC .= $joins;
+			$selectClause = 'SELECT ' . implode(',', $fields) . "\n";
+			$selectClause .= ' FROM ' . $base['table'] . ' ' . $base['alias'] . "\n";
+			$selectClause .= $joins;
 		}
-		return $SC;
+		return $selectClause;
 	}
 
 
@@ -387,60 +427,60 @@ class ReferenceReader {
 	 * This function returns a SQL JOIN string for the requested
 	 * table if it has not yet been joined with the requested alias
 	 *
-	 * @return The WHERE clause string
+	 * @return string The WHERE clause string
 	 */
 	function get_sql_join($table, $join, &$aliases) {
-		$rT =& $this->refTable;
-		$aT =& $this->authorTable;
-		$sT =& $this->aShipTable;
+		$referenceTable =& $this->referenceTable;
+		$authorTable =& $this->authorTable;
+		$authorshipTable =& $this->authorshipTable;
 
-		$js = '';
+		$joinStatement = '';
 
 		if (in_array($join['alias'], $aliases))
 			return '';
 
 		// The match fields
-		$t_mf = '';
-		$j_mf = '';
+		$tableMatchField = '';
+		$joinMatchField = '';
 
 		switch ($table['table']) {
-			case $rT:
+			case $referenceTable:
 				switch ($join['table']) {
-					case $sT:
-						$t_mf = 'uid';
-						$j_mf = 'pub_id';
+					case $authorshipTable:
+						$tableMatchField = 'uid';
+						$joinMatchField = 'pub_id';
 						break;
 				}
 				break;
-			case $sT:
+			case $authorshipTable:
 				switch ($join['table']) {
-					case $rT:
-						$t_mf = 'pub_id';
-						$j_mf = 'uid';
+					case $referenceTable:
+						$tableMatchField = 'pub_id';
+						$joinMatchField = 'uid';
 						break;
-					case $aT:
-						$t_mf = 'author_id';
-						$j_mf = 'uid';
+					case $authorTable:
+						$tableMatchField = 'author_id';
+						$joinMatchField = 'uid';
 						break;
 				}
 				break;
-			case $aT:
+			case $authorTable:
 				switch ($join['table']) {
-					case $sT:
-						$t_mf = 'uid';
-						$j_mf = 'author_id';
+					case $authorshipTable:
+						$tableMatchField = 'uid';
+						$joinMatchField = 'author_id';
 						break;
 				}
 				break;
 		}
 
 		$aliases[] = $join['alias'];
-		$js .= ' INNER JOIN ' . $join['table'] . ' AS ' . $join['alias'];
-		$js .= ' ON ' . $table['alias'] . '.' . $t_mf;
-		$js .= '=' . $join['alias'] . '.' . $j_mf;
-		$js .= "\n";
+		$joinStatement .= ' INNER JOIN ' . $join['table'] . ' AS ' . $join['alias'];
+		$joinStatement .= ' ON ' . $table['alias'] . '.' . $tableMatchField;
+		$joinStatement .= '=' . $join['alias'] . '.' . $joinMatchField;
+		$joinStatement .= "\n";
 
-		return $js;
+		return $joinStatement;
 	}
 
 
@@ -448,14 +488,14 @@ class ReferenceReader {
 	 * This function returns the SQL WHERE clause configured
 	 * by the filters
 	 *
-	 * @return The WHERE clause string
+	 * @return string The WHERE clause string
 	 */
-	function get_reference_where_clause(&$columns) {
+	protected function get_reference_where_clause(&$columns) {
 
-		$rT = $this->refTable;
-		$sT = $this->aShipTable;
-		$rta = $this->refTableAlias;
-		$sta = $this->aShipTableAlias;
+		$referenceTable = $this->referenceTable;
+		$authorshipTable = $this->authorshipTable;
+		$referenceTableAlias = $this->referenceTableAlias;
+		$authorshipTableAlias = $this->authorshipTableAlias;
 
 		$WCA = array();
 		$columns = array();
@@ -470,61 +510,63 @@ class ReferenceReader {
 			$WCA = array_merge($WCA, $parts);
 		}
 
-		$WC = implode(' AND ', $WCA);
+		$whereClause = implode(' AND ', $WCA);
 
-		if (strlen($WC) > 0) {
-			$columns = array_merge(array($rta), $runvar['columns']);
+		if (strlen($whereClause) > 0) {
+			$columns = array_merge(array($referenceTableAlias), $runvar['columns']);
 			$columns = array_unique($columns);
 
 			foreach ($columns as &$column) {
 				$column = preg_replace('/\.[^\.]*$/', '', $column);
-				if (!(strpos($column, $rta) === FALSE)) {
-					$WC .= $this->enable_fields($rT, $column, $this->show_hidden);
+				if (!(strpos($column, $referenceTableAlias) === FALSE)) {
+					$whereClause .= $this->enable_fields($referenceTable, $column, $this->show_hidden);
 				}
-				if (!(strpos($column, $sta) === FALSE)) {
-					$WC .= $this->enable_fields($sT, $column);
+				if (!(strpos($column, $authorshipTableAlias) === FALSE)) {
+					$whereClause .= $this->enable_fields($authorshipTable, $column);
 				}
 			}
 		}
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'WHERE clause: ' => $WC ) );
-		return $WC;
+		return $whereClause;
 	}
 
 
 	/**
 	 * This function returns the SQL WHERE clause parts for one filter
 	 *
-	 * @return The WHERE clause parts in an array
+	 * @param array $filter
+	 * @param array $runvar
+	 *
+	 * @return array The WHERE clause parts in an array
 	 */
 	function get_filter_wc_parts($filter, &$runvar) {
 
-		$rT = $this->refTable;
-		$sT = $this->aShipTable;
-		$rta = $this->refTableAlias;
-		$sta = $this->aShipTableAlias;
+		$referenceTable = $this->referenceTable;
+		$authorshipTable = $this->authorshipTable;
+		$referenceTableAlias = $this->referenceTableAlias;
+		$authorshipTableAlias = $this->authorshipTableAlias;
 
 		$columns =& $runvar['columns'];
 		$aShip_count =& $runvar['aShip_count'];
 
-		$WC = array();
+		$whereClause = array();
 
 		// Filter by UID
 		if (isset ($filter['FALSE'])) {
-			$WC[] = 'FALSE';
-			return $WC;
+			$whereClause[] = 'FALSE';
+			return $whereClause;
 		}
 
 		// Filter by UID
 		if (is_array($filter['uid']) && (sizeof($filter['uid']) > 0)) {
 			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['uid']);
-			$WC[] = $rta . '.uid IN (' . $csv . ')';
+			$whereClause[] = $referenceTableAlias . '.uid IN (' . $csv . ')';
 		}
 
 		// Filter by storage PID
 		if (is_array($filter['pid']) && (sizeof($filter['pid']) > 0)) {
 			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['pid']);
-			$WC[] = $rta . '.pid IN (' . $csv . ')';
+			$whereClause[] = $referenceTableAlias . '.pid IN (' . $csv . ')';
 		}
 
 		// Filter by year
@@ -534,7 +576,7 @@ class ReferenceReader {
 			// years
 			if (is_array($f['years']) && (sizeof($f['years']) > 0)) {
 				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['years']);
-				$wca .= ' ' . $rta . '.year IN (' . $csv . ')' . "\n";
+				$wca .= ' ' . $referenceTableAlias . '.year IN (' . $csv . ')' . "\n";
 			}
 			// ranges
 			if (is_array($f['ranges']) && sizeof($f['ranges'])) {
@@ -548,17 +590,17 @@ class ReferenceReader {
 						if ($both)
 							$wca .= '(';
 						if (isset ($r['from']))
-							$wca .= $rta . '.year >= ' . intval($r['from']);
+							$wca .= $referenceTableAlias . '.year >= ' . intval($r['from']);
 						if ($both)
 							$wca .= ' AND ';
 						if (isset ($r['to']))
-							$wca .= $rta . '.year <= ' . intval($r['to']);
+							$wca .= $referenceTableAlias . '.year <= ' . intval($r['to']);
 						if ($both)
 							$wca .= ')';
 					}
 				}
 			}
-			$WC[] = '(' . $wca . ')';
+			$whereClause[] = '(' . $wca . ')';
 		}
 
 		// Filter by authors
@@ -579,7 +621,7 @@ class ReferenceReader {
 							$uid_lst = implode(',', $uid_lst);
 							$col_num = $aShip_count;
 							$aShip_count += 1;
-							$column = $sta . (($col_num > 0) ? strval($col_num) : '');
+							$column = $authorshipTableAlias . (($col_num > 0) ? strval($col_num) : '');
 							$wc_set[] = $column . '.author_id IN (' . $uid_lst . ')';
 							$columns[] = $column;
 						}
@@ -587,13 +629,13 @@ class ReferenceReader {
 
 					// Append set clause
 					if (sizeof($wc_set) > 0) {
-						$WC = array_merge($WC, $wc_set);
+						$whereClause = array_merge($whereClause, $wc_set);
 					} else {
-						$WC[] = 'FALSE';
+						$whereClause[] = 'FALSE';
 					}
 
 				} else {
-					$WC[] = 'FALSE';
+					$whereClause[] = 'FALSE';
 				}
 
 			} else {
@@ -609,11 +651,11 @@ class ReferenceReader {
 						$uid_lst = implode(',', $uid_lst);
 						$col_num = $aShip_count;
 						$aShip_count += 1;
-						$column = $sta . (($col_num > 0) ? strval($col_num) : '');
-						$WC[] = $column . '.author_id IN (' . $uid_lst . ')';
+						$column = $authorshipTableAlias . (($col_num > 0) ? strval($col_num) : '');
+						$whereClause[] = $column . '.author_id IN (' . $uid_lst . ')';
 						$columns[] = $column;
 					} else {
-						$WC[] = 'FALSE';
+						$whereClause[] = 'FALSE';
 					}
 				}
 			}
@@ -624,7 +666,7 @@ class ReferenceReader {
 			$f =& $filter['bibtype'];
 			if (is_array($f['types']) && (sizeof($f['types']) > 0)) {
 				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['types']);
-				$WC[] = $rta . '.bibtype IN (' . $csv . ')';
+				$whereClause[] = $referenceTableAlias . '.bibtype IN (' . $csv . ')';
 			}
 		}
 
@@ -633,7 +675,7 @@ class ReferenceReader {
 			$f =& $filter['state'];
 			if (is_array($f['states']) && (sizeof($f['states']) > 0)) {
 				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['states']);
-				$WC[] = $rta . '.state IN (' . $csv . ')';
+				$whereClause[] = $referenceTableAlias . '.state IN (' . $csv . ')';
 			}
 		}
 
@@ -641,10 +683,10 @@ class ReferenceReader {
 		if (is_array($filter['origin']) && (sizeof($filter['origin']) > 0)) {
 			$f =& $filter['origin'];
 			if (is_numeric($f['origin'])) {
-				$wca = $rta . '.extern = \'0\'';
+				$wca = $referenceTableAlias . '.extern = \'0\'';
 				if (intval($f['origin']) != 0)
-					$wca = $rta . '.extern != \'0\'';
-				$WC[] = $wca;
+					$wca = $referenceTableAlias . '.extern != \'0\'';
+				$whereClause[] = $wca;
 			}
 		}
 
@@ -652,10 +694,10 @@ class ReferenceReader {
 		if (is_array($filter['reviewed']) && (sizeof($filter['reviewed']) > 0)) {
 			$f =& $filter['reviewed'];
 			if (is_numeric($f['value'])) {
-				$wca = $rta . '.reviewed = \'0\'';
+				$wca = $referenceTableAlias . '.reviewed = \'0\'';
 				if (intval($f['value']) != 0)
-					$wca = $rta . '.reviewed != \'0\'';
-				$WC[] = $wca;
+					$wca = $referenceTableAlias . '.reviewed != \'0\'';
+				$whereClause[] = $wca;
 			}
 		}
 
@@ -663,10 +705,10 @@ class ReferenceReader {
 		if (is_array($filter['borrowed']) && (sizeof($filter['borrowed']) > 0)) {
 			$f =& $filter['borrowed'];
 			if (is_numeric($f['value'])) {
-				$wca = 'LENGTH(' . $rta . '.borrowed_by) = \'0\'';
+				$wca = 'LENGTH(' . $referenceTableAlias . '.borrowed_by) = \'0\'';
 				if (intval($f['value']) != 0)
-					$wca = 'LENGTH(' . $rta . '.borrowed_by) != \'0\'';
-				$WC[] = $wca;
+					$wca = 'LENGTH(' . $referenceTableAlias . '.borrowed_by) != \'0\'';
+				$whereClause[] = $wca;
 			}
 		}
 
@@ -674,10 +716,10 @@ class ReferenceReader {
 		if (is_array($filter['in_library']) && (sizeof($filter['in_library']) > 0)) {
 			$f =& $filter['in_library'];
 			if (is_numeric($f['value'])) {
-				$wca = $rta . '.in_library = \'0\'';
+				$wca = $referenceTableAlias . '.in_library = \'0\'';
 				if (intval($f['value']) != 0)
-					$wca = $rta . '.in_library != \'0\'';
-				$WC[] = $wca;
+					$wca = $referenceTableAlias . '.in_library != \'0\'';
+				$whereClause[] = $wca;
 			}
 		}
 
@@ -685,13 +727,13 @@ class ReferenceReader {
 		if (is_array($filter['citeid']) && (sizeof($filter['citeid']) > 0)) {
 			$f =& $filter['citeid'];
 			if (is_array($f['ids']) && (sizeof($f['ids']) > 0)) {
-				$wca = $rta . '.citeid IN (';
+				$wca = $referenceTableAlias . '.citeid IN (';
 				for ($i = 0; $i < sizeof($f['ids']); $i++) {
 					if ($i > 0) $wca .= ',';
-					$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $rT);
+					$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $referenceTable);
 				}
 				$wca .= ')';
-				$WC[] = $wca;
+				$whereClause[] = $wca;
 			}
 		}
 
@@ -712,7 +754,7 @@ class ReferenceReader {
 
 				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'wca' => $wca ) );
 				foreach ($wca as $app) {
-					if (strlen($app) > 0) $WC[] = $app;
+					if (strlen($app) > 0) $whereClause[] = $app;
 				}
 			}
 		}
@@ -734,7 +776,7 @@ class ReferenceReader {
 
 				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'wca' => $wca ) );
 				foreach ($wca as $app) {
-					if (strlen($app) > 0) $WC[] = $app;
+					if (strlen($app) > 0) $whereClause[] = $app;
 				}
 			}
 		}
@@ -763,13 +805,13 @@ class ReferenceReader {
 
 				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'wca' => $wca ) );
 				foreach ($wca as $app) {
-					if (strlen($app) > 0) $WC[] = $app;
+					if (strlen($app) > 0) $whereClause[] = $app;
 				}
 
 			}
 		}
 
-		return $WC;
+		return $whereClause;
 	}
 
 
@@ -782,8 +824,8 @@ class ReferenceReader {
 	 * @return The WHERE clause string
 	 */
 	function get_filter_search_fields_clause($words, $fields) {
-		$rT =& $this->refTable;
-		$rta =& $this->refTableAlias;
+		$rT =& $this->referenceTable;
+		$rta =& $this->referenceTableAlias;
 		$res = '';
 		$wca = array();
 
@@ -804,7 +846,6 @@ class ReferenceReader {
 					$proc_words[] = $oword;
 			}
 		}
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'pro_words' => $proc_words ) );
 
 		// Fields
 		$refFields = $this->refFields;
@@ -871,7 +912,7 @@ class ReferenceReader {
 	 */
 	function get_order_clause() {
 		$db =& $GLOBALS['TYPO3_DB'];
-		$rT = $this->refTable;
+		$rT = $this->referenceTable;
 		$OC = '';
 		foreach ($this->filters as $filter) {
 			if (is_array($filter['sorting'])) {
@@ -919,8 +960,8 @@ class ReferenceReader {
 	function get_reference_select_clause($fields, $order = '', $group = '') {
 		if (!is_array($fields))
 			$fields = array($fields);
-		$rta =& $this->refTableAlias;
-		$sta =& $this->aShipTableAlias;
+		$rta =& $this->referenceTableAlias;
+		$sta =& $this->authorshipTableAlias;
 		$ata =& $this->authorTableAlias;
 
 		$columns = array();
@@ -955,8 +996,6 @@ class ReferenceReader {
 			}
 		}
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $tables );
-
 		$q = $this->select_clause_start($fields, $tables);
 		if (strlen($WC))
 			$q .= ' WHERE ' . $WC . "\n";
@@ -968,7 +1007,6 @@ class ReferenceReader {
 			$q .= ' LIMIT ' . $LC . "\n";
 		$q .= ';';
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'ref select clause: ' => $q ) );
 		return $q;
 	}
 
@@ -985,7 +1023,7 @@ class ReferenceReader {
 		$num = 0;
 		$db =& $GLOBALS['TYPO3_DB'];
 		$WC = array();
-		$WC[] = 'citeid=' . $db->fullQuoteStr($citeid, $this->refTable);
+		$WC[] = 'citeid=' . $db->fullQuoteStr($citeid, $this->referenceTable);
 		if (is_numeric($uid) && ($uid >= 0)) {
 			$WC[] = 'uid!=' . "'" . intval($uid) . "'";
 		}
@@ -994,9 +1032,9 @@ class ReferenceReader {
 			$WC[] = 'pid IN (' . $csv . ')';
 		}
 		$WC = implode(' AND ', $WC);
-		$WC .= $this->enable_fields($this->refTable, '', $this->show_hidden);
+		$WC .= $this->enable_fields($this->referenceTable, '', $this->show_hidden);
 
-		$res = $db->exec_SELECTquery('count(uid)', $this->refTable, $WC);
+		$res = $db->exec_SELECTquery('count(uid)', $this->referenceTable, $WC);
 		$row = $db->sql_fetch_assoc($res);
 		if (is_array($row)) {
 			$num = intval($row['count(uid)']);
@@ -1013,7 +1051,7 @@ class ReferenceReader {
 	 * @return The number of publications
 	 */
 	function fetch_num() {
-		$rta =& $this->refTableAlias;
+		$rta =& $this->referenceTableAlias;
 
 		$select = $this->get_reference_select_clause($rta . '.uid', NULL);
 		$select = preg_replace('/;\s*$/', '', $select);
@@ -1032,7 +1070,7 @@ class ReferenceReader {
 	 * @return The publication data from the database
 	 */
 	function fetch_max_tstamp() {
-		$max_rT = 'max(' . $this->refTableAlias . '.tstamp)';
+		$max_rT = 'max(' . $this->referenceTableAlias . '.tstamp)';
 		$max_aT = 'max(' . $this->authorTableAlias . '.tstamp)';
 
 		$query = $this->get_reference_select_clause(
@@ -1055,9 +1093,9 @@ class ReferenceReader {
 	 *
 	 * @return A histogram
 	 */
-	function fetch_histogram($field = 'year') {
+	public function fetch_histogram($field = 'year') {
 		$histo = array();
-		$rta =& $this->refTableAlias;
+		$rta =& $this->referenceTableAlias;
 
 		$query = $this->get_reference_select_clause($rta . '.' . $field, $rta . '.' . $field . ' ASC');
 		$res = $GLOBALS['TYPO3_DB']->sql_query($query);
@@ -1158,7 +1196,7 @@ class ReferenceReader {
 	 * @return An array containing the authors
 	 */
 	function search_author_authorships($words, $pids, $fields = array('forename', 'surname')) {
-		$sT =& $this->aShipTable;
+		$sT =& $this->authorshipTable;
 		$ships = array();
 		$authors = $this->search_authors($words, $pids, $fields);
 		if (sizeof($authors) > 0) {
@@ -1272,14 +1310,14 @@ class ReferenceReader {
 	 */
 	function fetch_pub_authors($pub_id) {
 		$authors = array();
-		$sta =& $this->aShipTableAlias;
+		$sta =& $this->authorshipTableAlias;
 		$ata =& $this->authorTableAlias;
 
 		$WC = '';
 
 		$WC .= $sta . '.pub_id=' . intval($pub_id) . "\n";
 		//$WC .= ' AND '.$sta.'.pid='.$ata.'.pid'."\n";
-		$WC .= $this->enable_fields($this->aShipTable, $sta);
+		$WC .= $this->enable_fields($this->authorshipTable, $sta);
 		$WC .= $this->enable_fields($this->authorTable, $ata);
 
 		$OC = $sta . '.sorting ASC';
@@ -1306,9 +1344,9 @@ class ReferenceReader {
 	 */
 	function fetch_db_pub($uid) {
 		$WC = "uid='" . intval($uid) . "'";
-		$WC .= $this->enable_fields($this->refTable, '', $this->show_hidden);
+		$WC .= $this->enable_fields($this->referenceTable, '', $this->show_hidden);
 		$field_csv = implode(',', $this->refAllFields);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($field_csv, $this->refTable, $WC);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($field_csv, $this->referenceTable, $WC);
 		$pub = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		if (is_array($pub)) {
 			$pub['authors'] = $this->fetch_pub_authors($pub['uid']);
@@ -1326,7 +1364,7 @@ class ReferenceReader {
 	 * @return Not defined
 	 */
 	function mFetch_initialize() {
-		$rta =& $this->refTableAlias;
+		$rta =& $this->referenceTableAlias;
 		$field_csv = $rta . '.' . implode(',' . $rta . '.', $this->refAllFields);
 		$query = $this->get_reference_select_clause($field_csv);
 		$this->dbRes = $GLOBALS['TYPO3_DB']->sql_query($query);
@@ -1409,9 +1447,9 @@ class ReferenceReader {
 					$WC[] = 'pid=' . intval($aShip['pid']);
 				}
 				$WC = implode(' AND ', $WC);
-				$WC .= $this->enable_fields($this->aShipTable);
+				$WC .= $this->enable_fields($this->authorshipTable);
 				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'WC: ' => $WC ) );
-				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->aShipTable, $WC);
+				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', $this->authorshipTable, $WC);
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))
 					$ret[] = $row;
 			}

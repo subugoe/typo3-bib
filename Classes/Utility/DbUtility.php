@@ -44,6 +44,7 @@ class DbUtility {
 	/**
 	 * Initializes the import. The argument must be the plugin class
 	 *
+	 * @param bool|\Ipf\Bib\Utility\ReferenceReader
 	 * @return void
 	 */
 	function initialize($referenceReader = FALSE) {
@@ -62,7 +63,7 @@ class DbUtility {
 	 */
 	function delete_no_ref_authors() {
 		$authorTable =& $this->referenceReader->authorTable;
-		$authorshipTable =& $this->referenceReader->aShipTable;
+		$authorshipTable =& $this->referenceReader->authorshipTable;
 		$count = 0;
 
 		$selectQuery = 'SELECT t_au.uid' . "\n";
@@ -118,10 +119,11 @@ class DbUtility {
 	/**
 	 * Updates the full_text field for all references if neccessary
 	 *
-	 * @return An array with some statistical data
+	 * @param bool $force
+	 * @return array An array with some statistical data
 	 */
 	public function update_full_text_all($force = FALSE) {
-		$rT =& $this->referenceReader->refTable;
+		$referenceTable =& $this->referenceReader->referenceTable;
 		$stat = array();
 		$stat['updated'] = array();
 		$stat['errors'] = array();
@@ -129,17 +131,17 @@ class DbUtility {
 		$stat['limit_time'] = 0;
 		$uids = array();
 
-		$WC = array();
+		$whereClause = array();
 
 		if (sizeof($this->referenceReader->pid_list) > 0) {
 			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->referenceReader->pid_list);
-			$WC[] = 'pid IN (' . $csv . ')';
+			$whereClause[] = 'pid IN (' . $csv . ')';
 		}
-		$WC[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
+		$whereClause[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
-		$WC = implode(' AND ', $WC);
-		$WC .= $this->referenceReader->enable_fields($rT);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $rT, $WC);
+		$whereClause = implode(' AND ', $whereClause);
+		$whereClause .= $this->referenceReader->enable_fields($referenceTable);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', $referenceTable, $whereClause);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$uids[] = intval($row['uid']);
 		}
@@ -176,13 +178,10 @@ class DbUtility {
 	 * @return Not defined
 	 */
 	function update_full_text($uid, $force = FALSE) {
-		$rT =& $this->referenceReader->refTable;
-		$db =& $GLOBALS['TYPO3_DB'];
+		$referenceTable =& $this->referenceReader->referenceTable;
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'Updating full text' => $uid ) );
-
-		$WC = 'uid=' . intval($uid);
-		$rows = $db->exec_SELECTgetRows('file_url,full_text_tstamp,full_text_file_url', $rT, $WC);
+		$whereClause = 'uid=' . intval($uid);
+		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('file_url,full_text_tstamp,full_text_file_url', $referenceTable, $whereClause);
 		if (sizeof($rows) != 1) {
 			return FALSE;
 		}
@@ -293,10 +292,10 @@ class DbUtility {
 
 		if ($db_update) {
 
-			$ret = $db->exec_UPDATEquery($rT, $WC, $db_data);
+			$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($referenceTable, $whereClause, $db_data);
 			if ($ret == FALSE) {
 				$err = array();
-				$err['msg'] = 'Full text update failed: ' . $db->sql_error();
+				$err['msg'] = 'Full text update failed: ' . $GLOBALS['TYPO3_DB']->sql_error();
 				return $err;
 			}
 			return TRUE;
