@@ -1,11 +1,11 @@
 <?php
 namespace Ipf\Bib\Utility;
 
-
 /**
  * This class provides some utility methods and acts mainly a a namespace
  *
  * @author Sebastian Holtermann
+ * @author Ingo Pfennigstorf
  */
 class Utility {
 
@@ -13,7 +13,7 @@ class Utility {
 	/**
 	 * Returns the processed title of a page
 	 *
-	 * @return The title string or FALSE
+	 * @return string|bool The title string or FALSE
 	 */
 	static public function get_page_title($uid) {
 		$title = FALSE;
@@ -326,13 +326,15 @@ class Utility {
 	/**
 	 * Returns true if an integer in $allowed is in $current
 	 *
-	 * @return TRUE if there is an overlap FALSE otherwise
+	 * @return bool TRUE if there is an overlap FALSE otherwise
 	 */
 	static public function intval_list_check($allowed, $current) {
-		if (!is_array($allowed))
+		if (!is_array($allowed)) {
 			$allowed = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($allowed));
-		if (!is_array($current))
+		}
+		if (!is_array($current)) {
 			$current = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($current));
+		}
 
 		foreach ($current as $cur) {
 			if (in_array($cur, $allowed))
@@ -533,7 +535,6 @@ class Utility {
 		}
 		return FALSE;
 	}
-
 }
 
 ?>

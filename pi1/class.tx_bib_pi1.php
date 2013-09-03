@@ -135,181 +135,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected $pidList;
 
-
-	/**
-	 * Retrieve and optimize Extension configuration
-	 *
-	 * @return array
-	 */
-	protected function getExtensionConfiguration() {
-		$extConf = array();
-		// Initialize current configuration
-		$extConf['link_vars'] = array();
-		$extConf['sub_page'] = array();
-
-		$extConf['view_mode'] = self::VIEW_LIST;
-		$extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
-		$extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
-
-
-		//
-		// Retrieve general FlexForm values
-		//
-		$fSheet = 'sDEF';
-		$extConf['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
-		$extConf['enum_style'] = $this->pi_getFFvalue($this->flexFormData, 'enum_style', $fSheet);
-		$extConf['show_nav_search'] = $this->pi_getFFvalue($this->flexFormData, 'show_search', $fSheet);
-		$extConf['show_nav_author'] = $this->pi_getFFvalue($this->flexFormData, 'show_authors', $fSheet);
-		$extConf['show_nav_pref'] = $this->pi_getFFvalue($this->flexFormData, 'show_pref', $fSheet);
-		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue($this->flexFormData, 'items_per_page', $fSheet);
-		$extConf['max_authors'] = $this->pi_getFFvalue($this->flexFormData, 'max_authors', $fSheet);
-		$extConf['split_bibtypes'] = $this->pi_getFFvalue($this->flexFormData, 'split_bibtypes', $fSheet);
-		$extConf['stat_mode'] = $this->pi_getFFvalue($this->flexFormData, 'stat_mode', $fSheet);
-		$extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
-		$extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
-
-		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
-		$show_fields = explode(',', $show_fields);
-
-		$extConf['hide_fields'] = array(
-			'abstract' => 1,
-			'annotation' => 1,
-			'note' => 1,
-			'keywords' => 1,
-			'tags' => 1
-		);
-
-		foreach ($show_fields as $f) {
-			$field = FALSE;
-			switch ($f) {
-				case 1:
-					$field = 'abstract';
-					break;
-				case 2:
-					$field = 'annotation';
-					break;
-				case 3:
-					$field = 'note';
-					break;
-				case 4:
-					$field = 'keywords';
-					break;
-				case 5:
-					$field = 'tags';
-					break;
-			}
-			if ($field) {
-				$extConf['hide_fields'][$field] = 0;
-			}
-		}
-
-		return $extConf;
-	}
-
-	/**
-	 * Get configuration from FlexForms
-	 */
-	protected function getFrontendEditorConfiguration() {
-		$ecEditor =& $this->extConf['editor'];
-		$flexFormSheet = 's_fe_editor';
-		$ecEditor['enabled'] = $this->pi_getFFvalue($this->flexFormData, 'enable_editor', $flexFormSheet);
-		$ecEditor['citeid_gen_new'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_new', $flexFormSheet);
-		$ecEditor['citeid_gen_old'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_old', $flexFormSheet);
-		$ecEditor['clear_page_cache'] = $this->pi_getFFvalue($this->flexFormData, 'clear_cache', $flexFormSheet);
-
-		// Overwrite editor configuration from TSsetup
-		if (is_array($this->conf['editor.'])) {
-			$editorOverride =& $this->conf['editor.'];
-			if (array_key_exists('enabled', $editorOverride))
-				$extConf['editor']['enabled'] = $editorOverride['enabled'] ? TRUE : FALSE;
-			if (array_key_exists('citeid_gen_new', $editorOverride))
-				$extConf['editor']['citeid_gen_new'] = $editorOverride['citeid_gen_new'] ? TRUE : FALSE;
-			if (array_key_exists('citeid_gen_old', $editorOverride))
-				$extConf['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? TRUE : FALSE;
-		}
-		$this->referenceReader->clear_cache = $extConf['editor']['clear_page_cache'];
-	}
-
-	/**
-	 * Get storage pages
-	 *
-	 * @return void
-	 */
-	protected function getStoragePid() {
-		$pidList = array();
-		if (isset ($this->conf['pid_list'])) {
-			$this->pidList = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->conf['pid_list']);
-		}
-		if (isset ($this->cObj->data['pages'])) {
-			$tmp = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->cObj->data['pages']);
-			$this->pidList = array_merge($pidList, $tmp);
-		}
-	}
-
-	/**
-	 * Builds the export navigation
-	 */
-	protected function getExportNavigation() {
-		$this->extConf['export_navi'] = array();
-
-		// Check group restrictions
-		$groups = $this->conf['export.']['FE_groups_only'];
-		$validFrontendUser = TRUE;
-		if (strlen($groups) > 0) {
-			$validFrontendUser = \Ipf\Bib\Utility\Utility::check_fe_user_groups($groups);
-		}
-
-		// Acquire export modes
-		$modes = $this->conf['export.']['enable_export'];
-		if (strlen($modes) > 0) {
-			$modes = \Ipf\Bib\Utility\Utility::explode_trim_lower(
-				',',
-				$modes,
-				TRUE
-			);
-		}
-
-		// Add export modes
-		$this->extConf['export_navi']['modes'] = array();
-		$exportModules =& $this->extConf['export_navi']['modes'];
-		if (is_array($modes) && $validFrontendUser) {
-			$availableExportModes = array('bibtex', 'xml');
-			$exportModules = array_intersect($availableExportModes, $modes);
-		}
-
-		if (sizeof($exportModules) == 0) {
-			$extConf['show_nav_export'] = FALSE;
-		} else {
-			$exportPluginVariables = trim($this->piVars['export']);
-			if ((strlen($exportPluginVariables) > 0) && in_array($exportPluginVariables, $exportModules)) {
-				$this->extConf['export_navi']['do'] = $exportPluginVariables;
-			}
-		}
-	}
-
-	/**
-	 * Determine whether a valid backend user with write access to the reference table is logged in
-	 *
-	 * @return bool
-	 */
-	protected function isValidBackendUser() {
-		if (is_object($GLOBALS['BE_USER'])) {
-			if ($GLOBALS['BE_USER']->isAdmin())
-				return TRUE;
-			else {
-				return $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->referenceTable);
-			}
-		}
-	}
-
-	protected function isValidFrontendUser($validBackendUser) {
-		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
-			$groups = $this->conf['FE_edit_groups'];
-			if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
-				return TRUE;
-		}
-	}
-
 	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
@@ -842,6 +667,180 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			);
 		}
 		return $this->pi_wrapInBaseClass($pluginContent);
+	}
+
+	/**
+	 * Retrieve and optimize Extension configuration
+	 *
+	 * @return array
+	 */
+	protected function getExtensionConfiguration() {
+		$extConf = array();
+		// Initialize current configuration
+		$extConf['link_vars'] = array();
+		$extConf['sub_page'] = array();
+
+		$extConf['view_mode'] = self::VIEW_LIST;
+		$extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
+		$extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
+
+
+		//
+		// Retrieve general FlexForm values
+		//
+		$fSheet = 'sDEF';
+		$extConf['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
+		$extConf['enum_style'] = $this->pi_getFFvalue($this->flexFormData, 'enum_style', $fSheet);
+		$extConf['show_nav_search'] = $this->pi_getFFvalue($this->flexFormData, 'show_search', $fSheet);
+		$extConf['show_nav_author'] = $this->pi_getFFvalue($this->flexFormData, 'show_authors', $fSheet);
+		$extConf['show_nav_pref'] = $this->pi_getFFvalue($this->flexFormData, 'show_pref', $fSheet);
+		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue($this->flexFormData, 'items_per_page', $fSheet);
+		$extConf['max_authors'] = $this->pi_getFFvalue($this->flexFormData, 'max_authors', $fSheet);
+		$extConf['split_bibtypes'] = $this->pi_getFFvalue($this->flexFormData, 'split_bibtypes', $fSheet);
+		$extConf['stat_mode'] = $this->pi_getFFvalue($this->flexFormData, 'stat_mode', $fSheet);
+		$extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
+		$extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
+
+		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
+		$show_fields = explode(',', $show_fields);
+
+		$extConf['hide_fields'] = array(
+			'abstract' => 1,
+			'annotation' => 1,
+			'note' => 1,
+			'keywords' => 1,
+			'tags' => 1
+		);
+
+		foreach ($show_fields as $f) {
+			$field = FALSE;
+			switch ($f) {
+				case 1:
+					$field = 'abstract';
+					break;
+				case 2:
+					$field = 'annotation';
+					break;
+				case 3:
+					$field = 'note';
+					break;
+				case 4:
+					$field = 'keywords';
+					break;
+				case 5:
+					$field = 'tags';
+					break;
+			}
+			if ($field) {
+				$extConf['hide_fields'][$field] = 0;
+			}
+		}
+
+		return $extConf;
+	}
+
+	/**
+	 * Get configuration from FlexForms
+	 */
+	protected function getFrontendEditorConfiguration() {
+		$ecEditor =& $this->extConf['editor'];
+		$flexFormSheet = 's_fe_editor';
+		$ecEditor['enabled'] = $this->pi_getFFvalue($this->flexFormData, 'enable_editor', $flexFormSheet);
+		$ecEditor['citeid_gen_new'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_new', $flexFormSheet);
+		$ecEditor['citeid_gen_old'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_old', $flexFormSheet);
+		$ecEditor['clear_page_cache'] = $this->pi_getFFvalue($this->flexFormData, 'clear_cache', $flexFormSheet);
+
+		// Overwrite editor configuration from TSsetup
+		if (is_array($this->conf['editor.'])) {
+			$editorOverride =& $this->conf['editor.'];
+			if (array_key_exists('enabled', $editorOverride))
+				$extConf['editor']['enabled'] = $editorOverride['enabled'] ? TRUE : FALSE;
+			if (array_key_exists('citeid_gen_new', $editorOverride))
+				$extConf['editor']['citeid_gen_new'] = $editorOverride['citeid_gen_new'] ? TRUE : FALSE;
+			if (array_key_exists('citeid_gen_old', $editorOverride))
+				$extConf['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? TRUE : FALSE;
+		}
+		$this->referenceReader->clear_cache = $extConf['editor']['clear_page_cache'];
+	}
+
+	/**
+	 * Get storage pages
+	 *
+	 * @return void
+	 */
+	public function getStoragePid() {
+		$pidList = array();
+		if (isset ($this->conf['pid_list'])) {
+			$this->pidList = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->conf['pid_list']);
+		}
+		if (isset ($this->cObj->data['pages'])) {
+			$tmp = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->cObj->data['pages']);
+			$this->pidList = array_merge($pidList, $tmp);
+		}
+	}
+
+	/**
+	 * Builds the export navigation
+	 */
+	protected function getExportNavigation() {
+		$this->extConf['export_navi'] = array();
+
+		// Check group restrictions
+		$groups = $this->conf['export.']['FE_groups_only'];
+		$validFrontendUser = TRUE;
+		if (strlen($groups) > 0) {
+			$validFrontendUser = \Ipf\Bib\Utility\Utility::check_fe_user_groups($groups);
+		}
+
+		// Acquire export modes
+		$modes = $this->conf['export.']['enable_export'];
+		if (strlen($modes) > 0) {
+			$modes = \Ipf\Bib\Utility\Utility::explode_trim_lower(
+				',',
+				$modes,
+				TRUE
+			);
+		}
+
+		// Add export modes
+		$this->extConf['export_navi']['modes'] = array();
+		$exportModules =& $this->extConf['export_navi']['modes'];
+		if (is_array($modes) && $validFrontendUser) {
+			$availableExportModes = array('bibtex', 'xml');
+			$exportModules = array_intersect($availableExportModes, $modes);
+		}
+
+		if (sizeof($exportModules) == 0) {
+			$extConf['show_nav_export'] = FALSE;
+		} else {
+			$exportPluginVariables = trim($this->piVars['export']);
+			if ((strlen($exportPluginVariables) > 0) && in_array($exportPluginVariables, $exportModules)) {
+				$this->extConf['export_navi']['do'] = $exportPluginVariables;
+			}
+		}
+	}
+
+	/**
+	 * Determine whether a valid backend user with write access to the reference table is logged in
+	 *
+	 * @return bool
+	 */
+	protected function isValidBackendUser() {
+		if (is_object($GLOBALS['BE_USER'])) {
+			if ($GLOBALS['BE_USER']->isAdmin())
+				return TRUE;
+			else {
+				return $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->referenceTable);
+			}
+		}
+	}
+
+	protected function isValidFrontendUser($validBackendUser) {
+		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
+			$groups = $this->conf['FE_edit_groups'];
+			if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
+				return TRUE;
+		}
 	}
 
 

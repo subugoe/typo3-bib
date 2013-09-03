@@ -253,7 +253,6 @@ class ReferenceReader {
 		$this->cObj =& $cObj;
 	}
 
-
 	/**
 	 * Clears the page cache of all selected pages
 	 *
@@ -291,7 +290,7 @@ class ReferenceReader {
 	/**
 	 * This changes the character set of a publication (array)
 	 *
-	 * @return The character set adjusted publication
+	 * @return array The character set adjusted publication
 	 */
 	function change_pub_charset($publication, $originalCharset, $targetCharset) {
 		if (is_array($publication) && strlen($originalCharset) && strlen($targetCharset)
@@ -1450,11 +1449,35 @@ class ReferenceReader {
 					$whereClause
 				);
 
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 					$ret[] = $row;
+				}
 			}
 		}
 		return $ret;
+	}
+
+	/**
+	 * @param string $citationId
+	 * @return int
+	 */
+	public function getUidFromCitationId($citationId) {
+
+		$citationId = filter_var($citationId, FILTER_SANITIZE_STRING);
+
+		$query = $GLOBALS['TYPO3_DB']->exec_SELECTQuery(
+			'uid',
+			$this->referenceTable,
+			'citeid = "' . $citationId . '"',
+			'',
+			'',
+			1
+		);
+
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($query)) {
+			$result = $row['uid'];
+		}
+		return $result;
 	}
 
 }

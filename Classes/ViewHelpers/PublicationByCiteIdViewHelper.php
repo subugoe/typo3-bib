@@ -52,7 +52,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 		}
 
 		if (empty($citationId)) {
-			throw new \Exception('A citation Id has to be Provided for ' . __CLASS__ , 1378194424);
+			throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
 		} else {
 			return $this->getBibliographicDataFromCitationId($citationId);
 		}
@@ -64,12 +64,8 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 	 */
 	protected function getBibliographicDataFromCitationId($citationId) {
 
-		/** @var \tx_bib_pi1 $pi1 */
-		$pi1 = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_bib_pi1');
-		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($pi1, __CLASS__ . ' @ ' . __LINE__);
-
 		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader= $pi1->referenceReader;
+		$referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 
 		if ($referenceReader->citeid_exists($citationId)) {
 			$referenceReader->append_filter(array('citeid' => array('ids' => $citationId)));
@@ -77,7 +73,8 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 			throw new \Exception('Citation Id ' . $citationId . ' does not exist', 1378195258);
 		}
 
-		return array();
+		$citationUid = $referenceReader->getUidFromCitationId($citationId);
+		return $referenceReader->fetch_db_pub($citationUid);
 	}
 
 }
