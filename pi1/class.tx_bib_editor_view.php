@@ -18,13 +18,13 @@ class tx_bib_editor_view {
 	public $referenceReader;
 
 	/**
-	 * @var Tx_Bib_Utility_ReferenceWriter
+	 * @var \Ipf\Bib\Utility\ReferenceWriter
 	 */
 	public $referenceWriter;
 	/**
 	 * Database Utility
 	 *
-	 * @var Tx_Bib_Utility_DbUtility
+	 * @var \Ipf\Bib\Utility\DbUtility
 	 */
 	public $dbUtility;
 
@@ -73,7 +73,7 @@ class tx_bib_editor_view {
 
 
 		// setup db_utility
-		$this->dbUtility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_DbUtility');
+		$this->dbUtility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
 		$this->dbUtility->initialize($pi1->referenceReader);
 		$this->dbUtility->charset = $pi1->extConf['charset']['upper'];
 		$this->dbUtility->read_full_text_conf($this->conf['full_text.']);
@@ -84,10 +84,10 @@ class tx_bib_editor_view {
 			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->conf['citeid_generator_file']);
 			if (file_exists($ext_file)) {
 				require_once($ext_file);
-				$this->idGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_Generator_AuthorsCiteIdGenerator');
+				$this->idGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\AuthorsCiteIdGenerator');
 			}
 		} else {
-			$this->idGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Bib_Utility_Generator_CiteIdGenerator');
+			$this->idGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\CiteIdGenerator');
 		}
 		$this->idGenerator->initialize($pi1);
 	}

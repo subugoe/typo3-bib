@@ -3,14 +3,26 @@ namespace Ipf\Bib\Utility;
 
 class PRegExpTranslator {
 
-	protected  $pattern;
+	/**
+	 * @var string
+	 */
+	protected $pattern;
+
+	/**
+	 * @var string
+	 */
 	protected $replacement;
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->clear();
 	}
 
-
+	/**
+	 * @return void
+	 */
 	protected function clear() {
 		$this->pattern = array();
 		$this->replacement = array();
@@ -27,9 +39,12 @@ class PRegExpTranslator {
 		return $this;
 	}
 
-
-	public function translate($str) {
-		return preg_replace($this->pattern, $this->replacement, $str);
+	/**
+	 * @param string $source
+	 * @return mixed
+	 */
+	public function translate($source) {
+		return preg_replace($this->pattern, $this->replacement, $source);
 	}
 }
 
