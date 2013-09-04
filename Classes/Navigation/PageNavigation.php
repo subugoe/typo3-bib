@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi_page extends tx_bib_navi {
+class PageNavigation extends Navigation {
 
 	/*
 	 * Initialize

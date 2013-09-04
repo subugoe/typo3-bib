@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi_search extends tx_bib_navi {
+class SearchNavigation extends Navigation {
 
 	public $hidden_input;
 

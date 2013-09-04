@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi_year extends tx_bib_navi {
+class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 
 	/*
 	 * Intialize

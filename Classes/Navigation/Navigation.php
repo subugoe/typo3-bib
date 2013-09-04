@@ -1,6 +1,8 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi {
+
+class Navigation {
 
 	/**
 	 * @var \tx_bib_pi1

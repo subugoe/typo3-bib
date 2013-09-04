@@ -266,7 +266,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$extConf['dynamic'] = TRUE;
 			$extConf['search_navi'] = array();
 			$searchNavigationConfiguration =& $extConf['search_navi'];
-			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('tx_bib_navi_search');
+			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('SearchNavigation');
 			$searchNavigationConfiguration['obj']->hook_init();
 		}
 
@@ -284,7 +284,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$extConf['dynamic'] = TRUE;
 			$extConf['author_navi'] = array();
 			$searchNavigationConfiguration =& $extConf['author_navi'];
-			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('tx_bib_navi_author');
+			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('AuthorNavigation');
 			$searchNavigationConfiguration['obj']->hook_init();
 		}
 
@@ -295,7 +295,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if ($extConf['show_nav_pref']) {
 			$extConf['pref_navi'] = array();
 			$searchNavigationConfiguration =& $extConf['pref_navi'];
-			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('tx_bib_navi_pref');
+			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('PreferenceNavigation');
 			$searchNavigationConfiguration['obj']->hook_init();
 		}
 
@@ -1449,9 +1449,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return The url
 	 */
 	function get_navi_instance($type) {
-		$file = 'EXT:' . $this->extKey . '/pi1/class.' . $type . '.php';
-		require_once($GLOBALS['TSFE']->tmpl->getFileName($file));
-		$obj = GeneralUtility::makeInstance($type);
+		$obj = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\' . $type);
 		$obj->initialize($this);
 		return $obj;
 	}
@@ -1577,7 +1575,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$cObj =& $this->cObj;
 
 		if ($this->extConf['show_nav_year']) {
-			$obj = $this->get_navi_instance('tx_bib_navi_year');
+			$obj = $this->get_navi_instance('YearNavigation');
 
 			$trans = $obj->translator();
 			$hasStr = array('', '');
@@ -1627,7 +1625,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$cObj =& $this->cObj;
 
 		if ($this->extConf['show_nav_page']) {
-			$obj = $this->get_navi_instance('tx_bib_navi_page');
+			$obj = $this->get_navi_instance('PageNavigation');
 
 			$trans = $obj->translator();
 			$hasStr = array('', '');
@@ -1701,7 +1699,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$cObj =& $this->cObj;
 
 		if ($this->extConf['show_nav_stat']) {
-			$obj = $this->get_navi_instance('tx_bib_navi_stat');
+			$obj = $this->get_navi_instance('StatisticsNavigation');
 
 			$trans = $obj->translator();
 			$hasStr = array('', '');

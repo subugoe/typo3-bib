@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi_author extends tx_bib_navi {
+class AuthorNavigation extends Navigation {
 
 	public $extConf;
 
@@ -114,12 +115,10 @@ class tx_bib_navi_author extends tx_bib_navi {
 				if (!(strpos($name, '&') === FALSE)) {
 					$name = html_entity_decode($name, ENT_COMPAT, $charset);
 					$spec = TRUE;
-					//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'sur' => $name ) );
 				}
 				// check if first letter matches
 				$ll = mb_substr($name, 0, 1, $charset);
 				if (($ll != $sel_up) && ($ll != $sel_low)) {
-					//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'sel' => $sel_letter, 'll' => $ll ) );
 					continue;
 				}
 				if (!in_array($name, $lst)) {
@@ -130,7 +129,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 				usort($lst, 'strcoll');
 			}
 			$sel_surnames = $lst;
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $sel_surnames );
 
 			//
 			// Restore filter
@@ -141,7 +139,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 		//
 		// Setup filter for selected author
 		//
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'sel_author' => $sel_author ) );
 		if ($sel_author != '0') {
 			$spec = htmlentities($sel_author, ENT_QUOTES, $charset);
 
@@ -153,7 +150,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 				if ($spec != $sel_author)
 					$pats[] = $spec;
 
-				//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'pats' => $pats ) );
 				// Reset filter with the surname only
 				$filter = array();
 				foreach ($pats as $pat) {
@@ -171,7 +167,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 			$ff['author']['author'] = array();
 			$ff['author']['author']['authors'] = $filter;
 
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $extConf['filters'] );
 			$ref_read->set_filters($ff);
 		}
 	}
@@ -183,7 +178,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 	function sel_get_text($ii) {
 		$txt = strval($this->pi1->stat['authors']['sel_surnames'][$ii]);
 		$txt = htmlspecialchars($txt, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $txt );
 		return $txt;
 	}
 
@@ -247,7 +241,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 				$letters[] = $ll;
 		}
 		usort($letters, 'strcoll');
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $letters );
 
 		return $letters;
 	}
@@ -261,18 +254,12 @@ class tx_bib_navi_author extends tx_bib_navi {
 		$sel2 = htmlentities($sel1, ENT_QUOTES, $charset);
 		$sel3 = html_entity_decode($sel1, ENT_QUOTES, $charset);
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 
-		//	'sel1' => $sel1, 'sel2' => $sel2, 
-		// 'sel3' => $sel3, 'all' => $list ) );
-
 		$idx = -1;
 		if ($sel1 != $null) {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'sns' => $sns ) );
 			$idx = array_search($sel1, $list);
 			if ($idx === FALSE) $idx = array_search($sel2, $list);
 			if ($idx === FALSE) $idx = array_search($sel3, $list);
 			if ($idx === FALSE) $idx = -1;
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'idx' => $idx ) );
 		}
 		return $idx;
 	}
@@ -294,7 +281,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 
 		$extConf['sel_name_idx'] =
 				$this->string_index($sel, $sns, '0', $charset);
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug( $extConf );
 
 		// The label
 		$nlabel = $cObj->stdWrap(
@@ -329,7 +315,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 		$max = sizeof($sns) - 1;
 
 		$indices = array(0, $cur, $max);
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug( $indices );
 
 		$numSel = 3;
 		if (array_key_exists('authors', $cfgSel))
@@ -400,7 +385,6 @@ class tx_bib_navi_author extends tx_bib_navi {
 		$pairs = array('' => $all);
 		foreach ($names as $name) {
 			$name = htmlspecialchars($name, ENT_QUOTES, $charset);
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'select' => $name ) );
 			$pairs[$name] = $name;
 		}
 		$attribs = array(

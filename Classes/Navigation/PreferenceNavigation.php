@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi_pref extends tx_bib_navi {
+class PreferenceNavigation extends Navigation {
 
 	public $extConf;
 
@@ -175,7 +176,7 @@ class tx_bib_navi_pref extends tx_bib_navi {
 		$trans['###GO###'] = $go_btn;
 		$trans['###FORM_END###'] = $fo_end;
 
-		$tmpl = $this->pi1->setup_enum_cond_block($this->template);
+		$tmpl = $this->pi1->setupEnumerationConditionBlock($this->template);
 		$con = $cObj->substituteMarkerArrayCached($tmpl, $trans);
 
 		return $con;

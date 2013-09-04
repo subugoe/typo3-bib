@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\Navigation;
 
-class tx_bib_navi_stat extends tx_bib_navi {
+class StatisticsNavigation extends Navigation {
 
 	/*
 	 * Initialize
