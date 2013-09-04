@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\View;
 
-class tx_bib_single_view {
+class SingleView {
 
 	/**
 	 * @var tx_bib_pi1

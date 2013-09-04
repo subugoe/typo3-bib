@@ -1,6 +1,7 @@
 <?php
+namespace Ipf\Bib\View;
 
-class tx_bib_editor_view {
+class EditorView {
 
 	/**
 	 * @var tx_bib_pi1

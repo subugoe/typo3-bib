@@ -2922,8 +2922,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return String The single view
 	 */
 	protected function singleView() {
-		/** @var tx_bib_single_view $singleView */
-		$singleView = GeneralUtility::makeInstance('tx_bib_single_view');
+		/** @var \Ipf\Bib\View\SingleView $singleView */
+		$singleView = GeneralUtility::makeInstance('Ipf\\Bib\\View\\SingleView');
 		$singleView->initialize($this);
 
 		return $singleView->single_view();
@@ -2936,8 +2936,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return String The editor view
 	 */
 	protected function editorView() {
-		/** @var tx_bib_editor_view $editorView */
-		$editorView = GeneralUtility::makeInstance('tx_bib_editor_view');
+		/** @var \Ipf\Bib\View\EditorView $editorView */
+		$editorView = GeneralUtility::makeInstance('Ipf\\Bib\\View\\EditorView');
 		$editorView->initialize($this);
 
 		return $editorView->editor_view();
