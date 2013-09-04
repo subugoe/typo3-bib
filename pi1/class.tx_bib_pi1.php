@@ -156,6 +156,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
+
+		/** @var \Ipf\Bib\Utility\ReferenceReader referenceReader */
 		$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		$this->referenceReader->set_cObj($this->cObj);
 
@@ -260,44 +262,29 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Search Navigation
 		if ($extConf['show_nav_search']) {
-			$this->getSearchNavigation();
+			$this->initializeSearchNavigation();
 		}
 
 		//
 		// Year Navigation
 		//
 		if ($extConf['d_mode'] == self::D_Y_NAV) {
-			$extConf['show_nav_year'] = TRUE;
+			$this->enableYearNavigation();
 		}
 
-		//
 		// Author Navigation
-		//
 		if ($extConf['show_nav_author']) {
-			$extConf['dynamic'] = TRUE;
-			$extConf['author_navi'] = array();
-			$searchNavigationConfiguration =& $extConf['author_navi'];
-			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('AuthorNavigation');
-			$searchNavigationConfiguration['obj']->hook_init();
+			$this->initializeAuthorNavigation();
 		}
 
-
-		//
 		// Preference Navigation
-		//
 		if ($extConf['show_nav_pref']) {
-			$extConf['pref_navi'] = array();
-			$searchNavigationConfiguration =& $extConf['pref_navi'];
-			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('PreferenceNavigation');
-			$searchNavigationConfiguration['obj']->hook_init();
+			$this->initializePreferenceNavigation();
 		}
 
-
-		//
 		// Statistic navi
-		//
 		if (intval($this->extConf['stat_mode']) != self::STAT_NONE) {
-			$extConf['show_nav_stat'] = TRUE;
+			$this->enableStatisticsNavigation(TRUE);
 		}
 
 		// Export navigation
@@ -334,7 +321,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$extConf['show_hidden'] = TRUE;
 		}
 		$this->referenceReader->show_hidden = $extConf['show_hidden'];
-
 
 		// Edit mode specific
 		if ($extConf['edit_mode']) {
@@ -503,6 +489,39 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * @return void
 	 */
+	protected function enableYearNavigation() {
+		$this->extConf['show_nav_year'] = TRUE;
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function enableStatisticsNavigation() {
+		$this->extConf['show_nav_stat'] = TRUE;
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializePreferenceNavigation() {
+		$this->extConf['pref_navi'] = array();
+		$this->extConf['pref_navi']['obj'] =& $this->get_navi_instance('PreferenceNavigation');
+		$this->extConf['pref_navi']['obj']->hook_init();
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeAuthorNavigation() {
+		$this->extConf['dynamic'] = TRUE;
+		$this->extConf['author_navi'] = array();
+		$this->extConf['author_navi']['obj'] =& $this->get_navi_instance('AuthorNavigation');
+		$this->extConf['author_navi']['obj']->hook_init();
+	}
+
+	/**
+	 * @return void
+	 */
 	protected function getEditMode() {
 		// Disable caching in edit mode
 		$GLOBALS['TSFE']->set_no_cache();
@@ -633,7 +652,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * @return void
 	 */
-	protected function getSearchNavigation() {
+	protected function initializeSearchNavigation() {
 		$this->extConf['dynamic'] = TRUE;
 		$this->extConf['search_navi'] = array();
 		$this->extConf['search_navi']['obj'] =& $this->get_navi_instance('SearchNavigation');
