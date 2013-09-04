@@ -29,6 +29,18 @@ use TYPO3\CMS\Core\FormProtection\Exception;
 
 /**
  * Retrieve an array of the publication by providing a CiteId
+ *
+ * Usage:
+ * First: Declare the namespace for this extension:
+ *
+ * {namespace bib=Ipf\Bib\ViewHelpers}
+ *
+ * Than create an alias block for the result and call the properties inside this block:
+ *
+ * <f:alias map="{bib:\"{bib:publicationByCiteId(citeId:'2r')}\"}" >
+ *     {bib.publisher}
+ * </f:alias>
+ *
  */
 class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
