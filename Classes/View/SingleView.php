@@ -141,14 +141,25 @@ class SingleView {
 
 					$value = strval($pdata[$field]);
 					$stdWrap = $pi1->conf['field.'][$field . '.'];
-					if (isset ($pi1->conf['field.'][$bib_str . '.'][$field . '.']))
+
+					if (isset ($pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
 						$stdWrap = $pi1->conf['field.'][$bib_str . '.'][$field . '.'];
-					if (isset ($this->conf['field_wrap.'][$field . '.']))
-						$stdWrap = $this->conf['field_wrap.'][$field . '.'];
-					//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( $field => $stdWrap ));
-					if (isset ($stdWrap['single_view_link'])) {
-						$value = $pi1->get_link($value, array('show_uid' => strval($pdata['uid'])));
 					}
+
+					if (isset ($this->conf['field_wrap.'][$field . '.'])) {
+						$stdWrap = $this->conf['field_wrap.'][$field . '.'];
+					}
+
+					if (isset ($stdWrap['single_view_link'])) {
+						$value = $pi1->get_link(
+							$value,
+							array(
+								'show_uid' => strval($pdata['uid']
+								)
+							)
+						);
+					}
+
 					$value = $cObj->stdWrap($value, $stdWrap);
 
 
@@ -188,8 +199,8 @@ class SingleView {
 	 * Depending on the bibliography type this function returns
 	 * The label for a field
 	 *
-	 * @param field The field
-	 * @param bib_str The bibtype identifier string
+	 * @param string $field The field
+	 * @param string $bib_str The bibtype identifier string
 	 */
 	function field_label($field, $bib_str) {
 		$pi1 =& $this->pi1;
@@ -222,8 +233,8 @@ class SingleView {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_single_view.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_single_view.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/SingleView.php"]) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/SingleView.php"]);
 }
 
 ?>

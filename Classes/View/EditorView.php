@@ -1,6 +1,8 @@
 <?php
 namespace Ipf\Bib\View;
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class EditorView {
 
 	/**
@@ -49,7 +51,6 @@ class EditorView {
 	 */
 	public $isFirstEdit = FALSE;
 
-	// Widget modes
 	/**
 	 * Show and pass value
 	 */
@@ -88,7 +89,7 @@ class EditorView {
 		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
 
 		// setup db_utility
-		$this->dbUtility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
+		$this->dbUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
 		$this->dbUtility->initialize($pi1->referenceReader);
 		$this->dbUtility->charset = $pi1->extConf['charset']['upper'];
 		$this->dbUtility->read_full_text_conf($this->conf['full_text.']);
@@ -98,10 +99,10 @@ class EditorView {
 			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->conf['citeid_generator_file']);
 			if (file_exists($ext_file)) {
 				require_once($ext_file);
-				$this->idGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\AuthorsCiteIdGenerator');
+				$this->idGenerator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\AuthorsCiteIdGenerator');
 			}
 		} else {
-			$this->idGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\CiteIdGenerator');
+			$this->idGenerator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\CiteIdGenerator');
 		}
 		$this->idGenerator->initialize($pi1);
 	}
@@ -581,8 +582,8 @@ class EditorView {
 	/**
 	 * Depending on the bibliography type this function returns
 	 * The label for a field
-	 * @param string The field
-	 * @param string bib_str The bibtype identifier string
+	 * @param string $field The field
+	 * @param string $bib_str The bibtype identifier string
 	 * @return string $label
 	 */
 	function field_label($field, $bib_str) {

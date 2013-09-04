@@ -1,4 +1,5 @@
 <?php
+namespace Ipf\Bib\Domain\Model;
 
 /* * *************************************************************
  *  Copyright notice
@@ -28,7 +29,7 @@
 /**
  * References Model
  */
-class Tx_Bib_Domain_Model_References extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
+class References extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var int

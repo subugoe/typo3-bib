@@ -6,6 +6,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
  *  Copyright notice
  *
  *  (c) 2008 Sebastian Holtermann (sebholt@web.de)
+ *  (c) 2013 Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -29,9 +30,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @author Sebastian Holtermann <sebholt@web.de>
  * @author Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
- *
  */
-
 class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $prefixId = 'tx_bib_pi1';
@@ -95,8 +94,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	const SORT_DESC = 0;
 	const SORT_ASC = 1;
 
-	public $template; // HTML templates
-	public $itemTemplate; // HTML templates
+	/**
+	 * @var string
+	 */
+	public $template;
+
+	/**
+	 * @var string
+	 */
+	public $itemTemplate;
 
 	/**
 	 * These are derived/extra configuration values

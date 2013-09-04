@@ -1,4 +1,6 @@
 <?php
+namespace Ipf\Bib\Controller;
+
 
 /* * *************************************************************
  *  Copyright notice
@@ -28,7 +30,7 @@
 /**
  * Main controller for the extension 'bib'
  */
-class Tx_Bib_Controller_IndexController extends Tx_Extbase_MVC_Controller_ActionController {
+class IndexController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	public function listAction() {
 
