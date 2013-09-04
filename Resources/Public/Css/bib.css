@@ -1,0 +1,442 @@
+div.tx_bib-top_navigation {
+  clear: both;
+  padding: 0px;
+  margin: 1ex 0px;
+  margin-bottom: 1.5ex;
+  border-width: 0px;
+  border-bottom: 1px solid black;
+}
+
+div.tx_bib-bottom_navigation {
+  clear: both;
+  padding: 1ex 0px;
+  padding-top: 0.5ex;
+  margin: 1ex 0px;
+  border-width: 0px;
+}
+
+div.tx_bib-navi_year,
+div.tx_bib-navi_page,
+div.tx_bib-navi_pref,
+div.tx_bib-navi_author,
+div.tx_bib-navi_search {
+  padding: 0em;
+  margin: 0px;
+  border-width: 0px;
+}
+
+div.tx_bib-navi_search_top,
+div.tx_bib-navi_author_top,
+div.tx_bib-navi_year_top,
+div.tx_bib-navi_page_top,
+div.tx_bib-navi_pref_top {
+  clear: both;
+  padding: 0px;
+  margin: 1.5ex 0em;
+  border-width: 0px;
+}
+
+div.tx_bib-navi_search_bottom,
+div.tx_bib-navi_author_bottom,
+div.tx_bib-navi_year_bottom,
+div.tx_bib-navi_page_bottom,
+div.tx_bib-navi_pref_bottom {
+  clear: both;
+  padding: 0px;
+  margin: 1.5ex 0em;
+  border-width: 0px;
+}
+
+.tx_bib-inline_form,
+.tx_bib-year_select_form,
+.tx_bib-author_select_form,
+.tx_bib-search_form {
+  display: inline;
+  padding: 0px;
+  margin: 0px;
+  border-width: 0px;
+}
+
+.tx_bib-navi_search_details,
+.tx_bib-navi_year_selection,
+.tx_bib-navi_author_letters,
+.tx_bib-navi_author_selection,
+.tx_bib-navi_page_selection {
+  float: left;
+}
+
+div.tx_bib-float_clear {
+  clear: both;
+  padding: 0px;
+  margin: 0px;
+  border-width: 0px;
+  height: 0px;
+  width: 0px;
+}
+
+.tx_bib-year_select_form,
+.tx_bib-author_select_form {
+  float: right;
+}
+
+div.tx_bib-navi_extra_row {
+  padding-top: 1.5ex;
+}
+
+form.tx_bib-search_form {
+  display: block;
+}
+
+.tx_bib-navi_search_details {
+  margin-left: 12em;
+}
+
+.tx_bib-navi_author_selection {
+  margin-left: 12em;
+}
+
+.tx_bib-navi_author_select {
+  float: right;
+}
+
+form.tx_bib-navi_pref_form {
+  display: block;
+}
+
+span.tx_bib-navi_current {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.tx_bib-navi_widget {
+  padding: 0px;
+  padding-right: 1em;
+}
+
+.tx_bib-navi_label {
+  padding: 0px;
+  margin-right: 0.5em;
+}
+
+div.tx_bib-navi_main_label {
+  font-weight: bold;
+  width: 12em;
+  padding: 0px;
+  margin: 0px;
+  float: left;
+}
+
+span.tx_bib-navi_separator {
+  padding: 0px 0.75em;
+}
+
+.tx_bib-navi_new {
+  text-align: right;
+  margin: 0.5em 0em;
+  padding: 0px;
+}
+
+div.tx_bib-navi_export,
+div.tx_bib-navi_import,
+div.tx_bib-navi_statistic {
+  text-align: left;
+  margin: 1em 0em;
+  padding: 0px;
+  font-size: smaller;
+}
+
+.tx_bib-export_label,
+.tx_bib-import_label,
+.tx_bib-statistic_label {
+  font-weight: bold;
+  margin-right: 1em;
+}
+
+div.tx_bib-list_container {
+  margin: 0px;
+  padding: 0px;
+  margin-left: 12em;
+}
+
+table.tx_bib-list {
+  float: left;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.tx_bib-list th,
+table.tx_bib-list td {
+  border-width: 0px;
+}
+
+.tx_bib-year_row {
+  padding: 0.25em 0.5em;
+  text-align: left;
+}
+
+.tx_bib-year_row h3 {
+  padding: 0px;
+  margin: 0px;
+}
+
+.tx_bib-bibtype_row {
+  padding: 0.25em 0.5em;
+  text-align: left;
+}
+
+.tx_bib-bibtype_row h4 {
+  padding: 0px;
+  margin: 0px;
+}
+
+td.tx_bib-item_even,
+td.tx_bib-item_odd {
+  padding: 0ex 0.3em;
+  padding-bottom: 1.5ex;
+  vertical-align: top;
+}
+
+td.tx_bib-enum {
+  text-align: right;
+  padding-left: 0px;
+  padding-right: 0.5em;
+  max-width: 4em;
+}
+
+div.tx_bib-file_url_icon {
+  padding: 0px;
+  margin: 0px;
+  padding-top: 0.25ex;
+  width: 32px;
+}
+
+.tx_bib-button {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+.tx_bib-italic {
+  font-style: italic;
+}
+
+.tx_bib-bold {
+  font-weight: bold;
+}
+
+.tx_bib-hidden {
+  display: none;
+}
+
+img.tx_bib-file_icon,
+img.tx_bib-person_icon {
+  display: inline;
+  padding: 0px;
+  margin: 0px;
+  border-width: 0px;
+}
+
+.tx_bib-block {
+  display: block;
+  padding: 0px;
+  margin: 0px;
+  border-width: 0px;
+}
+
+.tx_bib-author {
+  padding: 0px;
+  margin: 0px;
+}
+
+.tx_bib-authors {
+  padding: 0px;
+  margin: 0px;
+}
+
+.tx_bib-author_high {
+  font-weight: bold;
+}
+
+.tx_bib-title {
+  font-style: italic;
+}
+
+.tx_bib-series {
+  font-style: italic;
+}
+
+.tx_bib-state {
+  font-style: italic;
+}
+
+.tx_bib-type {
+  font-style: italic;
+}
+
+.tx_bib-abstract_block,
+.tx_bib-note_block,
+.tx_bib-annotation_block,
+.tx_bib-misc_block,
+.tx_bib-keywords_block,
+.tx_bib-tags_block {
+  margin: 1ex 0px;
+  padding: 0px;
+}
+
+.tx_bib-url_block {
+  margin: 0.5ex 0px;
+}
+
+div.tx_bib-missing_data {
+  font-weight: bold;
+  background-color: #eb0000;
+  margin: 0px;
+  padding: 1ex 1em;
+}
+
+.tx_bib-warning_box {
+  padding: 1ex 1em;
+  margin: 1ex 0px;
+  background-color: #eba533;
+  border: 4px solid black;
+}
+
+.tx_bib-manipulator_block {
+  border-width: 0px;
+  padding: 0px;
+  margin: 0px 0px 2px 0.75em;
+  float: right;
+}
+
+.tx_bib-manip {
+  border-width: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.tx_bib-edit_icon,
+.tx_bib-hide_icon,
+.tx_bib-delete_icon,
+.tx_bib-new_icon {
+  border-width: 0px;
+  padding: 0.25em 0.25em;
+}
+
+table.tx_bib-layout {
+  border-collapse: collapse;
+  border-width: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+
+table.tx_bib-layout td,
+table.tx_bib-layout th,
+table.tx_bib-layout tr {
+  border-width: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+
+table.tx_bib-single_item {
+  border-collapse: collapse;
+  border-width: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+
+th.tx_bib-single_label,
+td.tx_bib-single_value {
+  padding: 0.5ex 0px;
+}
+
+th.tx_bib-single_label {
+  min-width: 8em;
+  padding-right: 1em;
+  text-align: left;
+  vertical-align: top;
+}
+
+td.tx_bib-single_value {
+  text-align: left;
+  vertical-align: bottom;
+}
+
+div.tx_bib-editor {
+  padding: 1em;
+  margin: 1em 0em;
+  border: 1px solid black;
+}
+
+table.tx_bib-editor_fields {
+  border-collapse: collapse;
+  padding: 0px;
+  margin: 0.75ex 0em;
+  border-width: 0px;
+}
+
+table.tx_bib-editor_fields th,
+table.tx_bib-editor_fields td {
+  border-width: 0px;
+  padding: 0.5ex 0.5em;
+  vertical-align: top;
+  text-align: left;
+}
+
+table.tx_bib-editor_fields th {
+  min-width: 8em;
+}
+
+.tx_bib-editor h3 {
+  font-size: large;
+  border-bottom: 1px solid black;
+  padding: 0.25em 0em;
+}
+
+.tx_bib-editor_button {
+  margin: 0em 0.5em;
+}
+
+.tx_bib-editor_button_box {
+  padding: 1em 1em;
+  background-color: #eee;
+}
+
+.tx_bib-box_right {
+  float: right;
+}
+
+select.tx_bib-editor_input,
+input.tx_bib-editor_input,
+textarea.tx_bib-editor_input {
+  padding: 2px;
+}
+
+input.tx_bib-editor_input,
+textarea.tx_bib-editor_input {
+  border: 1px solid black;
+}
+
+table.tx_bib-editor_author {
+  border-collapse: collapse;
+  padding: 0px;
+  margin: 0px;
+}
+
+table.tx_bib-editor_author th,
+table.tx_bib-editor_author td {
+  border-width: 0px;
+  min-width: 0px;
+  font-size: small;
+}
+
+table.tx_bib-editor_author
+th.tx_bib-editor_author_num {
+  padding: 0ex 0.75ex 0ex 0ex;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.tx_bib-editor_hidden {
+  text-decoration: line-through;
+}
