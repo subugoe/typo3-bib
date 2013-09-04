@@ -142,6 +142,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected $pidList;
 
 	/**
+	 * Insert extension specific JavaScript
+	 * @todo check if jQuery is integrated
+	 */
+	protected function includeJavaScript() {
+		/** @var t3lib_pageRenderer $pageRenderer */
+		$pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
+		$pageRenderer->addJsFooterFile('typo3conf/ext/' . $this->extKey . '/Resources/Public/JavaScript/bib.js');
+	}
+
+	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
 	 *
@@ -159,6 +169,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->pi_initPIflexForm();
 
 		$this->flexFormData = $this->cObj->data['pi_flexform'];
+
+		$this->includeJavaScript();
 
 		// Create some configuration shortcuts
 		$extConf =& $this->extConf;
