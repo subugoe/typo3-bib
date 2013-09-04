@@ -4,7 +4,7 @@ namespace Ipf\Bib\View;
 class EditorView {
 
 	/**
-	 * @var tx_bib_pi1
+	 * @var \tx_bib_pi1
 	 */
 	public $pi1;
 
@@ -50,21 +50,36 @@ class EditorView {
 	public $isFirstEdit = FALSE;
 
 	// Widget modes
-	const WIDGET_SHOW = 0; // Show and pass value
-	const WIDGET_EDIT = 1; // Edit and pass value
-	const WIDGET_SILENT = 2; // Don't show but pass value
-	const WIDGET_HIDDEN = 3; // Don't show and don't pass value
+	/**
+	 * Show and pass value
+	 */
+	const WIDGET_SHOW = 0;
+
+	/**
+	 * Edit and pass value
+	 */
+	const WIDGET_EDIT = 1;
+
+	/**
+	 * Don't show but pass value
+	 */
+	const WIDGET_SILENT = 2;
+
+	/**
+	 * Don't show and don't pass value
+	 */
+	const WIDGET_HIDDEN = 3;
 
 
 	/**
 	 * Initializes this class
 	 *
-	 * @param tx_bib_pi1 $pi1
+	 * @param \tx_bib_pi1 $pi1
 	 * @return void
 	 */
 	function initialize($pi1) {
 
-		/** @var tx_bib_pi1 pi1 */
+		/** @var \tx_bib_pi1 pi1 */
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['editor.'];
 		$this->referenceReader =& $pi1->referenceReader;
@@ -72,13 +87,11 @@ class EditorView {
 		// Load editor language data
 		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
 
-
 		// setup db_utility
 		$this->dbUtility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
 		$this->dbUtility->initialize($pi1->referenceReader);
 		$this->dbUtility->charset = $pi1->extConf['charset']['upper'];
 		$this->dbUtility->read_full_text_conf($this->conf['full_text.']);
-
 
 		// Create an instance of the citeid generator
 		if (isset ($this->conf['citeid_generator_file'])) {
@@ -108,7 +121,12 @@ class EditorView {
 		return $this->pi1->get_ll($key, $alt, $hsc);
 	}
 
-
+	/**
+	 * @param string $key
+	 * @param string $alt
+	 * @param bool $hsc
+	 * @return string
+	 */
 	function get_db_ll($key, $alt = '', $hsc = FALSE) {
 		$key = str_replace('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:', '', $key);
 		return $this->pi1->get_ll($key, $alt, $hsc);
@@ -119,10 +137,9 @@ class EditorView {
 	 * The editor shows a single publication entry
 	 * and allows to edit, delete or save it.
 	 *
-	 * @return String A publication editor
+	 * @return string A publication editor
 	 */
 	function editor_view() {
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ($GLOBALS["HTTP_POST_VARS"]);
 		$content = '';
 
 		// check whether the BE user is authorized
@@ -237,7 +254,6 @@ class EditorView {
 		// Evaluate actions
 		if (is_array($pi1->piVars['action'])) {
 			$actions =& $pi1->piVars['action'];
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $actions );
 
 			// Generate cite id
 			if (array_key_exists('generate_id', $actions)) {
@@ -565,8 +581,9 @@ class EditorView {
 	/**
 	 * Depending on the bibliography type this function returns
 	 * The label for a field
-	 * @param field The field
-	 * @param bib_str The bibtype identifier string
+	 * @param string The field
+	 * @param string bib_str The bibtype identifier string
+	 * @return string $label
 	 */
 	function field_label($field, $bib_str) {
 		$label = $this->referenceReader->referenceTable . '_' . $field;
@@ -605,7 +622,7 @@ class EditorView {
 	 * Depending on the bibliography type this function returns what fields
 	 * are required and what are optional according to BibTeX
 	 *
-	 * @return An array with subarrays with field lists for
+	 * @return array An array with subarrays with field lists for
 	 */
 	function get_edit_fields($bibType) {
 		$fields = array();
@@ -627,7 +644,6 @@ class EditorView {
 					$cfg_fields[$group][$type] = array();
 					$ff = \Ipf\Bib\Utility\Utility::multi_explode_trim(
 						array(',', '|'), $cfg_arr[$type], TRUE);
-					//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $ff );
 					$cfg_fields[$group][$type] = $ff;
 				}
 			}
@@ -647,7 +663,7 @@ class EditorView {
 				}
 			}
 			$cur = array_unique($cur);
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'After' => $cur ) );
+
 			$cur = array_intersect($cur, $pubFields);
 			$pubFields = array_diff($pubFields, $cur);
 		}
@@ -656,7 +672,6 @@ class EditorView {
 		$fields['other'] = $pubFields;
 		$fields['typo3'] = array('uid', 'hidden', 'pid');
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $fields );
 		return $fields;
 	}
 
@@ -669,30 +684,30 @@ class EditorView {
 	function get_widget_mode($field, $mode) {
 		$edConf =& $this->conf;
 
-		$wm = $mode;
+		$widgetMode = $mode;
 
-		if (($wm == self::WIDGET_EDIT) && $edConf['no_edit.'][$field]) {
-			$wm = self::WIDGET_SHOW;
+		if (($widgetMode == self::WIDGET_EDIT) && $edConf['no_edit.'][$field]) {
+			$widgetMode = self::WIDGET_SHOW;
 		}
 		if ($edConf['no_show.'][$field]) {
-			$wm = self::WIDGET_HIDDEN;
+			$widgetMode = self::WIDGET_HIDDEN;
 		}
 
 		if ($field == 'uid') {
-			if ($wm == self::WIDGET_EDIT) {
-				$wm = self::WIDGET_SHOW;
-			} else if ($wm == self::WIDGET_HIDDEN) {
+			if ($widgetMode == self::WIDGET_EDIT) {
+				$widgetMode = self::WIDGET_SHOW;
+			} else if ($widgetMode == self::WIDGET_HIDDEN) {
 				// uid must be passed always
-				$wm = self::WIDGET_SILENT;
+				$widgetMode = self::WIDGET_SILENT;
 			}
 		} else if ($field == 'pid') {
 			// pid must be passed always
-			if ($wm == self::WIDGET_HIDDEN) {
-				$wm = self::WIDGET_SILENT;
+			if ($widgetMode == self::WIDGET_HIDDEN) {
+				$widgetMode = self::WIDGET_SILENT;
 			}
 		}
 
-		return $wm;
+		return $widgetMode;
 	}
 
 
@@ -793,7 +808,11 @@ class EditorView {
 
 			case 'check' :
 				$content .= \Ipf\Bib\Utility\Utility::html_check_input(
-					$fieldAttr, '1', ($value == 1), $attrs);
+					$fieldAttr,
+					'1',
+					($value == 1),
+					$attrs
+				);
 
 				break;
 
@@ -806,24 +825,24 @@ class EditorView {
 
 
 	function get_default_static_widget($field, $value, $mode) {
-		$cfg =& $GLOBALS['TCA'][$this->referenceReader->referenceTable]['columns'][$field]['config'];
+		$configuration =& $GLOBALS['TCA'][$this->referenceReader->referenceTable]['columns'][$field]['config'];
 		$pi1 =& $this->pi1;
 		$Iclass = ' class="' . $pi1->prefixShort . '-editor_input' . '"';
 
 		// Default widget
-		$widgetType = $cfg['type'];
-		$fieldAttr = $pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
+		$widgetType = $configuration['type'];
+		$fieldAttributes = $pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
 		$htmlValue = $pi1->filter_pub_html($value, TRUE);
 
 		$content = '';
 		if ($mode == self::WIDGET_SHOW) {
 			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
-				$fieldAttr, $htmlValue);
+				$fieldAttributes, $htmlValue);
 
 			switch ($widgetType) {
 				case 'select':
 					$name = '';
-					foreach ($cfg['items'] as $it) {
+					foreach ($configuration['items'] as $it) {
 						if (strtolower($it[1]) == strtolower($value)) {
 							$name = $this->get_db_ll($it[0], $it[0]);
 							break;
@@ -844,7 +863,9 @@ class EditorView {
 		} else if ($mode == self::WIDGET_SILENT) {
 
 			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
-				$fieldAttr, $htmlValue);
+				$fieldAttributes,
+				$htmlValue
+			);
 
 		}
 
@@ -855,13 +876,15 @@ class EditorView {
 	/**
 	 * Get the authors widget
 	 *
-	 * @return The authors widget
+	 * @param array $value
+	 * @param int $mode
+	 * @return string The authors widget
 	 */
 	function get_authors_widget($value, $mode) {
 		$content = '';
 		$cclass = $this->pi1->prefixShort . '-editor_input';
 
-		/** @var tx_bib_pi1 $pi1 */
+		/** @var \tx_bib_pi1 $pi1 */
 		$pi1 =& $this->pi1;
 
 		$isize = 25;
@@ -994,11 +1017,11 @@ class EditorView {
 	/**
 	 * Get the pid (storage folder) widget
 	 *
-	 * @return The pid widget
+	 * @return string The pid widget
 	 */
 	function get_pid_widget($value, $mode) {
 
-		$content = ''; // Content
+		$content = '';
 
 		// Pid
 		$pi1 =& $this->pi1;
@@ -1035,13 +1058,12 @@ class EditorView {
 	/**
 	 * Returns the default storage uid
 	 *
-	 * @return The parent id pid
+	 * @return int The parent id pid
 	 */
 	function get_default_pid() {
-		$edConf =& $this->conf;
 		$pid = 0;
-		if (is_numeric($edConf['default_pid'])) {
-			$pid = intval($edConf['default_pid']);
+		if (is_numeric($this->conf['default_pid'])) {
+			$pid = intval($this->conf['default_pid']);
 		}
 		if (!in_array($pid, $this->referenceReader->pid_list)) {
 			$pid = intval($this->referenceReader->pid_list[0]);
@@ -1053,16 +1075,15 @@ class EditorView {
 	/**
 	 * Returns the default publication data
 	 *
-	 * @return An array containing the default publication data
+	 * @return array An array containing the default publication data
 	 */
 	function get_ref_default() {
-		$edConf =& $this->conf;
 		$pub = array();
 
-		if (is_array($edConf['field_default.'])) {
+		if (is_array($this->conf['field_default.'])) {
 			foreach ($this->referenceReader->refFields as $field) {
-				if (array_key_exists($field, $edConf['field_default.']))
-					$pub[$field] = strval($edConf['field_default.'][$field]);
+				if (array_key_exists($field, $this->conf['field_default.']))
+					$pub[$field] = strval($this->conf['field_default.'][$field]);
 			}
 		}
 
@@ -1087,13 +1108,14 @@ class EditorView {
 
 	/**
 	 * Returns the publication data that was encoded in the
-	 * HTTP erquest
+	 * HTTP request
 	 *
-	 * @return An array containing the formatted publication
+	 * @param bool $htmlSpecialChars
+	 * @return array An array containing the formatted publication
 	 *         data that was found in the HTTP request
 	 */
-	function get_ref_http($hsc = FALSE) {
-		$pub = array();
+	function get_ref_http($htmlSpecialChars = FALSE) {
+		$Publication = array();
 		$charset = $this->pi1->extConf['charset']['upper'];
 		$fields = $this->referenceReader->pubFields;
 		$fields[] = 'uid';
@@ -1107,16 +1129,16 @@ class EditorView {
 
 					case 'authors':
 						if (is_array($data[$ff])) {
-							$pub['authors'] = array();
+							$Publication['authors'] = array();
 							foreach ($data[$ff] as $v) {
-								$fn = trim($v['forename']);
-								$sn = trim($v['surname']);
-								if ($hsc) {
-									$fn = htmlspecialchars($fn, ENT_QUOTES, $charset);
-									$sn = htmlspecialchars($sn, ENT_QUOTES, $charset);
+								$foreName = trim($v['forename']);
+								$sureName = trim($v['surname']);
+								if ($htmlSpecialChars) {
+									$foreName = htmlspecialchars($foreName, ENT_QUOTES, $charset);
+									$sureName = htmlspecialchars($sureName, ENT_QUOTES, $charset);
 								}
-								if (strlen($fn) || strlen($sn)) {
-									$pub['authors'][] = array('forename' => $fn, 'surname' => $sn);
+								if (strlen($foreName) || strlen($sureName)) {
+									$Publication['authors'][] = array('forename' => $foreName, 'surname' => $sureName);
 								}
 							}
 						}
@@ -1126,23 +1148,22 @@ class EditorView {
 					default:
 
 						if (array_key_exists($ff, $data)) {
-							$pub[$ff] = $data[$ff];
-							if ($hsc) {
-								$pub[$ff] = htmlspecialchars($pub[$ff], ENT_QUOTES, $charset);
+							$Publication[$ff] = $data[$ff];
+							if ($htmlSpecialChars) {
+								$Publication[$ff] = htmlspecialchars($Publication[$ff], ENT_QUOTES, $charset);
 							}
 						}
 				}
 			}
 		}
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $pub );
-		return $pub;
+		return $Publication;
 	}
 
 
 	/**
 	 * Performs actions after Database write access (save/delete)
 	 *
-	 * @return The requested dialog
+	 * @return array The requested dialog
 	 */
 	function post_db_write() {
 		$events = array();
@@ -1150,9 +1171,9 @@ class EditorView {
 		if ($this->conf['delete_no_ref_authors']) {
 			$count = $this->dbUtility->deleteAuthorsWithoutPublications();
 			if ($count > 0) {
-				$msg = $this->get_ll('msg_deleted_authors');
-				$msg = str_replace('%d', strval($count), $msg);
-				$events[] = $msg;
+				$message = $this->get_ll('msg_deleted_authors');
+				$message = str_replace('%d', strval($count), $message);
+				$events[] = $message;
 			}
 		}
 		if ($this->conf['full_text.']['update']) {
@@ -1160,28 +1181,28 @@ class EditorView {
 
 			$count = sizeof($stat['updated']);
 			if ($count > 0) {
-				$msg = $this->get_ll('msg_updated_full_text');
-				$msg = str_replace('%d', strval($count), $msg);
-				$events[] = $msg;
+				$message = $this->get_ll('msg_updated_full_text');
+				$message = str_replace('%d', strval($count), $message);
+				$events[] = $message;
 			}
 
 			if (sizeof($stat['errors']) > 0) {
 				foreach ($stat['errors'] as $err) {
-					$msg = $err[1]['msg'];
-					$errors[] = $msg;
+					$message = $err[1]['msg'];
+					$errors[] = $message;
 				}
 			}
 
 			if ($stat['limit_num']) {
-				$msg = $this->get_ll('msg_warn_ftc_limit') . ' - ';
-				$msg .= $this->get_ll('msg_warn_ftc_limit_num');
-				$errors[] = $msg;
+				$message = $this->get_ll('msg_warn_ftc_limit') . ' - ';
+				$message .= $this->get_ll('msg_warn_ftc_limit_num');
+				$errors[] = $message;
 			}
 
 			if ($stat['limit_time']) {
-				$msg = $this->get_ll('msg_warn_ftc_limit') . ' - ';
-				$msg .= $this->get_ll('msg_warn_ftc_limit_time');
-				$errors[] = $msg;
+				$message = $this->get_ll('msg_warn_ftc_limit') . ' - ';
+				$message .= $this->get_ll('msg_warn_ftc_limit_time');
+				$errors[] = $message;
 			}
 
 		}
@@ -1192,7 +1213,7 @@ class EditorView {
 	/**
 	 * Creates a html text from a post db write event
 	 *
-	 * @return The html message string
+	 * @return string The html message string
 	 */
 	function post_db_write_message($messages) {
 		$content = '';
@@ -1211,7 +1232,7 @@ class EditorView {
 	/**
 	 * Creates a html text from a post db write event
 	 *
-	 * @return The html message string
+	 * @return string The html message string
 	 */
 	function post_db_write_message_items($messages) {
 		$content = '';
@@ -1235,7 +1256,7 @@ class EditorView {
 	/**
 	 * This switches to the requested dialog
 	 *
-	 * @return The requested dialog
+	 * @return string The requested dialog
 	 */
 	function dialog_view() {
 		$content = '';
@@ -1248,23 +1269,23 @@ class EditorView {
 		switch ($pi1->extConf['dialog_mode']) {
 
 			case $pi1::DIALOG_SAVE_CONFIRMED :
-				$pub = $this->get_ref_http();
+				$publication = $this->get_ref_http();
 
 				// Unset fields that should not be edited
 				$checkFields = $this->referenceReader->refFields;
 				$checkFields[] = 'pid';
 				$checkFields[] = 'hidden';
 				foreach ($checkFields as $ff) {
-					if ($pub[$ff]) {
+					if ($publication[$ff]) {
 						if ($this->conf['no_edit.'][$ff] ||
 								$this->conf['no_show.'][$ff]
 						) {
-							unset ($pub[$ff]);
+							unset ($publication[$ff]);
 						}
 					}
 				}
 
-				if ($this->referenceWriter->save_publication($pub)) {
+				if ($this->referenceWriter->save_publication($publication)) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
 					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
@@ -1277,8 +1298,8 @@ class EditorView {
 				break;
 
 			case $pi1::DIALOG_DELETE_CONFIRMED :
-				$pub = $this->get_ref_http();
-				if ($this->referenceWriter->delete_publication($pi1->piVars['uid'], $pub['mod_key'])) {
+				$publication = $this->get_ref_http();
+				if ($this->referenceWriter->delete_publication($pi1->piVars['uid'], $publication['mod_key'])) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
 					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
@@ -1311,7 +1332,7 @@ class EditorView {
 	/**
 	 * Validates the data in a publication
 	 *
-	 * @return An array with error messages
+	 * @return array An array with error messages
 	 */
 	function validate_data($pub) {
 		$d_err = array();
@@ -1376,9 +1397,7 @@ class EditorView {
 				if ($ok) $clear[] = $em;
 			}
 
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $empty );
 			$empty = array_diff($empty, $clear);
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $empty );
 
 			if (sizeof($empty)) {
 				$err = array('type' => $type);
@@ -1430,42 +1449,45 @@ class EditorView {
 	 * Makes some html out of the return array of
 	 * validate_data()
 	 *
-	 * @return An array with error messages
+	 * @param array $errors
+	 * @param int $level
+	 * @return array An array with error messages
 	 */
 	function validation_error_string($errors, $level = 0) {
-		if (!is_array($errors) || (sizeof($errors) == 0))
-			return '';
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 's_errors' => $errors ) );
+		if (!is_array($errors) || (sizeof($errors) == 0)) {
+			return '';
+		}
+
 		$charset = $this->pi1->extConf['charset']['upper'];
 
-		$res = '<ul>';
-		foreach ($errors as $err) {
-			$tmp = '<li>';
-			$msg = htmlspecialchars($err['msg'], ENT_QUOTES, $charset);
-			$tmp .= $this->pi1->cObj->stdWrap($msg,
+		$content = '<ul>';
+		foreach ($errors as $error) {
+			$errorIterator = '<li>';
+			$msg = htmlspecialchars($error['msg'], ENT_QUOTES, $charset);
+			$errorIterator .= $this->pi1->cObj->stdWrap($msg,
 						$this->conf['warn_box.']['msg.']) . "\n";
 
-			$lst =& $err['list'];
-			if (is_array($lst) && (sizeof($lst) > 0)) {
-				$tmp .= '<ul>';
-				$tmp .= $this->validation_error_string($lst, $level + 1);
-				$tmp .= '</ul>' . "\n";
+			$list =& $error['list'];
+			if (is_array($list) && (sizeof($list) > 0)) {
+				$errorIterator .= '<ul>';
+				$errorIterator .= $this->validation_error_string($list, $level + 1);
+				$errorIterator .= '</ul>' . "\n";
 			}
 
-			$tmp .= '</li>';
-			$res .= $tmp;
+			$errorIterator .= '</li>';
+			$content .= $errorIterator;
 		}
-		$res .= '</ul>';
+		$content .= '</ul>';
 
-		return $res;
+		return $content;
 	}
 
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_editor_view.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_editor_view.php"]);
+if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/EditorView.php"]) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/EditorView.php"]);
 }
 
 ?>

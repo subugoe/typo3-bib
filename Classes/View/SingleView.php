@@ -4,7 +4,7 @@ namespace Ipf\Bib\View;
 class SingleView {
 
 	/**
-	 * @var tx_bib_pi1
+	 * @var \tx_bib_pi1
 	 */
 	public $pi1;
 
