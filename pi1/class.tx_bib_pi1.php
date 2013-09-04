@@ -835,6 +835,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 	}
 
+	/**
+	 * @param bool $validBackendUser
+	 * @return bool
+	 */
 	protected function isValidFrontendUser($validBackendUser) {
 		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
 			$groups = $this->conf['FE_edit_groups'];
@@ -948,7 +952,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * This initializes all filters before the browsing filter
 	 *
-	 * @return FALSE or an error message
+	 * @return void
 	 */
 	function init_filters() {
 		$this->extConf['filters'] = array();
@@ -960,7 +964,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * This initializes filter array from the flexform
 	 *
-	 * @return FALSE or an error message
+	 * @return void
 	 */
 	function init_flexform_filter() {
 		// Create and select the flexform filter
@@ -1193,7 +1197,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * Initializes an array which contains subparts of the
 	 * html templates.
 	 *
-	 * @return TRUE on error, FALSE otherwise
+	 * @return bool TRUE on error, FALSE otherwise
 	 */
 	protected function initializeHtmlTemplate() {
 		$error = array();
