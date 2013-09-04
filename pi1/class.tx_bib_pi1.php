@@ -258,27 +258,20 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$extConf['sub_page']['ipp'] = max(intval($extConf['sub_page']['ipp']), 0);
 		$extConf['max_authors'] = max(intval($extConf['max_authors']), 0);
 
-
-		//
-		// Search navi
-		//
+		// Search Navigation
 		if ($extConf['show_nav_search']) {
-			$extConf['dynamic'] = TRUE;
-			$extConf['search_navi'] = array();
-			$searchNavigationConfiguration =& $extConf['search_navi'];
-			$searchNavigationConfiguration['obj'] =& $this->get_navi_instance('SearchNavigation');
-			$searchNavigationConfiguration['obj']->hook_init();
+			$this->getSearchNavigation();
 		}
 
 		//
-		// Year navi
+		// Year Navigation
 		//
 		if ($extConf['d_mode'] == self::D_Y_NAV) {
 			$extConf['show_nav_year'] = TRUE;
 		}
 
 		//
-		// Author navi
+		// Author Navigation
 		//
 		if ($extConf['show_nav_author']) {
 			$extConf['dynamic'] = TRUE;
@@ -290,7 +283,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 
 		//
-		// Preference navi
+		// Preference Navigation
 		//
 		if ($extConf['show_nav_pref']) {
 			$extConf['pref_navi'] = array();
@@ -312,7 +305,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$this->getExportNavigation();
 		}
 
-		// Enable Enable the edit mode
+		// Enable the edit mode
 		$validBackendUser = $this->isValidBackendUser();
 
 		// allow FE-user editing from special groups (set via TS)
@@ -343,87 +336,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->referenceReader->show_hidden = $extConf['show_hidden'];
 
 
-		//
-		// Edit mode specific !!!
-		//
+		// Edit mode specific
 		if ($extConf['edit_mode']) {
-
-			// Disable caching in edit mode
-			$GLOBALS['TSFE']->set_no_cache();
-
-			// Load edit labels
-			$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_editor.xml');
-
-			// Do an action type evaluation
-			if (is_array($this->piVars['action'])) {
-				$actionName = implode('', array_keys($this->piVars['action']));
-
-				switch ($actionName) {
-					case 'new':
-						$extConf['view_mode'] = self::VIEW_EDITOR;
-						$extConf['editor_mode'] = self::EDIT_NEW;
-						break;
-					case 'edit':
-						$extConf['view_mode'] = self::VIEW_EDITOR;
-						$extConf['editor_mode'] = self::EDIT_EDIT;
-						break;
-					case 'confirm_save':
-						$extConf['view_mode'] = self::VIEW_EDITOR;
-						$extConf['editor_mode'] = self::EDIT_CONFIRM_SAVE;
-						break;
-					case 'save':
-						$extConf['view_mode'] = self::VIEW_DIALOG;
-						$extConf['dialog_mode'] = self::DIALOG_SAVE_CONFIRMED;
-						break;
-					case 'confirm_delete':
-						$extConf['view_mode'] = self::VIEW_EDITOR;
-						$extConf['editor_mode'] = self::EDIT_CONFIRM_DELETE;
-						break;
-					case 'delete':
-						$extConf['view_mode'] = self::VIEW_DIALOG;
-						$extConf['dialog_mode'] = self::DIALOG_DELETE_CONFIRMED;
-						break;
-					case 'confirm_erase':
-						$extConf['view_mode'] = self::VIEW_EDITOR;
-						$extConf['editor_mode'] = self::EDIT_CONFIRM_ERASE;
-						break;
-					case 'erase':
-						$extConf['view_mode'] = self::VIEW_DIALOG;
-						$extConf['dialog_mode'] = self::DIALOG_ERASE_CONFIRMED;
-					case 'hide':
-						$this->hidePublication(TRUE);
-						break;
-					case 'reveal':
-						$this->hidePublication(FALSE);
-						break;
-					default:
-				}
-			}
-
-			// Set unset extConf and piVars editor mode
-			if ($extConf['view_mode'] == self::VIEW_DIALOG) {
-				unset ($this->piVars['editor_mode']);
-			}
-
-			if (isset ($extConf['editor_mode'])) {
-				$this->piVars['editor_mode'] = $extConf['editor_mode'];
-			} else if (isset ($this->piVars['editor_mode'])) {
-				$extConf['view_mode'] = self::VIEW_EDITOR;
-				$extConf['editor_mode'] = $this->piVars['editor_mode'];
-			}
-
-			// Initialize edit icons
-			$this->init_edit_icons();
-
-			// Switch to an import view on demand
-			$allImport = intval(self::IMP_BIBTEX | self::IMP_XML);
-			if (isset($this->piVars['import']) &&
-					(intval($this->piVars['import']) & $allImport)
-			) {
-				$extConf['view_mode'] = self::VIEW_DIALOG;
-				$extConf['dialog_mode'] = self::DIALOG_IMPORT;
-			}
-
+			$this->getEditMode();
 		}
 
 		// Switch to an export view on demand
@@ -440,7 +355,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			unset ($this->piVars['dialog_mode']);
 		}
 
-
 		//
 		// Search navigation setup
 		//
@@ -449,111 +363,28 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 
-		//
 		// Fetch publication statistics
-		//
 		$this->stat = array();
 		$this->referenceReader->set_filters($extConf['filters']);
 
-		//
 		// Author navigation hook
-		//
 		if ($extConf['show_nav_author']) {
 			$extConf['author_navi']['obj']->hook_filter();
 		}
 
-
-		//
 		// Year navigation
-		//
 		if ($extConf['show_nav_year']) {
-			// Fetch a year histogram
-			$histogram = $this->referenceReader->fetch_histogram('year');
-			$this->stat['year_hist'] = $histogram;
-			$this->stat['years'] = array_keys($histogram);
-			sort($this->stat['years']);
-
-			$this->stat['num_all'] = array_sum($histogram);
-			$this->stat['num_page'] = $this->stat['num_all'];
-
-			//
-			// Determine the year to display
-			//
-			$extConf['year'] = intval(date('Y')); // System year
-			//$extConf['year'] = 'all'; // All years
-			$yearNavigationConfiguration =& $extConf['year'];
-
-			$exportPluginVariables = strtolower($this->piVars['year']);
-			if (is_numeric($exportPluginVariables)) {
-				$yearNavigationConfiguration = intval($exportPluginVariables);
-			} else {
-				if ($exportPluginVariables == 'all') {
-					$yearNavigationConfiguration = $exportPluginVariables;
-				}
-			}
-
-			if ($yearNavigationConfiguration == 'all') {
-				if ($this->conf['yearNav.']['selection.']['all_year_split']) {
-					$extConf['split_years'] = TRUE;
-				}
-			}
-
-
-			// The selected year has no publications so select the closest year
-			if (($this->stat['num_all'] > 0) && is_numeric($yearNavigationConfiguration)) {
-				$yearNavigationConfiguration = \Ipf\Bib\Utility\Utility::find_nearest_int(
-					$yearNavigationConfiguration, $this->stat['years']);
-			}
-			// Append default link variable
-			$extConf['link_vars']['year'] = $yearNavigationConfiguration;
-
-			if (is_numeric($yearNavigationConfiguration)) {
-				// Adjust num_page
-				$this->stat['num_page'] = $this->stat['year_hist'][$yearNavigationConfiguration];
-
-				// Adjust year filter
-				$extConf['filters']['br_year'] = array();
-				$br_filter =& $extConf['filters']['br_year'];
-				$br_filter['year'] = array();
-				$br_filter['year']['years'] = array($yearNavigationConfiguration);
-			}
-
+			$this->getYearNavigation();
 		}
 
-		//
 		// Determine number of publications
-		//
 		if (!is_numeric($this->stat['num_all'])) {
 			$this->stat['num_all'] = $this->referenceReader->fetch_num();
 			$this->stat['num_page'] = $this->stat['num_all'];
 		}
 
-		//
 		// Page navigation
-		//
-		$subPage =& $extConf['sub_page'];
-		$subPage['max'] = 0;
-		$subPage['current'] = 0;
-		$iPP = $subPage['ipp'];
-
-		if ($iPP > 0) {
-			$subPage['max'] = floor(($this->stat['num_page'] - 1) / $iPP);
-			$subPage['current'] = \Ipf\Bib\Utility\Utility::crop_to_range(
-				$this->piVars['page'], 0, $subPage['max']);
-		}
-
-		if ($subPage['max'] > 0) {
-			$extConf['show_nav_page'] = TRUE;
-
-			$extConf['filters']['br_page'] = array();
-			$br_filter =& $extConf['filters']['br_page'];
-
-			// Adjust the browse filter limit
-			$br_filter['limit'] = array();
-			$br_filter['limit']['start'] = $subPage['current'] * $iPP;
-			$br_filter['limit']['num'] = $iPP;
-		}
-
+		$this->getPageNavigation();
 
 		//
 		// The sort filter
@@ -650,8 +481,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * This is the last function called before ouptput
 	 *
-	 * @param String $pluginContent
-	 * @return The input string with some extra data
+	 * @param string $pluginContent
+	 * @return string The input string with some extra data
 	 */
 	function finalize($pluginContent) {
 		if ($this->extConf['debug']) {
@@ -670,6 +501,174 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	}
 
 	/**
+	 * @return void
+	 */
+	protected function getEditMode() {
+		// Disable caching in edit mode
+		$GLOBALS['TSFE']->set_no_cache();
+
+		// Load edit labels
+		$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_editor.xml');
+
+		// Do an action type evaluation
+		if (is_array($this->piVars['action'])) {
+			$actionName = implode('', array_keys($this->piVars['action']));
+
+			switch ($actionName) {
+				case 'new':
+					$this->extConf['view_mode'] = self::VIEW_EDITOR;
+					$this->extConf['editor_mode'] = self::EDIT_NEW;
+					break;
+				case 'edit':
+					$this->extConf['view_mode'] = self::VIEW_EDITOR;
+					$this->extConf['editor_mode'] = self::EDIT_EDIT;
+					break;
+				case 'confirm_save':
+					$this->extConf['view_mode'] = self::VIEW_EDITOR;
+					$this->extConf['editor_mode'] = self::EDIT_CONFIRM_SAVE;
+					break;
+				case 'save':
+					$this->extConf['view_mode'] = self::VIEW_DIALOG;
+					$this->extConf['dialog_mode'] = self::DIALOG_SAVE_CONFIRMED;
+					break;
+				case 'confirm_delete':
+					$this->extConf['view_mode'] = self::VIEW_EDITOR;
+					$this->extConf['editor_mode'] = self::EDIT_CONFIRM_DELETE;
+					break;
+				case 'delete':
+					$this->extConf['view_mode'] = self::VIEW_DIALOG;
+					$this->extConf['dialog_mode'] = self::DIALOG_DELETE_CONFIRMED;
+					break;
+				case 'confirm_erase':
+					$this->extConf['view_mode'] = self::VIEW_EDITOR;
+					$this->extConf['editor_mode'] = self::EDIT_CONFIRM_ERASE;
+					break;
+				case 'erase':
+					$this->extConf['view_mode'] = self::VIEW_DIALOG;
+					$this->extConf['dialog_mode'] = self::DIALOG_ERASE_CONFIRMED;
+				case 'hide':
+					$this->hidePublication(TRUE);
+					break;
+				case 'reveal':
+					$this->hidePublication(FALSE);
+					break;
+				default:
+			}
+		}
+
+		// Set unset extConf and piVars editor mode
+		if ($this->extConf['view_mode'] == self::VIEW_DIALOG) {
+			unset ($this->piVars['editor_mode']);
+		}
+
+		if (isset ($this->extConf['editor_mode'])) {
+			$this->piVars['editor_mode'] = $this->extConf['editor_mode'];
+		} else if (isset ($this->piVars['editor_mode'])) {
+			$this->extConf['view_mode'] = self::VIEW_EDITOR;
+			$this->extConf['editor_mode'] = $this->piVars['editor_mode'];
+		}
+
+		// Initialize edit icons
+		$this->init_edit_icons();
+
+		// Switch to an import view on demand
+		$allImport = intval(self::IMP_BIBTEX | self::IMP_XML);
+		if (isset($this->piVars['import']) && (intval($this->piVars['import']) & $allImport)) {
+			$this->extConf['view_mode'] = self::VIEW_DIALOG;
+			$this->extConf['dialog_mode'] = self::DIALOG_IMPORT;
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function getYearNavigation() {
+		// Fetch a year histogram
+		$histogram = $this->referenceReader->fetch_histogram('year');
+		$this->stat['year_hist'] = $histogram;
+		$this->stat['years'] = array_keys($histogram);
+		sort($this->stat['years']);
+
+		$this->stat['num_all'] = array_sum($histogram);
+		$this->stat['num_page'] = $this->stat['num_all'];
+
+		// Determine the year to display
+		$this->extConf['year'] = intval(date('Y')); // System year
+
+		$exportPluginVariables = strtolower($this->piVars['year']);
+		if (is_numeric($exportPluginVariables)) {
+			$this->extConf['year'] = intval($exportPluginVariables);
+		} else {
+			if ($exportPluginVariables == 'all') {
+				$this->extConf['year'] = $exportPluginVariables;
+			}
+		}
+
+		if ($this->extConf['year'] == 'all') {
+			if ($this->conf['yearNav.']['selection.']['all_year_split']) {
+				$this->extConf['split_years'] = TRUE;
+			}
+		}
+
+
+		// The selected year has no publications so select the closest year
+		if (($this->stat['num_all'] > 0) && is_numeric($this->extConf['year'])) {
+			$this->extConf['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
+				$this->extConf['year'], $this->stat['years']);
+		}
+		// Append default link variable
+		$this->extConf['link_vars']['year'] = $this->extConf['year'];
+
+		if (is_numeric($this->extConf['year'])) {
+			// Adjust num_page
+			$this->stat['num_page'] = $this->stat['year_hist'][$this->extConf['year']];
+
+			// Adjust year filter
+			$this->extConf['filters']['br_year'] = array();
+			$this->extConf['filters']['br_year']['year'] = array();
+			$this->extConf['filters']['br_year']['year']['years'] = array($this->extConf['year']);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function getSearchNavigation() {
+		$this->extConf['dynamic'] = TRUE;
+		$this->extConf['search_navi'] = array();
+		$this->extConf['search_navi']['obj'] =& $this->get_navi_instance('SearchNavigation');
+		$this->extConf['search_navi']['obj']->hook_init();
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function getPageNavigation() {
+		$this->extConf['sub_page']['max'] = 0;
+		$this->extConf['sub_page']['current'] = 0;
+
+		if ($this->extConf['sub_page']['ipp'] > 0) {
+			$this->extConf['sub_page']['max'] = floor(($this->stat['num_page'] - 1) / $this->extConf['sub_page']['ipp']);
+			$this->extConf['sub_page']['current'] = \Ipf\Bib\Utility\Utility::crop_to_range(
+				$this->piVars['page'],
+				0,
+				$this->extConf['sub_page']['max']
+			);
+		}
+
+		if ($this->extConf['sub_page']['max'] > 0) {
+			$this->extConf['show_nav_page'] = TRUE;
+
+			$this->extConf['filters']['br_page'] = array();
+
+			// Adjust the browse filter limit
+			$this->extConf['filters']['br_page']['limit'] = array();
+			$this->extConf['filters']['br_page']['limit']['start'] = $this->extConf['sub_page']['current'] * $this->extConf['sub_page']['ipp'];
+			$this->extConf['filters']['br_page']['limit']['num'] = $this->extConf['sub_page']['ipp'];
+		}
+	}
+
+	/**
 	 * Retrieve and optimize Extension configuration
 	 *
 	 * @return array
@@ -684,10 +683,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
 		$extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
 
-
-		//
 		// Retrieve general FlexForm values
-		//
 		$fSheet = 'sDEF';
 		$extConf['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
 		$extConf['enum_style'] = $this->pi_getFFvalue($this->flexFormData, 'enum_style', $fSheet);
@@ -2167,7 +2163,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Returns the authors string for a publication
-	 *
+	 * @param array $authors
 	 * @return void
 	 */
 	function get_item_authors_html(& $authors) {
@@ -2220,22 +2216,21 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$elements = array();
 		// Iterate through authors
 		for ($i_a = 0; $i_a <= $lastAuthor; $i_a++) {
-			$a = $authors[$i_a];
-			// debug($a);
+			$author = $authors[$i_a];
 
 			// Init cObj data
-			$cObj->data = $a;
-			$cObj->data['url'] = htmlspecialchars_decode($a['url'], ENT_QUOTES);
+			$cObj->data = $author;
+			$cObj->data['url'] = htmlspecialchars_decode($author['url'], ENT_QUOTES);
 
 			// The forename
-			$authorForename = trim($a['forename']);
+			$authorForename = trim($author['forename']);
 			if (strlen($authorForename) > 0) {
 				$authorForename = $this->filter_pub_html_display($authorForename);
 				$authorForename = $this->cObj->stdWrap($authorForename, $this->conf['authors.']['forename.']);
 			}
 
 			// The surname
-			$authorSurname = trim($a['surname']);
+			$authorSurname = trim($author['surname']);
 			if (strlen($authorSurname) > 0) {
 				$authorSurname = $this->filter_pub_html_display($authorSurname);
 				$authorSurname = $this->cObj->stdWrap($authorSurname, $this->conf['authors.']['surname.']);
@@ -2245,7 +2240,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$cr_link = FALSE;
 			$authorIcon = '';
 			foreach ($this->extConf['author_lfields'] as $field) {
-				$val = trim(strval($a[$field]));
+				$val = trim(strval($author[$field]));
 				if ((strlen($val) > 0) && ($val != '0')) {
 					$cr_link = TRUE;
 					break;
@@ -2277,8 +2272,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// Wrap the filtered authors with a highlightning class on demand
 			if ($highlightAuthors) {
 				foreach ($filter_authors as $fa) {
-					if ($a['surname'] == $fa['surname']) {
-						if (!$fa['forename'] || ($a['forename'] == $fa['forename'])) {
+					if ($author['surname'] == $fa['surname']) {
+						if (!$fa['forename'] || ($author['forename'] == $fa['forename'])) {
 							$a_str = $this->cObj->stdWrap(
 								$a_str, $this->conf['authors.']['highlight.']);
 							break;
