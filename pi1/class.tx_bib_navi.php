@@ -2,9 +2,22 @@
 
 class tx_bib_navi {
 
+	/**
+	 * @var \tx_bib_pi1
+	 */
 	public $pi1;
-	public $template; // The template string
-	public $pref; // A prefix string
+
+	/**
+	 * The template string
+	 * @var string
+	 */
+	public $template;
+
+	/**
+	 * A prefix string
+	 * @var string
+	 */
+	public $pref;
 
 
 	function initialize($pi1) {
@@ -100,8 +113,6 @@ class tx_bib_navi {
 		while ($ii <= $idxMax) {
 			$text = $this->sel_get_text($ii);
 			$cr_link = TRUE;
-
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug( array('$ii' =>$ii, '$text' => $text) );
 
 			if ($ii == $idxCur) { // Current
 				$key = 'cur';

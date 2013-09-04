@@ -40,12 +40,12 @@ class tx_bib_navi_page extends tx_bib_navi {
 	 */
 	function get() {
 		$cObj =& $this->pi1->cObj;
-		$trans = array();
-		$con = '';
+		$translation = array();
+		$content = '';
 
-		$cfg =& $this->conf;
-		$cfgSel = is_array($cfg['selection.']) ? $cfg['selection.'] : array();
-		$cfgNav = is_array($cfg['navigation.']) ? $cfg['navigation.'] : array();
+		$configuration =& $this->conf;
+		$selectionConfiguration = is_array($configuration['selection.']) ? $configuration['selection.'] : array();
+		$navigationConfiguration = is_array($configuration['navigation.']) ? $configuration['navigation.'] : array();
 
 		// The data
 		$subPage =& $this->pi1->extConf['sub_page'];
@@ -54,7 +54,7 @@ class tx_bib_navi_page extends tx_bib_navi {
 
 		// The label
 		$label = $cObj->stdWrap($this->pi1->get_ll('pageNav_label'),
-			$cfg['label.']);
+			$configuration['label.']);
 
 		// The previous/next buttons
 		$nav_prev = $this->pi1->get_ll('pageNav_previous', 'previous', TRUE);
@@ -74,19 +74,18 @@ class tx_bib_navi_page extends tx_bib_navi {
 		}
 
 		// Wrap
-		$nav_prev = $cObj->stdWrap($nav_prev, $cfgNav['previous.']);
-		$nav_next = $cObj->stdWrap($nav_next, $cfgNav['next.']);
+		$nav_prev = $cObj->stdWrap($nav_prev, $navigationConfiguration['previous.']);
+		$nav_next = $cObj->stdWrap($nav_next, $navigationConfiguration['next.']);
 
-		// Navigation separator
-		$sepNav = '&nbsp;';
-		if (array_key_exists('separator', $cfgNav))
-			$sepNav = $cfgNav['separator'];
-		if (is_array($cfgNav['separator.']))
-			$sepNav = $cObj->stdWrap($sepNav, $cfgNav['separator.']);
+		$navigationSeparator = '&nbsp;';
+		if (array_key_exists('separator', $navigationConfiguration))
+			$navigationSeparator = $navigationConfiguration['separator'];
+		if (is_array($navigationConfiguration['separator.']))
+			$navigationSeparator = $cObj->stdWrap($navigationSeparator, $navigationConfiguration['separator.']);
 
 		// Replace separator
-		$nav_prev = str_replace('###SEPARATOR###', $sepNav, $nav_prev);
-		$nav_next = str_replace('###SEPARATOR###', $sepNav, $nav_next);
+		$nav_prev = str_replace('###SEPARATOR###', $navigationSeparator, $nav_prev);
+		$nav_next = str_replace('###SEPARATOR###', $navigationSeparator, $nav_next);
 
 
 		// Create selection
@@ -94,20 +93,18 @@ class tx_bib_navi_page extends tx_bib_navi {
 
 		// Number of pages to display in the selection
 		$numSel = 5;
-		if (array_key_exists('pages', $cfgSel))
-			$numSel = abs(intval($cfgSel['pages']));
+		if (array_key_exists('pages', $selectionConfiguration))
+			$numSel = abs(intval($selectionConfiguration['pages']));
 
-		$trans['###SELECTION###'] = $this->selection($cfgSel, $indices, $numSel);
-		$trans['###NAVI_LABEL###'] = $label;
-		$trans['###NAVI_BACKWARDS###'] = $nav_prev;
-		$trans['###NAVI_FORWARDS###'] = $nav_next;
+		$translation['###SELECTION###'] = $this->selection($selectionConfiguration, $indices, $numSel);
+		$translation['###NAVI_LABEL###'] = $label;
+		$translation['###NAVI_BACKWARDS###'] = $nav_prev;
+		$translation['###NAVI_FORWARDS###'] = $nav_next;
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug( $trans );
+		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
+		$content = $cObj->substituteMarkerArrayCached($template, $translation);
 
-		$tmpl = $this->pi1->setup_enum_cond_block($this->template);
-		$con = $cObj->substituteMarkerArrayCached($tmpl, $trans);
-
-		return $con;
+		return $content;
 	}
 
 }
