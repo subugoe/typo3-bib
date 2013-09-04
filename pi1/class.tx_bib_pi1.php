@@ -2959,8 +2959,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$content .= $this->importDialog();
 				break;
 			default :
-				/** @var \tx_bib_editor_view $editorView */
-				$editorView = GeneralUtility::makeInstance('tx_bib_editor_view');
+				/** @var \Ipf\Bib\View\EditorView $editorView */
+				$editorView = GeneralUtility::makeInstance('Ipf\\Bib\\View\\EditorView');
 				$editorView->initialize($this);
 				$content .= $editorView->dialog_view();
 		}
