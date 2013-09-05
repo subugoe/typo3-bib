@@ -1472,19 +1472,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		return $url;
 	}
 
-
-	/**
-	 * Same as get_link() but for edit mode links
-	 * @deprecated seems to be unused
-	 * @todo remove
-	 * @return string The link to the current page
-	 */
-	function get_edit_link($content, $vars = array(), $auto_cache = TRUE, $attribs = array()) {
-		$url = $this->get_edit_link_url($vars, $auto_cache);
-		return $this->composeLink($url, $content, $attribs);
-	}
-
-
 	/**
 	 * Same as get_link_url() but for edit mode urls
 	 *
