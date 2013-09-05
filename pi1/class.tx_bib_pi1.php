@@ -142,16 +142,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected $pidList;
 
 	/**
-	 * Insert extension specific JavaScript
-	 * @todo check if jQuery is integrated
-	 */
-	protected function includeJavaScript() {
-		/** @var t3lib_pageRenderer $pageRenderer */
-		$pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
-		$pageRenderer->addJsFooterFile('typo3conf/ext/' . $this->extKey . '/Resources/Public/JavaScript/bib.js');
-	}
-
-	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
 	 *
@@ -502,6 +492,23 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			);
 		}
 		return $this->pi_wrapInBaseClass($pluginContent);
+	}
+
+	/**
+	 * Insert extension specific JavaScript
+	 */
+	protected function includeJavaScript() {
+
+		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('t3jquery') && T3JQUERY === TRUE) {
+			// add t3query generated JavaScript
+			tx_t3jquery::addJqJS();
+
+			/** @var \TYPO3\CMS\Core\Page\PageRenderer $pageRenderer */
+			$pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
+			$pageRenderer->addJsFooterFile('typo3conf/ext/' . $this->extKey . '/Resources/Public/JavaScript/bib.js');
+		} else {
+			throw new \Exception('The TYPO3 extension t3jquery has to be installed and configured', 1378366263);
+		}
 	}
 
 	/**
