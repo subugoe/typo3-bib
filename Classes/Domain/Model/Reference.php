@@ -27,9 +27,9 @@ namespace Ipf\Bib\Domain\Model;
  * ************************************************************* */
 
 /**
- * References Model
+ * Reference Model
  */
-class References extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
+class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var int
