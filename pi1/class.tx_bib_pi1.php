@@ -162,143 +162,23 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$this->includeJavaScript();
 
-		// Create some configuration shortcuts
-		$extConf =& $this->extConf;
+		$this->initializeReferenceReader();
 
-		/** @var \Ipf\Bib\Utility\ReferenceReader referenceReader */
-		$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
-		$this->referenceReader->set_cObj($this->cObj);
+		$this->getExtensionConfiguration();
 
-		$extConf = GeneralUtility::array_merge_recursive_overrule($this->getExtensionConfiguration(), $extConf);
+		$this->getTypoScriptConfiguration();
 
-		// Configuration by TypoScript selected
-		if (intval($extConf['d_mode']) < 0)
-			$extConf['d_mode'] = intval($this->conf['display_mode']);
-		if (intval($extConf['enum_style']) < 0)
-			$extConf['enum_style'] = intval($this->conf['enum_style']);
-		if (intval($extConf['date_sorting']) < 0)
-			$extConf['date_sorting'] = intval($this->conf['date_sorting']);
-		if (intval($extConf['stat_mode']) < 0)
-			$extConf['stat_mode'] = intval($this->conf['statNav.']['mode']);
+		$this->getCharacterSet();
 
-		if (intval($extConf['sub_page']['ipp']) < 0) {
-			$extConf['sub_page']['ipp'] = intval($this->conf['items_per_page']);
-		}
-		if (intval($extConf['max_authors']) < 0) {
-			$extConf['max_authors'] = intval($this->conf['max_authors']);
-		}
-
-		// Character set
-		$extConf['charset'] = array('upper' => 'UTF-8', 'lower' => 'utf-8');
-		if (strlen($this->conf['charset']) > 0) {
-			$extConf['charset']['upper'] = strtoupper($this->conf['charset']);
-			$extConf['charset']['lower'] = strtolower($this->conf['charset']);
-		}
-
-		// Frontend editor configuration
 		$this->getFrontendEditorConfiguration();
 
-		// Get storage page(s)
 		$this->getStoragePid();
 
-		// Remove doubles and zero
-		$pidList = array_unique($this->pidList);
-		if (in_array(0, $pidList)) {
-			unset ($pidList[array_search(0, $pidList)]);
-		}
+		$this->getPidList();
 
-		if (sizeof($pidList) > 0) {
-			// Determine the recursive depth
-			$extConf['recursive'] = $this->cObj->data['recursive'];
-			if (isset ($this->conf['recursive'])) {
-				$extConf['recursive'] = $this->conf['recursive'];
-			}
-			$extConf['recursive'] = intval($extConf['recursive']);
+		$this->makeAdjustments();
 
-			$pidList = $this->pi_getPidList(implode(',', $pidList), $extConf['recursive']);
-
-			$pidList = GeneralUtility::intExplode(',', $pidList);
-
-			// Due to how recursive prepends the folders
-			$pidList = array_reverse($pidList);
-
-			$extConf['pid_list'] = $pidList;
-		} else {
-			// Use current page as storage
-			$extConf['pid_list'] = array(intval($GLOBALS['TSFE']->id));
-		}
-		$this->referenceReader->pid_list = $extConf['pid_list'];
-
-		//
-		// Adjustments
-		//
-		switch ($extConf['d_mode']) {
-			case self::D_SIMPLE:
-			case self::D_Y_SPLIT:
-			case self::D_Y_NAV:
-				break;
-			default:
-				$extConf['d_mode'] = self::D_SIMPLE; // emergency default
-		}
-		switch ($extConf['enum_style']) {
-			case self::ENUM_PAGE:
-			case self::ENUM_ALL:
-			case self::ENUM_BULLET:
-			case self::ENUM_EMPTY:
-			case self::ENUM_FILE_ICON:
-				break;
-			default:
-				$extConf['enum_style'] = self::ENUM_ALL; // emergency default
-		}
-		switch ($extConf['date_sorting']) {
-			case self::SORT_DESC:
-			case self::SORT_ASC:
-				break;
-			default:
-				$extConf['date_sorting'] = self::SORT_DESC; // emergency default
-		}
-		switch ($extConf['stat_mode']) {
-			case self::STAT_NONE:
-			case self::STAT_TOTAL:
-			case self::STAT_YEAR_TOTAL:
-				break;
-			default:
-				$extConf['stat_mode'] = self::STAT_TOTAL; // emergency default
-		}
-		$extConf['sub_page']['ipp'] = max(intval($extConf['sub_page']['ipp']), 0);
-		$extConf['max_authors'] = max(intval($extConf['max_authors']), 0);
-
-		// Search Navigation
-		if ($extConf['show_nav_search']) {
-			$this->initializeSearchNavigation();
-		}
-
-		//
-		// Year Navigation
-		//
-		if ($extConf['d_mode'] == self::D_Y_NAV) {
-			$this->enableYearNavigation();
-		}
-
-		// Author Navigation
-		if ($extConf['show_nav_author']) {
-			$this->initializeAuthorNavigation();
-		}
-
-		// Preference Navigation
-		if ($extConf['show_nav_pref']) {
-			$this->initializePreferenceNavigation();
-		}
-
-		// Statistic navi
-		if (intval($this->extConf['stat_mode']) != self::STAT_NONE) {
-			$this->enableStatisticsNavigation(TRUE);
-		}
-
-		// Export navigation
-		if ($extConf['show_nav_export']) {
-			$this->getExportNavigation();
-		}
+		$this->setupNavigations();
 
 		// Enable the edit mode
 		$validBackendUser = $this->isValidBackendUser();
@@ -306,138 +186,41 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// allow FE-user editing from special groups (set via TS)
 		$validFrontendUser = $this->isValidFrontendUser($validBackendUser);
 
-		$extConf['edit_mode'] = (($validBackendUser || $validFrontendUser) && $extConf['editor']['enabled']);
+		$this->extConf['edit_mode'] = (($validBackendUser || $validFrontendUser) && $this->extConf['editor']['enabled']);
 
-		// Set the enumeration mode
-		$extConf['has_enum'] = TRUE;
-		if (($extConf['enum_style'] == self::ENUM_EMPTY)) {
-			$extConf['has_enum'] = FALSE;
-		}
+		$this->setEnumerationMode();
 
-		// Initialize data display restrictions
 		$this->initializeRestrictions();
 
-		// Initialize icons
 		$this->initializeListViewIcons();
 
-		// Initialize the default filter
 		$this->initializeFilters();
 
-		// Don't show hidden entries
-		$extConf['show_hidden'] = FALSE;
-		if ($extConf['edit_mode']) {
-			$extConf['show_hidden'] = TRUE;
-		}
-		$this->referenceReader->show_hidden = $extConf['show_hidden'];
+		$this->showHiddenEntries();
 
-		// Edit mode specific
-		if ($extConf['edit_mode']) {
-			$this->getEditMode();
-		}
+		$this->getEditMode();
 
-		// Switch to an export view on demand
-		if (is_string($extConf['export_navi']['do'])) {
-			$extConf['view_mode'] = self::VIEW_DIALOG;
-			$extConf['dialog_mode'] = self::DIALOG_EXPORT;
-		}
+		$this->switchToExportView();
 
-		// Switch to a single view on demand
-		if (is_numeric($this->piVars['show_uid'])) {
-			$extConf['view_mode'] = self::VIEW_SINGLE;
-			$extConf['single_view']['uid'] = intval($this->piVars['show_uid']);
-			unset ($this->piVars['editor_mode']);
-			unset ($this->piVars['dialog_mode']);
-		}
+		$this->switchToSingleView();
 
-		//
-		// Search navigation setup
-		//
-		if ($extConf['show_nav_search']) {
-			$extConf['search_navi']['obj']->hook_filter();
-		}
-
+		$this->callSearchNavigationHook();
 
 		// Fetch publication statistics
 		$this->stat = array();
-		$this->referenceReader->set_filters($extConf['filters']);
+		$this->referenceReader->set_filters($this->extConf['filters']);
 
-		// Author navigation hook
-		if ($extConf['show_nav_author']) {
-			$extConf['author_navi']['obj']->hook_filter();
-		}
+		$this->callAuthorNavigationHook();
 
-		// Year navigation
-		if ($extConf['show_nav_year']) {
-			$this->getYearNavigation();
-		}
+		$this->getYearNavigation();
 
-		// Determine number of publications
-		if (!is_numeric($this->stat['num_all'])) {
-			$this->stat['num_all'] = $this->referenceReader->fetch_num();
-			$this->stat['num_page'] = $this->stat['num_all'];
-		}
+		$this->determineNumberOfPublications();
 
-		// Page navigation
 		$this->getPageNavigation();
 
-		//
-		// The sort filter
-		//
-		$extConf['filters']['sort'] = array();
-		$extConf['filters']['sort']['sorting'] = array();
-		$sortFilter =& $extConf['filters']['sort']['sorting'];
+		$this->getSortFilter();
 
-		// Default sorting
-		$defaultSorting = 'DESC';
-		if ($this->extConf['date_sorting'] == self::SORT_ASC) {
-			$defaultSorting = 'ASC';
-		}
-		$referenceTableAlias =& $this->referenceReader->referenceTableAlias;
-		$sortFilter = array(
-			array('field' => $referenceTableAlias . '.year', 'dir' => $defaultSorting),
-			array('field' => $referenceTableAlias . '.month', 'dir' => $defaultSorting),
-			array('field' => $referenceTableAlias . '.day', 'dir' => $defaultSorting),
-			array('field' => $referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
-			array('field' => $referenceTableAlias . '.state', 'dir' => 'ASC'),
-			array('field' => $referenceTableAlias . '.sorting', 'dir' => 'ASC'),
-			array('field' => $referenceTableAlias . '.title', 'dir' => 'ASC')
-		);
-
-		// Adjust sorting for bibtype split
-		if ($extConf['split_bibtypes']) {
-			if ($extConf['d_mode'] == self::D_SIMPLE) {
-				$sortFilter = array(
-					array('field' => $referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
-					array('field' => $referenceTableAlias . '.year', 'dir' => $defaultSorting),
-					array('field' => $referenceTableAlias . '.month', 'dir' => $defaultSorting),
-					array('field' => $referenceTableAlias . '.day', 'dir' => $defaultSorting),
-					array('field' => $referenceTableAlias . '.state', 'dir' => 'ASC'),
-					array('field' => $referenceTableAlias . '.sorting', 'dir' => 'ASC'),
-					array('field' => $referenceTableAlias . '.title', 'dir' => 'ASC')
-				);
-			} else {
-				$sortFilter = array(
-					array('field' => $referenceTableAlias . '.year', 'dir' => $defaultSorting),
-					array('field' => $referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
-					array('field' => $referenceTableAlias . '.month', 'dir' => $defaultSorting),
-					array('field' => $referenceTableAlias . '.day', 'dir' => $defaultSorting),
-					array('field' => $referenceTableAlias . '.state', 'dir' => 'ASC'),
-					array('field' => $referenceTableAlias . '.sorting', 'dir' => 'ASC'),
-					array('field' => $referenceTableAlias . '.title', 'dir' => 'ASC')
-				);
-			}
-		}
-
-		// Setup reference reader
-		$this->referenceReader->set_filters($extConf['filters']);
-
-		//
-		// Disable navigations om demand
-		//
-		if ($this->stat['num_all'] == 0)
-			$extConf['show_nav_export'] = FALSE;
-		if ($this->stat['num_page'] == 0)
-			$extConf['show_nav_stat'] = FALSE;
+		$this->disableNavigationOnDemand();
 
 		//
 		// Initialize the html templates
@@ -450,27 +233,351 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			return $this->finalize($bad);
 		}
 
-		//
 		// Switch to requested view mode
-		//
-		switch ($extConf['view_mode']) {
-			case self::VIEW_LIST :
-				return $this->finalize($this->list_view());
-				break;
-			case self::VIEW_SINGLE :
-				return $this->finalize($this->singleView());
-				break;
-			case self::VIEW_EDITOR :
-				return $this->finalize($this->editorView());
-				break;
-			case self::VIEW_DIALOG :
-				return $this->finalize($this->dialogView());
-				break;
-		}
-
-		return $this->finalize($this->errorMessage('An illegal view mode occured'));
+		return $this->finalize($this->switchToRequestedViewMode());
 	}
 
+	/**
+	 * Calls the hook_filter in the author navigation instance
+	 */
+	protected function callAuthorNavigationHook() {
+		if ($this->extConf['show_nav_author']) {
+			$this->extConf['author_navi']['obj']->hook_filter();
+		}
+	}
+
+	/**
+	 * Calls the hook_filter in the search navigation instance
+	 *
+	 * @return void
+	 */
+	protected function callSearchNavigationHook() {
+		if ($this->extConf['show_nav_search']) {
+			$this->extConf['search_navi']['obj']->hook_filter();
+		}
+	}
+
+	/**
+	 * Disable navigations om demand
+	 *
+	 * @return void
+	 */
+	protected function disableNavigationOnDemand() {
+
+		if ($this->stat['num_all'] == 0) {
+			$this->extConf['show_nav_export'] = FALSE;
+		}
+
+		if ($this->stat['num_page'] == 0) {
+			$this->extConf['show_nav_stat'] = FALSE;
+		}
+	}
+
+	/**
+	 * Initialize a ReferenceReader instance and pass it to the class variable
+	 * @return void
+	 */
+	protected function initializeReferenceReader() {
+		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
+		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+		$referenceReader->set_cObj($this->cObj);
+		$this->referenceReader = $referenceReader;
+	}
+
+	/**
+	 * Determines and applies sorting filters to the ReferenceReader
+	 */
+	protected function getSortFilter() {
+		$this->extConf['filters']['sort'] = array();
+		$this->extConf['filters']['sort']['sorting'] = array();
+
+		// Default sorting
+		$defaultSorting = 'DESC';
+
+		if ($this->extConf['date_sorting'] == self::SORT_ASC) {
+			$defaultSorting = 'ASC';
+		}
+
+		$this->extConf['filters']['sort']['sorting'] = array(
+			array('field' => $this->referenceReader->referenceTableAlias . '.year', 'dir' => $defaultSorting),
+			array('field' => $this->referenceReader->referenceTableAlias . '.month', 'dir' => $defaultSorting),
+			array('field' => $this->referenceReader->referenceTableAlias . '.day', 'dir' => $defaultSorting),
+			array('field' => $this->referenceReader->referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
+			array('field' => $this->referenceReader->referenceTableAlias . '.state', 'dir' => 'ASC'),
+			array('field' => $this->referenceReader->referenceTableAlias . '.sorting', 'dir' => 'ASC'),
+			array('field' => $this->referenceReader->referenceTableAlias . '.title', 'dir' => 'ASC')
+		);
+
+		// Adjust sorting for bibtype split
+		if ($this->extConf['split_bibtypes']) {
+			if ($this->extConf['d_mode'] == self::D_SIMPLE) {
+				$this->extConf['filters']['sort']['sorting'] = array(
+					array('field' => $this->referenceReader->referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->referenceTableAlias . '.year', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->referenceTableAlias . '.month', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->referenceTableAlias . '.day', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->referenceTableAlias . '.state', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->referenceTableAlias . '.sorting', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->referenceTableAlias . '.title', 'dir' => 'ASC')
+				);
+			} else {
+				$this->extConf['filters']['sort']['sorting'] = array(
+					array('field' => $this->referenceReader->referenceTableAlias . '.year', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->referenceTableAlias . '.month', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->referenceTableAlias . '.day', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->referenceTableAlias . '.state', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->referenceTableAlias . '.sorting', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->referenceTableAlias . '.title', 'dir' => 'ASC')
+				);
+			}
+		}
+		$this->referenceReader->set_filters($this->extConf['filters']);
+	}
+
+	/**
+	 * Determines the number of publications
+	 */
+	protected function determineNumberOfPublications() {
+		if (!is_numeric($this->stat['num_all'])) {
+			$this->stat['num_all'] = $this->referenceReader->fetch_num();
+			$this->stat['num_page'] = $this->stat['num_all'];
+		}
+	}
+
+	/**
+	 * Switch to single view on demand
+	 */
+	protected function switchToSingleView() {
+		if (is_numeric($this->piVars['show_uid'])) {
+			$this->extConf['view_mode'] = self::VIEW_SINGLE;
+			$this->extConf['single_view']['uid'] = intval($this->piVars['show_uid']);
+			unset ($this->piVars['editor_mode']);
+			unset ($this->piVars['dialog_mode']);
+		}
+	}
+
+	/**
+	 * Switch to export mode on demand
+	 * @return void
+	 */
+	protected function switchToExportView() {
+		if (is_string($this->extConf['export_navi']['do'])) {
+			$this->extConf['view_mode'] = self::VIEW_DIALOG;
+			$this->extConf['dialog_mode'] = self::DIALOG_EXPORT;
+		}
+	}
+
+	/**
+	 * Determines whether hidden entries are displayed or not
+	 * @return false
+	 */
+	protected function showHiddenEntries() {
+		$this->extConf['show_hidden'] = FALSE;
+		if ($this->extConf['edit_mode']) {
+			$this->extConf['show_hidden'] = TRUE;
+		}
+		$this->referenceReader->setShowHidden($this->extConf['show_hidden']);
+	}
+
+	/**
+	 * Set the enumeration mode
+	 * @return void
+	 */
+	protected function setEnumerationMode() {
+		$this->extConf['has_enum'] = TRUE;
+		if (($this->extConf['enum_style'] == self::ENUM_EMPTY)) {
+			$this->extConf['has_enum'] = FALSE;
+		}
+	}
+
+	/**
+	 * Retrieves and optimizes the pid list and passes it to the referenceReader
+	 *
+	 * @return void
+	 */
+	protected function getPidList() {
+		$pidList = array_unique($this->pidList);
+		if (in_array(0, $pidList)) {
+			unset ($pidList[array_search(0, $pidList)]);
+		}
+
+		if (sizeof($pidList) > 0) {
+			// Determine the recursive depth
+			$this->extConf['recursive'] = $this->cObj->data['recursive'];
+			if (isset ($this->conf['recursive'])) {
+				$this->extConf['recursive'] = $this->conf['recursive'];
+			}
+			$this->extConf['recursive'] = intval($this->extConf['recursive']);
+
+			$pidList = $this->pi_getPidList(implode(',', $pidList), $this->extConf['recursive']);
+
+			$pidList = GeneralUtility::intExplode(',', $pidList);
+
+			// Due to how recursive prepends the folders
+			$pidList = array_reverse($pidList);
+
+			$this->extConf['pid_list'] = $pidList;
+		} else {
+			// Use current page as storage
+			$this->extConf['pid_list'] = array(intval($GLOBALS['TSFE']->id));
+		}
+		$this->referenceReader->setPidList($this->extConf['pid_list']);
+	}
+
+	/**
+	 * Get the character set and write it to the configuration
+	 * @return void
+	 */
+	protected function getCharacterSet() {
+		$this->extConf['charset'] = array('upper' => 'UTF-8', 'lower' => 'utf-8');
+		if (strlen($this->conf['charset']) > 0) {
+			$this->extConf['charset']['upper'] = strtoupper($this->conf['charset']);
+			$this->extConf['charset']['lower'] = strtolower($this->conf['charset']);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function getTypoScriptConfiguration() {
+
+		if (intval($this->extConf['d_mode']) < 0) {
+			$this->extConf['d_mode'] = intval($this->conf['display_mode']);
+		}
+
+		if (intval($this->extConf['enum_style']) < 0) {
+			$this->extConf['enum_style'] = intval($this->conf['enum_style']);
+		}
+
+		if (intval($this->extConf['date_sorting']) < 0) {
+			$this->extConf['date_sorting'] = intval($this->conf['date_sorting']);
+		}
+
+		if (intval($this->extConf['stat_mode']) < 0) {
+			$this->extConf['stat_mode'] = intval($this->conf['statNav.']['mode']);
+		}
+
+		if (intval($this->extConf['sub_page']['ipp']) < 0) {
+			$this->extConf['sub_page']['ipp'] = intval($this->conf['items_per_page']);
+		}
+
+		if (intval($this->extConf['max_authors']) < 0) {
+			$this->extConf['max_authors'] = intval($this->conf['max_authors']);
+		}
+	}
+
+	/**
+	 * Determine the requested view mode (List, Single, Editor, Dialog)
+	 *
+	 * @return string
+	 */
+	protected function switchToRequestedViewMode() {
+
+		switch ($this->extConf['view_mode']) {
+			case self::VIEW_LIST :
+				return $this->list_view();
+				break;
+			case self::VIEW_SINGLE :
+				return $this->singleView();
+				break;
+			case self::VIEW_EDITOR :
+				return $this->editorView();
+				break;
+			case self::VIEW_DIALOG :
+				return $this->dialogView();
+				break;
+			default:
+				return $this->errorMessage('An illegal view mode occured');
+		}
+	}
+
+	/**
+	 * Setup and initialize Navigation types
+	 *
+	 * Search Navigation
+	 * Year Navigation
+	 * Author Navigation
+	 * Preference Navigation
+	 * Statistic Navigation
+	 * Export Navigation
+	 *
+	 * @return void
+	 */
+	protected function setupNavigations() {
+		// Search Navigation
+		if ($this->extConf['show_nav_search']) {
+			$this->initializeSearchNavigation();
+		}
+
+		// Year Navigation
+		if ($this->extConf['d_mode'] == self::D_Y_NAV) {
+			$this->enableYearNavigation();
+		}
+
+		// Author Navigation
+		if ($this->extConf['show_nav_author']) {
+			$this->initializeAuthorNavigation();
+		}
+
+		// Preference Navigation
+		if ($this->extConf['show_nav_pref']) {
+			$this->initializePreferenceNavigation();
+		}
+
+		// Statistic Navigation
+		if (intval($this->extConf['stat_mode']) != self::STAT_NONE) {
+			$this->enableStatisticsNavigation(TRUE);
+		}
+
+		// Export navigation
+		if ($this->extConf['show_nav_export']) {
+			$this->getExportNavigation();
+		}
+	}
+
+	/**
+	 * Make adjustments to different modes
+	 * @todo find a better method name or split up
+	 * @return void
+	 */
+	protected function makeAdjustments() {
+		switch ($this->extConf['d_mode']) {
+			case self::D_SIMPLE:
+			case self::D_Y_SPLIT:
+			case self::D_Y_NAV:
+				break;
+			default:
+				$this->extConf['d_mode'] = self::D_SIMPLE;
+		}
+		switch ($this->extConf['enum_style']) {
+			case self::ENUM_PAGE:
+			case self::ENUM_ALL:
+			case self::ENUM_BULLET:
+			case self::ENUM_EMPTY:
+			case self::ENUM_FILE_ICON:
+				break;
+			default:
+				$this->extConf['enum_style'] = self::ENUM_ALL;
+		}
+		switch ($this->extConf['date_sorting']) {
+			case self::SORT_DESC:
+			case self::SORT_ASC:
+				break;
+			default:
+				$this->extConf['date_sorting'] = self::SORT_DESC;
+		}
+		switch ($this->extConf['stat_mode']) {
+			case self::STAT_NONE:
+			case self::STAT_TOTAL:
+			case self::STAT_YEAR_TOTAL:
+				break;
+			default:
+				$this->extConf['stat_mode'] = self::STAT_TOTAL;
+		}
+		$this->extConf['sub_page']['ipp'] = max(intval($this->extConf['sub_page']['ipp']), 0);
+		$this->extConf['max_authors'] = max(intval($this->extConf['max_authors']), 0);
+	}
 
 	/**
 	 * This is the last function called before ouptput
@@ -548,78 +655,81 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return void
 	 */
 	protected function getEditMode() {
-		// Disable caching in edit mode
-		$GLOBALS['TSFE']->set_no_cache();
+		if ($this->extConf['edit_mode']) {
 
-		// Load edit labels
-		$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_editor.xml');
+			// Disable caching in edit mode
+			$GLOBALS['TSFE']->set_no_cache();
 
-		// Do an action type evaluation
-		if (is_array($this->piVars['action'])) {
-			$actionName = implode('', array_keys($this->piVars['action']));
+			// Load edit labels
+			$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_editor.xml');
 
-			switch ($actionName) {
-				case 'new':
-					$this->extConf['view_mode'] = self::VIEW_EDITOR;
-					$this->extConf['editor_mode'] = self::EDIT_NEW;
-					break;
-				case 'edit':
-					$this->extConf['view_mode'] = self::VIEW_EDITOR;
-					$this->extConf['editor_mode'] = self::EDIT_EDIT;
-					break;
-				case 'confirm_save':
-					$this->extConf['view_mode'] = self::VIEW_EDITOR;
-					$this->extConf['editor_mode'] = self::EDIT_CONFIRM_SAVE;
-					break;
-				case 'save':
-					$this->extConf['view_mode'] = self::VIEW_DIALOG;
-					$this->extConf['dialog_mode'] = self::DIALOG_SAVE_CONFIRMED;
-					break;
-				case 'confirm_delete':
-					$this->extConf['view_mode'] = self::VIEW_EDITOR;
-					$this->extConf['editor_mode'] = self::EDIT_CONFIRM_DELETE;
-					break;
-				case 'delete':
-					$this->extConf['view_mode'] = self::VIEW_DIALOG;
-					$this->extConf['dialog_mode'] = self::DIALOG_DELETE_CONFIRMED;
-					break;
-				case 'confirm_erase':
-					$this->extConf['view_mode'] = self::VIEW_EDITOR;
-					$this->extConf['editor_mode'] = self::EDIT_CONFIRM_ERASE;
-					break;
-				case 'erase':
-					$this->extConf['view_mode'] = self::VIEW_DIALOG;
-					$this->extConf['dialog_mode'] = self::DIALOG_ERASE_CONFIRMED;
-				case 'hide':
-					$this->hidePublication(TRUE);
-					break;
-				case 'reveal':
-					$this->hidePublication(FALSE);
-					break;
-				default:
+			// Do an action type evaluation
+			if (is_array($this->piVars['action'])) {
+				$actionName = implode('', array_keys($this->piVars['action']));
+
+				switch ($actionName) {
+					case 'new':
+						$this->extConf['view_mode'] = self::VIEW_EDITOR;
+						$this->extConf['editor_mode'] = self::EDIT_NEW;
+						break;
+					case 'edit':
+						$this->extConf['view_mode'] = self::VIEW_EDITOR;
+						$this->extConf['editor_mode'] = self::EDIT_EDIT;
+						break;
+					case 'confirm_save':
+						$this->extConf['view_mode'] = self::VIEW_EDITOR;
+						$this->extConf['editor_mode'] = self::EDIT_CONFIRM_SAVE;
+						break;
+					case 'save':
+						$this->extConf['view_mode'] = self::VIEW_DIALOG;
+						$this->extConf['dialog_mode'] = self::DIALOG_SAVE_CONFIRMED;
+						break;
+					case 'confirm_delete':
+						$this->extConf['view_mode'] = self::VIEW_EDITOR;
+						$this->extConf['editor_mode'] = self::EDIT_CONFIRM_DELETE;
+						break;
+					case 'delete':
+						$this->extConf['view_mode'] = self::VIEW_DIALOG;
+						$this->extConf['dialog_mode'] = self::DIALOG_DELETE_CONFIRMED;
+						break;
+					case 'confirm_erase':
+						$this->extConf['view_mode'] = self::VIEW_EDITOR;
+						$this->extConf['editor_mode'] = self::EDIT_CONFIRM_ERASE;
+						break;
+					case 'erase':
+						$this->extConf['view_mode'] = self::VIEW_DIALOG;
+						$this->extConf['dialog_mode'] = self::DIALOG_ERASE_CONFIRMED;
+					case 'hide':
+						$this->hidePublication(TRUE);
+						break;
+					case 'reveal':
+						$this->hidePublication(FALSE);
+						break;
+					default:
+				}
 			}
-		}
 
-		// Set unset extConf and piVars editor mode
-		if ($this->extConf['view_mode'] == self::VIEW_DIALOG) {
-			unset ($this->piVars['editor_mode']);
-		}
+			// Set unset extConf and piVars editor mode
+			if ($this->extConf['view_mode'] == self::VIEW_DIALOG) {
+				unset ($this->piVars['editor_mode']);
+			}
 
-		if (isset ($this->extConf['editor_mode'])) {
-			$this->piVars['editor_mode'] = $this->extConf['editor_mode'];
-		} else if (isset ($this->piVars['editor_mode'])) {
-			$this->extConf['view_mode'] = self::VIEW_EDITOR;
-			$this->extConf['editor_mode'] = $this->piVars['editor_mode'];
-		}
+			if (isset ($this->extConf['editor_mode'])) {
+				$this->piVars['editor_mode'] = $this->extConf['editor_mode'];
+			} else if (isset ($this->piVars['editor_mode'])) {
+				$this->extConf['view_mode'] = self::VIEW_EDITOR;
+				$this->extConf['editor_mode'] = $this->piVars['editor_mode'];
+			}
 
-		// Initialize edit icons
-		$this->initializeEditIcons();
+			// Initialize edit icons
+			$this->initializeEditIcons();
 
-		// Switch to an import view on demand
-		$allImport = intval(self::IMP_BIBTEX | self::IMP_XML);
-		if (isset($this->piVars['import']) && (intval($this->piVars['import']) & $allImport)) {
-			$this->extConf['view_mode'] = self::VIEW_DIALOG;
-			$this->extConf['dialog_mode'] = self::DIALOG_IMPORT;
+			// Switch to an import view on demand
+			$allImport = intval(self::IMP_BIBTEX | self::IMP_XML);
+			if (isset($this->piVars['import']) && (intval($this->piVars['import']) & $allImport)) {
+				$this->extConf['view_mode'] = self::VIEW_DIALOG;
+				$this->extConf['dialog_mode'] = self::DIALOG_IMPORT;
+			}
 		}
 	}
 
@@ -627,50 +737,53 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return void
 	 */
 	protected function getYearNavigation() {
-		// Fetch a year histogram
-		$histogram = $this->referenceReader->fetch_histogram('year');
-		$this->stat['year_hist'] = $histogram;
-		$this->stat['years'] = array_keys($histogram);
-		sort($this->stat['years']);
+		if ($this->extConf['show_nav_year']) {
 
-		$this->stat['num_all'] = array_sum($histogram);
-		$this->stat['num_page'] = $this->stat['num_all'];
+			// Fetch a year histogram
+			$histogram = $this->referenceReader->fetch_histogram('year');
+			$this->stat['year_hist'] = $histogram;
+			$this->stat['years'] = array_keys($histogram);
+			sort($this->stat['years']);
 
-		// Determine the year to display
-		$this->extConf['year'] = intval(date('Y')); // System year
+			$this->stat['num_all'] = array_sum($histogram);
+			$this->stat['num_page'] = $this->stat['num_all'];
 
-		$exportPluginVariables = strtolower($this->piVars['year']);
-		if (is_numeric($exportPluginVariables)) {
-			$this->extConf['year'] = intval($exportPluginVariables);
-		} else {
-			if ($exportPluginVariables == 'all') {
-				$this->extConf['year'] = $exportPluginVariables;
+			// Determine the year to display
+			$this->extConf['year'] = intval(date('Y')); // System year
+
+			$exportPluginVariables = strtolower($this->piVars['year']);
+			if (is_numeric($exportPluginVariables)) {
+				$this->extConf['year'] = intval($exportPluginVariables);
+			} else {
+				if ($exportPluginVariables == 'all') {
+					$this->extConf['year'] = $exportPluginVariables;
+				}
 			}
-		}
 
-		if ($this->extConf['year'] == 'all') {
-			if ($this->conf['yearNav.']['selection.']['all_year_split']) {
-				$this->extConf['split_years'] = TRUE;
+			if ($this->extConf['year'] == 'all') {
+				if ($this->conf['yearNav.']['selection.']['all_year_split']) {
+					$this->extConf['split_years'] = TRUE;
+				}
 			}
-		}
 
 
-		// The selected year has no publications so select the closest year
-		if (($this->stat['num_all'] > 0) && is_numeric($this->extConf['year'])) {
-			$this->extConf['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
-				$this->extConf['year'], $this->stat['years']);
-		}
-		// Append default link variable
-		$this->extConf['link_vars']['year'] = $this->extConf['year'];
+			// The selected year has no publications so select the closest year
+			if (($this->stat['num_all'] > 0) && is_numeric($this->extConf['year'])) {
+				$this->extConf['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
+					$this->extConf['year'], $this->stat['years']);
+			}
+			// Append default link variable
+			$this->extConf['link_vars']['year'] = $this->extConf['year'];
 
-		if (is_numeric($this->extConf['year'])) {
-			// Adjust num_page
-			$this->stat['num_page'] = $this->stat['year_hist'][$this->extConf['year']];
+			if (is_numeric($this->extConf['year'])) {
+				// Adjust num_page
+				$this->stat['num_page'] = $this->stat['year_hist'][$this->extConf['year']];
 
-			// Adjust year filter
-			$this->extConf['filters']['br_year'] = array();
-			$this->extConf['filters']['br_year']['year'] = array();
-			$this->extConf['filters']['br_year']['year']['years'] = array($this->extConf['year']);
+				// Adjust year filter
+				$this->extConf['filters']['br_year'] = array();
+				$this->extConf['filters']['br_year']['year'] = array();
+				$this->extConf['filters']['br_year']['year']['years'] = array($this->extConf['year']);
+			}
 		}
 	}
 
@@ -718,33 +831,33 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return array
 	 */
 	protected function getExtensionConfiguration() {
-		$extConf = array();
+		$this->extConf = array();
 		// Initialize current configuration
-		$extConf['link_vars'] = array();
-		$extConf['sub_page'] = array();
+		$this->extConf['link_vars'] = array();
+		$this->extConf['sub_page'] = array();
 
-		$extConf['view_mode'] = self::VIEW_LIST;
-		$extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
-		$extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
+		$this->extConf['view_mode'] = self::VIEW_LIST;
+		$this->extConf['debug'] = $this->conf['debug'] ? TRUE : FALSE;
+		$this->extConf['ce_links'] = $this->conf['ce_links'] ? TRUE : FALSE;
 
 		// Retrieve general FlexForm values
 		$fSheet = 'sDEF';
-		$extConf['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
-		$extConf['enum_style'] = $this->pi_getFFvalue($this->flexFormData, 'enum_style', $fSheet);
-		$extConf['show_nav_search'] = $this->pi_getFFvalue($this->flexFormData, 'show_search', $fSheet);
-		$extConf['show_nav_author'] = $this->pi_getFFvalue($this->flexFormData, 'show_authors', $fSheet);
-		$extConf['show_nav_pref'] = $this->pi_getFFvalue($this->flexFormData, 'show_pref', $fSheet);
-		$extConf['sub_page']['ipp'] = $this->pi_getFFvalue($this->flexFormData, 'items_per_page', $fSheet);
-		$extConf['max_authors'] = $this->pi_getFFvalue($this->flexFormData, 'max_authors', $fSheet);
-		$extConf['split_bibtypes'] = $this->pi_getFFvalue($this->flexFormData, 'split_bibtypes', $fSheet);
-		$extConf['stat_mode'] = $this->pi_getFFvalue($this->flexFormData, 'stat_mode', $fSheet);
-		$extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
-		$extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
+		$this->extConf['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
+		$this->extConf['enum_style'] = $this->pi_getFFvalue($this->flexFormData, 'enum_style', $fSheet);
+		$this->extConf['show_nav_search'] = $this->pi_getFFvalue($this->flexFormData, 'show_search', $fSheet);
+		$this->extConf['show_nav_author'] = $this->pi_getFFvalue($this->flexFormData, 'show_authors', $fSheet);
+		$this->extConf['show_nav_pref'] = $this->pi_getFFvalue($this->flexFormData, 'show_pref', $fSheet);
+		$this->extConf['sub_page']['ipp'] = $this->pi_getFFvalue($this->flexFormData, 'items_per_page', $fSheet);
+		$this->extConf['max_authors'] = $this->pi_getFFvalue($this->flexFormData, 'max_authors', $fSheet);
+		$this->extConf['split_bibtypes'] = $this->pi_getFFvalue($this->flexFormData, 'split_bibtypes', $fSheet);
+		$this->extConf['stat_mode'] = $this->pi_getFFvalue($this->flexFormData, 'stat_mode', $fSheet);
+		$this->extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
+		$this->extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
 
 		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
 		$show_fields = explode(',', $show_fields);
 
-		$extConf['hide_fields'] = array(
+		$this->extConf['hide_fields'] = array(
 			'abstract' => 1,
 			'annotation' => 1,
 			'note' => 1,
@@ -772,11 +885,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					break;
 			}
 			if ($field) {
-				$extConf['hide_fields'][$field] = 0;
+				$this->extConf['hide_fields'][$field] = 0;
 			}
 		}
-
-		return $extConf;
 	}
 
 	/**
@@ -794,13 +905,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (is_array($this->conf['editor.'])) {
 			$editorOverride =& $this->conf['editor.'];
 			if (array_key_exists('enabled', $editorOverride))
-				$extConf['editor']['enabled'] = $editorOverride['enabled'] ? TRUE : FALSE;
+				$this->extConf['editor']['enabled'] = $editorOverride['enabled'] ? TRUE : FALSE;
 			if (array_key_exists('citeid_gen_new', $editorOverride))
-				$extConf['editor']['citeid_gen_new'] = $editorOverride['citeid_gen_new'] ? TRUE : FALSE;
+				$this->extConf['editor']['citeid_gen_new'] = $editorOverride['citeid_gen_new'] ? TRUE : FALSE;
 			if (array_key_exists('citeid_gen_old', $editorOverride))
-				$extConf['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? TRUE : FALSE;
+				$this->extConf['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? TRUE : FALSE;
 		}
-		$this->referenceReader->clear_cache = $extConf['editor']['clear_page_cache'];
+		$this->referenceReader->clear_cache = $this->extConf['editor']['clear_page_cache'];
 	}
 
 	/**
@@ -1334,9 +1445,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (is_array($more))
 			$list = array_merge($list, $more);
 
-		$tmpl =& $GLOBALS['TSFE']->tmpl;
 		foreach ($list as $key => $val) {
-			$this->icon_src[$key] = $tmpl->getFileName($base . $val);
+			$this->icon_src[$key] = $GLOBALS['TSFE']->tmpl->getFileName($base . $val);
 		}
 	}
 
@@ -1354,11 +1464,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$list = array_merge($list, $more);
 		}
 
-		$tmpl =& $GLOBALS['TSFE']->tmpl;
 		$this->icon_src['files'] = array();
-		$ic =& $this->icon_src['files'];
+
 		foreach ($list as $key => $val) {
-			$ic['.' . $key] = $tmpl->getFileName($val);
+			$this->icon_src['files']['.' . $key] = $GLOBALS['TSFE']->tmpl->getFileName($val);
 		}
 	}
 
@@ -1494,6 +1603,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Returns an instance of a navigation bar class
 	 *
+	 * @param string $type
 	 * @return \Ipf\Bib\Navigation\Navigation Instance of the navigation object
 	 */
 	protected function getAndInitializeNavigationInstance($type) {
@@ -2283,7 +2393,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 			$a_str = $this->cObj->stdWrap($a_str, $stdWrap);
 
-			// Wrap the filtered authors with a highlightning class on demand
+			// Wrap the filtered authors with a highlighting class on demand
 			if ($highlightAuthors) {
 				foreach ($filter_authors as $fa) {
 					if ($author['surname'] == $fa['surname']) {
@@ -2897,7 +3007,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * or just the block markers
 	 *
 	 * @param String $template
-	 * @return void
+	 * @return string
 	 */
 	public function setupEnumerationConditionBlock($template) {
 		$sub = $this->extConf['has_enum'] ? array() : '';

@@ -249,7 +249,7 @@ class ReferenceReader {
 	 *
 	 * @return void
 	 */
-	function set_cObj(&$cObj) {
+	public function set_cObj(&$cObj) {
 		$this->cObj =& $cObj;
 	}
 
@@ -1478,6 +1478,22 @@ class ReferenceReader {
 			$result = $row['uid'];
 		}
 		return $result;
+	}
+
+	/**
+	 * @param array $pidList
+	 * @return void
+	 */
+	public function setPidList($pidList) {
+		$this->pid_list = $pidList;
+	}
+
+	/**
+	 * @param $showHidden
+	 * @return void
+	 */
+	public function setShowHidden($showHidden) {
+		$this->show_hidden = $showHidden;
 	}
 
 }
