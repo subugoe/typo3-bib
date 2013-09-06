@@ -36,4 +36,7 @@ if (!defined ('TYPO3_MODE')) {
 	,43
 );
 
+// provide automagic realUrl configuration
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/realurl/class.tx_realurl_autoconfgen.php']['extensionConfiguration'][$_EXTKEY] = 'EXT:' . $_EXTKEY . '/Classes/Hooks/RealUrl.php:Ipf\\Bib\Hooks\RealUrl->addRealUrlConfiguration';
+
 ?>
