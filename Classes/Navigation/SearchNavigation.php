@@ -369,7 +369,7 @@ class SearchNavigation extends Navigation {
 
 		$has_extra = $extConf['extra'] ? array('', '') : '';
 
-		$template = $this->pi1->setup_enum_cond_block($this->template);
+		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
 		$template = $cObj->substituteSubpart($template, '###HAS_EXTRA###', $has_extra);
 		$content = $cObj->substituteMarkerArrayCached($template, $translator);
 
