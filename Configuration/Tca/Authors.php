@@ -12,7 +12,7 @@ $TCA['tx_bib_domain_model_author'] = array (
 	'feInterface' => $TCA['tx_bib_domain_model_author']['feInterface'],
 	'columns' => array (
 		'surname' => array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_surname',
 			'config' => Array (
 				'type' => 'input',
@@ -22,7 +22,7 @@ $TCA['tx_bib_domain_model_author'] = array (
 			)
 		),
 		'forename' => array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_forename',
 			'config' => Array (
 				'type' => 'input',
@@ -32,7 +32,7 @@ $TCA['tx_bib_domain_model_author'] = array (
 			)
 		),
 		'url' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_url',
 			'config' => Array (
 				'type' => 'input',
@@ -52,7 +52,7 @@ $TCA['tx_bib_domain_model_author'] = array (
 			)
 		),
 		'fe_user_id' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_fe_user_id',
 			'config' => Array (
 				'type' => 'group',

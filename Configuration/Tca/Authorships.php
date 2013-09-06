@@ -12,7 +12,7 @@ $TCA['tx_bib_domain_model_authorships'] = array (
 	'feInterface' => $TCA['tx_bib_domain_model_authorships']['feInterface'],
 	'columns' => array (
 		'pub_id' => array (
-#      "exclude" => 1,
+		'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_pub_id',
 			'config' => array (
 				'type' => 'group',
@@ -50,7 +50,7 @@ $TCA['tx_bib_domain_model_authorships'] = array (
 			)
 		),
 		'author_id' => array (
-#      "exclude" => 1,
+		'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_author_id',
 			'config' => array (
 				'type' => 'group',
@@ -88,7 +88,7 @@ $TCA['tx_bib_domain_model_authorships'] = array (
 			)
 		),
 		'sorting' => array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_sorting',
 			'config' => Array (
 				'type' => 'input',

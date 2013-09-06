@@ -12,7 +12,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 	'feInterface' => $TCA['tx_bib_domain_model_reference']['feInterface'],
 	'columns' => array (
 		'hidden' => array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
 				'type'    => 'check',
@@ -20,7 +20,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'bibtype' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype',
 			'config' => Array (
 				'type' => 'select',
@@ -51,7 +51,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'citeid' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_citeid',
 			'config' => Array (
 				'type' => 'input',
@@ -61,7 +61,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'title' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_title',
 			'config' => Array (
 				'type' => 'text',
@@ -70,7 +70,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'journal' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_journal',
 			'config' => Array (
 				'type' => 'input',
@@ -80,7 +80,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'year' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_year',
 			'config' => Array (
 				'type'     => 'input',
@@ -95,7 +95,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'volume' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_volume',
 			'config' => Array (
 				'type' => 'input',
@@ -105,7 +105,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'number' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_number',
 			'config' => Array (
 				'type' => 'input',
@@ -115,7 +115,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'number2' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_number2',
 			'config' => Array (
 				'type' => 'input',
@@ -125,7 +125,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'pages' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_pages',
 			'config' => Array (
 				'type' => 'input',
@@ -135,7 +135,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'day' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_day',
 			'config' => Array (
 				'type' => 'select',
@@ -178,7 +178,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'month' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_month',
 			'config' => Array (
 				'type' => 'select',
@@ -202,7 +202,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'abstract' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_abstract',
 			'config' => Array (
 				'type' => 'text',
@@ -211,7 +211,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'affiliation' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_affiliation',
 			'config' => Array (
 				'type' => 'text',
@@ -221,7 +221,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'note' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_note',
 			'config' => Array (
 				'type' => 'text',
@@ -230,7 +230,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'annotation' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_annotation',
 			'config' => Array (
 				'type' => 'text',
@@ -239,7 +239,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'keywords' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_keywords',
 			'config' => Array (
 				'type' => 'text',
@@ -248,7 +248,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'tags' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_tags',
 			'config' => Array (
 				'type' => 'text',
@@ -257,7 +257,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'file_url' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_file_url',
 			'config' => Array (
 				'type' => 'input',
@@ -278,7 +278,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'web_url' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url',
 			'config' => Array (
 				'type' => 'input',
@@ -298,7 +298,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'web_url2' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url2',
 			'config' => Array (
 				'type' => 'input',
@@ -318,7 +318,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'misc' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_misc',
 			'config' => Array (
 				'type' => 'input',
@@ -328,7 +328,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'misc2' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_misc2',
 			'config' => Array (
 				'type' => 'input',
@@ -338,7 +338,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'editor' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_editor',
 			'config' => Array (
 				'type' => 'input',
@@ -348,7 +348,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'publisher' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_publisher',
 			'config' => Array (
 				'type' => 'input',
@@ -358,7 +358,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'address' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_address',
 			'config' => Array (
 				'type' => 'input',
@@ -368,7 +368,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'howpublished' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_howpublished',
 			'config' => Array (
 				'type' => 'input',
@@ -378,7 +378,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'series' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_series',
 			'config' => Array (
 				'type' => 'input',
@@ -388,7 +388,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'edition' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_edition',
 			'config' => Array (
 				'type' => 'input',
@@ -398,7 +398,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'chapter' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_chapter',
 			'config' => Array (
 				'type' => 'input',
@@ -408,7 +408,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'booktitle' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_booktitle',
 			'config' => Array (
 				'type' => 'text',
@@ -418,7 +418,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'school' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_school',
 			'config' => Array (
 				'type' => 'input',
@@ -428,7 +428,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'institute' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_institute',
 			'config' => Array (
 				'type' => 'input',
@@ -438,7 +438,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'organization' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_organization',
 			'config' => Array (
 				'type' => 'input',
@@ -448,7 +448,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'institution' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_institution',
 			'config' => Array (
 				'type' => 'input',
@@ -458,7 +458,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'event_name' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_event_name',
 			'config' => Array (
 				'type' => 'input',
@@ -468,7 +468,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'event_place' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_event_place',
 			'config' => Array (
 				'type' => 'input',
@@ -478,7 +478,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'event_date' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_event_date',
 			'config' => Array (
 				'type' => 'input',
@@ -488,7 +488,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'state' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state',
 			'config' => Array (
 				'type' => 'select',
@@ -504,7 +504,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'type' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_type',
 			'config' => Array (
 				'type' => 'input',
@@ -514,7 +514,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'language' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_language',
 			'config' => Array (
 				'type' => 'input',
@@ -524,7 +524,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'ISBN' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_ISBN',
 			'config' => Array (
 				'type' => 'input',
@@ -534,7 +534,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'ISSN' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_ISSN',
 			'config' => Array (
 				'type' => 'input',
@@ -544,7 +544,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'DOI' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_DOI',
 			'config' => Array (
 				'type' => 'input',
@@ -554,7 +554,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'extern' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_extern',
 			'config' => Array (
 				'type'    => 'check',
@@ -562,7 +562,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'reviewed' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_reviewed',
 			'config' => Array (
 				'type'    => 'check',
@@ -570,7 +570,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'in_library' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_in_library',
 			'config' => Array (
 				'type'    => 'check',
@@ -578,7 +578,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 			)
 		),
 		'borrowed_by' => Array (
-#			'exclude' => 1,
+			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_borrowed_by',
 			'config' => Array (
 				'type' => 'input',
