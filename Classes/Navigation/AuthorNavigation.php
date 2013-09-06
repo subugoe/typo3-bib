@@ -3,13 +3,18 @@ namespace Ipf\Bib\Navigation;
 
 class AuthorNavigation extends Navigation {
 
+	/**
+	 * @var array
+	 */
 	public $extConf;
-
 
 	/*
 	 * Initialize
+	 *
+	 * @param \tx_bib_pi1
+	 * @return void
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		parent::initialize($pi1);
 		if (is_array($pi1->conf['authorNav.']))
 			$this->conf =& $pi1->conf['authorNav.'];
@@ -26,6 +31,8 @@ class AuthorNavigation extends Navigation {
 
 	/*
 	 * Hook in to pi1 at init stage
+	 *
+	 * @return void
 	 */
 	function hook_init() {
 		$extConf =& $this->pi1->extConf;
@@ -56,7 +63,7 @@ class AuthorNavigation extends Navigation {
 	function hook_filter() {
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$ref_read =& $this->pi1->ref_read;
+		$ref_read =& $this->pi1->referenceReader;
 
 		// Init statistics
 		$this->pi1->stat['authors'] = array();
@@ -64,12 +71,10 @@ class AuthorNavigation extends Navigation {
 
 		$filter = array();
 
-		//
 		// Fetch all surnames and initialize letters
-		//
 		$astat['surnames'] = $ref_read->fetch_author_surnames();
 		$astat['sel_surnames'] = array();
-		$this->init_letters($astat['surnames']);
+		$this->initializeLetters($astat['surnames']);
 
 		// aliases
 		$surnames =& $astat['surnames'];
@@ -97,16 +102,11 @@ class AuthorNavigation extends Navigation {
 			$filters['temp']['author'] = array();
 			$filters['temp']['author']['authors'] = $filter;
 
-			//
 			// Fetch selected surnames
-			//
 			$ref_read->set_filters($filters);
 			$sel_surnames = $ref_read->fetch_author_surnames();
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $sel_surnames );
 
-			//
 			// Remove ampersand strings from surname list
-			//
 			$lst = array();
 			$spec = FALSE;
 			$sel_up = mb_strtoupper($sel_letter, $charset);
@@ -130,15 +130,11 @@ class AuthorNavigation extends Navigation {
 			}
 			$sel_surnames = $lst;
 
-			//
 			// Restore filter
-			//
 			$ref_read->set_filters($this->pi1->extConf['filters']);
 		}
 
-		//
 		// Setup filter for selected author
-		//
 		if ($sel_author != '0') {
 			$spec = htmlentities($sel_author, ENT_QUOTES, $charset);
 
@@ -175,7 +171,7 @@ class AuthorNavigation extends Navigation {
 	/*
 	 * Creates a text for a given index
 	 */
-	function sel_get_text($ii) {
+	protected function sel_get_text($ii) {
 		$txt = strval($this->pi1->stat['authors']['sel_surnames'][$ii]);
 		$txt = htmlspecialchars($txt, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
 		return $txt;
@@ -196,10 +192,11 @@ class AuthorNavigation extends Navigation {
 
 	/*
 	 * Initialize letters
+	 *
+	 * @param array $names
+	 * @return void
 	 */
-	function init_letters($names) {
-		$cObj =& $this->pi1->cObj;
-		$cfg =& $this->conf;
+	protected function initializeLetters($names) {
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
 
@@ -219,11 +216,14 @@ class AuthorNavigation extends Navigation {
 
 	/*
 	 * Returns the first letters of all strings in a list
+	 *
+	 * @param array $names
+	 * @param string $charset
+	 * @return array
 	 */
 	function first_letters($names, $charset) {
-		//
+
 		// Acquire letters
-		//
 		$letters = array();
 		foreach ($names as $name) {
 			$ll = mb_substr($name, 0, 1, $charset);
@@ -248,121 +248,121 @@ class AuthorNavigation extends Navigation {
 
 	/*
 	 * Returns the position of a string in a list
+	 *
+	 * @param string $string
+	 * @param array $list
+	 * @param mixed $null
+	 * @param string $charset
+	 * @return int|mixed
 	 */
-	function string_index($string, $list, $null, $charset) {
+	protected function string_index($string, $list, $null, $charset) {
 		$sel1 = $string;
 		$sel2 = htmlentities($sel1, ENT_QUOTES, $charset);
 		$sel3 = html_entity_decode($sel1, ENT_QUOTES, $charset);
 
-		$idx = -1;
+		$index = -1;
 		if ($sel1 != $null) {
-			$idx = array_search($sel1, $list);
-			if ($idx === FALSE) $idx = array_search($sel2, $list);
-			if ($idx === FALSE) $idx = array_search($sel3, $list);
-			if ($idx === FALSE) $idx = -1;
+			$index = array_search($sel1, $list);
+			if ($index === FALSE) $index = array_search($sel2, $list);
+			if ($index === FALSE) $index = array_search($sel3, $list);
+			if ($index === FALSE) $index = -1;
 		}
-		return $idx;
+		return $index;
 	}
 
 
 	/*
 	 * Returns content
+	 *
+	 * @return string
 	 */
 	function get() {
-		$cObj =& $this->pi1->cObj;
-		$cfg =& $this->conf;
-		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$con = '';
 
 		// find the index of the selected name
-		$sns =& $this->pi1->stat['authors']['sel_surnames'];
-		$sel = $this->extConf['sel_author'];
-
-		$extConf['sel_name_idx'] =
-				$this->string_index($sel, $sns, '0', $charset);
+		$this->extConf['sel_name_idx'] = $this->string_index(
+			$this->extConf['sel_author'],
+			$this->pi1->stat['authors']['sel_surnames'],
+			'0',
+			$charset
+		);
 
 		// The label
-		$nlabel = $cObj->stdWrap(
-			$this->pi1->get_ll('authorNav_label'), $cfg['label.']);
+		$nlabel = $this->pi1->cObj->stdWrap(
+			$this->pi1->get_ll('authorNav_label'), $this->conf['label.']);
 
-		// Translator
-		$trans = array();
-		$trans['###NAVI_LABEL###'] = $nlabel;
-		$trans['###LETTER_SELECTION###'] = $this->get_letter_selection();
+		$translator = array();
+		$translator['###NAVI_LABEL###'] = $nlabel;
+		$translator['###LETTER_SELECTION###'] = $this->get_letter_selection();
 
-		$trans['###SELECTION###'] = $this->get_author_selection();
-		$trans['###SURNAME_SELECT###'] = $this->get_html_select();
+		$translator['###SELECTION###'] = $this->getAuthorSelection();
+		$translator['###SURNAME_SELECT###'] = $this->getHtmlSelectFormField();
 
-		$tmpl = $this->pi1->setup_enum_cond_block($this->template);
-		$con = $cObj->substituteMarkerArrayCached($tmpl, $trans);
+		$template = $this->pi1->setup_enum_cond_block($this->template);
+		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
 
-		return $con;
+		return $content;
 	}
 
 
 	/*
 	 * The author surname select
+	 *
+	 * @return string
 	 */
-	function get_author_selection() {
-		$cObj =& $this->pi1->cObj;
-		$cfg =& $this->conf;
-		$cfgSel = is_array($cfg['selection.']) ? $cfg['selection.'] : array();
+	function getAuthorSelection() {
+		$configurationSelection = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
 
 		// Selection
-		$sns =& $this->pi1->stat['authors']['sel_surnames'];
 		$cur = $this->extConf['sel_name_idx'];
-		$max = sizeof($sns) - 1;
+		$max = sizeof($this->pi1->stat['authors']['sel_surnames']) - 1;
 
 		$indices = array(0, $cur, $max);
 
 		$numSel = 3;
-		if (array_key_exists('authors', $cfgSel))
-			$numSel = abs(intval($cfgSel['authors']));
+		if (array_key_exists('authors', $configurationSelection))
+			$numSel = abs(intval($configurationSelection['authors']));
 
-		$sel = $this->selection($cfgSel, $indices, $numSel);
+		$sel = $this->selection($configurationSelection, $indices, $numSel);
 
 		// All and Separator
 		$sep = ' - ';
-		if (isset ($cfgSel['all_sep']))
-			$sep = $cfgSel['all_sep'];
-		$sep = $cObj->stdWrap($sep, $cfgSel['all_sep.']);
+		if (isset ($configurationSelection['all_sep']))
+			$sep = $configurationSelection['all_sep'];
+		$sep = $this->pi1->cObj->stdWrap($sep, $configurationSelection['all_sep.']);
 
 		$txt = $this->pi1->get_ll('authorNav_all_authors', 'All', TRUE);
 		if ($cur < 0) {
-			$txt = $cObj->stdWrap($txt, $cfgSel['current.']);
+			$txt = $this->pi1->cObj->stdWrap($txt, $configurationSelection['current.']);
 		} else {
 			$txt = $this->pi1->get_link($txt, array('author' => '0'));
 		}
 
-
 		// All together
-		if (sizeof($sns) > 0) {
+		if (sizeof($this->pi1->stat['authors']['sel_surnames']) > 0) {
 			$all = $txt . $sep . $sel;
 		} else {
 			$all = '&nbsp;';
 		}
 
-		$all = $cObj->stdWrap($all, $cfgSel['all_wrap.']);
+		$all = $this->pi1->cObj->stdWrap($all, $configurationSelection['all_wrap.']);
 
 		return $all;
 	}
 
 
 	/*
-	 * The author surname selction
+	 * The author surname select form field
+	 *
+	 * @return string
 	 */
-	function get_html_select() {
-		$cObj =& $this->pi1->cObj;
-		$cfg =& $this->conf;
-		$charset = $this->pi1->extConf['charset']['upper'];
+	function getHtmlSelectFormField() {
 
-		$con = '';
-		$con .= '<form name="' . $this->pi1->prefix_pi1 . '-author_select_form" ';
-		$con .= 'action="' . $this->pi1->get_link_url(array('author' => ''), FALSE) . '"';
-		$con .= ' method="post"';
-		$con .= strlen($cfg['form_class']) ? ' class="' . $cfg['form_class'] . '"' : '';
-		$con .= '>' . "\n";
+		$content = '<form name="' . $this->pi1->prefix_pi1 . '-author_select_form" ';
+		$content .= 'action="' . $this->pi1->get_link_url(array('author' => ''), FALSE) . '"';
+		$content .= ' method="post"';
+		$content .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+		$content .= '>' . "\n";
 
 		// The raw data
 		$names = $this->pi1->stat['authors']['sel_surnames'];
@@ -370,130 +370,133 @@ class AuthorNavigation extends Navigation {
 		$sel_idx = $this->extConf['sel_name_idx'];
 		if ($sel_idx >= 0) {
 			$sel_name = $names[$sel_idx];
-			$sel_name = htmlspecialchars($sel_name, ENT_QUOTES, $charset);
+			$sel_name = htmlspecialchars($sel_name, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
 		}
 
 		// The 'All with %l' select option
 		$all = $this->pi1->get_ll('authorNav_select_all', 'All authors', TRUE);
 		$rep = '?';
 		if (strlen($this->extConf['sel_letter']) > 0) {
-			$rep = htmlspecialchars($this->extConf['sel_letter'], ENT_QUOTES, $charset);
+			$rep = htmlspecialchars($this->extConf['sel_letter'], ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
 		}
 		$all = str_replace('%l', $rep, $all);
 
 		// The processed data pairs
 		$pairs = array('' => $all);
 		foreach ($names as $name) {
-			$name = htmlspecialchars($name, ENT_QUOTES, $charset);
+			$name = htmlspecialchars($name, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
 			$pairs[$name] = $name;
 		}
-		$attribs = array(
+		$attributes = array(
 			'name' => $this->pi1->prefix_pi1 . '[author]',
 			'onchange' => 'this.form.submit()'
 		);
-		if (strlen($cfg['select_class']) > 0)
-			$attribs['class'] = $cfg['select_class'];
-		$btn = \Ipf\Bib\Utility\Utility::html_select_input(
-			$pairs, $sel_name, $attribs);
+		if (strlen($this->conf['select_class']) > 0)
+			$attributes['class'] = $this->conf['select_class'];
+		$button = \Ipf\Bib\Utility\Utility::html_select_input(
+			$pairs, $sel_name, $attributes);
 
-		$btn = $cObj->stdWrap($btn, $cfg['select.']);
-		$con .= $btn;
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
+		$content .= $button;
 
 		// Go button
-		$attribs = array();
-		if (strlen($cfg['go_btn_class']) > 0)
-			$attribs['class'] = $cfg['go_btn_class'];
-		$btn = \Ipf\Bib\Utility\Utility::html_submit_input(
+		$attributes = array();
+		if (strlen($this->conf['go_btn_class']) > 0)
+			$attributes['class'] = $this->conf['go_btn_class'];
+		$button = \Ipf\Bib\Utility\Utility::html_submit_input(
 			$this->pi1->prefix_pi1 . '[action][select_author]',
-			$this->pi1->get_ll('button_go'), $attribs);
-		$btn = $cObj->stdWrap($btn, $cfg['go_btn.']);
-		$con .= $btn;
+			$this->pi1->get_ll('button_go'), $attributes);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
+		$content .= $button;
 
 		// End of form
-		$con .= '</form>';
+		$content .= '</form>';
 
 		// Finalize
 		if (sizeof($pairs) == 1) {
-			$con = '&nbsp;';
+			$content = '&nbsp;';
 		}
 
-		$con = $cObj->stdWrap($con, $cfg['form.']);
+		$content = $this->pi1->cObj->stdWrap($content, $this->conf['form.']);
 
-		return $con;
+		return $content;
 	}
 
 
 	/*
 	 * Returns the author surname letter selection
+	 *
+	 * @return string
 	 */
 	function get_letter_selection() {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$lcfg = is_array($cfg['letters.']) ? $cfg['letters.'] : array();
+		$letterConfiguration = is_array($cfg['letters.']) ? $cfg['letters.'] : array();
 
 		if (sizeof($extConf['letters']) == 0) {
 			return '';
 		}
 
-		//
 		// Create list
-		//
 		// The letter separator
-		$let_sep = ', ';
-		if (isset ($lcfg['separator']))
-			$let_sep = $lcfg['separator'];
-		$let_sep = $cObj->stdWrap($let_sep, $lcfg['separator.']);
+		$letterSeparator = ', ';
+		if (isset ($letterConfiguration['separator']))
+			$letterSeparator = $letterConfiguration['separator'];
+		$letterSeparator = $cObj->stdWrap($letterSeparator, $letterConfiguration['separator.']);
 
-		$title_tmpl = $this->pi1->get_ll('authorNav_LetterLinkTitle', '%l', TRUE);
+		$titleTemplate = $this->pi1->get_ll('authorNav_LetterLinkTitle', '%l', TRUE);
 
 		// Iterate through letters
-		$let_sel = array();
-		foreach ($extConf['letters'] as $ll) {
-			$txt = htmlspecialchars($ll, ENT_QUOTES, $charset);
-			if ($ll == $extConf['sel_letter']) {
-				$txt = $cObj->stdWrap($txt, $lcfg['current.']);
+		$letterSelection = array();
+		foreach ($extConf['letters'] as $letter) {
+			$txt = htmlspecialchars($letter, ENT_QUOTES, $charset);
+			if ($letter == $extConf['sel_letter']) {
+				$txt = $cObj->stdWrap($txt, $letterConfiguration['current.']);
 			} else {
-				$title = str_replace('%l', $txt, $title_tmpl);
-				$txt = $this->pi1->get_link($txt,
-					array('author_letter' => $ll, 'author' => ''),
-					TRUE, array('title' => $title));
+				$title = str_replace('%l', $txt, $titleTemplate);
+				$txt = $this->pi1->get_link(
+					$txt,
+					array(
+						'author_letter' => $letter,
+						'author' => ''
+					),
+					TRUE,
+					array(
+						'title' => $title
+					)
+				);
 			}
-			$let_sel[] = $txt;
+			$letterSelection[] = $txt;
 		}
-		$lst = implode($let_sep, $let_sel);
+		$lst = implode($letterSeparator, $letterSelection);
 
-
-		//
 		// All link
-		//
 		$sep = '-';
-		if (isset ($lcfg['all_sep']))
-			$sep = $lcfg['all_sep'];
-		$sep = $cObj->stdWrap($sep, $lcfg['all_sep.']);
-
+		if (isset ($letterConfiguration['all_sep'])) {
+			$sep = $letterConfiguration['all_sep'];
+		}
+		$sep = $cObj->stdWrap($sep, $letterConfiguration['all_sep.']);
 
 		$txt = $this->pi1->get_ll('authorNav_all_letters', 'All', TRUE);
 		if (strlen($extConf['sel_letter']) == 0) {
-			$txt = $cObj->stdWrap($txt, $lcfg['current.']);
+			$txt = $cObj->stdWrap($txt, $letterConfiguration['current.']);
 		} else {
 			$txt = $this->pi1->get_link($txt, array('author_letter' => '', 'author' => ''));
 		}
 
-		//
 		// Compose
-		//
 		$txt = $txt . $sep . $lst;
-		$txt = $cObj->stdWrap($txt, $lcfg['all_wrap.']);
+		$txt = $cObj->stdWrap($txt, $letterConfiguration['all_wrap.']);
 
 		return $txt;
 	}
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_author.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_author.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/AuthorNavigation.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/AuthorNavigation.php']);
 }
 
 ?>

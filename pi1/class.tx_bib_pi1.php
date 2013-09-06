@@ -145,10 +145,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
 	 *
-	 * @param String $content
+	 * @param string $content
 	 * @param array $conf
 	 *
-	 * @return String The plugin HTML content
+	 * @return string The plugin HTML content
 	 */
 	public function main($content, $conf) {
 		$this->conf = $conf;
@@ -239,6 +239,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Calls the hook_filter in the author navigation instance
+	 *
+	 * @return void
 	 */
 	protected function callAuthorNavigationHook() {
 		if ($this->extConf['show_nav_author']) {
@@ -286,6 +288,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Determines and applies sorting filters to the ReferenceReader
+	 *
+	 * @return void
 	 */
 	protected function getSortFilter() {
 		$this->extConf['filters']['sort'] = array();
@@ -337,6 +341,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Determines the number of publications
+	 *
+	 * @return void
 	 */
 	protected function determineNumberOfPublications() {
 		if (!is_numeric($this->stat['num_all'])) {
@@ -347,6 +353,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Switch to single view on demand
+	 *
+	 * @return void
 	 */
 	protected function switchToSingleView() {
 		if (is_numeric($this->piVars['show_uid'])) {
@@ -359,6 +367,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Switch to export mode on demand
+	 *
 	 * @return void
 	 */
 	protected function switchToExportView() {
@@ -370,7 +379,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Determines whether hidden entries are displayed or not
-	 * @return false
+	 *
+	 * @return void
 	 */
 	protected function showHiddenEntries() {
 		$this->extConf['show_hidden'] = FALSE;
@@ -427,6 +437,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Get the character set and write it to the configuration
+	 *
 	 * @return void
 	 */
 	protected function getCharacterSet() {
@@ -539,6 +550,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Make adjustments to different modes
 	 * @todo find a better method name or split up
+	 *
 	 * @return void
 	 */
 	protected function makeAdjustments() {
@@ -603,6 +615,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Insert extension specific JavaScript
+	 *
+	 * @return void
 	 */
 	protected function includeJavaScript() {
 
@@ -828,7 +842,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Retrieve and optimize Extension configuration
 	 *
-	 * @return array
+	 * @return void
 	 */
 	protected function getExtensionConfiguration() {
 		$this->extConf = array();
@@ -892,6 +906,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Get configuration from FlexForms
+	 *
+	 * @return void
 	 */
 	protected function getFrontendEditorConfiguration() {
 		$ecEditor =& $this->extConf['editor'];
@@ -932,6 +948,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Builds the export navigation
+	 *
+	 * @return void
 	 */
 	protected function getExportNavigation() {
 		$this->extConf['export_navi'] = array();
@@ -1095,8 +1113,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				}
 			}
 		}
-
-		//GeneralUtiliy::debug ( $rest );
 	}
 
 
@@ -1701,7 +1717,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Returns the year navigation bar
 	 *
-	 * @return A HTML string with the year navigation bar
+	 * @return string An HTML string with the year navigation bar
 	 */
 	protected function setupSearchNavigation() {
 		$trans = array();
@@ -1723,7 +1739,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Returns the year navigation bar
 	 *
-	 * @return string A HTML string with the year navigation bar
+	 * @return string An HTML string with the year navigation bar
 	 */
 	protected function setupYearNavigation() {
 		$trans = array();
@@ -1989,7 +2005,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @param array $pub
 	 * @param array $warnings
 	 * @param bool $showHidden
-	 * @return array The procesed publication data array
+	 * @return array The processed publication data array
 	 */
 	public function prepare_pub_display($pub, &$warnings = array(), $showHidden = FALSE) {
 
@@ -2057,9 +2073,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$pdata['reviewed'] = ($pub['reviewed'] > 0) ? $b_yes : $b_no;
 		$pdata['in_library'] = ($pub['in_library'] > 0) ? $b_yes : $b_no;
 
-		//
 		// Copy field values
-		//
 		$charset = $this->extConf['charset']['upper'];
 		$url_max = 40;
 		if (is_numeric($this->conf['max_url_string_length'])) {
@@ -2122,11 +2136,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Format the author string
 		$pdata['authors'] = $this->getItemAuthorsHtml($pdata['authors']);
 
-		#nkw
-		# hier merken wir uns wie die editoren aussehen, bevor die ext damit sachen macht, die wir nicht wollen
-		# siehe auch: https://develop.sub.uni-goettingen.de/jira/browse/ADWD-631
+		// store editor's data before processing it
 		$cleanEditors = $pdata['editor'];
-		#nkw end
 
 		// Editors
 		if (strlen($pdata['editor']) > 0) {
@@ -2144,11 +2155,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$pdata['editor'] = \Ipf\Bib\Utility\Utility::implode_and_last(
 				$lst, ', ', $and);
 
-			#nkw
-			# nachdem die ext hier dinge mit den editoren macht, die wir nicht brauchen setzen wir das einfach mal wieder zur�ck.
-			# siehe auch: https://develop.sub.uni-goettingen.de/jira/browse/ADWD-631
+			// reset processed data @todo check if the above block may be removed
 			$pdata['editor'] = $cleanEditors;
-			#nkw end
 
 		}
 
@@ -2287,6 +2295,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Returns the authors string for a publication
+	 *
 	 * @param array $authors
 	 * @return void
 	 */
@@ -2410,7 +2419,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if (!empty($authorSurname)) {
 				$elements[] = $authorSurname . ', ' . $authorForename;
 			}
-
 
 			// Append 'et al.'
 			if ($cutAuthors && ($i_a == $lastAuthor)) {
@@ -2767,6 +2775,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Returns the new entry button
+	 *
+	 * @return string
 	 */
 	protected function getNewManipulator() {
 		$label = $this->get_ll('manipulators_new', 'New', TRUE);
@@ -2782,6 +2792,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Returns the edit button
+	 *
 	 * @param array $publication
 	 * @return string
 	 */
@@ -2803,6 +2814,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	/**
 	 * Returns the hide button
+	 *
 	 * @param array $publication
 	 * @return string
 	 */
@@ -2906,7 +2918,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 *
 	 * @param array $processedPublicationData The processed publication data
 	 * @param array $order
-	 * @return The generated url
+	 * @return stirng The generated url
 	 */
 	protected function getAutoUrl($processedPublicationData, $order) {
 
@@ -2947,7 +2959,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 *
 	 * @param array $unprocessedDatabaseData The unprocessed db data
 	 * @param array $processedDatabaseData The processed db data
-	 * @return The html icon img tag
+	 * @return string The html icon img tag
 	 */
 	protected function getFileUrlIcon($unprocessedDatabaseData, $processedDatabaseData) {
 
