@@ -100,7 +100,7 @@ class StatisticsNavigation extends Navigation {
 		$translator['###NAVI_LABEL###'] = $label;
 		$translator['###STATISTIC###'] = $stat_str;
 
-		$template = $this->pi1->setup_enum_cond_block($this->template);
+		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
 		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
 
 		return $content;

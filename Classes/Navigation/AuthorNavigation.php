@@ -328,7 +328,7 @@ class AuthorNavigation extends Navigation {
 		$translator['###SELECTION###'] = $this->getAuthorSelection();
 		$translator['###SURNAME_SELECT###'] = $this->getHtmlSelectFormField();
 
-		$template = $this->pi1->setup_enum_cond_block($this->template);
+		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
 		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
 
 		return $content;

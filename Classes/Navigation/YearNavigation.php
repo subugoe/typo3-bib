@@ -166,7 +166,7 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 		$trans['###SELECTION###'] = $selection;
 		$trans['###SELECT_FORM###'] = $sel;
 
-		$tmpl = $this->pi1->setup_enum_cond_block($this->template);
+		$tmpl = $this->pi1->setupEnumerationConditionBlock($this->template);
 		$content = $cObj->substituteMarkerArrayCached($tmpl, $trans);
 
 		return $content;
