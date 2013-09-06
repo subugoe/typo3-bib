@@ -1,6 +1,31 @@
 <?php
 namespace Ipf\Bib\Utility\Exporter;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
+
 class BibTexExporter extends Exporter {
 
 	/**
@@ -8,7 +33,7 @@ class BibTexExporter extends Exporter {
 	 */
 	public $bibTexTranslator;
 
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		parent::initialize($pi1);
 
 		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.bib';
@@ -138,7 +163,12 @@ class BibTexExporter extends Exporter {
 
 	}
 
-	function export_format_publication($pub, $infoArr = array()) {
+	/**
+	 * @param array $pub
+	 * @param array $infoArr
+	 * @return string
+	 */
+	public function export_format_publication($pub, $infoArr = array()) {
 		$str = '';
 
 		$bibtype = ucfirst($this->referenceReader->allBibTypes[$pub['bibtype']]);
@@ -192,8 +222,11 @@ class BibTexExporter extends Exporter {
 		return $str;
 	}
 
-
-	function bibtex_format_string($value) {
+	/**
+	 * @param $value
+	 * @return mixed|string
+	 */
+	protected function bibtex_format_string($value) {
 
 		// Convert characters to html sequences
 		$charset = $this->pi1->extConf['charset']['upper'];
@@ -229,8 +262,12 @@ class BibTexExporter extends Exporter {
 		return $value;
 	}
 
-
-	function bibtex_format_field($key, $value) {
+	/**
+	 * @param string $key
+	 * @param $value
+	 * @return mixed|string
+	 */
+	protected function bibtex_format_field($key, $value) {
 		switch ($key) {
 			case 'authors':
 				$authors = is_array($value) ? $value : explode(' and ', $value);
@@ -262,7 +299,7 @@ class BibTexExporter extends Exporter {
 	}
 
 
-	function file_intro($infoArr = array()) {
+	protected function file_intro($infoArr = array()) {
 		$str = "\n" . $this->info_text($infoArr);
 		$str = preg_replace('/^/m', '% ', $str) . "\n";
 		return $str;

@@ -173,9 +173,10 @@ class Exporter {
 	/**
 	 * Returns the file intro
 	 *
+	 * @param $infoArr
 	 * @return string The file header string
 	 */
-	function file_intro($infoArr = array()) {
+	protected function file_intro($infoArr = array()) {
 		return '';
 	}
 
@@ -183,9 +184,10 @@ class Exporter {
 	/**
 	 * Returns the file outtro
 	 *
+	 * @param array $infoArr
 	 * @return string The file header string
 	 */
-	function file_outtro($infoArr = array()) {
+	protected function file_outtro($infoArr = array()) {
 		return '';
 	}
 

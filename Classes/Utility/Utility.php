@@ -36,7 +36,7 @@ class Utility {
 	/**
 	 * Returns the titles of multiple pages
 	 *
-	 * @return The title string or FALSE
+	 * @return string|bool The title string or FALSE
 	 */
 	static public function get_page_titles($uids) {
 		$titles = array();
@@ -54,7 +54,7 @@ class Utility {
 	/**
 	 * Crops a string to a maximal length by cutting in the middle
 	 *
-	 * @return The string filtered for html output
+	 * @return string The string filtered for html output
 	 */
 	static function crop_middle($str, $len, $charset = 'UTF-8') {
 		$res = $str;
@@ -72,7 +72,7 @@ class Utility {
 	 * Fixes illegal occurences of ampersands (&) in html strings
 	 * Well TYPO3 seems to handle this as well
 	 *
-	 * @return The string filtered for html output
+	 * @return string The string filtered for html output
 	 */
 	static public function fix_html_ampersand($str) {
 
@@ -86,7 +86,6 @@ class Utility {
 		};
 		$str = str_replace('&;', '&amp;;', $str);
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array( 'post: ' => $str ) );
 		return $str;
 	}
 
@@ -94,7 +93,7 @@ class Utility {
 	/**
 	 * Check if the frontend user is in a usergroup
 	 *
-	 * @return TRUE if the user is in a given group FALSE otherwise
+	 * @return bool TRUE if the user is in a given group FALSE otherwise
 	 */
 	static public function check_fe_user_groups($groups, $admin_ok = FALSE) {
 		if ($admin_ok && is_object($GLOBALS['BE_USER'])
@@ -122,7 +121,7 @@ class Utility {
 	/**
 	 * Returns a html input element
 	 *
-	 * @return The hidden input element
+	 * @return string The hidden input element
 	 */
 	static public function html_input($type, $name, $value, $attribs = array()) {
 		$con = '<input type="' . strval($type) . '"';
@@ -144,9 +143,9 @@ class Utility {
 	/**
 	 * Returns a checkbox input
 	 *
-	 * @return The checkbox input element
+	 * @return string The checkbox input element
 	 */
-	function html_check_input($name, $value, $checked, $attribs = array()) {
+	static public function html_check_input($name, $value, $checked, $attribs = array()) {
 		if ($checked)
 			$attribs['checked'] = 'checked';
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -157,9 +156,9 @@ class Utility {
 	/**
 	 * Returns a checkbox input
 	 *
-	 * @return The checkbox input element
+	 * @return string The checkbox input element
 	 */
-	function html_radio_input($name, $value, $checked, $attribs = array()) {
+	static public function html_radio_input($name, $value, $checked, $attribs = array()) {
 		if ($checked)
 			$attribs['checked'] = 'checked';
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -169,7 +168,7 @@ class Utility {
 	/**
 	 * Returns a sumit input
 	 *
-	 * @return The submit input element
+	 * @return string The submit input element
 	 */
 	static public function html_submit_input($name, $value, $attribs = array()) {
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -180,7 +179,7 @@ class Utility {
 	/**
 	 * Returns a image input
 	 *
-	 * @return The image input element
+	 * @return string The image input element
 	 */
 	static public function html_image_input($name, $value, $src, $attribs = array()) {
 		$attribs = array_merge($attribs, array('src' => $src));
@@ -192,7 +191,7 @@ class Utility {
 	/**
 	 * Returns a hidden input
 	 *
-	 * @return The hidden input element
+	 * @return string The hidden input element
 	 */
 	static public function html_hidden_input($name, $value, $attribs = array()) {
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -203,7 +202,7 @@ class Utility {
 	/**
 	 * Returns a text input
 	 *
-	 * @return The text input element
+	 * @return string The text input element
 	 */
 	static public function html_text_input($name, $value, $attribs = array()) {
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -218,24 +217,24 @@ class Utility {
 	 */
 	static public function html_select_input($pairs, $value, $attribs = array()) {
 		$value = strval($value);
-		$con .= '<select';
+		$content = '<select';
 		foreach ($attribs as $a_key => $a_value) {
 			if (!($a_value === FALSE))
-				$con .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
+				$content .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
 		}
-		$con .= '>' . "\n";
+		$content .= '>' . "\n";
 		foreach ($pairs as $p_value => $p_name) {
 			$p_value = strval($p_value);
-			$con .= '<option value="' . $p_value . '"';
+			$content .= '<option value="' . $p_value . '"';
 			if ($p_value == strval($value)) {
-				$con .= ' selected="selected"';
+				$content .= ' selected="selected"';
 			}
-			$con .= '>';
-			$con .= strval($p_name);
-			$con .= '</option>' . "\n";
+			$content .= '>';
+			$content .= strval($p_name);
+			$content .= '</option>' . "\n";
 		}
-		$con .= '</select>' . "\n";
-		return $con;
+		$content .= '</select>' . "\n";
+		return $content;
 	}
 
 
@@ -347,7 +346,7 @@ class Utility {
 	/**
 	 * Applies intval() to each element of an array
 	 *
-	 * @return The intvaled array
+	 * @return array The intvaled array
 	 */
 	static public function intval_array($arr) {
 		$res = array();
@@ -360,7 +359,7 @@ class Utility {
 	/**
 	 * Implodes an array and applies intval to each element
 	 *
-	 * @return array The imploded array
+	 * @return string The imploded array
 	 */
 	static public function implode_intval($sep, $list, $noEmpty = TRUE) {
 		$res = array();
@@ -457,7 +456,7 @@ class Utility {
 	/**
 	 * Explodes a string by multiple separators and trims the results
 	 *
-	 * @return The exploded string
+	 * @return array The exploded string
 	 */
 	static public function multi_explode_trim($seps, $str, $noEmpty = FALSE) {
 		if (is_array($seps)) {
@@ -476,7 +475,7 @@ class Utility {
 	/**
 	 * Explodes an ' and ' separated author string
 	 *
-	 * @return bool|String FALSE or the error message array
+	 * @return bool|string FALSE or the error message array
 	 */
 	static public function explode_author_str($str) {
 		$res = array();
@@ -500,7 +499,7 @@ class Utility {
 	 * Implodes an array with $sep as separator
 	 * and $and as the last separator element
 	 *
-	 * @return String The imploded array as a string
+	 * @return string The imploded array as a string
 	 */
 	static public function implode_and_last($arr, $sep, $and) {
 		$res = array();
@@ -519,7 +518,7 @@ class Utility {
 	/**
 	 * Checks if a local file exists
 	 *
-	 * @return FALSE if the file exists TRUE if it does not exist
+	 * @return bool FALSE if the file exists TRUE if it does not exist
 	 */
 	static public function check_file_nexist($file) {
 		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'check_file_nexist ' => $file ) );

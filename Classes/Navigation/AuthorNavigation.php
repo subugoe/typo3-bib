@@ -1,6 +1,31 @@
 <?php
 namespace Ipf\Bib\Navigation;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
+
 class AuthorNavigation extends Navigation {
 
 	/**
@@ -34,7 +59,7 @@ class AuthorNavigation extends Navigation {
 	 *
 	 * @return void
 	 */
-	function hook_init() {
+	public function hook_init() {
 		$extConf =& $this->pi1->extConf;
 		$aconf =& $extConf['author_navi'];
 		$lvars =& $extConf['link_vars'];
@@ -59,8 +84,10 @@ class AuthorNavigation extends Navigation {
 
 	/*
 	 * Hook in to pi1 at filter stage
+	 *
+	 * @return void
 	 */
-	function hook_filter() {
+	public function hook_filter() {
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
 		$ref_read =& $this->pi1->referenceReader;
@@ -170,9 +197,12 @@ class AuthorNavigation extends Navigation {
 
 	/*
 	 * Creates a text for a given index
+	 *
+	 * @param int $index
+	 * @return string
 	 */
-	protected function sel_get_text($ii) {
-		$txt = strval($this->pi1->stat['authors']['sel_surnames'][$ii]);
+	protected function sel_get_text($index) {
+		$txt = strval($this->pi1->stat['authors']['sel_surnames'][$index]);
 		$txt = htmlspecialchars($txt, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
 		return $txt;
 	}
@@ -181,7 +211,7 @@ class AuthorNavigation extends Navigation {
 	/*
 	 * Creates a link for the selection
 	 */
-	function sel_get_link($text, $ii) {
+	protected function sel_get_link($text, $ii) {
 		$arg = strval($this->pi1->stat['authors']['sel_surnames'][$ii]);
 		$title = str_replace('%a', $text, $this->sel_link_title);
 		$lnk = $this->pi1->get_link($text, array('author' => $arg), TRUE,
@@ -221,7 +251,7 @@ class AuthorNavigation extends Navigation {
 	 * @param string $charset
 	 * @return array
 	 */
-	function first_letters($names, $charset) {
+	protected function first_letters($names, $charset) {
 
 		// Acquire letters
 		$letters = array();
@@ -276,7 +306,7 @@ class AuthorNavigation extends Navigation {
 	 *
 	 * @return string
 	 */
-	function get() {
+	protected function get() {
 		$charset = $this->pi1->extConf['charset']['upper'];
 
 		// find the index of the selected name
@@ -310,7 +340,7 @@ class AuthorNavigation extends Navigation {
 	 *
 	 * @return string
 	 */
-	function getAuthorSelection() {
+	protected function getAuthorSelection() {
 		$configurationSelection = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
 
 		// Selection
@@ -356,7 +386,7 @@ class AuthorNavigation extends Navigation {
 	 *
 	 * @return string
 	 */
-	function getHtmlSelectFormField() {
+	protected function getHtmlSelectFormField() {
 
 		$content = '<form name="' . $this->pi1->prefix_pi1 . '-author_select_form" ';
 		$content .= 'action="' . $this->pi1->get_link_url(array('author' => ''), FALSE) . '"';
@@ -428,7 +458,7 @@ class AuthorNavigation extends Navigation {
 	 *
 	 * @return string
 	 */
-	function get_letter_selection() {
+	protected function get_letter_selection() {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
 		$extConf =& $this->extConf;

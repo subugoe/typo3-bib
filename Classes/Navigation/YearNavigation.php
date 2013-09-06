@@ -1,15 +1,41 @@
 <?php
 namespace Ipf\Bib\Navigation;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
+
 class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 
 	/*
 	 * Intialize
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		parent::initialize($pi1);
-		if (is_array($pi1->conf['yearNav.']))
+		if (is_array($pi1->conf['yearNav.'])) {
 			$this->conf =& $pi1->conf['yearNav.'];
+		}
 
 		$this->pref = 'YEAR_NAVI';
 		$this->load_template('###YEAR_NAVI_BLOCK###');
@@ -20,8 +46,8 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 	/*
 	 * Creates a text for a given index
 	 */
-	function sel_get_text($ii) {
-		return strval($this->pi1->stat['years'][$ii]);
+	function sel_get_text($index) {
+		return strval($this->pi1->stat['years'][$index]);
 	}
 
 	/*
@@ -38,9 +64,9 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 	/*
 	 * Returns content
 	 */
-	function get() {
+	protected function get() {
 		$cObj =& $this->pi1->cObj;
-		$con = '';
+		$content = '';
 
 		$cfg =& $this->conf;
 		$cfgSel = is_array($cfg['selection.']) ? $cfg['selection.'] : array();
@@ -141,15 +167,15 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 		$trans['###SELECT_FORM###'] = $sel;
 
 		$tmpl = $this->pi1->setup_enum_cond_block($this->template);
-		$con = $cObj->substituteMarkerArrayCached($tmpl, $trans);
+		$content = $cObj->substituteMarkerArrayCached($tmpl, $trans);
 
-		return $con;
+		return $content;
 	}
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_year.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_year.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']);
 }
 
 ?>

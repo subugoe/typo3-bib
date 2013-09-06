@@ -6,9 +6,9 @@ class Labels {
 	/**
 	 * Returns label of an authorship
 	 *
-	 * @return Name of author and title of reference
+	 * @return void Name of author and title of reference
 	 */
-	function get_authorship_label(&$params, &$pObj) {
+	public function get_authorship_label(&$params, &$pObj) {
 		$item_id = $params['row']['uid'];
 		$title = '';
 

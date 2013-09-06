@@ -135,7 +135,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	public function file_intro($infoArr = array()) {
+	protected function file_intro($infoArr = array()) {
 		$content = '';
 		$content .= '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 		$content .= '<bib>' . "\n";
@@ -149,7 +149,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	public function file_outtro($infoArr = array()) {
+	protected function file_outtro($infoArr = array()) {
 		$content = '';
 		$content .= '</bib>' . "\n";
 		return $content;

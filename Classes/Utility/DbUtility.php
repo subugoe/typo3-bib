@@ -47,7 +47,7 @@ class DbUtility {
 	 * @param bool|\Ipf\Bib\Utility\ReferenceReader
 	 * @return void
 	 */
-	function initialize($referenceReader = FALSE) {
+	public function initialize($referenceReader = FALSE) {
 		if (is_object($referenceReader)) {
 			$this->referenceReader =& $referenceReader;
 		} else {
@@ -59,7 +59,7 @@ class DbUtility {
 	/**
 	 * Deletes authors that have no publications
 	 *
-	 * @return The number of deleted authors
+	 * @return int The number of deleted authors
 	 */
 	function deleteAuthorsWithoutPublications() {
 		$count = 0;
@@ -182,9 +182,9 @@ class DbUtility {
 	/**
 	 * Updates the full_text for the reference with the given uid
 	 *
-	 * @return Not defined
+	 * @return string|bool
 	 */
-	function update_full_text($uid, $force = FALSE) {
+	protected function update_full_text($uid, $force = FALSE) {
 
 		$whereClause = 'uid=' . intval($uid);
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(

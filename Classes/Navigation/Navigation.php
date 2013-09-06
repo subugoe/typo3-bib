@@ -1,8 +1,32 @@
 <?php
 namespace Ipf\Bib\Navigation;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
 
-class Navigation {
+abstract class Navigation {
 
 	/**
 	 * @var \tx_bib_pi1
@@ -21,64 +45,86 @@ class Navigation {
 	 */
 	public $pref;
 
-
-	function initialize($pi1) {
+	/**
+	 * @param \tx_bib_pi1 $pi1
+	 */
+	public function initialize($pi1) {
 		$this->pi1 =& $pi1;
 		$this->conf = array();
 	}
 
-
-	function load_template($subpart) {
-		$cObj =& $this->pi1->cObj;
-		$tmpl = '<p>ERROR: The html template file ' . $file .
+	/**
+	 * @param string $subpart
+	 * @return void
+	 */
+	protected function load_template($subpart) {
+		$templates = '<p>ERROR: The html template file ' . $this->template .
 				' is not readable or empty</p>';
 
 		$file = strval($this->conf['template']);
 		if (strlen($file) > 0) {
-			$file = $cObj->fileResource($file);
+			$file = $this->pi1->cObj->fileResource($file);
 			if (strlen($file) > 0) {
-				$tmpl = $cObj->getSubpart($file, $subpart);
+				$templates = $this->pi1->cObj->getSubpart($file, $subpart);
 			}
 		}
-		$this->template = $tmpl;
+		$this->template = $templates;
 	}
 
 
 	/*
 	 * Returns the translator for the main template
+	 *
+	 * @return array
 	 */
-	function translator() {
-		$cfg = $this->conf;
-		$cObj =& $this->pi1->cObj;
+	public function translator() {
 
 		$pref = '###' . $this->pref;
-		$con = $this->get();
+		$content = $this->get();
 
 		$res = array();
-		$res[$pref . '###'] = $con;
+		$res[$pref . '###'] = $content;
 
 		$val = '';
 		if ($this->conf['top_disable'] == 0)
-			$val = $cObj->stdWrap($con, $cfg['top.']);
+			$val = $this->pi1->cObj->stdWrap($content, $this->conf['top.']);
 		$res[$pref . '_TOP###'] = $val;
 
 		$val = '';
 		if ($this->conf['bottom_disable'] == 0)
-			$val = $cObj->stdWrap($con, $cfg['bottom.']);
+			$val = $this->pi1->cObj->stdWrap($content, $this->conf['bottom.']);
 		$res[$pref . '_BOTTOM###'] = $val;
 
 		return $res;
 	}
 
+	/**
+	 * @return string
+	 */
+	abstract protected function get();
+
+	/**
+	 * @param $index
+	 * @return mixed
+	 */
+	abstract protected function sel_get_text($index);
 
 	/*
 	 * Returns a selection translator
 	 *
+	 * @param array $cfgSel
+	 * @param array $indices
+	 * @param int $numSel
+	 * @return string
 	 */
-	function selection($cfgSel, $indices, $numSel) {
+	protected function selection($cfgSel, $indices, $numSel) {
 		$cObj =& $this->pi1->cObj;
 
-		$sel = array('prev' => array(), 'cur' => array(), 'next' => array());
+		$sel = array(
+			'prev' => array(),
+			'cur' => array(),
+			'next' => array()
+		);
 
 		// Determine ranges of year navigation bar
 		$idxMin = $indices[0];
@@ -184,8 +230,8 @@ class Navigation {
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']);
 }
 
 ?>

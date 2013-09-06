@@ -1,12 +1,40 @@
 <?php
 namespace Ipf\Bib\Navigation;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
+
 class PageNavigation extends Navigation {
 
 	/*
 	 * Initialize
+	 *
+	 * @param \tx_bib_pi1 $pi1
+	 * @return void
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		parent::initialize($pi1);
 		if (is_array($pi1->conf['pageNav.']))
 			$this->conf =& $pi1->conf['pageNav.'];
@@ -19,18 +47,25 @@ class PageNavigation extends Navigation {
 
 	/*
 	 * Creates a text for a given index
+	 *
+	 * @param int $index
+	 * @return string
 	 */
-	function sel_get_text($ii) {
-		return strval($ii + 1);
+	protected function sel_get_text($index) {
+		return strval($index + 1);
 	}
 
 
 	/*
 	 * Creates a link for the selection
+	 *
+	 * @param string $text
+	 * @param int $index
+	 * @return string
 	 */
-	function sel_get_link($text, $ii) {
+	protected function sel_get_link($text, $index) {
 		$title = str_replace('%p', $text, $this->sel_link_title);
-		$lnk = $this->pi1->get_link($text, array('page' => strval($ii)), TRUE,
+		$lnk = $this->pi1->get_link($text, array('page' => strval($index)), TRUE,
 			array('title' => $title));
 		return $lnk;
 	}
@@ -38,11 +73,12 @@ class PageNavigation extends Navigation {
 
 	/*
 	 * Returns content
+	 *
+	 * @return string
 	 */
-	function get() {
+	protected function get() {
 		$cObj =& $this->pi1->cObj;
 		$translation = array();
-		$content = '';
 
 		$configuration =& $this->conf;
 		$selectionConfiguration = is_array($configuration['selection.']) ? $configuration['selection.'] : array();
@@ -110,8 +146,8 @@ class PageNavigation extends Navigation {
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_page.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_page.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']);
 }
 
 ?>

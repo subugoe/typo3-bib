@@ -1,30 +1,63 @@
 <?php
 namespace Ipf\Bib\Navigation;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
+
 class StatisticsNavigation extends Navigation {
 
 	/*
 	 * Initialize
+	 *
+	 * @param \tx_bib_pi1 $pi1
+	 * @return void
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		parent::initialize($pi1);
-		if (is_array($pi1->conf['statNav.']))
+
+		if (is_array($pi1->conf['statNav.'])) {
 			$this->conf =& $pi1->conf['statNav.'];
+		}
 
 		$this->pref = 'STAT_NAVI';
 		$this->load_template('###STAT_NAVI_BLOCK###');
 	}
 
+	/**
+	 * @param int $index
+	 * @return mixed|void
+	 */
+	protected function sel_get_text($index){}
 
 	/*
 	 * Returns content
+	 *
+	 * @return string
 	 */
-	function get() {
-		$cObj =& $this->pi1->cObj;
-		$trans = array();
-		$con = '';
-
-		$cfg =& $this->conf;
+	protected function get() {
+		$translator = array();
 
 		$label = '';
 
@@ -43,12 +76,11 @@ class StatisticsNavigation extends Navigation {
 
 		// Setup values
 		$year = intval($this->pi1->extConf['year']);
-		$stat =& $this->pi1->stat;
 
-		$total_str = strval(intval($stat['num_all']));
-		$total_str = $cObj->stdWrap($total_str, $cfg['value_total.']);
-		$year_str = strval(intval($stat['year_hist'][$year]));
-		$year_str = $cObj->stdWrap($year_str, $cfg['value_year.']);
+		$total_str = strval(intval($this->pi1->stat['num_all']));
+		$total_str = $this->pi1->cObj->stdWrap($total_str, $this->conf['value_total.']);
+		$year_str = strval(intval($this->pi1->stat['year_hist'][$year]));
+		$year_str = $this->pi1->cObj->stdWrap($year_str, $this->conf['value_year.']);
 
 		// Setup strings
 		switch ($mode) {
@@ -61,25 +93,23 @@ class StatisticsNavigation extends Navigation {
 				$stat_str = $year_str . ' / ' . $total_str;
 				break;
 		}
-		$label = $cObj->stdWrap($label, $cfg['label.']);
-		$stat_str = $cObj->stdWrap($stat_str, $cfg['values.']);
+		$label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
+		$stat_str = $this->pi1->cObj->stdWrap($stat_str, $this->conf['values.']);
 
 		// Setup translator
-		$trans['###NAVI_LABEL###'] = $label;
-		$trans['###STATISTIC###'] = $stat_str;
+		$translator['###NAVI_LABEL###'] = $label;
+		$translator['###STATISTIC###'] = $stat_str;
 
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug( $trans );
+		$template = $this->pi1->setup_enum_cond_block($this->template);
+		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
 
-		$tmpl = $this->pi1->setup_enum_cond_block($this->template);
-		$con = $cObj->substituteMarkerArrayCached($tmpl, $trans);
-
-		return $con;
+		return $content;
 	}
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_stat.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_navi_stat.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']);
 }
 
 ?>

@@ -29,10 +29,11 @@ class ReferenceWriter {
 	/**
 	 * The constructor
 	 *
+	 * @param \Ipf\Bib\Utility\ReferenceReader $referenceReader
 	 * @return void
 	 */
-	public function initialize($ref_read) {
-		$this->referenceReader =& $ref_read;
+	public function initialize($referenceReader) {
+		$this->referenceReader =& $referenceReader;
 	}
 
 
@@ -42,7 +43,7 @@ class ReferenceWriter {
 	 *
 	 * @return string The last error message
 	 */
-	function error_message() {
+	public function error_message() {
 		$err = $this->error;
 		$this->error = FALSE;
 		return $err;
@@ -66,7 +67,7 @@ class ReferenceWriter {
 	 *
 	 * @return void
 	 */
-	function clear_page_cache() {
+	protected function clear_page_cache() {
 		if ($this->clear_cache) {
 			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
 			$dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
@@ -100,10 +101,11 @@ class ReferenceWriter {
 	 * This function updates a publication with all data
 	 * found in the HTTP request
 	 *
-	 * @return TRUE on error FALSE otherwise
+	 * @param array $publication
+	 * @return bool TRUE on error FALSE otherwise
 	 */
-	public function save_publication($pub) {
-		if (!is_array($pub)) {
+	public function save_publication($publication) {
+		if (!is_array($publication)) {
 			return TRUE;
 		}
 
@@ -114,29 +116,30 @@ class ReferenceWriter {
 
 		// Fetch reference from DB
 		$pub_db = NULL;
-		if (is_numeric($pub['uid'])) {
-			$pub_db = $this->referenceReader->fetch_db_pub(intval($pub['uid']));
+		if (is_numeric($publication['uid'])) {
+			$pub_db = $this->referenceReader->fetch_db_pub(intval($publication['uid']));
 			if (is_array($pub_db)) {
 				$uid = intval($pub_db['uid']);
 			} else {
 				$this->error = 'The publication reference could not be updated' .
 						' because it does not exist in the database (anymore?).';
-				$this->ref_log($this->error, $pub['uid'], 1);
+				$this->referenceLog($this->error, $publication['uid'], 1);
 				return TRUE;
 			}
 		}
 
 		// Acquire the storage folder pid if it is not given
-		if (!is_numeric($pub['pid'])) {
-			if (is_array($pub_db))
-				$pub['pid'] = intval($pub_db['pid']);
-			else
-				$pub['pid'] = $this->referenceReader->pid_list[0];
+		if (!is_numeric($publication['pid'])) {
+			if (is_array($pub_db)) {
+				$publication['pid'] = intval($pub_db['pid']);
+			} else {
+				$publication['pid'] = $this->referenceReader->pid_list[0];
+			}
 		}
 
 		// Check if the pid is in the allowed list
-		if (!in_array($pub['pid'], $this->referenceReader->pid_list)) {
-			$this->error = 'The given storage folder (pid=' . strval($pub['pid']) .
+		if (!in_array($publication['pid'], $this->referenceReader->pid_list)) {
+			$this->error = 'The given storage folder (pid=' . strval($publication['pid']) .
 					') is not in the list of allowed publication storage folders';
 			$this->log($this->error, 1);
 			return TRUE;
@@ -147,19 +150,20 @@ class ReferenceWriter {
 		foreach ($this->referenceReader->refFields as $field) {
 			switch ($field) {
 				default:
-					if (array_key_exists($field, $pub))
-						$referenceRow[$field] = $pub[$field];
+					if (array_key_exists($field, $publication)) {
+						$referenceRow[$field] = $publication[$field];
+					}
 			}
 		}
 
 		// Add TYPO3 fields
-		$referenceRow['pid'] = intval($pub['pid']);
+		$referenceRow['pid'] = intval($publication['pid']);
 		$referenceRow['tstamp'] = time();
-		$referenceRow['hidden'] = intval($pub['hidden']);
+		$referenceRow['hidden'] = intval($publication['hidden']);
 
 		$query = '';
 		if ($uid >= 0) {
-			if ($pub['mod_key'] == $pub_db['mod_key']) {
+			if ($publication['mod_key'] == $pub_db['mod_key']) {
 
 				$whereClause = 'uid=' . intval($uid);
 
@@ -178,7 +182,7 @@ class ReferenceWriter {
 				$this->error = 'The publication reference could not be updated' .
 						' because the modification key does not match.' . "\n";
 				$this->error .= ' Maybe someone edited this reference meanwhile.';
-				$this->ref_log($this->error, $uid, 1);
+				$this->referenceLog($this->error, $uid, 1);
 				return TRUE;
 			}
 		} else {
@@ -208,16 +212,18 @@ class ReferenceWriter {
 			}
 		}
 
-		if (($uid > 0) && (sizeof($pub['authors']) > 0)) {
-			$ret = $this->save_publication_authors($uid, $pub['pid'], $pub['authors']);
-			if ($ret)
+		if (($uid > 0) && (sizeof($publication['authors']) > 0)) {
+			$ret = $this->save_publication_authors($uid, $publication['pid'], $publication['authors']);
+			if ($ret) {
 				return TRUE;
+			}
 		}
 
-		if ($new)
-			$this->ref_log('A new publication reference was inserted (pid=' . $pub['pid'] . ')', $uid);
-		else
-			$this->ref_log('A publication reference was modified', $uid);
+		if ($new) {
+			$this->referenceLog('A new publication reference was inserted (pid=' . $publication['pid'] . ')', $uid);
+		} else {
+			$this->referenceLog('A publication reference was modified', $uid);
+		}
 
 		$this->clear_page_cache();
 		return FALSE;
@@ -227,9 +233,12 @@ class ReferenceWriter {
 	/**
 	 * Saves the authors of a publication
 	 *
-	 * @return The uid of the inserted author
+	 * @param int $pub_uid
+	 * @param int pid
+	 * @param array $authors
+	 * @return int The uid of the inserted author
 	 */
-	function save_publication_authors($pub_uid, $pid, $authors) {
+	public function save_publication_authors($pub_uid, $pid, $authors) {
 		// Fetches missing author uids and
 		// inserts new authors on demand
 		$sort = 0;
@@ -327,9 +336,10 @@ class ReferenceWriter {
 	/**
 	 * Inserts an author
 	 *
-	 * @return The uid of the inserted author
+	 * @param array $author
+	 * @return int The uid of the inserted author
 	 */
-	function insert_author($author) {
+	public function insert_author($author) {
 		$author['pid'] = intval($author['pid']);
 
 		// Creation user id if available
@@ -355,9 +365,11 @@ class ReferenceWriter {
 
 	/**
 	 * Deletes an authorship
+	 *
 	 * @param int $uid;
+	 * @return void
 	 */
-	function delete_authorship($uid) {
+	public function delete_authorship($uid) {
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 			$this->referenceReader->authorshipTable,
 			'uid=' . intval($uid) . ' AND deleted=0',
@@ -374,7 +386,7 @@ class ReferenceWriter {
 	 * @param array $uids
 	 * @return void
 	 */
-	function delete_authorships($uids) {
+	public function delete_authorships($uids) {
 		$uid_list = '';
 
 		for ($ii = 0; $ii < sizeof($uids); $ii++) {
@@ -400,7 +412,7 @@ class ReferenceWriter {
 	 * @param bool $hidden
 	 * @return void
 	 */
-	function hide_publication($uid, $hidden = TRUE) {
+	public function hide_publication($uid, $hidden = TRUE) {
 		$uid = intval($uid);
 
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
@@ -412,7 +424,7 @@ class ReferenceWriter {
 			)
 		);
 
-		$this->ref_log('A publication reference was ' . ($hidden ? 'hidden' : 'revealed'), $uid);
+		$this->referenceLog('A publication reference was ' . ($hidden ? 'hidden' : 'revealed'), $uid);
 		$this->clear_page_cache();
 	}
 
@@ -427,7 +439,7 @@ class ReferenceWriter {
 	 * @param string $mod_key
 	 * @return bool
 	 */
-	function delete_publication($uid, $mod_key) {
+	public function delete_publication($uid, $mod_key) {
 		$deleted = 1;
 
 		$uid = intval($uid);
@@ -456,19 +468,19 @@ class ReferenceWriter {
 
 				$this->clear_page_cache();
 
-				$this->ref_log('A publication reference was deleted', $uid);
+				$this->referenceLog('A publication reference was deleted', $uid);
 
 			} else {
 				$this->error = 'The publication reference could not be deleted' .
 						' because the modification key does not match.' . "\n";
 				$this->error .= ' Maybe someone edited this reference meanwhile.';
-				$this->ref_log($this->error, $uid, 1);
+				$this->referenceLog($this->error, $uid, 1);
 				return TRUE;
 			}
 		} else {
 			$this->error = 'The publication reference could not be deleted' .
 					' because it does not exist in the database.';
-			$this->ref_log($this->error, $uid, 1);
+			$this->referenceLog($this->error, $uid, 1);
 			return TRUE;
 		}
 
@@ -479,12 +491,12 @@ class ReferenceWriter {
 	/**
 	 * Removes the entry from the database.
 	 * The entry must have been marked deleted beforehand.
-	 * This erases the referenc and the authorships but not the author
+	 * This erases the reference and the authorships but not the author
 	 *
 	 * @param int $uid
 	 * @return bool
 	 */
-	function erase_publication($uid) {
+	public function erase_publication($uid) {
 
 		// Delete authorships
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
@@ -498,7 +510,7 @@ class ReferenceWriter {
 			'uid=' . intval($uid) . ' AND deleted!=0'
 		);
 
-		$this->ref_log('A publication reference was erased', $uid);
+		$this->referenceLog('A publication reference was erased', $uid);
 
 		return FALSE;
 	}
@@ -511,7 +523,7 @@ class ReferenceWriter {
 	 * @param int $error
 	 * @return void
 	 */
-	function log($message, $error = 0) {
+	protected function log($message, $error = 0) {
 		$be_user = $GLOBALS['BE_USER'];
 		if (is_object($be_user)) {
 			$be_user->simplelog($message, 'bib', $error);
@@ -520,14 +532,14 @@ class ReferenceWriter {
 
 
 	/**
-	 * Writes a log entry
+	 * Writes a log entry for the reference log
 	 *
 	 * @param string $message
 	 * @param int $uid
 	 * @param mixed $error
 	 * @return void
 	 */
-	protected function ref_log($message, $uid, $error = 0) {
+	protected function referenceLog($message, $uid, $error = 0) {
 		$message = $message . ' (' . $this->referenceReader->referenceTable . ':' . intval($uid) . ')';
 		$this->log($message, $error);
 	}
