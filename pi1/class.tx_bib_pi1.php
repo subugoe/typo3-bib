@@ -27,9 +27,6 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
  ***************************************************************/
 /**
  * Plugin 'Publication List' for the 'bib' extension.
- *
- * @author Sebastian Holtermann <sebholt@web.de>
- * @author Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
  */
 class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 

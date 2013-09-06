@@ -1,21 +1,43 @@
 <?php
 namespace Ipf\Bib\Utility;
 
+/* * *************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ * ************************************************************* */
+
 /**
  * This class provides some utility methods and acts mainly a a namespace
- *
- * @author Sebastian Holtermann
- * @author Ingo Pfennigstorf
  */
 class Utility {
-
 
 	/**
 	 * Returns the processed title of a page
 	 *
+	 * @param int $uid
 	 * @return string|bool The title string or FALSE
 	 */
-	static public function get_page_title($uid) {
+	public static function get_page_title($uid) {
 		$title = FALSE;
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -36,9 +58,10 @@ class Utility {
 	/**
 	 * Returns the titles of multiple pages
 	 *
+	 * @param array $uids
 	 * @return string|bool The title string or FALSE
 	 */
-	static public function get_page_titles($uids) {
+	public static function get_page_titles($uids) {
 		$titles = array();
 		foreach ($uids as $uid) {
 			$uid = intval($uid);
@@ -56,7 +79,7 @@ class Utility {
 	 *
 	 * @return string The string filtered for html output
 	 */
-	static function crop_middle($str, $len, $charset = 'UTF-8') {
+	public static function crop_middle($str, $len, $charset = 'UTF-8') {
 		$res = $str;
 		if (strlen($str) > $len) {
 			$le = ceil($len / 2.0);
@@ -72,9 +95,10 @@ class Utility {
 	 * Fixes illegal occurences of ampersands (&) in html strings
 	 * Well TYPO3 seems to handle this as well
 	 *
+	 * @param string $str
 	 * @return string The string filtered for html output
 	 */
-	static public function fix_html_ampersand($str) {
+	public static function fix_html_ampersand($str) {
 
 		$pattern = '/&(([^;]|$){8})/';
 		while (preg_match($pattern, $str)) {
@@ -95,7 +119,7 @@ class Utility {
 	 *
 	 * @return bool TRUE if the user is in a given group FALSE otherwise
 	 */
-	static public function check_fe_user_groups($groups, $admin_ok = FALSE) {
+	public static function check_fe_user_groups($groups, $admin_ok = FALSE) {
 		if ($admin_ok && is_object($GLOBALS['BE_USER'])
 				&& $GLOBALS['BE_USER']->isAdmin()
 		) return TRUE;
@@ -123,7 +147,7 @@ class Utility {
 	 *
 	 * @return string The hidden input element
 	 */
-	static public function html_input($type, $name, $value, $attribs = array()) {
+	public static function html_input($type, $name, $value, $attribs = array()) {
 		$con = '<input type="' . strval($type) . '"';
 		if (strlen($name) > 0) {
 			$con .= ' name="' . strval($name) . '"';
@@ -145,7 +169,7 @@ class Utility {
 	 *
 	 * @return string The checkbox input element
 	 */
-	static public function html_check_input($name, $value, $checked, $attribs = array()) {
+	public static function html_check_input($name, $value, $checked, $attribs = array()) {
 		if ($checked)
 			$attribs['checked'] = 'checked';
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -158,7 +182,7 @@ class Utility {
 	 *
 	 * @return string The checkbox input element
 	 */
-	static public function html_radio_input($name, $value, $checked, $attribs = array()) {
+	public static function html_radio_input($name, $value, $checked, $attribs = array()) {
 		if ($checked)
 			$attribs['checked'] = 'checked';
 		return \Ipf\Bib\Utility\Utility::html_input(
@@ -170,7 +194,7 @@ class Utility {
 	 *
 	 * @return string The submit input element
 	 */
-	static public function html_submit_input($name, $value, $attribs = array()) {
+	public static function html_submit_input($name, $value, $attribs = array()) {
 		return \Ipf\Bib\Utility\Utility::html_input(
 			'submit', $name, $value, $attribs);
 	}
@@ -181,7 +205,7 @@ class Utility {
 	 *
 	 * @return string The image input element
 	 */
-	static public function html_image_input($name, $value, $src, $attribs = array()) {
+	public static function html_image_input($name, $value, $src, $attribs = array()) {
 		$attribs = array_merge($attribs, array('src' => $src));
 		return \Ipf\Bib\Utility\Utility::html_input(
 			'image', $name, $value, $attribs);
@@ -193,7 +217,7 @@ class Utility {
 	 *
 	 * @return string The hidden input element
 	 */
-	static public function html_hidden_input($name, $value, $attribs = array()) {
+	public static function html_hidden_input($name, $value, $attribs = array()) {
 		return \Ipf\Bib\Utility\Utility::html_input(
 			'hidden', $name, $value, $attribs);
 	}
@@ -204,7 +228,7 @@ class Utility {
 	 *
 	 * @return string The text input element
 	 */
-	static public function html_text_input($name, $value, $attribs = array()) {
+	public static function html_text_input($name, $value, $attribs = array()) {
 		return \Ipf\Bib\Utility\Utility::html_input(
 			'text', $name, $value, $attribs);
 	}
@@ -241,9 +265,9 @@ class Utility {
 	/**
 	 * A layout table the contains all the strings in $rows
 	 *
-	 * @return The html table code
+	 * @return string The html table code
 	 */
-	static public function html_layout_table($rows) {
+	public static function html_layout_table($rows) {
 		$res = '<table class="tx_bib-layout"><tbody>';
 		foreach ($rows as $row) {
 			$res .= '<tr>';
@@ -264,9 +288,9 @@ class Utility {
 	/**
 	 * Counts strings in an array of strings
 	 *
-	 * @return An associative array contatining the input strings and their counts
+	 * @return array An associative array contatining the input strings and their counts
 	 */
-	static public function string_counter($messages) {
+	public static function string_counter($messages) {
 		$res = array();
 		foreach ($messages as $msg) {
 			$msg = strval($msg);
@@ -283,9 +307,9 @@ class Utility {
 	/**
 	 * Crops the first argument to a given range
 	 *
-	 * @return The value fitted into the given range
+	 * @return mixed The value fitted into the given range
 	 */
-	static public function crop_to_range($value, $min, $max) {
+	public static function crop_to_range($value, $min, $max) {
 		$value = min(intval($value), intval($max));
 		$value = max($value, intval($min));
 		return $value;
@@ -296,9 +320,9 @@ class Utility {
 	 * Finds the nearest integer in a stack.
 	 * The stack must be sorted
 	 *
-	 * @return The value fitted into the given range
+	 * @return mixed The value fitted into the given range
 	 */
-	static public function find_nearest_int($value, $stack) {
+	public static function find_nearest_int($value, $stack) {
 		$res = $value;
 		if (!in_array($value, $stack)) {
 			if ($value > end($stack)) {
@@ -327,7 +351,7 @@ class Utility {
 	 *
 	 * @return bool TRUE if there is an overlap FALSE otherwise
 	 */
-	static public function intval_list_check($allowed, $current) {
+	public static function intval_list_check($allowed, $current) {
 		if (!is_array($allowed)) {
 			$allowed = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($allowed));
 		}
@@ -348,7 +372,7 @@ class Utility {
 	 *
 	 * @return array The intvaled array
 	 */
-	static public function intval_array($arr) {
+	public static function intval_array($arr) {
 		$res = array();
 		foreach ($arr as $val)
 			$res[] = intval($val);
@@ -361,13 +385,14 @@ class Utility {
 	 *
 	 * @return string The imploded array
 	 */
-	static public function implode_intval($sep, $list, $noEmpty = TRUE) {
+	public static function implode_intval($sep, $list, $noEmpty = TRUE) {
 		$res = array();
 		if ($noEmpty) {
 			foreach ($list as $val) {
 				$val = trim($val);
-				if (strlen($val) > 0)
+				if (strlen($val) > 0) {
 					$res[] = strval(intval($val));
+				}
 			}
 		} else {
 			$res = \Ipf\Bib\Utility\Utility::intval_array($list);
@@ -382,7 +407,7 @@ class Utility {
 	 *
 	 * @return array The exploded string
 	 */
-	static public function explode_intval($sep, $str, $noEmpty = TRUE) {
+	public static function explode_intval($sep, $str, $noEmpty = TRUE) {
 		$res = array();
 		$list = explode($sep, $str);
 		if ($noEmpty) {
@@ -404,7 +429,7 @@ class Utility {
 	 *
 	 * @return array The exploded string
 	 */
-	static public function explode_trim($sep, $str, $noEmpty = FALSE) {
+	public static function explode_trim($sep, $str, $noEmpty = FALSE) {
 		$res = array();
 		$tmp = explode($sep, $str);
 		foreach ($tmp as $val) {
@@ -422,7 +447,7 @@ class Utility {
 	 *
 	 * @return array The exploded string
 	 */
-	static public function explode_trim_lower($sep, $str, $noEmpty = FALSE) {
+	public static function explode_trim_lower($sep, $str, $noEmpty = FALSE) {
 		$res = array();
 		$tmp = explode($sep, $str);
 		foreach ($tmp as $val) {
@@ -439,7 +464,7 @@ class Utility {
 	 *
 	 * @return array The exploded string
 	 */
-	static public function multi_explode($seps, $str) {
+	public static function multi_explode($seps, $str) {
 		if (is_array($seps)) {
 			$sep = strval($seps[0]);
 			for ($ii = 1; $ii < sizeof($seps); $ii++) {
@@ -458,7 +483,7 @@ class Utility {
 	 *
 	 * @return array The exploded string
 	 */
-	static public function multi_explode_trim($seps, $str, $noEmpty = FALSE) {
+	public static function multi_explode_trim($seps, $str, $noEmpty = FALSE) {
 		if (is_array($seps)) {
 			$sep = strval($seps[0]);
 			for ($ii = 1; $ii < sizeof($seps); $ii++) {
@@ -477,7 +502,7 @@ class Utility {
 	 *
 	 * @return bool|string FALSE or the error message array
 	 */
-	static public function explode_author_str($str) {
+	public static function explode_author_str($str) {
 		$res = array();
 		$lst = explode(' and ', $str);
 		foreach ($lst as $a_str) {
@@ -501,7 +526,7 @@ class Utility {
 	 *
 	 * @return string The imploded array as a string
 	 */
-	static public function implode_and_last($arr, $sep, $and) {
+	public static function implode_and_last($arr, $sep, $and) {
 		$res = array();
 		$size = sizeof($arr);
 		$c_idx = $size - 2;
@@ -518,10 +543,10 @@ class Utility {
 	/**
 	 * Checks if a local file exists
 	 *
+	 * @param string $file
 	 * @return bool FALSE if the file exists TRUE if it does not exist
 	 */
-	static public function check_file_nexist($file) {
-		//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( array ( 'check_file_nexist ' => $file ) );
+	public static function check_file_nexist($file) {
 		if ((strlen($file) > 0) &&
 				(substr($file, 0, 10) == 'fileadmin/')
 		) {
