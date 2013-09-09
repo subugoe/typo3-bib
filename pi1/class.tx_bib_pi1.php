@@ -1007,7 +1007,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if ($GLOBALS['BE_USER']->isAdmin())
 				return TRUE;
 			else {
-				return $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->referenceTable);
+				return $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable());
 			}
 		}
 	}
@@ -2162,7 +2162,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Bibtype
 		$pdata['bibtype_short'] = $this->referenceReader->allBibTypes[$pdata['bibtype']];
 		$pdata['bibtype'] = $this->get_ll(
-			$this->referenceReader->referenceTable . '_bibtype_I_' . $pdata['bibtype'],
+			$this->referenceReader->getReferenceTable() . '_bibtype_I_' . $pdata['bibtype'],
 				'Unknown bibtype: ' . $pdata['bibtype'], TRUE);
 
 		// Extern
@@ -2190,7 +2190,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				break;
 			default :
 				$pdata['state'] = $this->get_ll(
-					$this->referenceReader->referenceTable . '_state_I_' . $pdata['state'],
+					$this->referenceReader->getReferenceTable() . '_state_I_' . $pdata['state'],
 						'Unknown state: ' . $pdata['state'], TRUE);
 		}
 
@@ -3230,7 +3230,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				/** @var \Ipf\Bib\View\EditorView $editorView */
 				$editorView = GeneralUtility::makeInstance('Ipf\\Bib\\View\\EditorView');
 				$editorView->initialize($this);
-				$content .= $editorView->dialog_view();
+				$content .= $editorView->dialogView();
 		}
 		$content .= '<p>';
 		$content .= $this->get_link($this->get_ll('link_back_to_list'));
@@ -3372,7 +3372,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (is_object($GLOBALS['BE_USER'])) {
 			if ($GLOBALS['BE_USER']->isAdmin())
 				return true;
-			else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->referenceTable))
+			else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable()))
 				return true;
 		}
 

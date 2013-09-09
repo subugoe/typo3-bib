@@ -87,8 +87,8 @@ class DbUtility {
 		$count = 0;
 
 		$selectQuery = 'SELECT t_au.uid' . "\n";
-		$selectQuery .= ' FROM ' . $this->referenceReader->authorTable . ' AS t_au';
-		$selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->authorshipTable . ' AS t_as ' . "\n";
+		$selectQuery .= ' FROM ' . $this->referenceReader->getAuthorTable() . ' AS t_au';
+		$selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->getAuthorshipTable() . ' AS t_as ' . "\n";
 		$selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
 		$selectQuery .= ' WHERE t_au.deleted = 0 ' . "\n";
 		$selectQuery .= ' GROUP BY t_au.uid ' . "\n";
@@ -105,7 +105,7 @@ class DbUtility {
 			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $uids);
 
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				$this->referenceReader->authorTable,
+				$this->referenceReader->getAuthorTable(),
 				'uid IN ( ' . $csv . ')',
 				array(
 					'deleted' => '1'
@@ -164,10 +164,10 @@ class DbUtility {
 		$whereClause[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
 		$whereClause = implode(' AND ', $whereClause);
-		$whereClause .= $this->referenceReader->enable_fields($this->referenceReader->referenceTable);
+		$whereClause .= $this->referenceReader->enable_fields($this->referenceReader->getReferenceTable());
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			'uid',
-			$this->referenceReader->referenceTable,
+			$this->referenceReader->getReferenceTable(),
 			$whereClause
 		);
 
@@ -213,7 +213,7 @@ class DbUtility {
 		$whereClause = 'uid=' . intval($uid);
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'file_url,full_text_tstamp,full_text_file_url',
-			$this->referenceReader->referenceTable,
+			$this->referenceReader->getReferenceTable(),
 			$whereClause
 		);
 		if (sizeof($rows) != 1) {
@@ -325,7 +325,7 @@ class DbUtility {
 		if ($db_update) {
 
 			$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				$this->referenceReader->referenceTable,
+				$this->referenceReader->getReferenceTable(),
 				$whereClause,
 				$db_data
 			);

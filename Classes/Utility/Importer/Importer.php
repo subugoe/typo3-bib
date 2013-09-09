@@ -53,10 +53,16 @@ abstract class Importer {
 	/**
 	 * @var int
 	 */
-	public $storage_pid;
+	public $storage_pid = 0;
 
+	/**
+	 * @var int
+	 */
 	public $state;
 
+	/**
+	 * @var string
+	 */
 	public $import_type;
 
 	/**
@@ -86,12 +92,10 @@ abstract class Importer {
 		$this->referenceWriter = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
 		$this->referenceWriter->initialize($this->referenceReader);
 
-		$this->storage_pid = 0;
-
 		$this->statistics['warnings'] = array();
 		$this->statistics['errors'] = array();
 
-		// setup db_utility
+		// setup database utility
 		/** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
 		$databaseUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
 		$databaseUtility->initialize($this->referenceReader);
@@ -143,10 +147,9 @@ abstract class Importer {
 	 * @return int The parent id pid
 	 */
 	protected function getDefaultPid() {
-		$editorConfiguration =& $this->pi1->conf['editor.'];
 		$pid = 0;
-		if (is_numeric($editorConfiguration['default_pid'])) {
-			$pid = intval($editorConfiguration['default_pid']);
+		if (is_numeric($this->pi1->conf['editor.']['default_pid'])) {
+			$pid = intval($this->pi1->conf['editor.']['default_pid']);
 		}
 		if (!in_array($pid, $this->referenceReader->pid_list)) {
 			$pid = intval($this->referenceReader->pid_list[0]);
@@ -288,13 +291,12 @@ abstract class Importer {
 	 */
 	protected function importFileSelectionState() {
 		$buttonAttributes = array('class' => 'tx_bib-button');
-		$content = '';
 
 		// Pre import information
-		$content .= $this->displayInformationBeforeImport();
+		$content = $this->displayInformationBeforeImport();
 
-		$action = $this->pi1->get_link_url(array('import' => $this->import_type));
-		$content .= '<form action="' . $action . '" method="post" enctype="multipart/form-data" >';
+		$formAction = $this->pi1->get_link_url(array('import' => $this->import_type));
+		$content .= '<form action="' . $formAction . '" method="post" enctype="multipart/form-data" >';
 
 		// The storage selector
 		$content .= $this->getStorageSelector();
@@ -303,7 +305,7 @@ abstract class Importer {
 		$val = $this->pi1->get_ll('import_select_file', 'import_select_file', TRUE);
 		$content .= '<p>' . $val . '</p>' . "\n";
 
-		$val = '<input name="ImportFile" type="file" size="50" accept="text/*" />';
+		$val = '<input name="ImportFile" type="file" size="50" accept=".bib,text/*" />';
 		$content .= '<p>' . $val . '</p>' . "\n";
 
 		// The submit button

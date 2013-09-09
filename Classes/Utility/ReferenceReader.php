@@ -62,17 +62,17 @@ class ReferenceReader {
 	/**
 	 * @var string
 	 */
-	public $referenceTable = 'tx_bib_domain_model_reference';
+	protected $referenceTable = 'tx_bib_domain_model_reference';
 
 	/**
 	 * @var string
 	 */
-	public $authorTable = 'tx_bib_domain_model_author';
+	protected $authorTable = 'tx_bib_domain_model_author';
 
 	/**
 	 * @var string
 	 */
-	public $authorshipTable = 'tx_bib_domain_model_authorships';
+	protected $authorshipTable = 'tx_bib_domain_model_authorships';
 
 	/**
 	 * @var string
@@ -110,7 +110,7 @@ class ReferenceReader {
 
 	/**
 	 * These are the author relevant fields
-	 * that can be found in the reference table $this->authorTable.
+	 * that can be found in the reference table $this->getAuthorTable().
 	 * TYPO3 special fields like pid or uid are not listed here
 	 * @var array
 	 */
@@ -250,13 +250,13 @@ class ReferenceReader {
 		// @todo add to class variables
 		$this->filters = array();
 
-		$this->t_ref_default['table'] = $this->referenceTable;
+		$this->t_ref_default['table'] = $this->getReferenceTable();
 		$this->t_ref_default['alias'] = $this->referenceTableAlias;
 
-		$this->t_as_default['table'] = $this->authorshipTable;
+		$this->t_as_default['table'] = $this->getAuthorshipTable();
 		$this->t_as_default['alias'] = $this->authorshipTableAlias;
 
-		$this->t_au_default['table'] = $this->authorTable;
+		$this->t_au_default['table'] = $this->getAuthorTable();
 		$this->t_au_default['alias'] = $this->authorTableAlias;
 
 		// setup authorAllFields
@@ -455,8 +455,8 @@ class ReferenceReader {
 				$previous = $tables[$i - 1];
 				$current = $tables[$i];
 
-				if ((($previous['table'] == $this->referenceTable) && ($current['table'] == $this->authorTable)) ||
-						(($previous['table'] == $this->authorTable) && ($current['table'] == $this->referenceTable))
+				if ((($previous['table'] == $this->getReferenceTable()) && ($current['table'] == $this->getAuthorTable())) ||
+						(($previous['table'] == $this->getAuthorTable()) && ($current['table'] == $this->getReferenceTable()))
 				) {
 					$joins .= $this->getSqlJoinPart($previous, $this->t_as_default, $aliases);
 					$joins .= $this->getSqlJoinPart($this->t_as_default, $current, $aliases);
@@ -493,29 +493,29 @@ class ReferenceReader {
 		$joinMatchField = '';
 
 		switch ($table['table']) {
-			case $this->referenceTable:
+			case $this->getReferenceTable():
 				switch ($join['table']) {
-					case $this->authorshipTable:
+					case $this->getAuthorshipTable():
 						$tableMatchField = 'uid';
 						$joinMatchField = 'pub_id';
 						break;
 				}
 				break;
-			case $this->authorshipTable:
+			case $this->getAuthorshipTable():
 				switch ($join['table']) {
-					case $this->referenceTable:
+					case $this->getReferenceTable():
 						$tableMatchField = 'pub_id';
 						$joinMatchField = 'uid';
 						break;
-					case $this->authorTable:
+					case $this->getAuthorTable():
 						$tableMatchField = 'author_id';
 						$joinMatchField = 'uid';
 						break;
 				}
 				break;
-			case $this->authorTable:
+			case $this->getAuthorTable():
 				switch ($join['table']) {
-					case $this->authorshipTable:
+					case $this->getAuthorshipTable():
 						$tableMatchField = 'uid';
 						$joinMatchField = 'author_id';
 						break;
@@ -564,10 +564,10 @@ class ReferenceReader {
 			foreach ($columns as &$column) {
 				$column = preg_replace('/\.[^\.]*$/', '', $column);
 				if (!(strpos($column, $this->referenceTableAlias) === FALSE)) {
-					$whereClause .= $this->enable_fields($this->referenceTable, $column, $this->show_hidden);
+					$whereClause .= $this->enable_fields($this->getReferenceTable(), $column, $this->show_hidden);
 				}
 				if (!(strpos($column, $this->authorshipTableAlias) === FALSE)) {
-					$whereClause .= $this->enable_fields($this->authorshipTable, $column);
+					$whereClause .= $this->enable_fields($this->getAuthorshipTable(), $column);
 				}
 			}
 		}
@@ -769,7 +769,7 @@ class ReferenceReader {
 				$wca = $this->referenceTableAlias . '.citeid IN (';
 				for ($i = 0; $i < sizeof($f['ids']); $i++) {
 					if ($i > 0) $wca .= ',';
-					$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $this->referenceTable);
+					$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $this->getReferenceTable());
 				}
 				$wca .= ')';
 				$whereClause[] = $wca;
@@ -884,7 +884,7 @@ class ReferenceReader {
 		foreach ($fields as $field) {
 			if (in_array($field, $refFields)) {
 				foreach ($proc_words as $word) {
-					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr($word, $this->referenceTable);
+					$word = $GLOBALS['TYPO3_DB']->fullQuoteStr($word, $this->getReferenceTable());
 					$wca[] = $this->referenceTableAlias . '.' . $field . ' LIKE ' . $word;
 				}
 			}
@@ -1059,7 +1059,7 @@ class ReferenceReader {
 
 		$num = 0;
 		$whereClause = array();
-		$whereClause[] = 'citeid=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($citeId, $this->referenceTable);
+		$whereClause[] = 'citeid=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($citeId, $this->getReferenceTable());
 
 		if (is_numeric($uid) && ($uid >= 0)) {
 			$whereClause[] = 'uid!=' . "'" . intval($uid) . "'";
@@ -1071,9 +1071,9 @@ class ReferenceReader {
 		}
 
 		$whereClause = implode(' AND ', $whereClause);
-		$whereClause .= $this->enable_fields($this->referenceTable, '', $this->show_hidden);
+		$whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
 
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('count(uid)', $this->referenceTable, $whereClause);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('count(uid)', $this->getReferenceTable(), $whereClause);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
 		if (is_array($row)) {
@@ -1202,7 +1202,7 @@ class ReferenceReader {
 		foreach ($words as $word) {
 			$word = trim(strval($word));
 			if (strlen($word) > 0) {
-				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr($word, $this->authorTable);
+				$word = $GLOBALS['TYPO3_DB']->fullQuoteStr($word, $this->getAuthorTable());
 				foreach ($all_fields as $field) {
 					if (in_array($field, $fields)) {
 
@@ -1224,13 +1224,13 @@ class ReferenceReader {
 		}
 
 		$whereClause = implode(' AND ', $whereClause);
-		$whereClause .= $this->enable_fields($this->authorTable);
+		$whereClause .= $this->enable_fields($this->getAuthorTable());
 
 		$field_csv = implode(',', $this->authorAllFields);
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			$field_csv,
-			$this->authorTable,
+			$this->getAuthorTable(),
 			$whereClause
 		);
 
@@ -1260,11 +1260,11 @@ class ReferenceReader {
 				$uids[] = intval($author['uid']);
 			}
 			$whereClause = 'author_id IN (' . implode(',', $uids) . ')';
-			$whereClause .= $this->enable_fields($this->authorshipTable);
+			$whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'*',
-				$this->authorshipTable,
+				$this->getAuthorshipTable(),
 				$whereClause
 			);
 
@@ -1283,7 +1283,7 @@ class ReferenceReader {
 	 *
 	 * @param array $author
 	 * @param array $pids
-	 * @return void Not defined
+	 * @return array Not defined
 	 */
 	public function fetch_author_uids($author, $pids) {
 		$uids = array();
@@ -1298,7 +1298,7 @@ class ReferenceReader {
 				if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
 					$chk = ' LIKE ';
 				}
-				$whereClause[] = $field . $chk . $GLOBALS['TYPO3_DB']->fullQuoteStr($word, $this->authorTable);
+				$whereClause[] = $field . $chk . $GLOBALS['TYPO3_DB']->fullQuoteStr($word, $this->getAuthorTable());
 			}
 		}
 
@@ -1309,11 +1309,11 @@ class ReferenceReader {
 				$whereClause[] = 'pid=' . intval($pids);
 			}
 			$whereClause = implode(' AND ', $whereClause);
-			$whereClause .= $this->enable_fields($this->authorTable);
+			$whereClause .= $this->enable_fields($this->getAuthorTable());
 
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'uid,pid',
-				$this->authorTable,
+				$this->getAuthorTable(),
 				$whereClause
 			);
 
@@ -1376,8 +1376,8 @@ class ReferenceReader {
 
 		$whereClause .= $this->authorshipTableAlias . '.pub_id=' . intval($pub_id) . "\n";
 
-		$whereClause .= $this->enable_fields($this->authorshipTable, $this->authorshipTableAlias);
-		$whereClause .= $this->enable_fields($this->authorTable, $this->authorTableAlias);
+		$whereClause .= $this->enable_fields($this->getAuthorshipTable(), $this->authorshipTableAlias);
+		$whereClause .= $this->enable_fields($this->getAuthorTable(), $this->authorTableAlias);
 
 		$OC = $this->authorshipTableAlias . '.sorting ASC';
 
@@ -1406,12 +1406,12 @@ class ReferenceReader {
 	 */
 	public function getPublicationDetails($uid) {
 		$whereClause = "uid='" . intval($uid) . "'";
-		$whereClause .= $this->enable_fields($this->referenceTable, '', $this->show_hidden);
+		$whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
 		$field_csv = implode(',', $this->refAllFields);
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 			$field_csv,
-			$this->referenceTable,
+			$this->getReferenceTable(),
 			$whereClause
 		);
 
@@ -1517,11 +1517,11 @@ class ReferenceReader {
 					$whereClause[] = 'pid=' . intval($authorship['pid']);
 				}
 				$whereClause = implode(' AND ', $whereClause);
-				$whereClause .= $this->enable_fields($this->authorshipTable);
+				$whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 					'*',
-					$this->authorshipTable,
+					$this->getAuthorshipTable(),
 					$whereClause
 				);
 
@@ -1543,7 +1543,7 @@ class ReferenceReader {
 
 		$query = $GLOBALS['TYPO3_DB']->exec_SELECTQuery(
 			'uid',
-			$this->referenceTable,
+			$this->getReferenceTable(),
 			'citeid = "' . $citationId . '"',
 			'',
 			'',
@@ -1570,6 +1570,48 @@ class ReferenceReader {
 	 */
 	public function setShowHidden($showHidden) {
 		$this->show_hidden = $showHidden;
+	}
+
+	/**
+	 * @param string $authorTable
+	 */
+	public function setAuthorTable($authorTable) {
+		$this->authorTable = $authorTable;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAuthorTable() {
+		return $this->authorTable;
+	}
+
+	/**
+	 * @param string $authorshipTable
+	 */
+	public function setAuthorshipTable($authorshipTable) {
+		$this->authorshipTable = $authorshipTable;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAuthorshipTable() {
+		return $this->authorshipTable;
+	}
+
+	/**
+	 * @param string $referenceTable
+	 */
+	public function setReferenceTable($referenceTable) {
+		$this->referenceTable = $referenceTable;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getReferenceTable() {
+		return $this->referenceTable;
 	}
 
 }

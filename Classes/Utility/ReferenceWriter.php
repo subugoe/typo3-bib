@@ -133,7 +133,7 @@ class ReferenceWriter {
 		$new = False;
 		$uid = -1;
 
-		$referenceTable =& $this->referenceReader->referenceTable;
+		$referenceTable =& $this->referenceReader->getReferenceTable();
 
 		// Fetch reference from DB
 		$pub_db = NULL;
@@ -323,7 +323,7 @@ class ReferenceWriter {
 					$as_uid = $db_aships[$ii]['uid'];
 
 					$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-						$this->referenceReader->authorshipTable,
+						$this->referenceReader->getAuthorshipTable(),
 						'uid=' . intval($as_uid),
 						$as
 					);
@@ -336,7 +336,7 @@ class ReferenceWriter {
 				} else {
 					// No more present authorships - Insert authorship
 					$as_uid = $GLOBALS['TYPO3_DB']->exec_INSERTquery(
-						$this->referenceReader->authorshipTable,
+						$this->referenceReader->getAuthorshipTable(),
 						$as
 					);
 
@@ -374,7 +374,7 @@ class ReferenceWriter {
 		$author['cruser_id'] = $cruser_id;
 
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery(
-			$this->referenceReader->authorTable,
+			$this->referenceReader->getAuthorTable(),
 			$author
 		);
 
@@ -391,7 +391,7 @@ class ReferenceWriter {
 	 */
 	public function delete_authorship($uid) {
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-			$this->referenceReader->authorshipTable,
+			$this->referenceReader->getAuthorshipTable(),
 			'uid=' . intval($uid) . ' AND deleted=0',
 			array(
 				'deleted' => 1
@@ -416,7 +416,7 @@ class ReferenceWriter {
 		}
 
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-			$this->referenceReader->authorshipTable,
+			$this->referenceReader->getAuthorshipTable(),
 			'uid IN (' . $uid_list . ') AND deleted=0',
 			array(
 				'deleted' => 1
@@ -436,7 +436,7 @@ class ReferenceWriter {
 		$uid = intval($uid);
 
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-			$this->referenceReader->referenceTable,
+			$this->referenceReader->getReferenceTable(),
 			'uid=' . strval($uid),
 			array(
 				'hidden' => ($hidden ? '1' : '0'),
@@ -469,7 +469,7 @@ class ReferenceWriter {
 
 				// Delete authorships
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-					$this->referenceReader->authorshipTable,
+					$this->referenceReader->getAuthorshipTable(),
 					'pub_id=' . intval($uid) . ' AND deleted=0',
 					array(
 						'deleted' => $deleted
@@ -478,7 +478,7 @@ class ReferenceWriter {
 
 				// Delete reference
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-					$this->referenceReader->referenceTable,
+					$this->referenceReader->getReferenceTable(),
 					'uid=' . intval($uid) . ' AND deleted=0',
 					array(
 						'deleted' => $deleted,
@@ -520,13 +520,13 @@ class ReferenceWriter {
 
 		// Delete authorships
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			$this->referenceReader->authorshipTable,
+			$this->referenceReader->getAuthorshipTable(),
 			'pub_id=' . intval($uid) . ' AND deleted!=0'
 		);
 
 		// Delete reference
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			$this->referenceReader->referenceTable,
+			$this->referenceReader->getReferenceTable(),
 			'uid=' . intval($uid) . ' AND deleted!=0'
 		);
 
@@ -560,7 +560,7 @@ class ReferenceWriter {
 	 * @return void
 	 */
 	protected function referenceLog($message, $uid, $error = 0) {
-		$message = $message . ' (' . $this->referenceReader->referenceTable . ':' . intval($uid) . ')';
+		$message = $message . ' (' . $this->referenceReader->getReferenceTable() . ':' . intval($uid) . ')';
 		$this->log($message, $error);
 	}
 

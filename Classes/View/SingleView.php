@@ -229,11 +229,11 @@ class SingleView {
 	 */
 	function field_label($field, $bib_str) {
 		$pi1 =& $this->pi1;
-		$label = $this->referenceReader->referenceTable . '_' . $field;
+		$label = $this->referenceReader->getReferenceTable() . '_' . $field;
 
 		switch ($field) {
 			case 'authors':
-				$label = $this->referenceReader->authorTable . '_' . $field;
+				$label = $this->referenceReader->getAuthorTable() . '_' . $field;
 				break;
 		}
 
