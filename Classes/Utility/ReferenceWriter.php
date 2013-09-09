@@ -125,7 +125,7 @@ class ReferenceWriter {
 	 * @param array $publication
 	 * @return bool TRUE on error FALSE otherwise
 	 */
-	public function save_publication($publication) {
+	public function savePublication($publication) {
 		if (!is_array($publication)) {
 			return TRUE;
 		}

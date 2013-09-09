@@ -90,7 +90,7 @@ class AuthorNavigation extends Navigation {
 	public function hook_filter() {
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$ref_read =& $this->pi1->referenceReader;
+		$referenceReader =& $this->pi1->referenceReader;
 
 		// Init statistics
 		$this->pi1->stat['authors'] = array();
@@ -99,7 +99,7 @@ class AuthorNavigation extends Navigation {
 		$filter = array();
 
 		// Fetch all surnames and initialize letters
-		$astat['surnames'] = $ref_read->fetch_author_surnames();
+		$astat['surnames'] = $referenceReader->fetch_author_surnames();
 		$astat['sel_surnames'] = array();
 		$this->initializeLetters($astat['surnames']);
 
@@ -130,8 +130,8 @@ class AuthorNavigation extends Navigation {
 			$filters['temp']['author']['authors'] = $filter;
 
 			// Fetch selected surnames
-			$ref_read->set_filters($filters);
-			$sel_surnames = $ref_read->fetch_author_surnames();
+			$referenceReader->set_filters($filters);
+			$sel_surnames = $referenceReader->fetch_author_surnames();
 
 			// Remove ampersand strings from surname list
 			$lst = array();
@@ -158,7 +158,7 @@ class AuthorNavigation extends Navigation {
 			$sel_surnames = $lst;
 
 			// Restore filter
-			$ref_read->set_filters($this->pi1->extConf['filters']);
+			$referenceReader->set_filters($this->pi1->extConf['filters']);
 		}
 
 		// Setup filter for selected author
@@ -190,7 +190,7 @@ class AuthorNavigation extends Navigation {
 			$ff['author']['author'] = array();
 			$ff['author']['author']['authors'] = $filter;
 
-			$ref_read->set_filters($ff);
+			$referenceReader->set_filters($ff);
 		}
 	}
 

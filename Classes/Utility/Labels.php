@@ -26,6 +26,8 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use \TYPO3\CMS\Backend\Utility\BackendUtility;
+
 class Labels {
 
 	/**
@@ -39,17 +41,17 @@ class Labels {
 		$title = '';
 
 		if ($item_id) {
-			$item = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('tx_bib_domain_model_authorships', $item_id);
+			$item = BackendUtility::getRecord('tx_bib_domain_model_authorships', $item_id);
 
 			$author_id = $item['author_id'];
 			if ($author_id) {
-				$author = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('tx_bib_domain_model_author', $author_id);
+				$author = BackendUtility::getRecord('tx_bib_domain_model_author', $author_id);
 				$title .= $author['surname'] . ', ' . $author['forename'];
 			}
 
 			$pub_id = $item['pub_id'];
 			if ($pub_id) {
-				$pub = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecord('tx_bib_domain_model_reference', $pub_id);
+				$pub = BackendUtility::getRecord('tx_bib_domain_model_reference', $pub_id);
 				$title .= ' [' . $pub['title'] . ']';
 			}
 		}

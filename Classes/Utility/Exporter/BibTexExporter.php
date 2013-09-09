@@ -33,172 +33,192 @@ class BibTexExporter extends Exporter {
 	 */
 	public $bibTexTranslator;
 
+	/**
+	 * @param \tx_bib_pi1 $pi1
+	 * @return void
+	 */
 	public function initialize($pi1) {
 		parent::initialize($pi1);
 
 		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.bib';
 
-		$this->bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
-		$bibTexTranslator =& $this->bibTexTranslator;
+		/** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
+		$bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
 
-		$bibTexTranslator->push('/\\\\/', '\\\\textbackslash');
-		$bibTexTranslator->push('/&amp;/', '\&');
-		$bibTexTranslator->push('/&gt;/', '>');
-		$bibTexTranslator->push('/&lt;/', '<');
-		$bibTexTranslator->push('/&#0+([123456789]+);/', '&#\\1;');
+		$bibTexTranslator
+				->push('/\\\\/', '\\\\textbackslash')
+				->push('/&amp;/', '\&')
+				->push('/&gt;/', '>')
+				->push('/&lt;/', '<')
+				->push('/&#0+([123456789]+);/', '&#\\1;');
 
-		$bibTexTranslator->push('/&quot;/', "''");
-		$bibTexTranslator->push('/&#39;/', "'");
+		$bibTexTranslator
+				->push('/&quot;/', "''")
+				->push('/&#39;/', "'");
 
-		$bibTexTranslator->push('/%/', '\%');
-		$bibTexTranslator->push('/\$/', '\$');
-		$bibTexTranslator->push('/#/', '\#');
-		//$bt->push ( '/_/',  '\_' );
-		$bibTexTranslator->push('/~/', '\verb=~=');
-		$bibTexTranslator->push('/\^/', '\verb=^=');
-		$bibTexTranslator->push('/{/', '\{');
-		$bibTexTranslator->push('/}/', '\}');
+		$bibTexTranslator
+				->push('/%/', '\%')
+				->push('/\$/', '\$')
+				->push('/#/', '\#')
+				->push('/~/', '\verb=~=')
+				->push('/\^/', '\verb=^=')
+				->push('/{/', '\{')
+				->push('/}/', '\}');
 
-		$bibTexTranslator->push('/<sub>/', '\(_{');
-		$bibTexTranslator->push('/<\/sub>/', '}\)');
+		$bibTexTranslator
+				->push('/<sub>/', '\(_{')
+				->push('/<\/sub>/', '}\)');
 
-		$bibTexTranslator->push('/<sup>/', '\(^{');
-		$bibTexTranslator->push('/<\/sup>/', '}\)');
+		$bibTexTranslator
+				->push('/<sup>/', '\(^{')
+				->push('/<\/sup>/', '}\)');
 
-		$bibTexTranslator->push('/<em>/', '\emph{');
-		$bibTexTranslator->push('/<\/em>/', '}');
+		$bibTexTranslator
+				->push('/<em>/', '\emph{')
+				->push('/<\/em>/', '}');
 
-		$bibTexTranslator->push('/<strong>/', '\emph{');
-		$bibTexTranslator->push('/<\/strong>/', '}');
+		$bibTexTranslator
+				->push('/<strong>/', '\emph{')
+				->push('/<\/strong>/', '}');
 
 		// Local characters
-		$bibTexTranslator->push('/&(.)acute;/', '{\\\'\\1}');
-		$bibTexTranslator->push('/&(.)tilde;/', '{\~\\1}');
-		$bibTexTranslator->push('/&(.)circ;/', '{\^\\1}');
-		$bibTexTranslator->push('/&(.)grave;/', '{\`\\1}');
-		$bibTexTranslator->push('/&(.)uml;/', '{\"\\1}');
-		$bibTexTranslator->push('/&(.)cedil;/', '\c{\\1}');
-		$bibTexTranslator->push('/&szlig;/', '{\ss}');
-		$bibTexTranslator->push('/&([aeAE]{2})lig;/', '{\\\\\\1}');
-		$bibTexTranslator->push('/&(.)ring;/', '{\\\\\\1\\1}');
-		$bibTexTranslator->push('/&([oO])slash;/', '{\\\\\\1}');
+		$bibTexTranslator
+				->push('/&(.)acute;/', '{\\\'\\1}')
+				->push('/&(.)tilde;/', '{\~\\1}')
+				->push('/&(.)circ;/', '{\^\\1}')
+				->push('/&(.)grave;/', '{\`\\1}')
+				->push('/&(.)uml;/', '{\"\\1}')
+				->push('/&(.)cedil;/', '\c{\\1}')
+				->push('/&szlig;/', '{\ss}')
+				->push('/&([aeAE]{2})lig;/', '{\\\\\\1}')
+				->push('/&(.)ring;/', '{\\\\\\1\\1}')
+				->push('/&([oO])slash;/', '{\\\\\\1}');
 
 
-		$bibTexTranslator->push('/&euro;/', '{\euro}');
-		$bibTexTranslator->push('/&pound;/', '{\pounds}');
+		$bibTexTranslator
+				->push('/&euro;/', '{\euro}')
+				->push('/&pound;/', '{\pounds}');
 
 		// Greek characters
-		$bibTexTranslator->push('/&alpha;/', '\(\alpha\)');
-		$bibTexTranslator->push('/&beta;/', '\(\beta\)');
-		$bibTexTranslator->push('/&gamma;/', '\(\gamma\)');
-		$bibTexTranslator->push('/&delta;/', '\(\delta\)');
-		$bibTexTranslator->push('/&epsilon;/', '\(\epsilon\)');
-		$bibTexTranslator->push('/&zeta;/', '\(\zeta\)');
-		$bibTexTranslator->push('/&eta;/', '\(\eta\)');
-		$bibTexTranslator->push('/&theta;/', '\(\theta\)');
-		$bibTexTranslator->push('/&iota;/', '\(\iota\)');
-		$bibTexTranslator->push('/&kappa;/', '\(\kappa\)');
-		$bibTexTranslator->push('/&lambda;/', '\(\lambda\)');
-		$bibTexTranslator->push('/&mu;/', '\(\mu\)');
-		$bibTexTranslator->push('/&nu;/', '\(\nu\)');
-		$bibTexTranslator->push('/&xi;/', '\(\xi\)');
-		$bibTexTranslator->push('/&pi;/', '\(\pi\)');
-		$bibTexTranslator->push('/&rho;/', '\(\rho\)');
-		$bibTexTranslator->push('/&sigma;/', '\(\sigma\)');
-		$bibTexTranslator->push('/&tau;/', '\(\tau\)');
-		$bibTexTranslator->push('/&upsilon;/', '\(\upsilon\)');
-		$bibTexTranslator->push('/&phi;/', '\(\phi\)');
-		$bibTexTranslator->push('/&chi;/', '\(\chi\)');
-		$bibTexTranslator->push('/&psi;/', '\(\psi\)');
-		$bibTexTranslator->push('/&omega;/', '\(\omega\)');
-		$bibTexTranslator->push('/&Gamma;/', '\(\Gamma\)');
-		$bibTexTranslator->push('/&Delta;/', '\(\Delta\)');
-		$bibTexTranslator->push('/&Theta;/', '\(\Theta\)');
-		$bibTexTranslator->push('/&Lambda;/', '\(\Lambda\)');
-		$bibTexTranslator->push('/&Xi;/', '\(\Xi\)');
-		$bibTexTranslator->push('/&Pi;/', '\(\Pi\)');
-		$bibTexTranslator->push('/&Sigma;/', '\(\Sigma\)');
-		$bibTexTranslator->push('/&Upsilon;/', '\(\Upsilon\)');
-		$bibTexTranslator->push('/&Phi;/', '\(\Phi\)');
-		$bibTexTranslator->push('/&Psi;/', '\(\Psi\)');
-		$bibTexTranslator->push('/&Omega;/', '\(\Omega\)');
+		$bibTexTranslator
+				->push('/&alpha;/', '\(\alpha\)')
+				->push('/&beta;/', '\(\beta\)')
+				->push('/&gamma;/', '\(\gamma\)')
+				->push('/&delta;/', '\(\delta\)')
+				->push('/&epsilon;/', '\(\epsilon\)')
+				->push('/&zeta;/', '\(\zeta\)')
+				->push('/&eta;/', '\(\eta\)')
+				->push('/&theta;/', '\(\theta\)')
+				->push('/&iota;/', '\(\iota\)')
+				->push('/&kappa;/', '\(\kappa\)')
+				->push('/&lambda;/', '\(\lambda\)')
+				->push('/&mu;/', '\(\mu\)')
+				->push('/&nu;/', '\(\nu\)')
+				->push('/&xi;/', '\(\xi\)')
+				->push('/&pi;/', '\(\pi\)')
+				->push('/&rho;/', '\(\rho\)')
+				->push('/&sigma;/', '\(\sigma\)')
+				->push('/&tau;/', '\(\tau\)')
+				->push('/&upsilon;/', '\(\upsilon\)')
+				->push('/&phi;/', '\(\phi\)')
+				->push('/&chi;/', '\(\chi\)')
+				->push('/&psi;/', '\(\psi\)')
+				->push('/&omega;/', '\(\omega\)')
+				->push('/&Gamma;/', '\(\Gamma\)')
+				->push('/&Delta;/', '\(\Delta\)')
+				->push('/&Theta;/', '\(\Theta\)')
+				->push('/&Lambda;/', '\(\Lambda\)')
+				->push('/&Xi;/', '\(\Xi\)')
+				->push('/&Pi;/', '\(\Pi\)')
+				->push('/&Sigma;/', '\(\Sigma\)')
+				->push('/&Upsilon;/', '\(\Upsilon\)')
+				->push('/&Phi;/', '\(\Phi\)')
+				->push('/&Psi;/', '\(\Psi\)')
+				->push('/&Omega;/', '\(\Omega\)');
 
 		// Mathematical characters
-		$bibTexTranslator->push('/&deg;/', '\(^{\circ}\)');
-		$bibTexTranslator->push('/&radic;/', '\(\sqrt{}\)');
+		$bibTexTranslator
+				->push('/&deg;/', '\(^{\circ}\)')
+				->push('/&radic;/', '\(\sqrt{}\)');
 
 		// Relational symbols
-		$bibTexTranslator->push('/&approx;/', '\(\approx\)');
-		$bibTexTranslator->push('/&equiv;/', '\(\equiv\)');
-		$bibTexTranslator->push('/&prop;/', '\(\propto\)');
-		$bibTexTranslator->push('/&le;/', '\(\le\)');
-		$bibTexTranslator->push('/&ne;/', '\(\neq\)');
-		$bibTexTranslator->push('/&geq;/', '\(\ge\)');
+		$bibTexTranslator
+				->push('/&approx;/', '\(\approx\)')
+				->push('/&equiv;/', '\(\equiv\)')
+				->push('/&prop;/', '\(\propto\)')
+				->push('/&le;/', '\(\le\)')
+				->push('/&ne;/', '\(\neq\)')
+				->push('/&geq;/', '\(\ge\)');
 
 		// Logical symbols
-		$bibTexTranslator->push('/&not;/', '\(\neg\)');
-		$bibTexTranslator->push('/&and;/', '\(\wedge\)');
-		$bibTexTranslator->push('/&or;/', '\(\vee\)');
-		$bibTexTranslator->push('/&oplus;/', '\(\oplus\)');
+		$bibTexTranslator
+				->push('/&not;/', '\(\neg\)')
+				->push('/&and;/', '\(\wedge\)')
+				->push('/&or;/', '\(\vee\)')
+				->push('/&oplus;/', '\(\oplus\)');
 
-		$bibTexTranslator->push('/&exist;/', '\(\exists\)');
-		$bibTexTranslator->push('/&forall;/', '\(\forall\)');
+		$bibTexTranslator
+				->push('/&exist;/', '\(\exists\)')
+			->push('/&forall;/', '\(\forall\)');
 
 		// Set symbols
-		$bibTexTranslator->push('/&cap;/', '\(\cap\)');
-		$bibTexTranslator->push('/&cup;/', '\(\cup\)');
-		$bibTexTranslator->push('/&sub;/', '\(\subset\)');
-		$bibTexTranslator->push('/&sup;/', '\(\supset\)');
-		$bibTexTranslator->push('/&empty;/', '\(\emptyset\)');
-		$bibTexTranslator->push('/&isin;/', '\(\in\)');
-		$bibTexTranslator->push('/&notin;/', '\(\notin\)');
+		$bibTexTranslator
+				->push('/&cap;/', '\(\cap\)')
+				->push('/&cup;/', '\(\cup\)')
+				->push('/&sub;/', '\(\subset\)')
+				->push('/&sup;/', '\(\supset\)')
+				->push('/&empty;/', '\(\emptyset\)')
+				->push('/&isin;/', '\(\in\)')
+				->push('/&notin;/', '\(\notin\)');
 
 		// Misc symbols
-		$bibTexTranslator->push('/&infin;/', '\(\infty\)');
-		$bibTexTranslator->push('/&sim;/', '\(\sim\)');
-		$bibTexTranslator->push('/&rfloor;/', '\(\rfloor\)');
-		$bibTexTranslator->push('/&prime;/', '\(\prime\)');
-		$bibTexTranslator->push('/&sim;/', '\(\sim\)');
-		$bibTexTranslator->push('/&times;/', '\(\times\)');
+		$bibTexTranslator
+				->push('/&infin;/', '\(\infty\)')
+				->push('/&sim;/', '\(\sim\)')
+				->push('/&rfloor;/', '\(\rfloor\)')
+				->push('/&prime;/', '\(\prime\)')
+				->push('/&sim;/', '\(\sim\)')
+				->push('/&times;/', '\(\times\)');
 
+		$this->bibTexTranslator = $bibTexTranslator;
 	}
 
 	/**
-	 * @param array $pub
+	 * @param array $publication
 	 * @param array $infoArr
 	 * @return string
 	 */
-	public function export_format_publication($pub, $infoArr = array()) {
-		$str = '';
+	public function formatPublicationForExport($publication, $infoArr = array()) {
+		$content = '';
 
-		$bibtype = ucfirst($this->referenceReader->allBibTypes[$pub['bibtype']]);
+		$bibliographyType = ucfirst($this->referenceReader->allBibTypes[$publication['bibtype']]);
 
-		$str .= '@';
-		$str .= $bibtype . ' { ';
-		$str .= trim($pub['citeid']) . ",\n";
+		$content .= '@';
+		$content .= $bibliographyType . ' { ';
+		$content .= trim($publication['citeid']) . ",\n";
 
 		$entries = array();
-		foreach ($this->referenceReader->pubFields as $key) {
+		foreach ($this->referenceReader->pubFields as $publicationField) {
 			$append = TRUE;
-			switch ($key) {
+			switch ($publicationField) {
 				case 'bibtype':
 				case 'citeid':
 					$append = FALSE;
 					break;
 				case 'authors':
-					$value = $pub['authors'];
+					$value = $publication['authors'];
 					if (sizeof($value) == 0)
 						$append = FALSE;
 					break;
 				default:
-					$value = trim($pub[$key]);
+					$value = trim($publication[$publicationField]);
 					if ((strlen($value) == 0) || ($value == '0'))
 						$append = FALSE;
 			}
 
 			if ($append) {
 				$astr = '   ';
-				switch ($key) {
+				switch ($publicationField) {
 					case 'authors':
 						$astr .= 'author' . ' = {';
 						break;
@@ -206,60 +226,60 @@ class BibTexExporter extends Exporter {
 						$astr .= 'url' . ' = {';
 						break;
 					default:
-						$astr .= $key . ' = {';
+						$astr .= $publicationField . ' = {';
 				}
-				$astr .= $this->bibtex_format_field($key, $value);
+				$astr .= $this->bibTexFormatField($publicationField, $value);
 				$astr .= '}';
 				$entries[] = $astr;
 			}
 		}
 
-		$str .= implode(",\n", $entries);
-		$str .= "\n";
-		$str .= '}';
-		$str .= "\n\n";
+		$content .= implode(",\n", $entries);
+		$content .= "\n";
+		$content .= '}';
+		$content .= "\n\n";
 
-		return $str;
+		return $content;
 	}
 
 	/**
-	 * @param $value
+	 * @param string $content
 	 * @return mixed|string
 	 */
-	protected function bibtex_format_string($value) {
+	protected function bibTexFormatString($content) {
 
 		// Convert characters to html sequences
 		$charset = $this->pi1->extConf['charset']['upper'];
 		// Replace illegal html ampersands with &amp;
-		$value = \Ipf\Bib\Utility\Utility::fix_html_ampersand($value);
+		$content = \Ipf\Bib\Utility\Utility::fix_html_ampersand($content);
 		// Replaces &amp; with &amp;amp;
-		$value = htmlentities($value, ENT_QUOTES, $charset);
+		$content = htmlentities($content, ENT_QUOTES, $charset);
 		// Replaces &amp;amp; with &amp;
-		$value = str_replace('&amp;', '&', $value);
-		$value = $this->bibTexTranslator->translate($value);
+		$content = str_replace('&amp;', '&', $content);
+		$content = $this->bibTexTranslator->translate($content);
 
 		// Recognize protected tag
-		$tmp = explode('<prt>', $value);
+		$tmp = explode('<prt>', $content);
 		if (sizeof($tmp) > 1) {
 
-			$value = '';
+			$content = '';
 			$first = TRUE;
 			foreach ($tmp as $v) {
 				if ($first) {
 					$first = FALSE;
-					$value .= $v;
+					$content .= $v;
 				} else {
 					$tmp2 = explode('</prt>', $v);
 
-					$value .= '{' . $tmp2[0] . '}';
+					$content .= '{' . $tmp2[0] . '}';
 					for ($i = 1; $i < sizeof($tmp2); $i++) {
-						$value .= $tmp2[$i];
+						$content .= $tmp2[$i];
 					}
 				}
 			}
 		}
 
-		return $value;
+		return $content;
 	}
 
 	/**
@@ -267,7 +287,7 @@ class BibTexExporter extends Exporter {
 	 * @param $value
 	 * @return mixed|string
 	 */
-	protected function bibtex_format_field($key, $value) {
+	protected function bibTexFormatField($key, $value) {
 		switch ($key) {
 			case 'authors':
 				$authors = is_array($value) ? $value : explode(' and ', $value);
@@ -279,8 +299,8 @@ class BibTexExporter extends Exporter {
 					} else {
 						$value .= ' and ';
 					}
-					$fn = $this->bibtex_format_string($a['forename']);
-					$sn = $this->bibtex_format_string($a['surname']);
+					$fn = $this->bibTexFormatString($a['forename']);
+					$sn = $this->bibTexFormatString($a['surname']);
 					if (strlen($sn) && strlen($fn))
 						$value .= $sn . ', ' . $fn;
 					else
@@ -289,22 +309,32 @@ class BibTexExporter extends Exporter {
 				break;
 			case 'state':
 				$value = $this->referenceReader->allStates[$value];
-				$value = $this->bibtex_format_string($value);
+				$value = $this->bibTexFormatString($value);
 				break;
 			default:
-				$value = $this->bibtex_format_string($value);
+				$value = $this->bibTexFormatString($value);
 		}
 
 		return $value;
 	}
 
-
-	protected function file_intro($infoArr = array()) {
-		$str = "\n" . $this->info_text($infoArr);
+	/**
+	 * @param array $infoArr
+	 * @return string
+	 */
+	protected function fileIntro($infoArr = array()) {
+		$str = "\n" . $this->getGeneralInformationText($infoArr);
 		$str = preg_replace('/^/m', '% ', $str) . "\n";
 		return $str;
 	}
 
+	/**
+	 * @param array $infoArr
+	 * @return string
+	 */
+	protected function fileOutro($infoArr = array()){
+		return '';
+	}
 }
 
 ?>

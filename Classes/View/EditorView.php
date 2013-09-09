@@ -54,7 +54,7 @@ class EditorView {
 	 *
 	 * @var \Ipf\Bib\Utility\DbUtility
 	 */
-	public $dbUtility;
+	public $databaseUtility;
 
 	/**
 	 * @var string
@@ -114,10 +114,13 @@ class EditorView {
 		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
 
 		// setup db_utility
-		$this->dbUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
-		$this->dbUtility->initialize($pi1->referenceReader);
-		$this->dbUtility->charset = $pi1->extConf['charset']['upper'];
-		$this->dbUtility->read_full_text_conf($this->conf['full_text.']);
+		/** @var \Ipf\Bib\Utility\DbUtility $databaseUtility */
+		$databaseUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
+		$databaseUtility->initialize($pi1->referenceReader);
+		$databaseUtility->charset = $pi1->extConf['charset']['upper'];
+		$databaseUtility->readFullTextGenerationConfiguration($this->conf['full_text.']);
+
+		$this->databaseUtility = $databaseUtility;
 
 		// Create an instance of the citeid generator
 		if (isset ($this->conf['citeid_generator_file'])) {
@@ -1195,7 +1198,7 @@ class EditorView {
 		$events = array();
 		$errors = array();
 		if ($this->conf['delete_no_ref_authors']) {
-			$count = $this->dbUtility->deleteAuthorsWithoutPublications();
+			$count = $this->databaseUtility->deleteAuthorsWithoutPublications();
 			if ($count > 0) {
 				$message = $this->get_ll('msg_deleted_authors');
 				$message = str_replace('%d', strval($count), $message);
@@ -1203,7 +1206,7 @@ class EditorView {
 			}
 		}
 		if ($this->conf['full_text.']['update']) {
-			$stat = $this->dbUtility->update_full_text_all();
+			$stat = $this->databaseUtility->update_full_text_all();
 
 			$count = sizeof($stat['updated']);
 			if ($count > 0) {

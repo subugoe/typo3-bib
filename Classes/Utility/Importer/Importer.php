@@ -28,7 +28,7 @@ namespace Ipf\Bib\Utility\Importer;
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class Importer {
+abstract class Importer {
 
 	/**
 	 * @var \tx_bib_pi1
@@ -88,11 +88,13 @@ class Importer {
 		$this->statistics['errors'] = array();
 
 		// setup db_utility
-		$this->databaseUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
-		$this->databaseUtility->initialize($pi1->ref_read);
-		$this->databaseUtility->charset = $pi1->extConf['charset']['upper'];
-		$this->databaseUtility->read_full_text_conf($pi1->conf['editor.']['full_text.']);
+		/** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
+		$databaseUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
+		$databaseUtility->initialize($this->referenceReader);
+		$databaseUtility->charset = $pi1->extConf['charset']['upper'];
+		$databaseUtility->readFullTextGenerationConfiguration($pi1->conf['editor.']['full_text.']);
 
+		$this->databaseUtility = $databaseUtility;
 
 		// Create an instance of the citeid generator
 		if (isset ($this->conf['citeid_generator_file'])) {
@@ -112,15 +114,19 @@ class Importer {
 	 * Returns a page title
 	 *
 	 * @param int $uid
-	 * @return void
+	 * @return string
 	 */
-	function get_page_title($uid) {
+	protected function getPageTitle($uid) {
 		$title = FALSE;
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('title', 'pages', 'uid=' . intval($uid));
-		$p_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'title',
+			'pages',
+			'uid=' . intval($uid)
+		);
+		$page = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		$charset = $this->pi1->extConf['charset']['upper'];
-		if (is_array($p_row)) {
-			$title = htmlspecialchars($p_row['title'], ENT_NOQUOTES, $charset);
+		if (is_array($page)) {
+			$title = htmlspecialchars($page['title'], ENT_NOQUOTES, $charset);
 			$title .= ' (' . strval($uid) . ')';
 		}
 		return $title;
@@ -130,13 +136,13 @@ class Importer {
 	/**
 	 * Returns the default storage uid
 	 *
-	 * @return The parent id pid
+	 * @return int The parent id pid
 	 */
-	function get_default_pid() {
-		$edConf =& $this->pi1->conf['editor.'];
+	protected function getDefaultPid() {
+		$editorConfiguration =& $this->pi1->conf['editor.'];
 		$pid = 0;
-		if (is_numeric($edConf['default_pid'])) {
-			$pid = intval($edConf['default_pid']);
+		if (is_numeric($editorConfiguration['default_pid'])) {
+			$pid = intval($editorConfiguration['default_pid']);
 		}
 		if (!in_array($pid, $this->referenceReader->pid_list)) {
 			$pid = intval($this->referenceReader->pid_list[0]);
@@ -149,15 +155,15 @@ class Importer {
 	 * Returns the storage selector if there is more
 	 * than one storage folder selected
 	 *
-	 * @return the storage selector string
+	 * @return string the storage selector string
 	 */
-	function storage_selector() {
+	protected function getStorageSelector() {
 		// Pid
 		$pages = array();
 		$content = '';
 
 		$pids = $this->pi1->extConf['pid_list'];
-		$default_pid = $this->get_default_pid();
+		$default_pid = $this->getDefaultPid();
 
 		if (sizeof($pids) > 1) {
 			// Fetch page titles
@@ -183,13 +189,10 @@ class Importer {
 	 *
 	 * @return void
 	 */
-	function acquire_storage_pid() {
-		$pid =& $this->storage_pid;
-		$pids =& $this->pi1->extConf['pid_list'];
-
-		$pid = intval($this->pi1->piVars['import_pid']);
-		if (!in_array($pid, $pids)) {
-			$pid = $this->get_default_pid();
+	protected function acquireStoragePid() {
+		$this->storage_pid = intval($this->pi1->piVars['import_pid']);
+		if (!in_array($this->storage_pid, $this->pi1->extConf['pid_list'])) {
+			$this->storage_pid = $this->getDefaultPid();
 		}
 	}
 
@@ -197,43 +200,43 @@ class Importer {
 	/**
 	 * Saves a publication
 	 *
-	 * @return void
+	 * @param array $publication
+	 * @return bool
 	 */
-	public function save_publication($pub) {
-		$stat =& $this->statistics;
+	protected function savePublication($publication) {
 		$res = FALSE;
 
 		// Data checks
 		$s_ok = TRUE;
-		if (!array_key_exists('bibtype', $pub)) {
-			$stat['failed']++;
-			$stat['errors'][] = 'Missing bibtype';
+		if (!array_key_exists('bibtype', $publication)) {
+			$this->statistics['failed']++;
+			$this->statistics['errors'][] = 'Missing bibtype';
 			$s_ok = FALSE;
 		}
 
 		// Data adjustments
-		$pub['pid'] = $this->storage_pid;
+		$publication['pid'] = $this->storage_pid;
 
 		// Don't accept publication uids since that
 		// could override existing publications
-		if (array_key_exists('uid', $pub)) {
-			unset ($pub['uid']);
+		if (array_key_exists('uid', $publication)) {
+			unset ($publication['uid']);
 		}
 
-		if (strlen($pub['citeid']) == 0) {
-			$pub['citeid'] = $this->idGenerator->generateId($pub);
+		if (strlen($publication['citeid']) == 0) {
+			$publication['citeid'] = $this->idGenerator->generateId($publication);
 		}
 
 		// Save publications
 		if ($s_ok) {
 
-			$s_fail = $this->referenceWriter->save_publication($pub);
+			$s_fail = $this->referenceWriter->savePublication($publication);
 
 			if ($s_fail) {
-				$stat['failed']++;
-				$stat['errors'][] = $this->referenceWriter->error_message();
+				$this->statistics['failed']++;
+				$this->statistics['errors'][] = $this->referenceWriter->error_message();
 			} else {
-				$stat['succeeded']++;
+				$this->statistics['succeeded']++;
 			}
 		}
 
@@ -242,25 +245,25 @@ class Importer {
 
 
 	/**
-	 * The main function
+	 * The main importer function
 	 *
+	 * @return string
 	 */
-	function import() {
+	public function import() {
 		$this->state = 1;
 		if (intval($_FILES['ImportFile']['size']) > 0) {
 			$this->state = 2;
 		}
 
-		$content = '';
 		switch ($this->state) {
 			case 1:
-				$content = $this->import_state_1();
+				$content = $this->importFileSelectionState();
 				break;
 			case 2:
-				$this->acquire_storage_pid();
+				$this->acquireStoragePid();
 				$content = $this->import_state_2();
-				$content .= $this->post_import();
-				$content .= $this->import_stat_str();
+				$content .= $this->postImport();
+				$content .= $this->getImportStatistics();
 				break;
 			default:
 				$content = $this->pi1->error_msg('Bad import state');
@@ -273,9 +276,10 @@ class Importer {
 	/**
 	 * file selection state
 	 *
+	 * @return string
 	 */
-	function import_state_1() {
-		$btn_attribs = array('class' => 'tx_bib-button');
+	protected function importFileSelectionState() {
+		$buttonAttributes = array('class' => 'tx_bib-button');
 		$content = '';
 
 		// Pre import information
@@ -285,7 +289,7 @@ class Importer {
 		$content .= '<form action="' . $action . '" method="post" enctype="multipart/form-data" >';
 
 		// The storage selector
-		$content .= $this->storage_selector();
+		$content .= $this->getStorageSelector();
 
 		// The file selection
 		$val = $this->pi1->get_ll('import_select_file', 'import_select_file', TRUE);
@@ -296,25 +300,28 @@ class Importer {
 
 		// The submit button
 		$val = $this->pi1->get_ll('import_file', 'import_file', TRUE);
-		$btn = \Ipf\Bib\Utility\Utility::html_submit_input('submit', $val, $btn_attribs);
-		$content .= '<p>' . $btn . '</p>' . "\n";
+		$button = \Ipf\Bib\Utility\Utility::html_submit_input('submit', $val, $buttonAttributes);
+		$content .= '<p>' . $button . '</p>' . "\n";
 
 		$content .= '</form>';
 
 		return $content;
 	}
 
+	/**
+	 * @return string
+	 */
+	abstract protected function import_state_2();
 
 	/**
-	 * Returns an import statistics string
+	 * Adds an import statistics string to the statistics array
 	 *
+	 * @return void
 	 */
-	function post_import() {
+	protected function postImport() {
 		if ($this->statistics['succeeded'] > 0) {
 
-			//
 			// Update full texts
-			//
 			if ($this->pi1->conf['editor.']['full_text.']['update']) {
 				$arr = $this->databaseUtility->update_full_text_all();
 				if (sizeof($arr['errors']) > 0) {
@@ -332,8 +339,11 @@ class Importer {
 	/**
 	 * Returns a html table row string
 	 *
+	 * @param string $th
+	 * @param string $td
+	 * @return string
 	 */
-	function table_row_str($th, $td) {
+	protected function getTableRowAsString($th, $td) {
 		$content = '<tr>' . "\n";
 		$content .= '<th>' . strval($th) . '</th>' . "\n";
 		$content .= '<td>' . strval($td) . '</td>' . "\n";
@@ -345,8 +355,9 @@ class Importer {
 	/**
 	 * Returns an import statistics string
 	 *
+	 * @return string
 	 */
-	function import_stat_str() {
+	protected function getImportStatistics() {
 		$stat =& $this->statistics;
 		$charset = $this->pi1->extConf['charset']['upper'];
 
@@ -355,41 +366,41 @@ class Importer {
 		$content .= '<table class="tx_bib-editor_fields">';
 		$content .= '<tbody>';
 
-		$content .= $this->table_row_str(
+		$content .= $this->getTableRowAsString(
 			'Import file:',
 				htmlspecialchars($stat['file_name'], ENT_QUOTES, $charset) .
 				' (' . strval($stat['file_size']) . ' Bytes)'
 		);
 
-		$content .= $this->table_row_str(
+		$content .= $this->getTableRowAsString(
 			'Storage folder:',
-			$this->get_page_title($stat['storage'])
+			$this->getPageTitle($stat['storage'])
 		);
 
 
 		if (isset ($stat['succeeded'])) {
-			$content .= $this->table_row_str(
+			$content .= $this->getTableRowAsString(
 				'Successful imports:',
 				intval($stat['succeeded']));
 		}
 
 		if (isset ($stat['failed']) && ($stat['failed'] > 0)) {
-			$content .= $this->table_row_str(
+			$content .= $this->getTableRowAsString(
 				'Failed imports:',
 				intval($stat['failed']));
 		}
 
 		if (is_array($stat['full_text'])) {
 			$fts =& $stat['full_text'];
-			$content .= $this->table_row_str(
+			$content .= $this->getTableRowAsString(
 				'Updated full texts:', count($fts['updated']));
 			if ($fts['limit_num']) {
-				$content .= $this->table_row_str(
+				$content .= $this->getTableRowAsString(
 					$this->pi1->get_ll('msg_warn_ftc_limit'),
 					$this->pi1->get_ll('msg_warn_ftc_limit_num'));
 			}
 			if ($fts['limit_time']) {
-				$content .= $this->table_row_str(
+				$content .= $this->getTableRowAsString(
 					$this->pi1->get_ll('msg_warn_ftc_limit'),
 					$this->pi1->get_ll('msg_warn_ftc_limit_time'));
 			}
@@ -399,24 +410,24 @@ class Importer {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
 			$messages = \Ipf\Bib\Utility\Utility::string_counter($stat['warnings']);
 			foreach ($messages as $msg => $count) {
-				$str = $this->message_times_str($msg, $count);
+				$str = $this->getMessageOccurrenceCounter($msg, $count);
 				$val .= '<li>' . $str . '</li>' . "\n";
 			}
 			$val .= '</ul>' . "\n";
 
-			$content .= $this->table_row_str('Warnings:', $val);
+			$content .= $this->getTableRowAsString('Warnings:', $val);
 		}
 
 		if (is_array($stat['errors']) && (count($stat['errors']) > 0)) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
 			$messages = \Ipf\Bib\Utility\Utility::string_counter($stat['errors']);
 			foreach ($messages as $msg => $count) {
-				$str = $this->message_times_str($msg, $count);
+				$str = $this->getMessageOccurrenceCounter($msg, $count);
 				$val .= '<li>' . $str . '</li>' . "\n";
 			}
 			$val .= '</ul>' . "\n";
 
-			$content .= $this->table_row_str('Errors:', $val);
+			$content .= $this->getTableRowAsString('Errors:', $val);
 		}
 
 		$content .= '</tbody>';
@@ -426,23 +437,30 @@ class Importer {
 		return $content;
 	}
 
-
-	function message_times_str($msg, $count) {
+	/**
+	 * @param string $message
+	 * @param int $count
+	 * @return string
+	 */
+	protected function getMessageOccurrenceCounter($message, $count) {
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$res = htmlspecialchars($msg, ENT_QUOTES, $charset);
+		$content = htmlspecialchars($message, ENT_QUOTES, $charset);
 		if ($count > 1) {
-			$res .= ' (' . strval($count);
-			$res .= ' times)';
+			$content .= ' (' . strval($count);
+			$content .= ' times)';
 		}
-		return $res;
+		return $content;
 	}
 
 
 	/**
-	 * Replaces character code descriotion like &aauml; with
+	 * Replaces character code description like &aauml; with
 	 * the equivalent
+	 *
+	 * @param string $code
+	 * @return string
 	 */
-	function code_to_utf8($str) {
+	protected function codeToUnicode($code) {
 		$translationTable =& $this->code_trans_tbl;
 		if (!is_array($translationTable)) {
 			$translationTable = get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES);
@@ -452,30 +470,31 @@ class Importer {
 			unset ($translationTable['&lt;']);
 			unset ($translationTable['&gt;']);
 
-			$cs =& $GLOBALS['TSFE']->csConvObj;
-
 			foreach ($translationTable as $key => $val) {
-				$translationTable[$key] = $cs->conv($val, 'iso-8859-1', 'utf-8');
+				$translationTable[$key] = $GLOBALS['TSFE']->csConvObj->conv($val, 'iso-8859-1', 'utf-8');
 			}
 		}
 
-		return strtr($str, $translationTable);
+		return strtr($code, $translationTable);
 	}
 
 
 	/**
 	 * Takes an utf-8 string and changes the character set on demand
+	 *
+	 * @param string $content
+	 * @param string $charset
+	 * @return string
 	 */
-	function import_utf8_string($str, $charset = NULL) {
+	protected function importUnicodeString($content, $charset = NULL) {
 		if (!is_string($charset)) {
 			$charset = $this->pi1->extConf['charset']['lower'];
 		}
 
 		if ($charset != 'utf-8') {
-			$cs =& $GLOBALS['TSFE']->csConvObj;
-			$str = $cs->utf8_decode($str, $charset, TRUE);
+			$content = $GLOBALS['TSFE']->csConvObj->utf8_decode($content, $charset, TRUE);
 		}
-		return $str;
+		return $content;
 	}
 
 }

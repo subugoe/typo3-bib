@@ -47,7 +47,7 @@ class CiteIdGenerator {
 	/**
 	 * @param \tx_bib_pi1 $pi1
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		$this->referenceReader =& $pi1->referenceReader;
 		$this->charset = $pi1->extConf['charset']['upper'];
 	}
@@ -56,9 +56,9 @@ class CiteIdGenerator {
 	 * Generates a cite id for the publication in piVars['DATA']
 	 *
 	 * @param array $row
-	 * @return The generated id
+	 * @return string The generated id
 	 */
-	function generateId($row) {
+	public function generateId($row) {
 		$id = $this->generateBasicId($row);
 		$tmpId = $id;
 
@@ -78,9 +78,9 @@ class CiteIdGenerator {
 
 	/**
 	 * @param array $row
-	 * @return String
+	 * @return string
 	 */
-	function generateBasicId($row) {
+	protected function generateBasicId($row) {
 		$authors = $row['authors'];
 		$editors = \Ipf\Bib\Utility\Utility::explode_author_str($row['editor']);
 
@@ -97,7 +97,7 @@ class CiteIdGenerator {
 					else if (strlen($pp['forename']))
 						$a_str = $pp['forename'];
 					if (strlen($a_str) > 0)
-						$id = $this->simplified_string($a_str);
+						$id = $this->simplifiedString($a_str);
 				}
 			}
 			for ($i = 1; $i < sizeof($list); $i++) {
@@ -109,7 +109,7 @@ class CiteIdGenerator {
 					$a_str = $pp['forename'];
 				if (strlen($a_str) > 0) {
 					$id .= mb_substr(
-						$this->simplified_string($a_str), 0, 1, $this->charset);
+						$this->simplifiedString($a_str), 0, 1, $this->charset);
 				}
 			}
 		}
@@ -120,7 +120,7 @@ class CiteIdGenerator {
 		if ($row['year'] > 0)
 			$id .= $row['year'];
 
-		return $this->simplified_string($id);
+		return $this->simplifiedString($id);
 	}
 
 
@@ -128,9 +128,10 @@ class CiteIdGenerator {
 	 * Replaces all special characters and HTML sequences in a string to
 	 * characters that are allowed in a citation id
 	 *
-	 * @return The simplified string
+	 * @param string $id
+	 * @return string The simplified string
 	 */
-	function simplified_string($id) {
+	protected function simplifiedString($id) {
 		// Replace some special characters with ASCII characters
 		$id = htmlentities($id, ENT_QUOTES, $this->charset);
 		$id = str_replace('&amp;', '&', $id);

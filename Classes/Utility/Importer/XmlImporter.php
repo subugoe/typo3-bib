@@ -30,6 +30,7 @@ class XmlImporter extends Importer {
 
 	/**
 	 * @param \tx_bib_pi1 $pi1
+	 * @return void
 	 */
 	public function initialize($pi1) {
 		parent::initialize($pi1);
@@ -52,8 +53,6 @@ class XmlImporter extends Importer {
 	 * @return string
 	 */
 	protected function import_state_2() {
-		$stat =& $this->statistics;
-		$action = $this->pi1->get_link_url(array('import_state' => 2));
 		$content = '';
 
 		$stat =& $this->statistics;
@@ -66,26 +65,23 @@ class XmlImporter extends Importer {
 
 		$fstr = file_get_contents($_FILES['ImportFile']['tmp_name']);
 
-		$parsed = 'Unknown error';
-		$parsed = $this->parse_xml_pubs($fstr);
+		$parsed = $this->parseXmlPublications($fstr);
 		if (is_string($parsed)) {
 			$stat['failed'] += 1;
 			$stat['errors'][] = $parsed;
 		} else {
-			//\TYPO3\CMS\Core\Utility\GeneralUtility::debug ( $parsed );
-
 			foreach ($parsed as $pub) {
-				$this->save_publication($pub);
+				$this->savePublication($pub);
 			}
 		}
 		return $content;
 	}
 
 	/**
-	 * @param $xmlPublications
+	 * @param string $xmlPublications
 	 * @return array|string
 	 */
-	protected function parse_xml_pubs($xmlPublications) {
+	protected function parseXmlPublications($xmlPublications) {
 		$parser = xml_parser_create();
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
@@ -96,9 +92,9 @@ class XmlImporter extends Importer {
 			return 'File is not valid XML';
 		}
 
-		$refFields = array();
+		$referenceFields = array();
 		foreach ($this->referenceReader->refFields as $field) {
-			$refFields[] = strtolower($field);
+			$referenceFields[] = strtolower($field);
 		}
 
 		$pubs = array();
@@ -107,21 +103,20 @@ class XmlImporter extends Importer {
 		$in_ref = FALSE;
 		$in_authors = FALSE;
 		$in_person = FALSE;
+
 		foreach ($tags as $cTag) {
 			$tag =& $cTag['tag'];
-			$tag_low = strtolower($tag);
-			$tag_up = strtoupper($tag);
+			$lowerCaseTag = strtolower($tag);
+			$upperCaseTag = strtoupper($tag);
 			$type =& $cTag['type'];
 			$level =& $cTag['level'];
-			$value = $this->import_utf8_string($cTag['value']);
+			$value = $this->importUnicodeString($cTag['value']);
+
 			if (!$in_bib) {
-				if (($tag == 'bib') &&
-						($type == 'open')
-				) {
+				if (($tag == 'bib') && ($type == 'open')) {
 					$in_bib = TRUE;
 				}
 			} else {
-
 				if (!$in_ref) {
 					if (($tag == 'reference') && ($type == 'open')) {
 						// News reference
@@ -140,9 +135,9 @@ class XmlImporter extends Importer {
 							$in_authors = TRUE;
 							$pub['authors'] = array();
 						} else
-							if (in_array($tag_low, $refFields)) {
+							if (in_array($lowerCaseTag, $referenceFields)) {
 								if ($type == 'complete') {
-									switch ($tag_low) {
+									switch ($lowerCaseTag) {
 										case 'bibtype':
 											foreach ($this->referenceReader->allBibTypes as $ii => $bib) {
 												if (strtolower($value) == $bib) {
@@ -162,11 +157,11 @@ class XmlImporter extends Importer {
 										default:
 									}
 									// Apply value
-									if (in_array($tag_low, $this->referenceReader->refFields)) {
-										$pub[$tag_low] = $value;
+									if (in_array($lowerCaseTag, $this->referenceReader->refFields)) {
+										$pub[$lowerCaseTag] = $value;
 									} else {
-										if (in_array($tag_up, $this->referenceReader->refFields)) {
-											$pub[$tag_up] = $value;
+										if (in_array($upperCaseTag, $this->referenceReader->refFields)) {
+											$pub[$upperCaseTag] = $value;
 										} else {
 											$pub[$tag] = $value;
 										}
@@ -202,15 +197,17 @@ class XmlImporter extends Importer {
 							$fn_fields = array('forename', 'fn');
 							if (in_array($tag, $sn_fields) && ($type == 'complete')) {
 								$author['surname'] = $value;
-							} else
+							} else {
 								if (in_array($tag, $fn_fields) && ($type == 'complete')) {
 									$author['forename'] = $value;
-								} else
+								} else {
 									if (($tag == 'person') && ($type == 'close')) {
 										// Leave person
 										$in_person = FALSE;
 										$pub['authors'][] = $author;
 									}
+								}
+							}
 						}
 					}
 				}

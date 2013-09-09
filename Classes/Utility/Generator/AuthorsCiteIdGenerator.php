@@ -30,7 +30,7 @@ class AuthorsCiteIdGenerator extends CiteIdGenerator {
 
 	function generateBasicId($row) {
 		$authors = $row['authors'];
-		return $this->simplified_string($authors[0]['sn']);
+		return $this->simplifiedString($authors[0]['sn']);
 	}
 
 }

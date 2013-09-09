@@ -26,7 +26,7 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-class Exporter {
+abstract class Exporter {
 
 	/**
 	 * @var \tx_bib_pi1
@@ -45,7 +45,14 @@ class Exporter {
 	public $filter_key;
 	public $page_mode;
 
+	/**
+	 * @var string
+	 */
 	public $file_path;
+
+	/**
+	 * @var string
+	 */
 	public $file_name;
 	public $file_new;
 
@@ -56,6 +63,9 @@ class Exporter {
 	public $info;
 	public $error;
 
+	/**
+	 * @var array
+	 */
 	public $extensionManagerConfiguration;
 
 	/**
@@ -88,24 +98,22 @@ class Exporter {
 		$this->data = '';
 	}
 
-
 	/**
 	 * Returns the composed path/file name
 	 *
 	 * @return String The file address
 	 */
-	function get_file_rel() {
+	public function getRelativeFilePath() {
 		return $this->file_path . '/' . $this->file_name;
 	}
-
 
 	/**
 	 * Returns absolute system file path
 	 *
 	 * @return String The absolute file path
 	 */
-	function get_file_abs() {
-		return PATH_site . $this->get_file_rel();
+	protected function getAbsoluteFilePath() {
+		return PATH_site . $this->getRelativeFilePath();
 	}
 
 
@@ -117,12 +125,12 @@ class Exporter {
 	 * @return bool TRUE if file exists and is newer than the
 	 *         database content, FALSE otherwise.
 	 */
-	function file_is_newer($file) {
-		$db_time = $this->referenceReader->fetch_max_tstamp();
+	protected function isFileMoreUpToDate($file) {
+		$databaseTimestamp = $this->referenceReader->fetch_max_tstamp();
 
 		if (file_exists($file)) {
-			$ft = filemtime($file);
-			if (!($ft === FALSE) && ($db_time < $ft)) {
+			$fileModificationTIme = filemtime($file);
+			if (!($fileModificationTIme === FALSE) && ($databaseTimestamp < $fileModificationTIme)) {
 				return TRUE;
 			}
 		}
@@ -136,7 +144,7 @@ class Exporter {
 	 *
 	 * @return bool TRUE ond error, FALSE otherwise
 	 */
-	function export() {
+	public function export() {
 		$this->file_new = FALSE;
 
 		// Initialize sink
@@ -158,18 +166,18 @@ class Exporter {
 			$infoArr['index'] = -1;
 
 			// Write pre data
-			$data = $this->file_intro($infoArr);
+			$data = $this->fileIntro($infoArr);
 			$this->sink_write($data);
 
 			// Write publications
 			while ($pub = $this->referenceReader->mFetch()) {
 				$infoArr['index']++;
-				$data = $this->export_format_publication($pub, $infoArr);
+				$data = $this->formatPublicationForExport($pub, $infoArr);
 				$this->sink_write($data);
 			}
 
 			// Write post data
-			$data = $this->file_outtro($infoArr);
+			$data = $this->fileOutro($infoArr);
 			$this->sink_write($data);
 
 			// Clean up db access
@@ -188,11 +196,11 @@ class Exporter {
 	/**
 	 * Formats one publication for the export
 	 *
+	 * @param array $publication
+	 * @param array $infoArr
 	 * @return string The export string
 	 */
-	function export_format_publication($pub, $infoArr = array()) {
-		return '';
-	}
+	abstract protected function formatPublicationForExport($publication, $infoArr = array());
 
 
 	/**
@@ -201,10 +209,7 @@ class Exporter {
 	 * @param $infoArr
 	 * @return string The file header string
 	 */
-	protected function file_intro($infoArr = array()) {
-		return '';
-	}
-
+	abstract protected function fileIntro($infoArr = array());
 
 	/**
 	 * Returns the file outtro
@@ -212,17 +217,16 @@ class Exporter {
 	 * @param array $infoArr
 	 * @return string The file header string
 	 */
-	protected function file_outtro($infoArr = array()) {
-		return '';
-	}
+	abstract protected function fileOutro($infoArr = array());
 
 
 	/**
 	 * Returns a general information text for the exported dataset
 	 *
+	 * @param array
 	 * @return string A filter information string
 	 */
-	function info_text($infoArr = array()) {
+	protected function getGeneralInformationText($infoArr = array()) {
 		$content = '';
 
 		$num = intval($infoArr['pubNum']);
@@ -251,15 +255,17 @@ class Exporter {
 	 *  0 - Sink ready
 	 *  1 - Sink failed
 	 * -1 - Sink is up to date
+	 *
+	 * @return int
 	 */
-	function sink_init() {
+	protected function sink_init() {
 		if ($this->dynamic) {
 			$this->data = '';
 		} else {
 			// Open file
-			$file_abs = $this->get_file_abs();
+			$file_abs = $this->getAbsoluteFilePath();
 
-			if ($this->file_is_newer($file_abs)
+			if ($this->isFileMoreUpToDate($file_abs)
 					&& !$this->pi1->extConf['debug']
 			) {
 				return -1;
@@ -279,7 +285,11 @@ class Exporter {
 		return 0;
 	}
 
-	function sink_write($data) {
+	/**
+	 * @param $data
+	 * @return void
+	 */
+	protected function sink_write($data) {
 		if ($this->dynamic) {
 			$this->data .= $data;
 		} else {
@@ -287,10 +297,11 @@ class Exporter {
 		}
 	}
 
-	function sink_finish() {
-		if ($this->dynamic) {
-			// Nothing
-		} else {
+	/**
+	 * @return void
+	 */
+	protected function sink_finish() {
+		if (!$this->dynamic) {
 			if ($this->file_res) {
 				fclose($this->file_res);
 				$this->file_res = FALSE;

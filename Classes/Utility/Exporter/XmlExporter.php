@@ -57,11 +57,11 @@ class XmlExporter extends Exporter {
 	}
 
 	/**
-	 * @param $pub
+	 * @param $publication
 	 * @param array $infoArr
 	 * @return string
 	 */
-	public function export_format_publication($pub, $infoArr = array()) {
+	public function formatPublicationForExport($publication, $infoArr = array()) {
 		$content = '';
 
 		$pi1 =& $this->pi1;
@@ -69,7 +69,7 @@ class XmlExporter extends Exporter {
 		$charset = $pi1->extConf['charset']['lower'];
 
 		if ($charset != 'utf-8') {
-			$pub = $this->referenceReader->change_pub_charset($pub, $charset, 'utf-8');
+			$publication = $this->referenceReader->change_pub_charset($publication, $charset, 'utf-8');
 		}
 
 		$content .= '<reference>' . "\n";
@@ -81,12 +81,12 @@ class XmlExporter extends Exporter {
 
 			switch ($key) {
 				case 'authors':
-					$value = $pub['authors'];
+					$value = $publication['authors'];
 					if (sizeof($value) == 0)
 						$append = FALSE;
 					break;
 				default:
-					$value = trim($pub[$key]);
+					$value = trim($publication[$key]);
 					if ((strlen($value) == 0) || ($value == '0'))
 						$append = FALSE;
 			}
@@ -160,12 +160,12 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function file_intro($infoArr = array()) {
+	protected function fileIntro($infoArr = array()) {
 		$content = '';
 		$content .= '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 		$content .= '<bib>' . "\n";
 		$content .= '<comment>' . "\n";
-		$content .= $this->xmlFormatString($this->info_text($infoArr));
+		$content .= $this->xmlFormatString($this->getGeneralInformationText($infoArr));
 		$content .= '</comment>' . "\n";
 		return $content;
 	}
@@ -174,7 +174,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function file_outtro($infoArr = array()) {
+	protected function fileOutro($infoArr = array()) {
 		$content = '';
 		$content .= '</bib>' . "\n";
 		return $content;

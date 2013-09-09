@@ -66,7 +66,7 @@ class DbUtility {
 	/**
 	 * Initializes the import. The argument must be the plugin class
 	 *
-	 * @param bool|\Ipf\Bib\Utility\ReferenceReader
+	 * @param bool|\Ipf\Bib\Utility\ReferenceReader $referenceReader
 	 * @return void
 	 */
 	public function initialize($referenceReader = FALSE) {
@@ -83,7 +83,7 @@ class DbUtility {
 	 *
 	 * @return int The number of deleted authors
 	 */
-	function deleteAuthorsWithoutPublications() {
+	public function deleteAuthorsWithoutPublications() {
 		$count = 0;
 
 		$selectQuery = 'SELECT t_au.uid' . "\n";
@@ -122,7 +122,7 @@ class DbUtility {
 	 * @param array $configuration
 	 * @return void
 	 */
-	public function read_full_text_conf($configuration) {
+	public function readFullTextGenerationConfiguration($configuration) {
 
 		if (is_array($configuration)) {
 			if (isset ($configuration['max_num'])) {
@@ -204,6 +204,8 @@ class DbUtility {
 	/**
 	 * Updates the full_text for the reference with the given uid
 	 *
+	 * @param int $uid
+	 * @param bool $force
 	 * @return string|bool
 	 */
 	protected function update_full_text($uid, $force = FALSE) {
@@ -258,10 +260,8 @@ class DbUtility {
 			}
 
 			if ($clear) {
-
 				$db_update = TRUE;
 			} else {
-
 				return FALSE;
 			}
 		}

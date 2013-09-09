@@ -138,6 +138,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected $pidList;
 
+	protected $flexForm;
+
+	/**
+	 * @var string
+	 */
+	protected $flexFormFilterSheet;
+
 	/**
 	 * The main function merges all configuration options and
 	 * switches to the appropriate request handler
@@ -1124,6 +1131,277 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->initializeSelectionFilter();
 	}
 
+	/**
+	 * @return void
+	 */
+	protected function initializeYearFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_year', $this->flexFormFilterSheet) > 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['years'] = array();
+			$flexFormFilter['ranges'] = array();
+			$ffStr = $this->pi_getFFvalue($this->flexForm, 'years', $this->flexFormFilterSheet);
+			$arr = \Ipf\Bib\Utility\Utility::multi_explode_trim(
+				array(',', "\r", "\n"),
+				$ffStr,
+				TRUE
+			);
+
+			foreach ($arr as $year) {
+				if (strpos($year, '-') === FALSE) {
+					if (is_numeric($year)) {
+						$flexFormFilter['years'][] = intval($year);
+					}
+				} else {
+					$range = array();
+					$elms = \Ipf\Bib\Utility\Utility::explode_trim('-', $year, FALSE);
+					if (is_numeric($elms[0])) {
+						$range['from'] = intval($elms[0]);
+					}
+					if (is_numeric($elms[1])) {
+						$range['to'] = intval($elms[1]);
+					}
+					if (sizeof($range) > 0) {
+						$flexFormFilter['ranges'][] = $range;
+					}
+				}
+			}
+			if ((sizeof($flexFormFilter['years']) + sizeof($flexFormFilter['ranges'])) > 0) {
+				$this->extConf['filters']['flexform']['year'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeAuthorFilter() {
+		$this->extConf['highlight_authors'] = $this->pi_getFFvalue($this->flexForm, 'highlight_authors', $this->flexFormFilterSheet);
+
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_author', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();;
+			$flexFormFilter['authors'] = array();
+			$flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'author_rule', $this->flexFormFilterSheet);
+			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+
+			$authors = $this->pi_getFFvalue($this->flexForm, 'authors', $this->flexFormFilterSheet);
+			$authors = \Ipf\Bib\Utility\Utility::multi_explode_trim(
+				array("\r", "\n"),
+				$authors,
+				TRUE
+			);
+
+			foreach ($authors as $a) {
+				$parts = GeneralUtility::trimExplode(',', $a);
+				$author = array();
+				if (strlen($parts[0]) > 0) {
+					$author['surname'] = $parts[0];
+				}
+				if (strlen($parts[1]) > 0) {
+					$author['forename'] = $parts[1];
+				}
+				if (sizeof($author) > 0) {
+					$flexFormFilter['authors'][] = $author;
+				}
+			}
+			if (sizeof($flexFormFilter['authors']) > 0) {
+				$this->extConf['filters']['flexform']['author'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeStateFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_state', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['states'] = array();
+			$states = intval($this->pi_getFFvalue($this->flexForm, 'states', $this->flexFormFilterSheet));
+
+			$j = 1;
+			for ($i = 0; $i < sizeof($this->referenceReader->allStates); $i++) {
+				if ($states & $j) {
+					$flexFormFilter['states'][] = $i;
+				}
+				$j = $j * 2;
+			}
+			if (sizeof($flexFormFilter['states']) > 0) {
+				$this->extConf['filters']['flexform']['state'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeBibliographyTypeFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_bibtype', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['types'] = array();
+			$types = $this->pi_getFFvalue($this->flexForm, 'bibtypes', $this->flexFormFilterSheet);
+			$types = explode(',', $types);
+			foreach ($types as $type) {
+				$type = intval($type);
+				if (($type >= 0) && ($type < sizeof($this->referenceReader->allBibTypes))) {
+					$flexFormFilter['types'][] = $type;
+				}
+			}
+			if (sizeof($flexFormFilter['types']) > 0) {
+				$this->extConf['filters']['flexform']['bibtype'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeOriginFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_origin', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['origin'] = $this->pi_getFFvalue($this->flexForm, 'origins', $this->flexFormFilterSheet);
+
+			if ($flexFormFilter['origin'] == 1) {
+				// Legacy value
+				$flexFormFilter['origin'] = 0;
+			} else if ($flexFormFilter['origin'] == 2) {
+				// Legacy value
+				$flexFormFilter['origin'] = 1;
+			}
+
+			$this->extConf['filters']['flexform']['origin'] = $flexFormFilter;
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializePidFilter() {
+		$this->extConf['filters']['flexform']['pid'] = $this->extConf['pid_list'];
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeReviewFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_reviewes', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'reviewes', $this->flexFormFilterSheet);
+			$this->extConf['filters']['flexform']['reviewed'] = $flexFormFilter;
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeInLibraryFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_in_library', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'in_library', $this->flexFormFilterSheet);
+			$this->extConf['filters']['flexform']['in_library'] = $flexFormFilter;
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeBorrowedFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_borrowed', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'borrowed', $this->flexFormFilterSheet);
+			$this->extConf['filters']['flexform']['borrowed'] = $flexFormFilter;
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeCiteIdFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_citeid', $this->flexFormFilterSheet) != 0) {
+			$flexFormFilter = array();
+			$ids = $this->pi_getFFvalue($this->flexForm, 'citeids', $this->flexFormFilterSheet);
+			if (strlen($ids) > 0) {
+				$ids = \Ipf\Bib\Utility\Utility::multi_explode_trim(
+					array(
+						',',
+						"\r",
+						"\n"
+					),
+					$ids,
+					TRUE
+				);
+				$flexFormFilter['ids'] = array_unique($ids);
+				$this->extConf['filters']['flexform']['citeid'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeTagFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_tags', $this->flexFormFilterSheet)) {
+			$flexFormFilter = array();
+			$flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'tags_rule', $this->flexFormFilterSheet);
+			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+			$kw = $this->pi_getFFvalue($this->flexForm, 'tags', $this->flexFormFilterSheet);
+			if (strlen($kw) > 0) {
+				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(
+					array(
+						',',
+						"\r",
+						"\n"
+					),
+					$kw,
+					TRUE
+				);
+				foreach ($words as &$word) {
+					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
+				}
+				$flexFormFilter['words'] = $words;
+				$this->extConf['filters']['flexform']['tags'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeKeywordsFilter() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_keywords', $this->flexFormFilterSheet)) {
+			$flexFormFilter = array();
+			$flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'keywords_rule', $this->flexFormFilterSheet);
+			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+			$kw = $this->pi_getFFvalue($this->flexForm, 'keywords', $this->flexFormFilterSheet);
+			if (strlen($kw) > 0) {
+				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
+				foreach ($words as &$word) {
+					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
+				}
+				$flexFormFilter['words'] = $words;
+				$this->extConf['filters']['flexform']['keywords'] = $flexFormFilter;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeGeneralKeywordSearch() {
+		if ($this->pi_getFFvalue($this->flexForm, 'enable_search_all', $this->flexFormFilterSheet)) {
+			$flexFormFilter = array();
+			$flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'search_all_rule', $this->flexFormFilterSheet);
+			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+			$kw = $this->pi_getFFvalue($this->flexForm, 'search_all', $this->flexFormFilterSheet);
+			if (strlen($kw) > 0) {
+				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
+				foreach ($words as &$word) {
+					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
+				}
+				$flexFormFilter['words'] = $words;
+				$this->extConf['filters']['flexform']['all'] = $flexFormFilter;
+			}
+		}
+	}
 
 	/**
 	 * This initializes filter array from the flexform
@@ -1133,188 +1411,37 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function initializeFlexformFilter() {
 		// Create and select the flexform filter
 		$this->extConf['filters']['flexform'] = array();
-		$filter =& $this->extConf['filters']['flexform'];
 
-		// Flexform helpers
-		$flexForm =& $this->cObj->data['pi_flexform'];
-		$flexFormSheet = 's_filter';
+		// Filtersheet and flexform data into variable
+		$this->flexForm = $this->cObj->data['pi_flexform'];
+		$this->flexFormFilterSheet = 's_filter';
 
-		// Pid filter
-		$filter['pid'] = $this->extConf['pid_list'];
+		$this->initializePidFilter();
 
-		// Year filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_year', $flexFormSheet) > 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['years'] = array();
-			$flexFormFilter['ranges'] = array();
-			$ffStr = $this->pi_getFFvalue($flexForm, 'years', $flexFormSheet);
-			$arr = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $ffStr, TRUE);
-			foreach ($arr as $y) {
-				if (strpos($y, '-') === FALSE) {
-					if (is_numeric($y))
-						$flexFormFilter['years'][] = intval($y);
-				} else {
-					$range = array();
-					$elms = \Ipf\Bib\Utility\Utility::explode_trim('-', $y, FALSE);
-					if (is_numeric($elms[0]))
-						$range['from'] = intval($elms[0]);
-					if (is_numeric($elms[1]))
-						$range['to'] = intval($elms[1]);
-					if (sizeof($range) > 0)
-						$flexFormFilter['ranges'][] = $range;
-				}
-			}
-			if ((sizeof($flexFormFilter['years']) + sizeof($flexFormFilter['ranges'])) > 0) {
-				$filter['year'] = $flexFormFilter;
-			}
-		}
+		$this->initializeYearFilter();
 
-		// Author filter
-		$this->extConf['highlight_authors'] = $this->pi_getFFvalue($flexForm, 'highlight_authors', $flexFormSheet);
+		$this->initializeAuthorFilter();
 
-		if ($this->pi_getFFvalue($flexForm, 'enable_author', $flexFormSheet) != 0) {
-			$flexFormFilter = array();;
-			$flexFormFilter['authors'] = array();
-			$flexFormFilter['rule'] = $this->pi_getFFvalue($flexForm, 'author_rule', $flexFormSheet);
-			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+		$this->initializeStateFilter();
 
-			$authors = $this->pi_getFFvalue($flexForm, 'authors', $flexFormSheet);
-			$authors = \Ipf\Bib\Utility\Utility::multi_explode_trim(array("\r", "\n"), $authors, TRUE);
-			foreach ($authors as $a) {
-				$parts = GeneralUtiliy::trimExplode(',', $a);
-				$author = array();
-				if (strlen($parts[0]) > 0)
-					$author['surname'] = $parts[0];
-				if (strlen($parts[1]) > 0)
-					$author['forename'] = $parts[1];
-				if (sizeof($author) > 0)
-					$flexFormFilter['authors'][] = $author;
-			}
-			if (sizeof($flexFormFilter['authors']) > 0)
-				$filter['author'] = $flexFormFilter;
-		}
+		$this->initializeBibliographyTypeFilter();
 
-		// State filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_state', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['states'] = array();
-			$states = intval($this->pi_getFFvalue($flexForm, 'states', $flexFormSheet));
+		$this->initializeOriginFilter();
 
-			$j = 1;
-			for ($i = 0; $i < sizeof($this->referenceReader->allStates); $i++) {
-				if ($states & $j)
-					$flexFormFilter['states'][] = $i;
-				$j = $j * 2;
-			}
-			if (sizeof($flexFormFilter['states']) > 0)
-				$filter['state'] = $flexFormFilter;
-		}
+		$this->initializeReviewFilter();
 
-		// Bibtype filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_bibtype', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['types'] = array();
-			$types = $this->pi_getFFvalue($flexForm, 'bibtypes', $flexFormSheet);
-			$types = explode(',', $types);
-			foreach ($types as $v) {
-				$v = intval($v);
-				if (($v >= 0) && ($v < sizeof($this->referenceReader->allBibTypes)))
-					$flexFormFilter['types'][] = $v;
-			}
-			if (sizeof($flexFormFilter['types']) > 0)
-				$filter['bibtype'] = $flexFormFilter;
-		}
+		$this->initializeInLibraryFilter();
 
-		// Origin filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_origin', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['origin'] = $this->pi_getFFvalue($flexForm, 'origins', $flexFormSheet);
-			if ($flexFormFilter['origin'] == 1)
-				$flexFormFilter['origin'] = 0; // Legacy value
-			else if ($flexFormFilter['origin'] == 2)
-				$flexFormFilter['origin'] = 1; // Legacy value
-			$filter['origin'] = $flexFormFilter;
-		}
+		$this->initializeBorrowedFilter();
 
-		// Reviewed filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_reviewes', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['value'] = $this->pi_getFFvalue($flexForm, 'reviewes', $flexFormSheet);
-			$filter['reviewed'] = $flexFormFilter;
-		}
+		$this->initializeCiteIdFilter();
 
-		// In library filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_in_library', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['value'] = $this->pi_getFFvalue($flexForm, 'in_library', $flexFormSheet);
-			$filter['in_library'] = $flexFormFilter;
-		}
+		$this->initializeTagFilter();
 
-		// Borrowed filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_borrowed', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$flexFormFilter['value'] = $this->pi_getFFvalue($flexForm, 'borrowed', $flexFormSheet);
-			$filter['borrowed'] = $flexFormFilter;
-		}
+		$this->initializeKeywordsFilter();
 
-		// Citeid filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_citeid', $flexFormSheet) != 0) {
-			$flexFormFilter = array();
-			$ids = $this->pi_getFFvalue($flexForm, 'citeids', $flexFormSheet);
-			if (strlen($ids) > 0) {
-				$ids = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $ids, TRUE);
-				$flexFormFilter['ids'] = array_unique($ids);
-				$filter['citeid'] = $flexFormFilter;
-			}
-		}
+		$this->initializeGeneralKeywordSearch();
 
-		// Tags filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_tags', $flexFormSheet)) {
-			$flexFormFilter = array();
-			$flexFormFilter['rule'] = $this->pi_getFFvalue($flexForm, 'tags_rule', $flexFormSheet);
-			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
-			$kw = $this->pi_getFFvalue($flexForm, 'tags', $flexFormSheet);
-			if (strlen($kw) > 0) {
-				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
-				foreach ($words as &$word) {
-					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
-				}
-				$flexFormFilter['words'] = $words;
-				$filter['tags'] = $flexFormFilter;
-			}
-		}
-
-		// Keywords filter
-		if ($this->pi_getFFvalue($flexForm, 'enable_keywords', $flexFormSheet)) {
-			$flexFormFilter = array();
-			$flexFormFilter['rule'] = $this->pi_getFFvalue($flexForm, 'keywords_rule', $flexFormSheet);
-			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
-			$kw = $this->pi_getFFvalue($flexForm, 'keywords', $flexFormSheet);
-			if (strlen($kw) > 0) {
-				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
-				foreach ($words as &$word) {
-					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
-				}
-				$flexFormFilter['words'] = $words;
-				$filter['keywords'] = $flexFormFilter;
-			}
-		}
-
-		// General keyword search
-		if ($this->pi_getFFvalue($flexForm, 'enable_search_all', $flexFormSheet)) {
-			$flexFormFilter = array();
-			$flexFormFilter['rule'] = $this->pi_getFFvalue($flexForm, 'search_all_rule', $flexFormSheet);
-			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
-			$kw = $this->pi_getFFvalue($flexForm, 'search_all', $flexFormSheet);
-			if (strlen($kw) > 0) {
-				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
-				foreach ($words as &$word) {
-					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
-				}
-				$flexFormFilter['words'] = $words;
-				$filter['all'] = $flexFormFilter;
-			}
-		}
 	}
 
 
@@ -1455,8 +1582,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function initializeEditIcons() {
 		$list = array();
 		$more = $this->conf['edit_icons.'];
-		if (is_array($more))
+		if (is_array($more)) {
 			$list = array_merge($list, $more);
+		}
 
 		foreach ($list as $key => $val) {
 			$this->icon_src[$key] = $GLOBALS['TSFE']->tmpl->getFileName($base . $val);
@@ -3119,9 +3247,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$title = $this->get_ll('export_title');
 		$content .= '<h2>' . $title . '</h2>' . "\n";
 
-		$exporter = FALSE;
 		$label = '';
-		$exporterClass = '';
 		switch ($mode) {
 			case 'bibtex':
 				$exporterClass = 'Ipf\\Bib\\Utility\\Exporter\\BibTexExporter';
@@ -3147,15 +3273,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 
 			$dynamic = $this->conf['export.']['dynamic'] ? TRUE : FALSE;
-			if ($this->extConf['dynamic'])
+
+			if ($this->extConf['dynamic']) {
 				$dynamic = TRUE;
+			}
+
 			$exporter->dynamic = $dynamic;
 
 			if ($exporter->export()) {
 				$content .= $this->errorMessage($exporter->error);
 			} else {
 				if ($dynamic) {
-
 					// Dump the export data and exit
 					$exporterFileName = $exporter->file_name;
 					header('Content-Type: text/plain');
@@ -3163,15 +3291,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					header('Cache-Control: no-cache, must-revalidate');
 					echo $exporter->data;
 					exit ();
-
 				} else {
 					// Create link to file
-					$link = $this->cObj->getTypoLink($exporter->file_name,
-						$exporter->get_file_rel());
+					$link = $this->cObj->getTypoLink(
+						$exporter->file_name,
+						$exporter->getRelativeFilePath()
+					);
 					$content .= '<ul><li><div>';
 					$content .= $link;
-					if ($exporter->file_new)
+					if ($exporter->file_new) {
 						$content .= ' (' . $this->get_ll('export_file_new') . ')';
+					}
 					$content .= '</div></li>';
 					$content .= '</ul>' . "\n";
 				}
@@ -3188,14 +3318,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return String The import dialog
 	 */
 	protected function importDialog() {
-		$content = '';
+
 		$title = $this->get_ll('import_title');
-		$content .= '<h2>' . $title . '</h2>' . "\n";
+		$content = '<h2>' . $title . '</h2>' . "\n";
 		$mode = $this->piVars['import'];
 
 		if (($mode == self::IMP_BIBTEX) || ($mode == self::IMP_XML)) {
 
+			/** @var \Ipf\Bib\Utility\Importer\Importer $importer */
 			$importer = FALSE;
+
 			switch ($mode) {
 				case self::IMP_BIBTEX:
 					$importer = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Importer\\BibTexImporter');
@@ -3204,6 +3336,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					$importer = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Importer\\XmlImporter');
 					break;
 			}
+
 			$importer->initialize($this);
 			$content .= $importer->import();
 		} else {
@@ -3246,7 +3379,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				"fe_user_id",
 				"tx_bib_domain_model_author as a,tx_bib_domain_model_authorships as m",
-					"a.uid=m.author_id AND m.pub_id=" . $publicationId
+				"a.uid=m.author_id AND m.pub_id=" . $publicationId
 			);
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {

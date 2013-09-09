@@ -296,13 +296,14 @@ class BibTexImporter extends Importer {
 		return $content;
 	}
 
-
+	/**
+	 * @return string
+	 */
 	protected function import_state_2() {
-		$stat =& $this->statistics;
 		$action = $this->pi1->get_link_url(array('import_state' => 2));
 		$buff_size = 1024;
 		//$buff_size = 10;
-		$con = '';
+		$content = '';
 
 		$stat =& $this->statistics;
 
@@ -334,8 +335,9 @@ class BibTexImporter extends Importer {
 				foreach ($buff_arr as $this->buffer) {
 					$ii++;
 					$this->parser_switch();
-					if (($count > 1) && ($ii < $count))
+					if (($count > 1) && ($ii < $count)) {
 						$this->pline += 1;
+					}
 				}
 			}
 		} catch (ParserException $parserException) {
@@ -346,9 +348,9 @@ class BibTexImporter extends Importer {
 
 		// Translate and save the raw references
 		foreach ($this->raw_refs as $raw) {
-			$save_ok = false;
+
 			try {
-				$pub = $this->translate_raw_ref($raw);
+				$publication = $this->translate_raw_ref($raw);
 				$save_ok = true;
 			} catch (TranslatorException $translatorException) {
 				$stat['failed']++;
@@ -357,11 +359,11 @@ class BibTexImporter extends Importer {
 			}
 
 			if ($save_ok) {
-				$this->save_publication($pub);
+				$this->savePublication($publication);
 			}
 		}
 
-		return $con;
+		return $content;
 	}
 
 
@@ -708,8 +710,8 @@ class BibTexImporter extends Importer {
 	 */
 	function translate_raw_string($raw) {
 		$res = $this->bt->translate($raw);
-		$res = $this->code_to_utf8($res);
-		$res = $this->import_utf8_string($res);
+		$res = $this->codeToUnicode($res);
+		$res = $this->importUnicodeString($res);
 		return $res;
 	}
 

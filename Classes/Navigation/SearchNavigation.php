@@ -193,7 +193,7 @@ class SearchNavigation extends Navigation {
 			// Setup search patterns
 			$words = array();
 			foreach ($strings as $txt) {
-				$words[] = $this->pi1->ref_read->search_word($txt, $charset);
+				$words[] = $this->pi1->referenceReader->search_word($txt, $charset);
 			}
 
 			$exclude = array();
