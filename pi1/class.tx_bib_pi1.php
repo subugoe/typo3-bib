@@ -605,7 +605,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function finalize($pluginContent) {
 		if ($this->extConf['debug']) {
-			$pluginContent .= GeneralUtility::view_array(
+			$pluginContent .= \TYPO3\CMS\Core\Utility\DebugUtility::viewArray(
 				array(
 					'extConf' => $this->extConf,
 					'conf' => $this->conf,
