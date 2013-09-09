@@ -28,7 +28,7 @@ namespace Ipf\Bib\Utility;
 
 use \TYPO3\CMS\Backend\Utility\BackendUtility;
 
-class Labels {
+class LabelUtility {
 
 	/**
 	 * Returns label of an authorship
@@ -36,7 +36,7 @@ class Labels {
 	 * @param mixed $pObj
 	 * @return void Name of author and title of reference
 	 */
-	public function get_authorship_label(&$params, &$pObj) {
+	public function getAuthorshipLabel(&$params, &$pObj) {
 		$item_id = $params['row']['uid'];
 		$title = '';
 

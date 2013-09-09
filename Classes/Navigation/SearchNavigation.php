@@ -39,15 +39,17 @@ class SearchNavigation extends Navigation {
 	 * @param \tx_bib_pi1 $pi1
 	 * @return void
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		parent::initialize($pi1);
-		if (is_array($pi1->conf['searchNav.']))
+
+		if (is_array($pi1->conf['searchNav.'])) {
 			$this->conf =& $pi1->conf['searchNav.'];
+		}
 
 		$this->extConf = array();
-		if (is_array($pi1->extConf['search_navi']))
+		if (is_array($pi1->extConf['search_navi'])) {
 			$this->extConf =& $pi1->extConf['search_navi'];
-
+		}
 
 		$this->pref = 'SEARCH_NAVI';
 		$this->load_template('###SEARCH_NAVI_BLOCK###');
