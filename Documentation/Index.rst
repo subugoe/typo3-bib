@@ -1,49 +1,38 @@
-﻿
-
 .. ==================================================
 .. FOR YOUR INFORMATION
 .. --------------------------------------------------
 .. -*- coding: utf-8 -*- with BOM.
 
-.. ==================================================
-.. DEFINE SOME TEXTROLES
-.. --------------------------------------------------
-.. role::   underline
-.. role::   typoscript(code)
-.. role::   ts(typoscript)
-   :class:  typoscript
-.. role::   php(code)
+.. include:: Includes.txt
+.. include:: Images.txt
 
 
-EXT: Bib
-==============
+============================
+Bib: Bibliography Management
+============================
 
-Extension Key: bib
+:Rendered:
+      |today|
 
-Language: en
+:Classification:
+      bibliography
 
-Keywords: publication, reference, manager, bibliography, sevenpack
+:Keywords:
+      publication, reference, manager, bibliography, sevenpack
 
-Copyright 2008-2013, Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
+:Author:
+      Ingo Pfennigstorf
 
-This document is published under the Open Content License
+:Email:
+      i.pfennigstorf@gmail.com
 
-available from http://www.opencontent.org/opl.shtml
 
-The content of this document is related to TYPO3
-
-\- a GNU/GPL CMS/Framework available from www.typo3.org
-
+:Language:
+      en
 
 .. toctree::
    :maxdepth: 5
    :titlesonly:
    :glob:
 
-   Introduction/Index
-   UserManual/Index
-   Administration/Index
-   Configuration/Index
-   ViewHelpers/Index
-   KnownProblems/Index
-   To-doList/Index
+   Main/Index
