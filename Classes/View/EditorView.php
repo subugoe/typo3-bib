@@ -362,7 +362,7 @@ class EditorView {
 		$helpButton = '';
 		if ($widgetMode == self::WIDGET_EDIT) {
 			$url = $GLOBALS['TSFE']->tmpl->getFileName(
-				'EXT:bib/Documentation/syntax.html');
+				'EXT:bib/Resources/Public/Html/Syntax.html');
 			$helpButton = '<span class="' . $buttonClass . '">' .
 					'<a href="' . $url . '" target="_blank" class="button-help">' .
 					$this->get_ll($this->LLPrefix . 'btn_syntax_help') . '</a></span>';
