@@ -282,6 +282,7 @@ class ReferenceReader {
 	/**
 	 * set the cObject
 	 *
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 * @return void
 	 */
 	public function set_cObj(&$cObj) {
@@ -377,7 +378,7 @@ class ReferenceReader {
 			if (!is_array($filter['pid']))
 				if (is_string($filter['pid']))
 					$filter['pid'] = explode(',', strval($filter['pid']));
-			$this->fetch_author_filter_uids($filter);
+			$this->getFilteredAuthorsUids($filter);
 			$this->filters[] = $filter;
 		}
 	}
@@ -584,9 +585,6 @@ class ReferenceReader {
 	 */
 	protected function getFilterWhereClauseParts($filter, &$runvar) {
 
-		$columns =& $runvar['columns'];
-		$aShip_count =& $runvar['aShip_count'];
-
 		$whereClause = array();
 
 		// Filter by UID
@@ -609,32 +607,35 @@ class ReferenceReader {
 
 		// Filter by year
 		if (is_array($filter['year']) && (sizeof($filter['year']) > 0)) {
-			$f =& $filter['year'];
 			$wca = '';
 			// years
-			if (is_array($f['years']) && (sizeof($f['years']) > 0)) {
-				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['years']);
+			if (is_array($filter['year']['years']) && (sizeof($filter['year']['years']) > 0)) {
+				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['year']['years']);
 				$wca .= ' ' . $this->referenceTableAlias . '.year IN (' . $csv . ')' . "\n";
 			}
 			// ranges
-			if (is_array($f['ranges']) && sizeof($f['ranges'])) {
-				$ra =& $f['ranges'];
-				if (sizeof($ra)) {
-					for ($i = 0; $i < sizeof($ra); $i++) {
-						$r =& $ra[$i];
-						$both = (isset ($r['from']) && isset ($r['to'])) ? TRUE : FALSE;
-						if (strlen($wca))
+			if (is_array($filter['year']['ranges']) && sizeof($filter['year']['ranges'])) {
+				if (sizeof($filter['year']['ranges'])) {
+					for ($i = 0; $i < sizeof($filter['year']['ranges']); $i++) {
+						$both = (isset ($filter['year']['ranges'][$i]['from']) && isset ($filter['year']['ranges'][$i]['to'])) ? TRUE : FALSE;
+						if (strlen($wca)) {
 							$wca .= ' OR ';
-						if ($both)
+						}
+						if ($both) {
 							$wca .= '(';
-						if (isset ($r['from']))
-							$wca .= $this->referenceTableAlias . '.year >= ' . intval($r['from']);
-						if ($both)
+						}
+						if (isset ($filter['year']['ranges'][$i]['from'])) {
+							$wca .= $this->referenceTableAlias . '.year >= ' . intval($filter['year']['ranges'][$i]['from']);
+						}
+						if ($both) {
 							$wca .= ' AND ';
-						if (isset ($r['to']))
-							$wca .= $this->referenceTableAlias . '.year <= ' . intval($r['to']);
-						if ($both)
+						}
+						if (isset ($filter['year']['ranges'][$i]['to'])) {
+							$wca .= $this->referenceTableAlias . '.year <= ' . intval($filter['year']['ranges'][$i]['to']);
+						}
+						if ($both) {
 							$wca .= ')';
+						}
 					}
 				}
 			}
@@ -657,11 +658,11 @@ class ReferenceReader {
 						}
 						if (sizeof($uid_lst) > 0) {
 							$uid_lst = implode(',', $uid_lst);
-							$col_num = $aShip_count;
-							$aShip_count += 1;
+							$col_num = $runvar['aShip_count'];
+							$runvar['aShip_count'] += 1;
 							$column = $this->authorshipTableAlias . (($col_num > 0) ? strval($col_num) : '');
 							$wc_set[] = $column . '.author_id IN (' . $uid_lst . ')';
-							$columns[] = $column;
+							$runvar['columns'][] = $column;
 						}
 					}
 
@@ -687,11 +688,11 @@ class ReferenceReader {
 					}
 					if (sizeof($uid_lst) > 0) {
 						$uid_lst = implode(',', $uid_lst);
-						$col_num = $aShip_count;
-						$aShip_count += 1;
+						$col_num = $runvar['aShip_count'];
+						$runvar['aShip_count'] += 1;
 						$column = $this->authorshipTableAlias . (($col_num > 0) ? strval($col_num) : '');
 						$whereClause[] = $column . '.author_id IN (' . $uid_lst . ')';
-						$columns[] = $column;
+						$runvar['columns'][] = $column;
 					} else {
 						$whereClause[] = 'FALSE';
 					}
@@ -891,7 +892,7 @@ class ReferenceReader {
 
 		// Authors
 		if (in_array('authors', $fields)) {
-			$a_ships = $this->search_author_authorships($proc_words, $this->pid_list);
+			$a_ships = $this->searchAuthorAuthorships($proc_words, $this->pid_list);
 			if (sizeof($a_ships) > 0) {
 				$uids = array();
 				foreach ($a_ships as $as) {
@@ -918,7 +919,7 @@ class ReferenceReader {
 	 * @param array $wrap
 	 * @return string|array The search object (string or array)
 	 */
-	public function search_word($word, $charset, $wrap = array('%', '%')) {
+	public function getSearchTerm($word, $charset, $wrap = array('%', '%')) {
 		$spec = htmlentities($word, ENT_QUOTES, $charset);
 		$words = array($word);
 		if ($spec != $word) {
@@ -1050,7 +1051,7 @@ class ReferenceReader {
 	 * @param int $uid ;
 	 * @return bool TRUE on existence FALSE otherwise
 	 */
-	public function citeid_exists($citeId, $uid = -1) {
+	public function citeIdExists($citeId, $uid = -1) {
 
 		if (strlen($citeId) == 0) {
 			return FALSE;
@@ -1089,10 +1090,9 @@ class ReferenceReader {
 	 *
 	 * @return int The number of publications
 	 */
-	public function fetch_num() {
-		$rta =& $this->referenceTableAlias;
+	public function getNumberOfPublications() {
 
-		$select = $this->getReferenceSelectClause($rta . '.uid', NULL);
+		$select = $this->getReferenceSelectClause($this->referenceTableAlias . '.uid', NULL);
 		$select = preg_replace('/;\s*$/', '', $select);
 		$query = 'SELECT count(pubs.uid) FROM (' . $select . ') pubs;';
 		$res = $GLOBALS['TYPO3_DB']->sql_query($query);
@@ -1111,12 +1111,15 @@ class ReferenceReader {
 	 *
 	 * @return int The publication data from the database
 	 */
-	public function fetch_max_tstamp() {
-		$max_rT = 'max(' . $this->referenceTableAlias . '.tstamp)';
-		$max_aT = 'max(' . $this->authorTableAlias . '.tstamp)';
+	public function getLatestTimestamp() {
+		$maximalValueFromReferenceTable = 'max(' . $this->referenceTableAlias . '.tstamp)';
+		$maximumValueFromAuthorTable = 'max(' . $this->authorTableAlias . '.tstamp)';
 
 		$query = $this->getReferenceSelectClause(
-			$max_rT . ', ' . $max_aT, NULL, NULL);
+			$maximalValueFromReferenceTable . ', ' . $maximumValueFromAuthorTable,
+			NULL,
+			NULL
+		);
 		$res = $GLOBALS['TYPO3_DB']->sql_query($query);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
@@ -1135,7 +1138,7 @@ class ReferenceReader {
 	 * @param string $field
 	 * @return array A histogram
 	 */
-	public function fetch_histogram($field = 'year') {
+	public function getHistogram($field = 'year') {
 		$histogram = array();
 
 		$query = $this->getReferenceSelectClause($this->referenceTableAlias . '.' . $field, $this->referenceTableAlias . '.' . $field . ' ASC');
@@ -1145,9 +1148,9 @@ class ReferenceReader {
 		$cNum = NULL;
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$val = $row[$field];
-			if ($cVal == $val)
+			if ($cVal == $val) {
 				$cNum++;
-			else {
+			} else {
 				$cVal = $val;
 				$histogram[$val] = 1;
 				$cNum =& $histogram[$val];
@@ -1164,7 +1167,7 @@ class ReferenceReader {
 	 *
 	 * @return array An array containing the authors
 	 */
-	public function fetch_author_surnames() {
+	public function getSurnamesOfAllAuthors() {
 		$names = array();
 
 		$query = $this->getReferenceSelectClause(
@@ -1191,7 +1194,7 @@ class ReferenceReader {
 	 * @param array $fields
 	 * @return array An array containing the authors
 	 */
-	protected function search_authors($words, $pids, $fields = array('forename', 'surname')) {
+	protected function searchByAuthor($words, $pids, $fields = array('forename', 'surname')) {
 		$all_fields = array('forename', 'surname', 'url');
 		$authors = array();
 		$whereClause = array();
@@ -1243,11 +1246,14 @@ class ReferenceReader {
 	 * Searches and returns the authorships of authors whose name
 	 * looks like any of the words (array)
 	 *
+	 * @param array $words
+	 * @param array $pids
+	 * @param array $fields
 	 * @return array An array containing the authors
 	 */
-	function search_author_authorships($words, $pids, $fields = array('forename', 'surname')) {
+	protected function searchAuthorAuthorships($words, $pids, $fields = array('forename', 'surname')) {
 		$authorships = array();
-		$authors = $this->search_authors($words, $pids, $fields);
+		$authors = $this->searchByAuthor($words, $pids, $fields);
 		if (sizeof($authors) > 0) {
 			$uids = array();
 			foreach ($authors as $author) {
@@ -1275,9 +1281,11 @@ class ReferenceReader {
 	 * Fetches the uid(s) of the given auhor.
 	 * Checked is against the forename and the surname.
 	 *
+	 * @param array $author
+	 * @param array $pids
 	 * @return void Not defined
 	 */
-	function fetch_author_uids($author, $pids) {
+	public function fetch_author_uids($author, $pids) {
 		$uids = array();
 		$all_fields = array('forename', 'surname', 'url');
 
@@ -1321,9 +1329,10 @@ class ReferenceReader {
 	/**
 	 * Fetches the uids of the auhors in the author filter
 	 *
+	 * @param array $filter
 	 * @return void
 	 */
-	function fetch_author_filter_uids(&$filter) {
+	protected function getFilteredAuthorsUids(&$filter) {
 		if (is_array($filter['author']['authors'])) {
 			$filter['author']['sets'] = array();
 			foreach ($filter['author']['authors'] as &$a) {
@@ -1357,9 +1366,10 @@ class ReferenceReader {
 	/**
 	 * Fetches the authors of a publication
 	 *
-	 * @return An array containing author array
+	 * @param int $pub_id
+	 * @return array An array containing author array
 	 */
-	function fetch_pub_authors($pub_id) {
+	protected function getAuthorByPublication($pub_id) {
 		$authors = array();
 
 		$whereClause = '';
@@ -1392,9 +1402,9 @@ class ReferenceReader {
 	 * This retrieves the publication data from the database
 	 *
 	 * @param int $uid
-	 * @return The publication data from the database
+	 * @return array The publication data from the database
 	 */
-	function fetch_db_pub($uid) {
+	public function getPublicationDetails($uid) {
 		$whereClause = "uid='" . intval($uid) . "'";
 		$whereClause .= $this->enable_fields($this->referenceTable, '', $this->show_hidden);
 		$field_csv = implode(',', $this->refAllFields);
@@ -1408,8 +1418,8 @@ class ReferenceReader {
 		$pub = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
 		if (is_array($pub)) {
-			$pub['authors'] = $this->fetch_pub_authors($pub['uid']);
-			$pub['mod_key'] = $this->modification_key($pub);
+			$pub['authors'] = $this->getAuthorByPublication($pub['uid']);
+			$pub['mod_key'] = $this->getModificationKey($pub);
 		}
 
 		return $pub;
@@ -1422,7 +1432,7 @@ class ReferenceReader {
 	 *
 	 * @return void
 	 */
-	function mFetch_initialize() {
+	public function initializeReferenceFetching() {
 		$field_csv = $this->referenceTableAlias . '.' . implode(',' . $this->referenceTableAlias . '.', $this->refAllFields);
 		$query = $this->getReferenceSelectClause($field_csv);
 		$this->dbRes = $GLOBALS['TYPO3_DB']->sql_query($query);
@@ -1432,9 +1442,9 @@ class ReferenceReader {
 	/**
 	 * Returns the number of references that will be fetched
 	 *
-	 * @return The number of references
+	 * @return int The number of references
 	 */
-	function mFetch_num() {
+	public function numberOfReferencesToBeFetched() {
 		return $GLOBALS['TYPO3_DB']->sql_num_rows($this->dbRes);
 	}
 
@@ -1444,11 +1454,11 @@ class ReferenceReader {
 	 *
 	 * @return array A database row
 	 */
-	function mFetch() {
+	public function getReference() {
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($this->dbRes);
 		if ($row) {
-			$row['authors'] = $this->fetch_pub_authors($row['uid']);
-			$row['mod_key'] = $this->modification_key($row);
+			$row['authors'] = $this->getAuthorByPublication($row['uid']);
+			$row['mod_key'] = $this->getModificationKey($row);
 		}
 		return $row;
 	}
@@ -1459,7 +1469,7 @@ class ReferenceReader {
 	 *
 	 * @return void
 	 */
-	function mFetch_finish() {
+	public function finalizeReferenceFetching() {
 		$GLOBALS['TYPO3_DB']->sql_free_result($this->dbRes);
 	}
 
@@ -1467,29 +1477,31 @@ class ReferenceReader {
 	/**
 	 * This returns the modification key for a publication
 	 *
-	 * @return The mod_key string
+	 * @param array $publication
+	 * @return string The mod_key string
 	 */
-	function modification_key($pub) {
-		$key = '';
-		foreach ($pub['authors'] as $author) {
-			$key .= $author['surname'];
-			$key .= $author['forename'];
+	protected function getModificationKey($publication) {
+		$modificationKey = '';
+		foreach ($publication['authors'] as $author) {
+			$modificationKey .= $author['surname'];
+			$modificationKey .= $author['forename'];
 		};
-		$key .= $pub['title'];
-		$key .= strval($pub['crdate']);
-		$key .= strval($pub['tstamp']);
-		$sha = sha1($key);
+		$modificationKey .= $publication['title'];
+		$modificationKey .= strval($publication['crdate']);
+		$modificationKey .= strval($publication['tstamp']);
+		$hashedModificationKey = sha1($modificationKey);
 
-		return $sha;
+		return $hashedModificationKey;
 	}
 
 
 	/**
 	 * Fetches an authorship
 	 *
-	 * @return The matching authorship row or NULL
+	 * @param array $authorship
+	 * @return null|array The matching authorship row or NULL
 	 */
-	function fetch_authorships($authorship) {
+	public function getAuthorships($authorship) {
 		$ret = array();
 		if (is_array($authorship)) {
 

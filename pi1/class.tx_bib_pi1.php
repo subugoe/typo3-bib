@@ -120,8 +120,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	public $icon_src = array();
 
-	// Statistics
-	public $stat;
+	/**
+	 * Statistices
+	 *
+	 * @var array
+	 */
+	public $stat = array();
 
 	/**
 	 * @var array
@@ -210,8 +214,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$this->callSearchNavigationHook();
 
-		// Fetch publication statistics
-		$this->stat = array();
 		$this->referenceReader->set_filters($this->extConf['filters']);
 
 		$this->callAuthorNavigationHook();
@@ -350,7 +352,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function determineNumberOfPublications() {
 		if (!is_numeric($this->stat['num_all'])) {
-			$this->stat['num_all'] = $this->referenceReader->fetch_num();
+			$this->stat['num_all'] = $this->referenceReader->getNumberOfPublications();
 			$this->stat['num_page'] = $this->stat['num_all'];
 		}
 	}
@@ -603,7 +605,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function finalize($pluginContent) {
 		if ($this->extConf['debug']) {
-			$pluginContent .= GeneralUtiliy::view_array(
+			$pluginContent .= GeneralUtility::view_array(
 				array(
 					'extConf' => $this->extConf,
 					'conf' => $this->conf,
@@ -758,7 +760,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if ($this->extConf['show_nav_year']) {
 
 			// Fetch a year histogram
-			$histogram = $this->referenceReader->fetch_histogram('year');
+			$histogram = $this->referenceReader->getHistogram('year');
 			$this->stat['year_hist'] = $histogram;
 			$this->stat['years'] = array_keys($histogram);
 			sort($this->stat['years']);
@@ -1355,7 +1357,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					TRUE
 				);
 				foreach ($words as &$word) {
-					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
+					$word = $this->referenceReader->getSearchTerm($word, $this->extConf['charset']['upper']);
 				}
 				$flexFormFilter['words'] = $words;
 				$this->extConf['filters']['flexform']['tags'] = $flexFormFilter;
@@ -1375,7 +1377,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if (strlen($kw) > 0) {
 				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
 				foreach ($words as &$word) {
-					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
+					$word = $this->referenceReader->getSearchTerm($word, $this->extConf['charset']['upper']);
 				}
 				$flexFormFilter['words'] = $words;
 				$this->extConf['filters']['flexform']['keywords'] = $flexFormFilter;
@@ -1395,7 +1397,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if (strlen($kw) > 0) {
 				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(array(',', "\r", "\n"), $kw, TRUE);
 				foreach ($words as &$word) {
-					$word = $this->referenceReader->search_word($word, $this->extConf['charset']['upper']);
+					$word = $this->referenceReader->getSearchTerm($word, $this->extConf['charset']['upper']);
 				}
 				$flexFormFilter['words'] = $words;
 				$this->extConf['filters']['flexform']['all'] = $flexFormFilter;
@@ -2725,7 +2727,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Database reading initialization
-		$this->referenceReader->mFetch_initialize();
+		$this->referenceReader->initializeReferenceFetching();
 
 		// Determine publication numbers
 		$publicationsBefore = 0;
@@ -2755,7 +2757,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$i_bibtype = 1;
 
 		// Start the fetch loop
-		while ($pub = $this->referenceReader->mFetch()) {
+		while ($pub = $this->referenceReader->getReference()) {
 			// Get prepared publication data
 			$warnings = array();
 			$pdata = $this->prepare_pub_display($pub, $warnings);
@@ -2872,7 +2874,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// clean up
-		$this->referenceReader->mFetch_finish();
+		$this->referenceReader->finalizeReferenceFetching();
 
 		// Restore cObj data
 		$this->cObj->data = $contentObjectBackup;

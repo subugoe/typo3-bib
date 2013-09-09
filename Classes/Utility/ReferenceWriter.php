@@ -138,7 +138,7 @@ class ReferenceWriter {
 		// Fetch reference from DB
 		$pub_db = NULL;
 		if (is_numeric($publication['uid'])) {
-			$pub_db = $this->referenceReader->fetch_db_pub(intval($publication['uid']));
+			$pub_db = $this->referenceReader->getPublicationDetails(intval($publication['uid']));
 			if (is_array($pub_db)) {
 				$uid = intval($pub_db['uid']);
 			} else {
@@ -290,7 +290,7 @@ class ReferenceWriter {
 			}
 		}
 
-		$db_aships = $this->referenceReader->fetch_authorships(array('pub_id' => $pub_uid));
+		$db_aships = $this->referenceReader->getAuthorships(array('pub_id' => $pub_uid));
 
 		$as_delete = array();
 		$as_new = sizeof($authors) - sizeof($db_aships);
@@ -463,7 +463,7 @@ class ReferenceWriter {
 		$deleted = 1;
 
 		$uid = intval($uid);
-		$db_pub = $this->referenceReader->fetch_db_pub($uid);
+		$db_pub = $this->referenceReader->getPublicationDetails($uid);
 		if (is_array($db_pub)) {
 			if ($db_pub['mod_key'] == $mod_key) {
 

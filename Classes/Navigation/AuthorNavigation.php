@@ -99,7 +99,7 @@ class AuthorNavigation extends Navigation {
 		$filter = array();
 
 		// Fetch all surnames and initialize letters
-		$astat['surnames'] = $referenceReader->fetch_author_surnames();
+		$astat['surnames'] = $referenceReader->getSurnamesOfAllAuthors();
 		$astat['sel_surnames'] = array();
 		$this->initializeLetters($astat['surnames']);
 
@@ -131,7 +131,7 @@ class AuthorNavigation extends Navigation {
 
 			// Fetch selected surnames
 			$referenceReader->set_filters($filters);
-			$sel_surnames = $referenceReader->fetch_author_surnames();
+			$sel_surnames = $referenceReader->getSurnamesOfAllAuthors();
 
 			// Remove ampersand strings from surname list
 			$lst = array();

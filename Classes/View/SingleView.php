@@ -94,7 +94,7 @@ class SingleView {
 		$content = '';
 
 		$uid = intval($pi1->extConf['single_view']['uid']);
-		$ref = $this->referenceReader->fetch_db_pub($uid);
+		$ref = $this->referenceReader->getPublicationDetails($uid);
 
 		if (is_array($ref)) {
 			$content .= $this->type_reference($ref);

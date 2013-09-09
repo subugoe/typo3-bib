@@ -126,7 +126,7 @@ abstract class Exporter {
 	 *         database content, FALSE otherwise.
 	 */
 	protected function isFileMoreUpToDate($file) {
-		$databaseTimestamp = $this->referenceReader->fetch_max_tstamp();
+		$databaseTimestamp = $this->referenceReader->getLatestTimestamp();
 
 		if (file_exists($file)) {
 			$fileModificationTIme = filemtime($file);
@@ -158,11 +158,11 @@ abstract class Exporter {
 
 			// Initialize db access
 			$this->referenceReader->set_filters($this->filters);
-			$this->referenceReader->mFetch_initialize();
+			$this->referenceReader->initializeReferenceFetching();
 
 			// Setup info array
 			$infoArr = array();
-			$infoArr['pubNum'] = $this->referenceReader->mFetch_num();
+			$infoArr['pubNum'] = $this->referenceReader->numberOfReferencesToBeFetched();
 			$infoArr['index'] = -1;
 
 			// Write pre data
@@ -170,7 +170,7 @@ abstract class Exporter {
 			$this->sink_write($data);
 
 			// Write publications
-			while ($pub = $this->referenceReader->mFetch()) {
+			while ($pub = $this->referenceReader->getReference()) {
 				$infoArr['index']++;
 				$data = $this->formatPublicationForExport($pub, $infoArr);
 				$this->sink_write($data);
@@ -181,7 +181,7 @@ abstract class Exporter {
 			$this->sink_write($data);
 
 			// Clean up db access
-			$this->referenceReader->mFetch_finish();
+			$this->referenceReader->finalizeReferenceFetching();
 
 			$this->info = $infoArr;
 		}

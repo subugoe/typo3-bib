@@ -264,7 +264,7 @@ class EditorView {
 				}
 
 				// Load publication data from database
-				$pub_db = $this->referenceReader->fetch_db_pub($uid);
+				$pub_db = $this->referenceReader->getPublicationDetails($uid);
 				if ($pub_db) {
 					$publicationData = array_merge($publicationData, $pub_db);
 				} else {
@@ -1463,7 +1463,7 @@ class EditorView {
 		if ($warn[$type] && !$this->conf['no_edit.']['citeid'] &&
 				!$this->conf['no_show.']['citeid']
 		) {
-			if ($this->referenceReader->citeid_exists($pub['citeid'], $pub['uid'])) {
+			if ($this->referenceReader->citeIdExists($pub['citeid'], $pub['uid'])) {
 				$err = array('type' => $type);
 				$err['msg'] = $this->get_ll($this->LLPrefix . 'error_id_exists');
 				$d_err[] = $err;

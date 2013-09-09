@@ -67,7 +67,7 @@ class CiteIdGenerator {
 			$uid = intval($row['uid']);
 
 		$num = 1;
-		while ($this->referenceReader->citeid_exists($tmpId, $uid)) {
+		while ($this->referenceReader->citeIdExists($tmpId, $uid)) {
 			$num++;
 			$tmpId = $id . '_' . $num;
 		}
