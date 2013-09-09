@@ -255,7 +255,7 @@ class ReferenceWriter {
 	 * Saves the authors of a publication
 	 *
 	 * @param int $pub_uid
-	 * @param int pid
+	 * @param int $pid
 	 * @param array $authors
 	 * @return int The uid of the inserted author
 	 */
@@ -282,7 +282,7 @@ class ReferenceWriter {
 					if ($author['uid'] > 0) {
 
 					} else {
-						$this->error = 'An author could not be inserted into the database';
+						$this->error = 'An author ' . $ia['surename'] . '  could not be inserted into the database';
 						$this->log($this->error, 1);
 						return TRUE;
 					}
@@ -324,7 +324,7 @@ class ReferenceWriter {
 
 					$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 						$this->referenceReader->authorshipTable,
-							'uid=' . intval($as_uid),
+						'uid=' . intval($as_uid),
 						$as
 					);
 
@@ -350,7 +350,6 @@ class ReferenceWriter {
 				}
 			}
 		}
-
 	}
 
 
@@ -566,7 +565,6 @@ class ReferenceWriter {
 	}
 
 }
-
 
 if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceWriter.php"]) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceWriter.php"]);
