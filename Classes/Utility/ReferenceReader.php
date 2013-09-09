@@ -1058,7 +1058,7 @@ class ReferenceReader {
 
 		$num = 0;
 		$whereClause = array();
-		$whereClause[] = 'cited=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($citeId, $this->referenceTable);
+		$whereClause[] = 'citeid=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($citeId, $this->referenceTable);
 
 		if (is_numeric($uid) && ($uid >= 0)) {
 			$whereClause[] = 'uid!=' . "'" . intval($uid) . "'";
