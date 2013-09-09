@@ -25,6 +25,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class provides some utility methods and acts mainly a a namespace
@@ -117,20 +118,23 @@ class Utility {
 	/**
 	 * Check if the frontend user is in a usergroup
 	 *
+	 * @param string $groups
+	 * @param bool $admin_ok
 	 * @return bool TRUE if the user is in a given group FALSE otherwise
 	 */
 	public static function check_fe_user_groups($groups, $admin_ok = FALSE) {
-		if ($admin_ok && is_object($GLOBALS['BE_USER'])
-				&& $GLOBALS['BE_USER']->isAdmin()
-		) return TRUE;
+		if ($admin_ok && is_object($GLOBALS['BE_USER']) && $GLOBALS['BE_USER']->isAdmin()) {
+			return TRUE;
+		}
 		if (is_object($GLOBALS['TSFE']->fe_user)
 				&& is_array($GLOBALS['TSFE']->fe_user->user)
 				&& is_array($GLOBALS['TSFE']->fe_user->groupData)
 		) {
 			if (is_string($groups)) {
 				$groups = strtolower($groups);
-				if (!(strpos($groups, 'all') === FALSE))
+				if (!(strpos($groups, 'all') === FALSE)) {
 					return TRUE;
+				}
 				$groups = \Ipf\Bib\Utility\Utility::explode_intval(',', $groups);
 			}
 			$cur =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
@@ -147,20 +151,21 @@ class Utility {
 	 *
 	 * @return string The hidden input element
 	 */
-	public static function html_input($type, $name, $value, $attribs = array()) {
-		$con = '<input type="' . strval($type) . '"';
+	public static function html_input($type, $name, $value, $attributes = array()) {
+		$content = '<input type="' . strval($type) . '"';
 		if (strlen($name) > 0) {
-			$con .= ' name="' . strval($name) . '"';
+			$content .= ' name="' . strval($name) . '"';
 		}
 		if (strlen($value) > 0) {
-			$con .= ' value="' . strval($value) . '"';
+			$content .= ' value="' . strval($value) . '"';
 		}
-		foreach ($attribs as $a_key => $a_value) {
-			if (!($a_value === FALSE))
-				$con .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
+		foreach ($attributes as $a_key => $a_value) {
+			if (!($a_value === FALSE)) {
+				$content .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
+			}
 		}
-		$con .= '>';
-		return $con;
+		$content .= '>';
+		return $content;
 	}
 
 
@@ -190,7 +195,7 @@ class Utility {
 	}
 
 	/**
-	 * Returns a sumit input
+	 * Returns a submit input
 	 *
 	 * @return string The submit input element
 	 */
@@ -405,6 +410,11 @@ class Utility {
 	/**
 	 * Explodes a string and applies intval to each element
 	 *
+	 * @deprecated Use GeneralUtility::intExplode()
+	 *
+	 * @param string $sep
+	 * @param string $str
+	 * @param bool $noEmpty
 	 * @return array The exploded string
 	 */
 	public static function explode_intval($sep, $str, $noEmpty = TRUE) {
@@ -426,7 +436,11 @@ class Utility {
 	/**
 	 * Returns and array with the exploded string and
 	 * the values trimmed
+	 * @deprecated Use GeneralUtility::trimExplode()
 	 *
+	 * @param string $sep
+	 * @param string $str
+	 * @param bool $noEmpty
 	 * @return array The exploded string
 	 */
 	public static function explode_trim($sep, $str, $noEmpty = FALSE) {
@@ -547,9 +561,7 @@ class Utility {
 	 * @return bool FALSE if the file exists TRUE if it does not exist
 	 */
 	public static function check_file_nexist($file) {
-		if ((strlen($file) > 0) &&
-				(substr($file, 0, 10) == 'fileadmin/')
-		) {
+		if ((strlen($file) > 0) && (substr($file, 0, 10) == 'fileadmin/')) {
 			$root = PATH_site;
 			if (substr($root, -1, 1) != '/') {
 				$root .= '/';

@@ -50,7 +50,11 @@ abstract class Importer {
 	 */
 	public $databaseUtility;
 
+	/**
+	 * @var int
+	 */
 	public $storage_pid;
+
 	public $state;
 
 	public $import_type;
@@ -261,17 +265,21 @@ abstract class Importer {
 				break;
 			case 2:
 				$this->acquireStoragePid();
-				$content = $this->import_state_2();
+				$content = $this->importStateTwo();
 				$content .= $this->postImport();
 				$content .= $this->getImportStatistics();
 				break;
 			default:
-				$content = $this->pi1->error_msg('Bad import state');
+				$content = $this->pi1->errorMessage('Bad import state');
 		}
 
 		return $content;
 	}
 
+	/**
+	 * @return string
+	 */
+	abstract protected function displayInformationBeforeImport();
 
 	/**
 	 * file selection state
@@ -283,7 +291,7 @@ abstract class Importer {
 		$content = '';
 
 		// Pre import information
-		$content .= $this->import_pre_info();
+		$content .= $this->displayInformationBeforeImport();
 
 		$action = $this->pi1->get_link_url(array('import' => $this->import_type));
 		$content .= '<form action="' . $action . '" method="post" enctype="multipart/form-data" >';
@@ -311,7 +319,7 @@ abstract class Importer {
 	/**
 	 * @return string
 	 */
-	abstract protected function import_state_2();
+	abstract protected function importStateTwo();
 
 	/**
 	 * Adds an import statistics string to the statistics array

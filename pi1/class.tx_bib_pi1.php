@@ -622,6 +622,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Insert extension specific JavaScript
 	 *
+	 * @throws \Exception
 	 * @return void
 	 */
 	protected function includeJavaScript() {
@@ -719,6 +720,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					case 'erase':
 						$this->extConf['view_mode'] = self::VIEW_DIALOG;
 						$this->extConf['dialog_mode'] = self::DIALOG_ERASE_CONFIRMED;
+						break;
 					case 'hide':
 						$this->hidePublication(TRUE);
 						break;
@@ -1088,10 +1090,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Process restriction requests
-		foreach ($fields as $table => $fields) {
+		foreach ($fields as $table => $tableFields) {
 			$restrictions[$table] = array();
 			$d_table = $table . '.';
-			foreach ($fields as $field) {
+			foreach ($tableFields as $field) {
 				$d_field = $field . '.';
 				$rcfg = $restrictionConfiguration[$d_table][$d_field];
 

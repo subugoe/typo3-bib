@@ -40,11 +40,9 @@ class XmlImporter extends Importer {
 	/**
 	 * @return string
 	 */
-	protected function import_pre_info() {
-		$content = '';
-
+	protected function displayInformationBeforeImport() {
 		$val = $this->pi1->get_ll('import_xml_title', 'import_xml_title', TRUE);
-		$content .= '<p>' . $val . '</p>' . "\n";
+		$content = '<p>' . $val . '</p>' . "\n";
 
 		return $content;
 	}
@@ -52,7 +50,7 @@ class XmlImporter extends Importer {
 	/**
 	 * @return string
 	 */
-	protected function import_state_2() {
+	protected function importStateTwo() {
 		$content = '';
 
 		$stat =& $this->statistics;
@@ -97,7 +95,7 @@ class XmlImporter extends Importer {
 			$referenceFields[] = strtolower($field);
 		}
 
-		$pubs = array();
+		$publications = array();
 		$startlevel = 0;
 		$in_bib = FALSE;
 		$in_ref = FALSE;
@@ -121,7 +119,7 @@ class XmlImporter extends Importer {
 					if (($tag == 'reference') && ($type == 'open')) {
 						// News reference
 						$in_ref = TRUE;
-						$pub = array();
+						$publication = array();
 					} else
 						if (($tag == 'bib') && ($type == 'close')) {
 							// Leave bib
@@ -133,7 +131,7 @@ class XmlImporter extends Importer {
 						if (($tag == 'authors') && ($type == 'open')) {
 							// Enter authors
 							$in_authors = TRUE;
-							$pub['authors'] = array();
+							$publication['authors'] = array();
 						} else
 							if (in_array($lowerCaseTag, $referenceFields)) {
 								if ($type == 'complete') {
@@ -158,12 +156,12 @@ class XmlImporter extends Importer {
 									}
 									// Apply value
 									if (in_array($lowerCaseTag, $this->referenceReader->refFields)) {
-										$pub[$lowerCaseTag] = $value;
+										$publication[$lowerCaseTag] = $value;
 									} else {
 										if (in_array($upperCaseTag, $this->referenceReader->refFields)) {
-											$pub[$upperCaseTag] = $value;
+											$publication[$upperCaseTag] = $value;
 										} else {
-											$pub[$tag] = $value;
+											$publication[$tag] = $value;
 										}
 									}
 								} else {
@@ -174,7 +172,7 @@ class XmlImporter extends Importer {
 								if (($tag == 'reference') && ($type == 'close')) {
 									// Leave reference
 									$in_ref = FALSE;
-									$pubs[] = $pub;
+									$publications[] = $publication;
 								} else {
 									// Unknown field
 									$this->statistics['warnings'][] = 'Ignored field: ' . $tag;
@@ -204,7 +202,7 @@ class XmlImporter extends Importer {
 									if (($tag == 'person') && ($type == 'close')) {
 										// Leave person
 										$in_person = FALSE;
-										$pub['authors'][] = $author;
+										$publication['authors'][] = $author;
 									}
 								}
 							}
@@ -215,7 +213,7 @@ class XmlImporter extends Importer {
 			}
 		}
 
-		return $pubs;
+		return $publications;
 	}
 
 }
