@@ -1020,7 +1020,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @param String $errorString
 	 * @return String The wrapper error message
 	 */
-	protected function errorMessage($errorString) {
+	public function errorMessage($errorString) {
 		$errorMessage = '<div class="' . $this->prefixShort . '-warning_box">' . "\n";
 		$errorMessage .= '<h3>' . $this->prefix_pi1 . ' error</h3>' . "\n";
 		$errorMessage .= '<div>' . $errorString . '</div>' . "\n";
