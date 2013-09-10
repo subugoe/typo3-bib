@@ -1422,7 +1422,7 @@ class ReferenceReader {
 	 * @return array The publication data from the database
 	 */
 	public function getPublicationDetails($uid) {
-		$whereClause = "uid='" . intval($uid) . "'";
+		$whereClause = 'uid = ' . intval($uid);
 		$whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
 		$field_csv = implode(',', $this->refAllFields);
 
@@ -1432,14 +1432,14 @@ class ReferenceReader {
 			$whereClause
 		);
 
-		$pub = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		$publication = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 
-		if (is_array($pub)) {
-			$pub['authors'] = $this->getAuthorByPublication($pub['uid']);
-			$pub['mod_key'] = $this->getModificationKey($pub);
+		if (is_array($publication)) {
+			$publication['authors'] = $this->getAuthorByPublication($publication['uid']);
+			$publication['mod_key'] = $this->getModificationKey($publication);
 		}
 
-		return $pub;
+		return $publication;
 	}
 
 

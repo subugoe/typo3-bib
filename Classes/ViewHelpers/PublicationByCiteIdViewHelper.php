@@ -86,7 +86,13 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 		$referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 
 		if ($referenceReader->citeIdExists($citationId)) {
-			$referenceReader->append_filter(array('citeid' => array('ids' => $citationId)));
+			$referenceReader->append_filter(
+				array(
+					'citeid' => array(
+						'ids' => $citationId
+					)
+				)
+			);
 		} else {
 			throw new \Exception('Citation Id ' . $citationId . ' does not exist', 1378195258);
 		}
