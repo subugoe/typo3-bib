@@ -228,15 +228,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$this->disableNavigationOnDemand();
 
-		//
 		// Initialize the html templates
-		//
-		$error = $this->initializeHtmlTemplate();
-		if (sizeof($error) > 0) {
-			$bad = '';
-			foreach ($error as $msg)
-				$bad .= $this->errorMessage($msg);
-			return $this->finalize($bad);
+		try {
+			$this->initializeHtmlTemplate();
+		} catch(Exception $e) {
+			return $this->finalize($e->getMessage());
 		}
 
 		// Switch to requested view mode
@@ -1492,14 +1488,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * Initializes an array which contains subparts of the
 	 * html templates.
 	 *
-	 * @return bool TRUE on error, FALSE otherwise
+	 * @throws \Exception
+	 * @return array
 	 */
 	protected function initializeHtmlTemplate() {
 		$error = array();
 
 		// Allready initialized?
-		if (isset ($this->template['LIST_VIEW']))
+		if (isset ($this->template['LIST_VIEW'])) {
 			return $error;
+		}
 
 		$this->template = array();
 		$this->itemTemplate = array();
@@ -1527,8 +1525,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Fetch the template file list
 		$tlist =& $this->conf['templates.'];
 		if (!is_array($tlist)) {
-			$error[] = 'HTML templates are not set in TypoScript';
-			return $error;
+			throw new \Exception('HTML templates are not set in TypoScript', 1378817757);
 		}
 
 		$info = array(
@@ -1553,22 +1550,18 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		foreach ($info as $key => $val) {
 			if (strlen($val['file']) == 0) {
-				$error[] = 'HTML template file for \'' . $key . '\' is not set';
-				continue;
+				throw new \Exception('HTML template file for \'' . $key . '\' is not set', 1378817806);
 			}
 			$tmpl = $this->cObj->fileResource($val['file']);
 			if (strlen($tmpl) == 0) {
-				$error[] = 'The HTML template file \'' . $val['file'] . '\' for \'' . $key .
-						'\' is not readable or empty';
-				continue;
+				throw new \Exception('The HTML template file \'' . $val['file'] . '\' for \'' . $key . '\' is not readable or empty', 1378817895);
 			}
 			foreach ($val['parts'] as $part) {
 				$ptag = '###' . $part . '###';
 				$pstr = $this->cObj->getSubpart($tmpl, $ptag);
 				// Error message
 				if ((strlen($pstr) == 0) && !$val['no_warn']) {
-					$error[] = 'The subpart \'' . $ptag . '\' in the HTML template file \''
-							. $val['file'] . '\' is empty';
+					throw new \Exception('The subpart \'' . $ptag . '\' in the HTML template file \'' . $val['file'] . '\' is empty', 1378817933);
 				}
 				$this->template[$part] = $pstr;
 			}
