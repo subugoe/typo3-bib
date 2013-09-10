@@ -53,6 +53,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 	}
 
 	/**
+	 * @throws \Exception
 	 * @return String
 	 */
 	public function render() {
@@ -66,11 +67,16 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 		if (empty($citationId)) {
 			throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
 		} else {
-			return $this->getBibliographicDataFromCitationId($citationId);
+			try {
+				return $this->getBibliographicDataFromCitationId($citationId);
+			} catch (\Exception $e) {
+				return $e->getMessage();
+			}
 		}
 	}
 
 	/**
+	 * @throws \Exception
 	 * @param string $citationId
 	 * @return array
 	 */
