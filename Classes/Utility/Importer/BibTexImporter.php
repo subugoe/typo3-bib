@@ -42,15 +42,17 @@ class BibTexImporter extends Importer {
 	 *
 	 * @var \Ipf\Bib\Utility\PRegExpTranslator
 	 */
-	public $pRegExpTranslator;
+	protected $pRegExpTranslator;
 
-	// The parser state
-	public $parserState;
+	/**
+	 * @var int
+	 */
+	protected $parserState;
 
 	/**
 	 * @var string
 	 */
-	public $pline;
+	protected $pline;
 
 	// Parser states
 	const PARSER_SEARCH_REFERENCE = 1;
@@ -69,35 +71,45 @@ class BibTexImporter extends Importer {
 	 * A value buffer
 	 * @var string
 	 */
-	public $pair_name;
+	protected $pair_name;
 
 	/**
 	 * @var string
 	 */
-	public $pair_value;
+	protected $pair_value;
 
 	/**
 	 * @var string
 	 */
-	public $pair_start;
+	protected $pair_start;
 
-	public $pair_brace;
+	/**
+	 * @var int
+	 */
+	protected $pair_brace;
 
 	/**
 	 * A raw reference
 	 *
 	 * @var array
 	 */
-	public $raw_ref;
-	public $raw_refs;
+	protected $raw_ref;
 
+	/**
+	 * @var array
+	 */
+	protected $raw_refs;
+
+	/**
+	 * @var string
+	 */
 	protected $buffer;
 
 	/**
 	 * @var array
 	 */
-	public $pubKeys =  array();
-	public $pubKeyMap;
+	protected $pubKeys =  array();
+	protected $pubKeyMap;
 
 	/**
 	 * @param \tx_bib_pi1 $pi1
@@ -421,19 +433,19 @@ class BibTexImporter extends Importer {
 	 */
 	protected function switchParserState() {
 		// Parse buffer chunk
-		while (strlen($this->buffer) > 0) {
+		while (strlen($this->getBuffer()) > 0) {
 
 			switch ($this->parserState) {
 
 				case self::PARSER_SEARCH_REFERENCE:
 
-					$pos = strpos($this->buffer, '@');
+					$pos = strpos($this->getBuffer(), '@');
 					if ($pos === FALSE) {
-						$this->buffer = '';
+						$this->setBuffer('');
 					} else {
 						$this->parserState = self::PARSER_READ_REFERENCE_TYPE;
 						$this->raw_ref['type'] = '';
-						$this->buffer = substr($this->buffer, $pos + 1);
+						$this->setBuffer(substr($this->getBuffer(), $pos + 1));
 					}
 					break;
 
@@ -441,10 +453,10 @@ class BibTexImporter extends Importer {
 
 					$matches = array();
 					$type = '';
-					if (preg_match('/^([^,\s{]+)/', $this->buffer, $matches) > 0) {
+					if (preg_match('/^([^,\s{]+)/', $this->getBuffer(), $matches) > 0) {
 						$type = $matches[1];
 						$this->raw_ref['type'] .= $type;
-						$this->buffer = substr($this->buffer, strlen($type));
+						$this->setBuffer(substr($this->getBuffer(), strlen($type)));
 					} else {
 						if (strlen($this->raw_ref['type']) == 0) {
 							throw new ParserException('Empty bibliography type', 1378736591);
@@ -454,11 +466,11 @@ class BibTexImporter extends Importer {
 					break;
 
 				case self::PARSER_SEARCH_REFERENCE_BEGIN:
-					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
-					if (strlen($this->buffer) > 0) {
-						if (substr($this->buffer, 0, 1) == "{") {
+					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
+					if (strlen($this->getBuffer()) > 0) {
+						if (substr($this->getBuffer(), 0, 1) == "{") {
 
-							$this->buffer = substr($this->buffer, 1);
+							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_SEARCH_CITE_ID;
 						} else {
 							throw new ParserException('Expected "{"', 1378736585);
@@ -467,9 +479,9 @@ class BibTexImporter extends Importer {
 					break;
 
 				case self::PARSER_SEARCH_CITE_ID:
-					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
-					if (strlen($this->buffer) > 0) {
-						if (preg_match('/^[^,\s]+/', $this->buffer) > 0) {
+					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
+					if (strlen($this->getBuffer()) > 0) {
+						if (preg_match('/^[^,\s]+/', $this->getBuffer()) > 0) {
 							$this->parserState = self::PARSER_READ_CITE_ID;
 						} else {
 							throw new ParserException('Invalid cite Id start', 1378736577);
@@ -480,10 +492,10 @@ class BibTexImporter extends Importer {
 				case self::PARSER_READ_CITE_ID:
 					$matches = array();
 					$id = '';
-					if (preg_match('/^([^,\s]+)/', $this->buffer, $matches) > 0) {
+					if (preg_match('/^([^,\s]+)/', $this->getBuffer(), $matches) > 0) {
 						$id = $matches[1];
 						$this->raw_ref['citeid'] .= $id;
-						$this->buffer = substr($this->buffer, strlen($id));
+						$this->setBuffer(substr($this->getBuffer(), strlen($id)));
 					} else {
 						if (strlen($this->raw_ref['citeid']) == 0) {
 							throw new ParserException('Empty cite Id', 1378736569);
@@ -494,16 +506,16 @@ class BibTexImporter extends Importer {
 					break;
 
 				case self::PARSER_SEARCH_COMMA:
-					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
-					if (strlen($this->buffer) > 0) {
-						$char = substr($this->buffer, 0, 1);
+					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
+					if (strlen($this->getBuffer()) > 0) {
+						$char = substr($this->getBuffer(), 0, 1);
 						if ($char == ",") {
 
-							$this->buffer = substr($this->buffer, 1);
+							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_SEARCH_PAIR_NAME;
 						} else if ($char == "}") {
 
-							$this->buffer = substr($this->buffer, 1);
+							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->pushCurrentRawReferenceToList();
 							$this->parserState = self::PARSER_SEARCH_REFERENCE;
 						} else {
@@ -513,16 +525,16 @@ class BibTexImporter extends Importer {
 					break;
 
 				case self::PARSER_SEARCH_PAIR_NAME:
-					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
-					if (strlen($this->buffer) > 0) {
-						$char = substr($this->buffer, 0, 1);
+					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
+					if (strlen($this->getBuffer()) > 0) {
+						$char = substr($this->getBuffer(), 0, 1);
 						if (preg_match('/^[a-zA-Z_0-9]/', $char) > 0) {
 
 							$this->pair_name = '';
 							$this->parserState = self::PARSER_READ_PAIR_NAME;
 						} else if ($char == "}") {
 
-							$this->buffer = substr($this->buffer, 1);
+							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->pushCurrentRawReferenceToList();
 							$this->parserState = self::PARSER_SEARCH_REFERENCE;
 						} else {
@@ -534,10 +546,10 @@ class BibTexImporter extends Importer {
 				case self::PARSER_READ_PAIR_NAME:
 					$matches = array();
 					$str = '';
-					if (preg_match('/^([a-zA-Z_0-9]+)/', $this->buffer, $matches) > 0) {
+					if (preg_match('/^([a-zA-Z_0-9]+)/', $this->getBuffer(), $matches) > 0) {
 						$str = $matches[1];
 						$this->pair_name .= $str;
-						$this->buffer = substr($this->buffer, strlen($str));
+						$this->setBuffer(substr($this->getBuffer(), strlen($str)));
 					} else {
 						if (strlen($this->pair_name) == 0) {
 							throw new ParserException('Empty value name', 1378736541);
@@ -548,12 +560,12 @@ class BibTexImporter extends Importer {
 					break;
 
 				case self::PARSER_SEARCH_ASSIGN:
-					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
-					if (strlen($this->buffer) > 0) {
-						$char = substr($this->buffer, 0, 1);
+					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
+					if (strlen($this->getBuffer()) > 0) {
+						$char = substr($this->getBuffer(), 0, 1);
 						if ($char == "=") {
 
-							$this->buffer = substr($this->buffer, 1);
+							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_SEARCH_PAIR_VALUE;
 						} else {
 							throw new ParserException('Expected "=" but found "' . $char . '"', 1378736530);
@@ -562,9 +574,9 @@ class BibTexImporter extends Importer {
 					break;
 
 				case self::PARSER_SEARCH_PAIR_VALUE:
-					$this->buffer = preg_replace('/^\s*/', '', $this->buffer);
-					if (strlen($this->buffer) > 0) {
-						$char = substr($this->buffer, 0, 1);
+					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
+					if (strlen($this->getBuffer()) > 0) {
+						$char = substr($this->getBuffer(), 0, 1);
 						if (preg_match('/^[^}=]/', $char) > 0) {
 
 							if (($char == "{") || ($char == "'") || ($char == "\"")) {
@@ -575,7 +587,7 @@ class BibTexImporter extends Importer {
 								$this->pair_value = $char;
 							}
 							$this->pair_brace = 0;
-							$this->buffer = substr($this->buffer, 1);
+							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_READ_PAIR_VALUE;
 						} else {
 							throw new ParserException('Found illegal pair value begin character: ' . $char, 1378736499);
@@ -591,8 +603,9 @@ class BibTexImporter extends Importer {
 					$prev_char = "";
 
 					while ($go_on) {
-						if ($ii > 0)
+						if ($ii > 0) {
 							$prev_char = $char;
+						}
 						$char = $this->buffer{$ii};
 						$last = $ii;
 
@@ -657,7 +670,7 @@ class BibTexImporter extends Importer {
 							}
 						}
 					}
-					$this->buffer = substr($this->buffer, $last + 1);
+					$this->setBuffer(substr($this->getBuffer(), $last + 1));
 
 					break;
 
@@ -777,6 +790,20 @@ class BibTexImporter extends Importer {
 		return $res;
 	}
 
+
+	/**
+	 * @param string $buffer
+	 */
+	public function setBuffer($buffer) {
+		$this->buffer = $buffer;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBuffer() {
+		return $this->buffer;
+	}
 
 	/**
 	 * Used to display debug messages
