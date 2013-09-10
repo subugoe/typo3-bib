@@ -722,6 +722,11 @@ class BibTexImporter extends Importer {
 					$publication['state'] = $r_val;
 					break;
 				case 'url':
+					$publication['web_url'] = $r_val;
+					break;
+				case 'urldate':
+					$publication['web_url_date'] = $r_val;
+					break;
 				case 'file_url':
 					$publication['file_url'] = $r_val;
 					break;

@@ -684,7 +684,7 @@ plugin.tx_bib_pi1 {
 		groups {
 			all {
 				required = state
-				optional = abstract,keywords,tags,file_url,web_url,web_url2,language,affiliation,note,misc,misc2
+				optional = abstract,keywords,tags,file_url,web_url,web_url_date,web_url2,web_url2_date,language,affiliation,note,misc,misc2
 				library = extern,reviewed,in_library,borrowed_by
 			}
 

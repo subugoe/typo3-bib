@@ -92,7 +92,9 @@
 			<label index="tx_bib_domain_model_reference_type">Work type</label>
 			<label index="tx_bib_domain_model_reference_volume">Volume</label>
 			<label index="tx_bib_domain_model_reference_web_url">Web URL</label>
+			<label index="tx_bib_domain_model_reference_web_url_date">Web URL Last Checked</label>
 			<label index="tx_bib_domain_model_reference_web_url2">Web URL 2</label>
+			<label index="tx_bib_domain_model_reference_web_url2_date">Web URL 2 Last Checked</label>
 			<label index="tx_bib_domain_model_reference_year">Year</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -182,7 +184,9 @@
 			<label index="tx_bib_domain_model_reference_type">Typ</label>
 			<label index="tx_bib_domain_model_reference_volume">Band</label>
 			<label index="tx_bib_domain_model_reference_web_url">Web URL</label>
+			<label index="tx_bib_domain_model_reference_web_url_date">Web URL Abrufdatum</label>
 			<label index="tx_bib_domain_model_reference_web_url2">Web URL 2</label>
+			<label index="tx_bib_domain_model_reference_web_url2_date">Web URL 2 Abrufdatum</label>
 			<label index="tx_bib_domain_model_reference_year">Jahr</label>
 		</languageKey>
 		<languageKey index="it" type="array">
