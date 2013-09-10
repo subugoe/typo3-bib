@@ -39,6 +39,8 @@
 			<label index="tx_bib_domain_model_reference_bibtype_I_17">Thesis</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_18">Manuscript</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_19">Report</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_20">Miscellaneous</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_21">URL</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_2">Book</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_3">Contribution to book</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_4">Booklet</label>
@@ -127,6 +129,8 @@
 			<label index="tx_bib_domain_model_reference_bibtype_I_17">These</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_18">Manuskript</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_19">Bericht</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_20">Verschiedene</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_21">URL</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_2">Buch</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_3">Beitrag zu Buch</label>
 			<label index="tx_bib_domain_model_reference_bibtype_I_4">Broschüre</label>
