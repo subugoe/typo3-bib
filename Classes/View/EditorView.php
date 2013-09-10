@@ -1352,7 +1352,7 @@ class EditorView {
 					}
 				}
 
-				if ($this->referenceWriter->save_publication($publication)) {
+				if ($this->referenceWriter->savePublication($publication)) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
 					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
