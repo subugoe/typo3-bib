@@ -544,6 +544,7 @@ class ReferenceWriter {
 	 * @return void
 	 */
 	protected function log($message, $error = 0) {
+		/** @var \TYPO3\CMS\Core\Authentication\BackendUserAuthentication $be_user */
 		$be_user = $GLOBALS['BE_USER'];
 		if (is_object($be_user)) {
 			$be_user->simplelog($message, 'bib', $error);

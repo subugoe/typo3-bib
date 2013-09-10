@@ -2532,8 +2532,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 		}
 
-		$res = \Ipf\Bib\Utility\Utility::implode_and_last($elements, $a_sep, $and);
-
+		$res = Utility::implode_and_last($elements, $a_sep, $and);
 		// Restore cObj data
 		$cObj->data = $contentObjectBackup;
 
