@@ -935,7 +935,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if (array_key_exists('citeid_gen_old', $editorOverride))
 				$this->extConf['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? TRUE : FALSE;
 		}
-		$this->referenceReader->clear_cache = $this->extConf['editor']['clear_page_cache'];
+		$this->referenceReader->setClearCache($this->extConf['editor']['clear_page_cache']);
 	}
 
 	/**

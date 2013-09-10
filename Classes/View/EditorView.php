@@ -109,7 +109,7 @@ class EditorView {
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['editor.'];
 		$this->referenceReader =& $pi1->referenceReader;
-		$this->referenceReader->clear_cache = $this->pi1->extConf['editor']['clear_page_cache'];
+		$this->referenceReader->setClearCache($this->pi1->extConf['editor']['clear_page_cache']);
 		// Load editor language data
 		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
 

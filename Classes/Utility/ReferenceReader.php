@@ -41,12 +41,15 @@ class ReferenceReader {
 	 */
 	protected $cObj;
 
-	protected  $databaseResource = NULL;
+	/**
+	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+	 */
+	protected $databaseResource = NULL;
 
 	/**
 	 * @var bool
 	 */
-	public $clear_cache = FALSE;
+	protected $clearCache = FALSE;
 
 	/**
 	 * @var array
@@ -296,7 +299,7 @@ class ReferenceReader {
 	 * @return void
 	 */
 	protected function clearPageCache() {
-		if ($this->clear_cache) {
+		if ($this->getClearCache()) {
 			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
 			$dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 			$clear_cache = array();
@@ -1646,17 +1649,31 @@ class ReferenceReader {
 	}
 
 	/**
-	 * @param null $databaseResource
+	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $databaseResource
 	 */
-	public function setDatabaseResource($databaseResource) {
+	public function setDatabaseResource(\TYPO3\CMS\Core\Database\DatabaseConnection $databaseResource) {
 		$this->databaseResource = $databaseResource;
 	}
 
 	/**
-	 * @return null
+	 * @return \TYPO3\CMS\Core\Database\DatabaseConnection
 	 */
 	public function getDatabaseResource() {
 		return $this->databaseResource;
+	}
+
+	/**
+	 * @param boolean $clearCache
+	 */
+	public function setClearCache($clearCache) {
+		$this->clearCache = $clearCache;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getClearCache() {
+		return $this->clearCache;
 	}
 
 }
