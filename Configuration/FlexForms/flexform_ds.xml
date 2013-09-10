@@ -591,8 +591,16 @@
 								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_19</numIndex>
 								<numIndex index="1">19</numIndex>
 							</numIndex>
+							<numIndex index="19" type="array">
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_20</numIndex>
+								<numIndex index="1">20</numIndex>
+							</numIndex>
+							<numIndex index="20" type="array">
+								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_21</numIndex>
+								<numIndex index="1">21</numIndex>
+							</numIndex>
 						</items>
-						<maxitems>20</maxitems>
+						<maxitems>22</maxitems>
 						<size>5</size>
 					</config>
 				</TCEforms>
