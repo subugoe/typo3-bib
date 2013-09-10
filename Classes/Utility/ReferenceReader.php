@@ -226,7 +226,9 @@ class ReferenceReader {
 		16 => 'poster',
 		17 => 'thesis',
 		18 => 'manuscript',
-		19 => 'report'
+		19 => 'report',
+		20 => 'misc',
+		21 => 'url'
 	);
 
 	/**
