@@ -42,7 +42,7 @@ class ReferenceReader {
 	protected $cObj;
 
 	/**
-	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+	 * @var boolean|\mysqli_result|object
 	 */
 	protected $databaseResource = NULL;
 
@@ -1651,14 +1651,14 @@ class ReferenceReader {
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Core\Database\DatabaseConnection $databaseResource
+	 * @param boolean|\mysqli_result|object $databaseResource
 	 */
-	public function setDatabaseResource(\TYPO3\CMS\Core\Database\DatabaseConnection $databaseResource) {
+	public function setDatabaseResource($databaseResource) {
 		$this->databaseResource = $databaseResource;
 	}
 
 	/**
-	 * @return \TYPO3\CMS\Core\Database\DatabaseConnection
+	 * @return boolean|\mysqli_result|object
 	 */
 	public function getDatabaseResource() {
 		return $this->databaseResource;
