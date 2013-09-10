@@ -189,16 +189,15 @@ class BibTexExporter extends Exporter {
 	 * @return string
 	 */
 	public function formatPublicationForExport($publication, $infoArr = array()) {
-		$content = '';
 
 		$bibliographyType = ucfirst($this->referenceReader->allBibTypes[$publication['bibtype']]);
 
-		$content .= '@';
+		$content = '@';
 		$content .= $bibliographyType . ' { ';
 		$content .= trim($publication['citeid']) . ",\n";
 
 		$entries = array();
-		foreach ($this->referenceReader->pubFields as $publicationField) {
+		foreach ($this->referenceReader->getPublicationFields() as $publicationField) {
 			$append = TRUE;
 			switch ($publicationField) {
 				case 'bibtype':

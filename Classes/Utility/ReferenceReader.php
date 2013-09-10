@@ -41,7 +41,7 @@ class ReferenceReader {
 	 */
 	protected $cObj;
 
-	public $dbRes = NULL;
+	protected  $databaseResource = NULL;
 
 	/**
 	 * @var bool
@@ -131,7 +131,7 @@ class ReferenceReader {
 	 * TYPO3 special fields like pid or uid are not listed here
 	 * @var array
 	 */
-	public $refFields = array(
+	protected $referenceFields = array(
 		'bibtype',
 		'citeid',
 		'title',
@@ -181,7 +181,6 @@ class ReferenceReader {
 		'borrowed_by'
 	);
 
-
 	/**
 	 * These are the publication relevant fields
 	 * that can be found in the reference table $this->referenceTable.
@@ -197,8 +196,7 @@ class ReferenceReader {
 	 *
 	 * @var array
 	 */
-	public $pubFields;
-
+	protected $publicationFields;
 
 	/**
 	 * These are the publication relevant fields
@@ -272,14 +270,14 @@ class ReferenceReader {
 		$typo3_fields = array(
 			'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
 		);
-		$this->refAllFields = array_merge($typo3_fields, $this->refFields);
+		$this->refAllFields = array_merge($typo3_fields, $this->getReferenceFields());
 
 		// setup pubFields
-		$this->pubFields = $this->refFields;
-		$this->pubFields[] = 'authors';
+		$this->setPublicationFields($this->getReferenceFields());
+		$this->publicationFields[] = 'authors';
 
 		// setup pubAllFields
-		$this->pubAllFields = array_merge($typo3_fields, $this->pubFields);
+		$this->pubAllFields = array_merge($typo3_fields, $this->getPublicationFields());
 	}
 
 	/**
@@ -828,7 +826,7 @@ class ReferenceReader {
 			if (is_array($f['words']) && (sizeof($f['words']) > 0)) {
 				$wca = array();
 
-				$fields = $this->pubFields;
+				$fields = $this->getPublicationFields();
 				$fields[] = 'full_text';
 				if (is_array($f['exclude'])) {
 					$fields = array_diff($fields, $f['exclude']);
@@ -882,7 +880,7 @@ class ReferenceReader {
 		}
 
 		// Fields
-		$refFields = $this->refFields;
+		$refFields = $this->getReferenceFields();
 		$refFields[] = 'full_text';
 		foreach ($fields as $field) {
 			if (in_array($field, $refFields)) {
@@ -1438,7 +1436,7 @@ class ReferenceReader {
 	public function initializeReferenceFetching() {
 		$field_csv = $this->referenceTableAlias . '.' . implode(',' . $this->referenceTableAlias . '.', $this->refAllFields);
 		$query = $this->getReferenceSelectClause($field_csv);
-		$this->dbRes = $GLOBALS['TYPO3_DB']->sql_query($query);
+		$this->setDatabaseResource($GLOBALS['TYPO3_DB']->sql_query($query));
 	}
 
 
@@ -1448,7 +1446,7 @@ class ReferenceReader {
 	 * @return int The number of references
 	 */
 	public function numberOfReferencesToBeFetched() {
-		return $GLOBALS['TYPO3_DB']->sql_num_rows($this->dbRes);
+		return $GLOBALS['TYPO3_DB']->sql_num_rows($this->getDatabaseResource());
 	}
 
 
@@ -1458,7 +1456,7 @@ class ReferenceReader {
 	 * @return array A database row
 	 */
 	public function getReference() {
-		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($this->dbRes);
+		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($this->getDatabaseResource());
 		if ($row) {
 			$row['authors'] = $this->getAuthorByPublication($row['uid']);
 			$row['mod_key'] = $this->getModificationKey($row);
@@ -1473,7 +1471,7 @@ class ReferenceReader {
 	 * @return void
 	 */
 	public function finalizeReferenceFetching() {
-		$GLOBALS['TYPO3_DB']->sql_free_result($this->dbRes);
+		$GLOBALS['TYPO3_DB']->sql_free_result($this->getDatabaseResource());
 	}
 
 
@@ -1615,6 +1613,50 @@ class ReferenceReader {
 	 */
 	public function getReferenceTable() {
 		return $this->referenceTable;
+	}
+
+
+	/**
+	 * @param array $publicationFields
+	 */
+	public function setPublicationFields($publicationFields) {
+		$this->publicationFields = $publicationFields;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getPublicationFields() {
+		return $this->publicationFields;
+	}
+
+
+	/**
+	 * @param array $referenceFields
+	 */
+	public function setReferenceFields($referenceFields) {
+		$this->referenceFields = $referenceFields;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getReferenceFields() {
+		return $this->referenceFields;
+	}
+
+	/**
+	 * @param null $databaseResource
+	 */
+	public function setDatabaseResource($databaseResource) {
+		$this->databaseResource = $databaseResource;
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getDatabaseResource() {
+		return $this->databaseResource;
 	}
 
 }

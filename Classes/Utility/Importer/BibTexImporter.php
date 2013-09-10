@@ -275,7 +275,7 @@ class BibTexImporter extends Importer {
 				->push('/\s+$/', '');
 
 		// Setup publication fields
-		foreach ($this->referenceReader->pubFields as $field) {
+		foreach ($this->referenceReader->getPublicationFields() as $field) {
 			$lfield = strtolower($field);
 			switch ($lfield) {
 				case 'bibtype':

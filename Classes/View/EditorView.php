@@ -681,7 +681,7 @@ class EditorView {
 		}
 
 		// Merge field lists
-		$pubFields = $this->referenceReader->pubFields;
+		$pubFields = $this->referenceReader->getPublicationFields();
 		unset ($pubFields[array_search('bibtype', $pubFields)]);
 		foreach ($all_types as $type) {
 			$fields[$type] = array();
@@ -1146,7 +1146,7 @@ class EditorView {
 		$publication = array();
 
 		if (is_array($this->conf['field_default.'])) {
-			foreach ($this->referenceReader->refFields as $field) {
+			foreach ($this->referenceReader->getReferenceFields() as $field) {
 				if (array_key_exists($field, $this->conf['field_default.']))
 					$publication[$field] = strval($this->conf['field_default.'][$field]);
 			}
@@ -1183,7 +1183,7 @@ class EditorView {
 	protected function getPublicationDataFromHttpRequest($htmlSpecialChars = FALSE) {
 		$Publication = array();
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$fields = $this->referenceReader->pubFields;
+		$fields = $this->referenceReader->getPublicationFields();
 		$fields[] = 'uid';
 		$fields[] = 'pid';
 		$fields[] = 'hidden';
@@ -1339,7 +1339,7 @@ class EditorView {
 				$publication = $this->getPublicationDataFromHttpRequest();
 
 				// Unset fields that should not be edited
-				$checkFields = $this->referenceReader->refFields;
+				$checkFields = $this->referenceReader->getReferenceFields();
 				$checkFields[] = 'pid';
 				$checkFields[] = 'hidden';
 				foreach ($checkFields as $ff) {

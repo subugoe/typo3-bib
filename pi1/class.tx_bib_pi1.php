@@ -1069,7 +1069,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 				switch ($table) {
 					case 'ref':
-						$allFields =& $this->referenceReader->refFields;
+						$allFields =& $this->referenceReader->getReferenceFields();
 						break;
 					case 'authors':
 						$allFields =& $this->referenceReader->authorFields;
@@ -2143,7 +2143,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Prepare processed row data
 		$pdata = $pub;
-		foreach ($this->referenceReader->refFields as $f) {
+		foreach ($this->referenceReader->getReferenceFields() as $f) {
 			$pdata[$f] = $this->filter_pub_html_display($pdata[$f]);
 		}
 
@@ -2210,7 +2210,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Iterate through reference fields
-		foreach ($this->referenceReader->refFields as $f) {
+		foreach ($this->referenceReader->getReferenceFields() as $f) {
 			// Trim string
 			$val = trim(strval($pdata[$f]));
 
@@ -2354,7 +2354,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Prepare the translator
 		// Remove empty field marker from the template
-		$fields = $this->referenceReader->pubFields;
+		$fields = $this->referenceReader->getPublicationFields();
 		$fields[] = 'file_url_short';
 		$fields[] = 'web_url_short';
 		$fields[] = 'web_url2_short';

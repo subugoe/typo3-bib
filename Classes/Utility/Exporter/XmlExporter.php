@@ -75,7 +75,7 @@ class XmlExporter extends Exporter {
 		$content .= '<reference>' . "\n";
 
 		$entries = array();
-		foreach ($this->referenceReader->pubFields as $key) {
+		foreach ($this->referenceReader->getPublicationFields() as $key) {
 			$value = '';
 			$append = TRUE;
 

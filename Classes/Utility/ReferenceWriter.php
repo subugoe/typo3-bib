@@ -167,8 +167,8 @@ class ReferenceWriter {
 		}
 
 		$referenceRow = array();
-		// Copy reference fiels
-		foreach ($this->referenceReader->refFields as $field) {
+		// Copy reference fields
+		foreach ($this->referenceReader->getReferenceFields() as $field) {
 			switch ($field) {
 				default:
 					if (array_key_exists($field, $publication)) {

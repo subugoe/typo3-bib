@@ -91,7 +91,7 @@ class XmlImporter extends Importer {
 		}
 
 		$referenceFields = array();
-		foreach ($this->referenceReader->refFields as $field) {
+		foreach ($this->referenceReader->getReferenceFields() as $field) {
 			$referenceFields[] = strtolower($field);
 		}
 
@@ -155,10 +155,10 @@ class XmlImporter extends Importer {
 										default:
 									}
 									// Apply value
-									if (in_array($lowerCaseTag, $this->referenceReader->refFields)) {
+									if (in_array($lowerCaseTag, $this->referenceReader->getReferenceFields())) {
 										$publication[$lowerCaseTag] = $value;
 									} else {
-										if (in_array($upperCaseTag, $this->referenceReader->refFields)) {
+										if (in_array($upperCaseTag, $this->referenceReader->getReferenceFields())) {
 											$publication[$upperCaseTag] = $value;
 										} else {
 											$publication[$tag] = $value;
