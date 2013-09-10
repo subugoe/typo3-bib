@@ -2426,7 +2426,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * Returns the authors string for a publication
 	 *
 	 * @param array $authors
-	 * @return void
+	 * @return string
 	 */
 	protected function getItemAuthorsHtml(& $authors) {
 
