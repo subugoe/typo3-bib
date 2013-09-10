@@ -297,6 +297,15 @@ $TCA['tx_bib_domain_model_reference'] = array (
 				),
 			)
 		),
+		'web_url_date' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url_date',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '10',
+				'eval' => 'trim',
+			)
+		),
 		'web_url2' => Array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url2',
@@ -315,6 +324,15 @@ $TCA['tx_bib_domain_model_reference'] = array (
 						'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
 					),
 				),
+			)
+		),
+		'web_url2_date' => Array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url2_date',
+			'config' => Array (
+				'type' => 'input',
+				'size' => '10',
+				'eval' => 'trim',
 			)
 		),
 		'misc' => Array (
@@ -589,7 +607,7 @@ $TCA['tx_bib_domain_model_reference'] = array (
 		),
 	),
 	'types' => array (
-		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, number2, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url2, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, DOI, ISSN, extern, reviewed, in_library, borrowed_by' )
+		'0' => array ( 'showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, number2, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url_date, web_url2, web_url2_date, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, DOI, ISSN, extern, reviewed, in_library, borrowed_by' )
 	),
 );
 
