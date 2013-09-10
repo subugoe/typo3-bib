@@ -2069,67 +2069,70 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Prepares database publication data for displaying
 	 *
-	 * @param array $pub
+	 * @param array $publication
 	 * @param array $warnings
 	 * @param bool $showHidden
 	 * @return array The processed publication data array
 	 */
-	public function prepare_pub_display($pub, &$warnings = array(), $showHidden = FALSE) {
-
+	public function preparePublicationData($publication, &$warnings = array(), $showHidden = FALSE) {
 		// The error list
 		$d_err = array();
 
 		// Prepare processed row data
-		$pdata = $pub;
-		foreach ($this->referenceReader->getReferenceFields() as $f) {
-			$pdata[$f] = Utility::filter_pub_html_display($pdata[$f], FALSE, $this->extConf['charset']['upper']);
+		$publicationData = $publication;
+		foreach ($this->referenceReader->getReferenceFields() as $referenceField) {
+			$publicationData[$referenceField] = Utility::filter_pub_html_display($publicationData[$referenceField], FALSE, $this->extConf['charset']['upper']);
 		}
 
 		// Preprocess some data
 
 		// File url
 		// Check file existance
-		$file_url = trim(strval($pub['file_url']));
-		if (\Ipf\Bib\Utility\Utility::check_file_nexist($file_url)) {
-			$pdata['file_url'] = '';
-			$pdata['_file_nexist'] = TRUE;
+		$fileUrl = trim(strval($publication['file_url']));
+		if (Utility::check_file_nexist($fileUrl)) {
+			$publicationData['file_url'] = '';
+			$publicationData['_file_nexist'] = TRUE;
 		} else {
-			$pdata['_file_nexist'] = FALSE;
+			$publicationData['_file_nexist'] = FALSE;
 		}
 
 		// Bibtype
-		$pdata['bibtype_short'] = $this->referenceReader->allBibTypes[$pdata['bibtype']];
-		$pdata['bibtype'] = $this->get_ll(
-			$this->referenceReader->getReferenceTable() . '_bibtype_I_' . $pdata['bibtype'],
-				'Unknown bibtype: ' . $pdata['bibtype'], TRUE);
+		$publicationData['bibtype_short'] = $this->referenceReader->allBibTypes[$publicationData['bibtype']];
+		$publicationData['bibtype'] = $this->get_ll(
+			$this->referenceReader->getReferenceTable() . '_bibtype_I_' . $publicationData['bibtype'],
+			'Unknown bibtype: ' . $publicationData['bibtype'],
+			TRUE
+		);
 
-		// Extern
-		$pdata['extern'] = ($pub['extern'] == 0 ? '' : 'extern');
+		// External
+		$publicationData['extern'] = ($publication['extern'] == 0 ? '' : 'extern');
 
 		// Day
-		if (($pub['day'] > 0) && ($pub['day'] <= 31)) {
-			$pdata['day'] = strval($pub['day']);
+		if (($publication['day'] > 0) && ($publication['day'] <= 31)) {
+			$publicationData['day'] = strval($publication['day']);
 		} else {
-			$pdata['day'] = '';
+			$publicationData['day'] = '';
 		}
 
 		// Month
-		if (($pub['month'] > 0) && ($pub['month'] <= 12)) {
-			$tme = mktime(0, 0, 0, intval($pub['month']), 15, 2008);
-			$pdata['month'] = $tme;
+		if (($publication['month'] > 0) && ($publication['month'] <= 12)) {
+			$tme = mktime(0, 0, 0, intval($publication['month']), 15, 2008);
+			$publicationData['month'] = $tme;
 		} else {
-			$pdata['month'] = '';
+			$publicationData['month'] = '';
 		}
 
 		// State
-		switch ($pdata['state']) {
+		switch ($publicationData['state']) {
 			case 0 :
-				$pdata['state'] = '';
+				$publicationData['state'] = '';
 				break;
 			default :
-				$pdata['state'] = $this->get_ll(
-					$this->referenceReader->getReferenceTable() . '_state_I_' . $pdata['state'],
-						'Unknown state: ' . $pdata['state'], TRUE);
+				$publicationData['state'] = $this->get_ll(
+					$this->referenceReader->getReferenceTable() . '_state_I_' . $publicationData['state'],
+					'Unknown state: ' . $publicationData['state'],
+					TRUE
+				);
 		}
 
 		// Bool strings
@@ -2137,8 +2140,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$b_no = $this->get_ll('label_no', 'No', TRUE);
 
 		// Bool fields
-		$pdata['reviewed'] = ($pub['reviewed'] > 0) ? $b_yes : $b_no;
-		$pdata['in_library'] = ($pub['in_library'] > 0) ? $b_yes : $b_no;
+		$publicationData['reviewed'] = ($publication['reviewed'] > 0) ? $b_yes : $b_no;
+		$publicationData['in_library'] = ($publication['in_library'] > 0) ? $b_yes : $b_no;
 
 		// Copy field values
 		$charset = $this->extConf['charset']['upper'];
@@ -2148,29 +2151,29 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Iterate through reference fields
-		foreach ($this->referenceReader->getReferenceFields() as $f) {
+		foreach ($this->referenceReader->getReferenceFields() as $referenceField) {
 			// Trim string
-			$val = trim(strval($pdata[$f]));
+			$val = trim(strval($publicationData[$referenceField]));
 
 			if (strlen($val) == 0) {
-				$pdata[$f] = $val;
+				$publicationData[$referenceField] = $val;
 				continue;
 			}
 
 			// Treat some fields
-			switch ($f) {
+			switch ($referenceField) {
 				case 'file_url':
 				case 'web_url':
 				case 'web_url2':
-					$pdata[$f] = \Ipf\Bib\Utility\Utility::fix_html_ampersand($val);
-					$val = \Ipf\Bib\Utility\Utility::crop_middle($val, $url_max, $charset);
-					$pdata[$f . '_short'] = \Ipf\Bib\Utility\Utility::fix_html_ampersand($val);
+					$publicationData[$referenceField] = Utility::fix_html_ampersand($val);
+					$val = Utility::crop_middle($val, $url_max, $charset);
+					$publicationData[$referenceField . '_short'] = Utility::fix_html_ampersand($val);
 					break;
 				case 'DOI':
-					$pdata[$f] = $val;
-					$pdata['DOI_url'] = 'http://dx.doi.org/' . $val;
+					$publicationData[$referenceField] = $val;
+					$publicationData['DOI_url'] = 'http://dx.doi.org/' . $val;
 				default:
-					$pdata[$f] = $val;
+					$publicationData[$referenceField] = $val;
 			}
 		}
 
@@ -2179,18 +2182,18 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			'authors' => $this->referenceReader->getAuthorFields()
 		);
 		foreach ($multi as $table => $fields) {
-			$elms =& $pdata[$table];
-			if (!is_array($elms)) {
+			$elements =& $publicationData[$table];
+			if (!is_array($elements)) {
 				continue;
 			}
-			foreach ($elms as &$elm) {
+			foreach ($elements as &$element) {
 				foreach ($fields as $field) {
-					$val = $elm[$field];
+					$val = $element[$field];
 					// Check restrictions
 					if (strlen($val) > 0) {
 						if ($this->checkFieldRestriction($table, $field, $val)) {
 							$val = '';
-							$elm[$field] = $val;
+							$element[$field] = $val;
 						}
 					}
 				}
@@ -2198,40 +2201,47 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Format the author string
-		$pdata['authors'] = $this->getItemAuthorsHtml($pdata['authors']);
-
-		// Format the author string
-		$pdata['authors'] = $this->getItemAuthorsHtml($pdata['authors']);
+		$publicationData['authors'] = $this->getItemAuthorsHtml($publicationData['authors']);
 
 		// store editor's data before processing it
-		$cleanEditors = $pdata['editor'];
+		$cleanEditors = $publicationData['editor'];
 
 		// Editors
-		if (strlen($pdata['editor']) > 0) {
-			$editors = \Ipf\Bib\Utility\Utility::explode_author_str($pdata['editor']);
+		if (strlen($publicationData['editor']) > 0) {
+			$editors = Utility::explode_author_str($publicationData['editor']);
 			$lst = array();
 			foreach ($editors as $ed) {
 				$app = '';
-				if (strlen($ed['forename']) > 0) $app .= $ed['forename'] . ' ';
-				if (strlen($ed['surname']) > 0) $app .= $ed['surname'];
+				if (strlen($ed['forename']) > 0) {
+					$app .= $ed['forename'] . ' ';
+				}
+				if (strlen($ed['surname']) > 0) {
+					$app .= $ed['surname'];
+				}
 				$app = $this->cObj->stdWrap($app, $this->conf['field.']['editor_each.']);
 				$lst[] = $app;
 			}
 
 			$and = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
-			$pdata['editor'] = \Ipf\Bib\Utility\Utility::implode_and_last(
-				$lst, ', ', $and);
+			$publicationData['editor'] = Utility::implode_and_last(
+				$lst,
+				', ',
+				$and
+			);
 
 			// reset processed data @todo check if the above block may be removed
-			$pdata['editor'] = $cleanEditors;
+			$publicationData['editor'] = $cleanEditors;
 
 		}
 
 		// Automatic url
-		$order = \Ipf\Bib\Utility\Utility::explode_trim(',', $this->conf['auto_url_order'], TRUE);
-		$pdata['auto_url'] = $this->getAutoUrl($pdata, $order);
-		$pdata['auto_url_short'] = \Ipf\Bib\Utility\Utility::crop_middle(
-			$pdata['auto_url'], $url_max, $charset);
+		$order = Utility::explode_trim(',', $this->conf['auto_url_order'], TRUE);
+		$publicationData['auto_url'] = $this->getAutoUrl($publicationData, $order);
+		$publicationData['auto_url_short'] = Utility::crop_middle(
+			$publicationData['auto_url'],
+			$url_max,
+			$charset
+		);
 
 		// Do data checks
 		if ($this->extConf['edit_mode']) {
@@ -2240,9 +2250,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// Local file does not exist
 			$type = 'file_nexist';
 			if ($w_cfg[$type]) {
-				if ($pdata['_file_nexist']) {
+				if ($publicationData['_file_nexist']) {
 					$msg = $this->get_ll('editor_error_file_nexist');
-					$msg = str_replace('%f', $file_url, $msg);
+					$msg = str_replace('%f', $fileUrl, $msg);
 					$d_err[] = array('type' => $type, 'msg' => $msg);
 				}
 			}
@@ -2251,7 +2261,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$warnings = $d_err;;
 
-		return $pdata;
+		return $publicationData;
 	}
 
 
@@ -2698,7 +2708,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		while ($pub = $this->referenceReader->getReference()) {
 			// Get prepared publication data
 			$warnings = array();
-			$pdata = $this->prepare_pub_display($pub, $warnings);
+			$pdata = $this->preparePublicationData($pub, $warnings);
 
 			// Item data
 			$this->prepare_pub_cObj_data($pdata);

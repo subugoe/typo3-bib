@@ -144,10 +144,10 @@ class SingleView {
 
 		// Prepare the publication data and environment
 		$pi1->prepareItemSetup();
-		$pdata = $pi1->prepare_pub_display($ref, $warnings, true);
-		$pi1->prepare_pub_cObj_data($pdata);
+		$publicationData = $pi1->preparePublicationData($ref, $warnings, true);
+		$pi1->prepare_pub_cObj_data($publicationData);
 
-		$bib_str = $pdata['bibtype_short'];
+		$bib_str = $publicationData['bibtype_short'];
 
 		// The translator array
 		$translator = array();
@@ -162,13 +162,13 @@ class SingleView {
 
 			// "Has field" conditions
 			$has_str = '';
-			if ((strlen($pdata[$field]) > 0)) {
+			if ((strlen($publicationData[$field]) > 0)) {
 				if (!in_array($field, $dont_show)) {
 					$has_str = array('', '');
 					$label = $this->getFieldLabel($field, $bib_str);
 					$label = $pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
 
-					$value = strval($pdata[$field]);
+					$value = strval($publicationData[$field]);
 					$stdWrap = $pi1->conf['field.'][$field . '.'];
 
 					if (isset ($pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
@@ -183,7 +183,7 @@ class SingleView {
 						$value = $pi1->get_link(
 							$value,
 							array(
-								'show_uid' => strval($pdata['uid']
+								'show_uid' => strval($publicationData['uid']
 								)
 							)
 						);
