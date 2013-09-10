@@ -54,7 +54,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 
 	/**
 	 * @throws \Exception
-	 * @return String
+	 * @return array
 	 */
 	public function render() {
 
@@ -70,7 +70,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 			try {
 				return $this->getBibliographicDataFromCitationId($citationId);
 			} catch (\Exception $e) {
-				return $e->getMessage();
+				return array('exception' => $e->getMessage());
 			}
 		}
 	}

@@ -26,6 +26,7 @@ namespace Ipf\Bib\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Utility\Utility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class EditorView {
@@ -795,7 +796,7 @@ class EditorView {
 		$widgetType = $cfg['type'];
 		$fieldAttr = $pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
 		$nameAttr = ' name="' . $fieldAttr . '"';
-		$htmlValue = $pi1->filter_pub_html($value, TRUE);
+		$htmlValue = Utility::filter_pub_html($value, TRUE, $pi1->extConf['charset']['upper']);
 
 		$attributes = array();
 		$attributes['class'] = $cclass;
@@ -882,12 +883,11 @@ class EditorView {
 		// Default widget
 		$widgetType = $configuration['type'];
 		$fieldAttributes = $pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
-		$htmlValue = $pi1->filter_pub_html($value, TRUE);
+		$htmlValue = Utility::filter_pub_html($value, TRUE, $pi1->extConf['charset']['upper']);
 
 		$content = '';
 		if ($mode == self::WIDGET_SHOW) {
-			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
-				$fieldAttributes, $htmlValue);
+			$content .= Utility::html_hidden_input($fieldAttributes, $htmlValue);
 
 			switch ($widgetType) {
 				case 'select':
@@ -958,8 +958,8 @@ class EditorView {
 				}
 				$row_con = array();
 
-				$foreName = $pi1->filter_pub_html($authors[$i]['forename'], TRUE);
-				$surName = $pi1->filter_pub_Html($authors[$i]['surname'], TRUE);
+				$foreName = Utility::filter_pub_html($authors[$i]['forename'], TRUE, $pi1->extConf['charset']['upper']);
+				$surName = Utility::filter_pub_Html($authors[$i]['surname'], TRUE, $pi1->extConf['charset']['upper']);
 
 				$row_con[0] = strval($i + 1);
 				if ($mode == self::WIDGET_SHOW) {
@@ -1050,15 +1050,15 @@ class EditorView {
 		} else if ($mode == self::WIDGET_SILENT) {
 
 			for ($i = 0; $i < sizeof($authors); $i++) {
-				$foreName = $pi1->filter_pub_html($authors[$i]['forename'], TRUE);
-				$surName = $pi1->filter_pub_Html($authors[$i]['surname'], TRUE);
+				$foreName = Utility::filter_pub_html($authors[$i]['forename'], TRUE, $pi1->extConf['charset']['upper']);
+				$surName = Utility::filter_pub_Html($authors[$i]['surname'], TRUE, $pi1->extConf['charset']['upper']);
 
-				$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
+				$content .= Utility::html_hidden_input(
 					$key_data . '[' . $i . '][forename]',
 					$foreName
 				);
 
-				$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
+				$content .= Utility::html_hidden_input(
 					$key_data . '[' . $i . '][surname]',
 					$surName
 				);

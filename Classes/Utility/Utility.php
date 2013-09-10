@@ -91,6 +91,64 @@ class Utility {
 		return $res;
 	}
 
+	/**
+	 * This replaces unneccessary tags and prepares the argument string
+	 * for html output
+	 *
+	 * @param string $content
+	 * @param bool $htmlSpecialChars
+	 * @param string $charset
+	 * @return string The string filtered for html output
+	 */
+	public static function filter_pub_html_display($content, $htmlSpecialChars = FALSE, $charset="UTF-8") {
+		$rand = strval(rand()) . strval(rand());
+		$content = str_replace(array('<prt>', '</prt>'), '', $content);
+
+		$LE = '#LE' . $rand . 'LE#';
+		$GE = '#GE' . $rand . 'GE#';
+
+		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
+		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+
+		foreach ($referenceReader->getAllowedTags() as $tag) {
+			$content = str_replace('<' . $tag . '>', $LE . $tag . $GE, $content);
+			$content = str_replace('</' . $tag . '>', $LE . '/' . $tag . $GE, $content);
+		}
+
+		$content = str_replace('<', '&lt;', $content);
+		$content = str_replace('>', '&gt;', $content);
+
+		$content = str_replace($LE, '<', $content);
+		$content = str_replace($GE, '>', $content);
+
+		$content = str_replace(array('<prt>', '</prt>'), '', $content);
+
+		// End of remove not allowed tags
+
+		// Handle illegal ampersands
+		if (!(strpos($content, '&') === FALSE)) {
+			$content = self::fix_html_ampersand($content);
+		}
+
+		$content = self::filter_pub_html($content, $htmlSpecialChars, $charset);
+		return $content;
+	}
+
+	/**
+	 * This function prepares database content fot HTML output
+	 *
+	 * @param string $content
+	 * @param boolean $htmlSpecialChars
+	 * @param string $charset
+	 * @return string The string filtered for html output
+	 */
+	public static function filter_pub_html($content, $htmlSpecialChars = FALSE, $charset) {
+		if ($htmlSpecialChars) {
+			$content = htmlspecialchars($content, ENT_QUOTES, $charset);
+		}
+		return $content;
+	}
+
 
 	/**
 	 * Fixes illegal occurences of ampersands (&) in html strings
@@ -538,6 +596,9 @@ class Utility {
 	 * Implodes an array with $sep as separator
 	 * and $and as the last separator element
 	 *
+	 * @param array $arr
+	 * @param string $sep
+	 * @param string $and
 	 * @return string The imploded array as a string
 	 */
 	public static function implode_and_last($arr, $sep, $and) {

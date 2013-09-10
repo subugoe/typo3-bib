@@ -1,7 +1,5 @@
 <?php
 
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +23,10 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \Ipf\Bib\Utility\Utility;
+
 /**
  * Plugin 'Publication List' for the 'bib' extension.
  */
@@ -305,36 +307,36 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		$this->extConf['filters']['sort']['sorting'] = array(
-			array('field' => $this->referenceReader->referenceTableAlias . '.year', 'dir' => $defaultSorting),
-			array('field' => $this->referenceReader->referenceTableAlias . '.month', 'dir' => $defaultSorting),
-			array('field' => $this->referenceReader->referenceTableAlias . '.day', 'dir' => $defaultSorting),
-			array('field' => $this->referenceReader->referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
-			array('field' => $this->referenceReader->referenceTableAlias . '.state', 'dir' => 'ASC'),
-			array('field' => $this->referenceReader->referenceTableAlias . '.sorting', 'dir' => 'ASC'),
-			array('field' => $this->referenceReader->referenceTableAlias . '.title', 'dir' => 'ASC')
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+			array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
 		);
 
 		// Adjust sorting for bibtype split
 		if ($this->extConf['split_bibtypes']) {
 			if ($this->extConf['d_mode'] == self::D_SIMPLE) {
 				$this->extConf['filters']['sort']['sorting'] = array(
-					array('field' => $this->referenceReader->referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->referenceTableAlias . '.year', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->referenceTableAlias . '.month', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->referenceTableAlias . '.day', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->referenceTableAlias . '.state', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->referenceTableAlias . '.sorting', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->referenceTableAlias . '.title', 'dir' => 'ASC')
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
 				);
 			} else {
 				$this->extConf['filters']['sort']['sorting'] = array(
-					array('field' => $this->referenceReader->referenceTableAlias . '.year', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->referenceTableAlias . '.bibtype', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->referenceTableAlias . '.month', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->referenceTableAlias . '.day', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->referenceTableAlias . '.state', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->referenceTableAlias . '.sorting', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->referenceTableAlias . '.title', 'dir' => 'ASC')
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
 				);
 			}
 		}
@@ -1068,7 +1070,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 						$allFields =& $this->referenceReader->getReferenceFields();
 						break;
 					case 'authors':
-						$allFields =& $this->referenceReader->authorFields;
+						$allFields =& $this->referenceReader->getAuthorFields();
 						break;
 					default:
 						continue;
@@ -1750,63 +1752,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		return $navigationInstance;
 	}
 
-
-	/**
-	 * This function prepares database content fot HTML output
-	 *
-	 * @param string $content
-	 * @param bool $htmlSpecialChars
-	 * @return string The string filtered for html output
-	 */
-	public function filter_pub_html($content, $htmlSpecialChars = FALSE) {
-		$charset = $this->extConf['charset']['upper'];
-		if ($htmlSpecialChars) {
-			$content = htmlspecialchars($content, ENT_QUOTES, $charset);
-		}
-		return $content;
-	}
-
-
-	/**
-	 * This replaces unneccessary tags and prepares the argument string
-	 * for html output
-	 *
-	 * @param string $content
-	 * @param bool $htmlSpecialChars
-	 * @return string The string filtered for html output
-	 */
-	protected function filter_pub_html_display($content, $htmlSpecialChars = FALSE) {
-		$rand = strval(rand()) . strval(rand());
-		$content = str_replace(array('<prt>', '</prt>'), '', $content);
-
-		$LE = '#LE' . $rand . 'LE#';
-		$GE = '#GE' . $rand . 'GE#';
-
-		foreach ($this->referenceReader->allowedTags as $tag) {
-			$content = str_replace('<' . $tag . '>', $LE . $tag . $GE, $content);
-			$content = str_replace('</' . $tag . '>', $LE . '/' . $tag . $GE, $content);
-		}
-
-		$content = str_replace('<', '&lt;', $content);
-		$content = str_replace('>', '&gt;', $content);
-
-		$content = str_replace($LE, '<', $content);
-		$content = str_replace($GE, '>', $content);
-
-		$content = str_replace(array('<prt>', '</prt>'), '', $content);
-
-		// End of remove not allowed tags
-
-		// Handle illegal ampersands
-		if (!(strpos($content, '&') === FALSE)) {
-			$content = \Ipf\Bib\Utility\Utility::fix_html_ampersand($content);
-		}
-
-		$content = $this->filter_pub_html($content, $htmlSpecialChars);
-		return $content;
-	}
-
-
 	/**
 	 * This function composes the html-view of a set of publications
 	 *
@@ -2137,7 +2082,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Prepare processed row data
 		$pdata = $pub;
 		foreach ($this->referenceReader->getReferenceFields() as $f) {
-			$pdata[$f] = $this->filter_pub_html_display($pdata[$f]);
+			$pdata[$f] = Utility::filter_pub_html_display($pdata[$f], FALSE, $this->extConf['charset']['upper']);
 		}
 
 		// Preprocess some data
@@ -2231,7 +2176,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Multi fields
 		$multi = array(
-			'authors' => $this->referenceReader->authorFields
+			'authors' => $this->referenceReader->getAuthorFields()
 		);
 		foreach ($multi as $table => $fields) {
 			$elms =& $pdata[$table];
@@ -2421,7 +2366,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @param array $authors
 	 * @return string
 	 */
-	protected function getItemAuthorsHtml(& $authors) {
+	protected function getItemAuthorsHtml(&$authors) {
 
 		$res = '';
 		$charset = $this->extConf['charset']['upper'];
@@ -2432,8 +2377,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Format the author string$this->
 		$and = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
-
-		$and = ';';
 
 		$max_authors = abs(intval($this->extConf['max_authors']));
 		$lastAuthor = sizeof($authors) - 1;
@@ -2480,14 +2423,14 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// The forename
 			$authorForename = trim($author['forename']);
 			if (strlen($authorForename) > 0) {
-				$authorForename = $this->filter_pub_html_display($authorForename);
+				$authorForename = Utility::filter_pub_html_display($authorForename, FALSE, $this->extConf['charset']['upper']);
 				$authorForename = $this->cObj->stdWrap($authorForename, $this->conf['authors.']['forename.']);
 			}
 
 			// The surname
 			$authorSurname = trim($author['surname']);
 			if (strlen($authorSurname) > 0) {
-				$authorSurname = $this->filter_pub_html_display($authorSurname);
+				$authorSurname = Utility::filter_pub_html_display($authorSurname, FALSE, $this->extConf['charset']['upper']);
 				$authorSurname = $this->cObj->stdWrap($authorSurname, $this->conf['authors.']['surname.']);
 			}
 
@@ -3375,8 +3318,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// query all authors of this publication
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				"fe_user_id",
-				"tx_bib_domain_model_author as a,tx_bib_domain_model_authorships as m",
-				"a.uid=m.author_id AND m.pub_id=" . $publicationId
+				"tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m",
+				"a.uid = m.author_id AND m.pub_id = " . $publicationId
 			);
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
