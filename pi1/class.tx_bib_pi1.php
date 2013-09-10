@@ -3187,7 +3187,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$singleView = GeneralUtility::makeInstance('Ipf\\Bib\\View\\SingleView');
 		$singleView->initialize($this);
 
-		return $singleView->single_view();
+		return $singleView->singleView();
 	}
 
 

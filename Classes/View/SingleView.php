@@ -75,7 +75,7 @@ class SingleView {
 	 * @param tx_bib_pi1
 	 * @return void
 	 */
-	function initialize($pi1) {
+	public function initialize($pi1) {
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['single_view.'];
 		$this->referenceReader =& $pi1->referenceReader;
@@ -89,7 +89,7 @@ class SingleView {
 	 *
 	 * @return string
 	 */
-	function single_view() {
+	public function singleView() {
 		$pi1 =& $this->pi1;
 		$content = '';
 
@@ -97,7 +97,11 @@ class SingleView {
 		$ref = $this->referenceReader->getPublicationDetails($uid);
 
 		if (is_array($ref)) {
-			$content .= $this->type_reference($ref);
+			try {
+				$content .= $this->typeReference($ref);
+			} catch (\Exception $e) {
+				$content .= $e->getMessage();
+			}
 		} else {
 			$content .= '<p>';
 			$content .= 'No publication with uid ' . $uid;
@@ -115,10 +119,12 @@ class SingleView {
 	}
 
 	/**
+	 *
+	 * @throws \Exception
 	 * @param $ref
 	 * @return string
 	 */
-	function type_reference($ref) {
+	protected function typeReference($ref) {
 		$pi1 =& $this->pi1;
 		$conf =& $this->conf;
 		$cObj =& $pi1->cObj;
@@ -128,12 +134,10 @@ class SingleView {
 		$templateFile = $conf['template'];
 		$template = $cObj->fileResource($templateFile);
 		if (strlen($template) == 0) {
-			$err = 'The HTML single view template file \'' . $templateFile . '\' is not readable or empty';
-			return $err;
+			throw new \Exception('The HTML single view template file \'' . $templateFile . '\' is not readable or empty', 1378818667);
 		}
 
 		$template = $cObj->getSubpart($template, '##SINGLE_VIEW###');
-
 
 		// Store the cObj Data for later recovery
 		$contentObjectBackup = $cObj->data;
@@ -161,7 +165,7 @@ class SingleView {
 			if ((strlen($pdata[$field]) > 0)) {
 				if (!in_array($field, $dont_show)) {
 					$has_str = array('', '');
-					$label = $this->field_label($field, $bib_str);
+					$label = $this->getFieldLabel($field, $bib_str);
 					$label = $pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
 
 					$value = strval($pdata[$field]);
@@ -226,8 +230,9 @@ class SingleView {
 	 *
 	 * @param string $field The field
 	 * @param string $bib_str The bibtype identifier string
+	 * @return string
 	 */
-	function field_label($field, $bib_str) {
+	protected function getFieldLabel($field, $bib_str) {
 		$pi1 =& $this->pi1;
 		$label = $this->referenceReader->getReferenceTable() . '_' . $field;
 
