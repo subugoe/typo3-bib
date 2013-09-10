@@ -45,6 +45,8 @@ $TCA['tx_bib_domain_model_reference'] = array (
 					Array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_17', '17'),
 					Array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_18', '18'),
 					Array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_19', '19'),
+					Array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_20', '20'),
+					Array('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_21', '21'),
 				),
 				'size' => 1,
 				'maxitems' => 1,
