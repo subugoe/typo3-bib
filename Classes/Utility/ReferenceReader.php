@@ -120,6 +120,10 @@ class ReferenceReader {
 
 	public $authorAllFields;
 
+	/**
+	 * @var array
+	 */
+	protected $filters = array();
 
 	/**
 	 * These are the publication relevant fields
@@ -248,9 +252,6 @@ class ReferenceReader {
 	 * @return void
 	 */
 	public function __construct() {
-
-		// @todo add to class variables
-		$this->filters = array();
 
 		$this->t_ref_default['table'] = $this->getReferenceTable();
 		$this->t_ref_default['alias'] = $this->referenceTableAlias;
