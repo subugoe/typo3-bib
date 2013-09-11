@@ -3286,7 +3286,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 
 			$importer->initialize($this);
-			$content .= $importer->import();
+			try {
+				$content .= $importer->import();
+			} catch (\Exception $e) {
+				$this->errorMessage($e->getMessage());
+			}
 		} else {
 			$content .= $this->errorMessage('Unknown import mode');
 		}
@@ -3314,10 +3318,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function checkFEauthorRestriction($publicationId) {
 		// always allow BE users with sufficient rights
 		if (is_object($GLOBALS['BE_USER'])) {
-			if ($GLOBALS['BE_USER']->isAdmin())
+			if ($GLOBALS['BE_USER']->isAdmin()) {
 				return true;
-			else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable()))
+			} else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable())) {
 				return true;
+			}
 		}
 
 		// Is FE-user editing only for own records enabled? (set via TS)

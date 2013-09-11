@@ -254,7 +254,7 @@ abstract class Importer {
 
 	/**
 	 * The main importer function
-	 *
+	 * @throws \Exception
 	 * @return string
 	 */
 	public function import() {
@@ -274,7 +274,7 @@ abstract class Importer {
 				$content .= $this->getImportStatistics();
 				break;
 			default:
-				$content = $this->pi1->errorMessage('Bad import state');
+				throw new \Exception('Bad import state ' . $this->state, 1378910596);
 		}
 
 		return $content;
