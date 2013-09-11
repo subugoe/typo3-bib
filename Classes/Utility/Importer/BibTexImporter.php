@@ -447,9 +447,7 @@ class BibTexImporter extends Importer {
 						$this->setBuffer(substr($this->getBuffer(), $pos + 1));
 					}
 					break;
-
 				case self::PARSER_READ_REFERENCE_TYPE:
-
 					$matches = array();
 					$type = '';
 					if (preg_match('/^([^,\s{]+)/', $this->getBuffer(), $matches) > 0) {
@@ -463,7 +461,6 @@ class BibTexImporter extends Importer {
 						$this->parserState = self::PARSER_SEARCH_REFERENCE_BEGIN;
 					}
 					break;
-
 				case self::PARSER_SEARCH_REFERENCE_BEGIN:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
@@ -476,7 +473,6 @@ class BibTexImporter extends Importer {
 						}
 					}
 					break;
-
 				case self::PARSER_SEARCH_CITE_ID:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
@@ -487,7 +483,6 @@ class BibTexImporter extends Importer {
 						}
 					}
 					break;
-
 				case self::PARSER_READ_CITE_ID:
 					$matches = array();
 					$id = '';
@@ -503,7 +498,6 @@ class BibTexImporter extends Importer {
 						$this->parserState = self::PARSER_SEARCH_COMMA;
 					}
 					break;
-
 				case self::PARSER_SEARCH_COMMA:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
@@ -522,7 +516,6 @@ class BibTexImporter extends Importer {
 						}
 					}
 					break;
-
 				case self::PARSER_SEARCH_PAIR_NAME:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
@@ -541,7 +534,6 @@ class BibTexImporter extends Importer {
 						}
 					}
 					break;
-
 				case self::PARSER_READ_PAIR_NAME:
 					$matches = array();
 					if (preg_match('/^([a-zA-Z_0-9]+)/', $this->getBuffer(), $matches) > 0) {
@@ -556,7 +548,6 @@ class BibTexImporter extends Importer {
 						$this->parserState = self::PARSER_SEARCH_ASSIGN;
 					}
 					break;
-
 				case self::PARSER_SEARCH_ASSIGN:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
@@ -570,7 +561,6 @@ class BibTexImporter extends Importer {
 						}
 					}
 					break;
-
 				case self::PARSER_SEARCH_PAIR_VALUE:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
@@ -592,9 +582,7 @@ class BibTexImporter extends Importer {
 						}
 					}
 					break;
-
 				case self::PARSER_READ_PAIR_VALUE:
-
 					$go_on = TRUE;
 					$ii = 0;
 					$last = 0;
@@ -671,7 +659,6 @@ class BibTexImporter extends Importer {
 					$this->setBuffer(substr($this->getBuffer(), $last + 1));
 
 					break;
-
 				default:
 					throw new ParserException ('Illegal BibTeX parser state: "' . strval($this->parserState).'"', 1378736678);
 					break;
@@ -730,15 +717,15 @@ class BibTexImporter extends Importer {
 					break;
 				default:
 					if (in_array($r_key, $this->pubKeys)) {
-						if (array_key_exists($r_key, $this->pubKeyMap))
+						if (array_key_exists($r_key, $this->pubKeyMap)) {
 							$r_key = $this->pubKeyMap[$r_key];
+						}
 						$publication[$r_key] = $r_val;
 					} else {
 						$this->statistics['warnings'][] = 'Ignored field: ' . $r_key;
 					}
 			}
 		}
-
 		return $publication;
 	}
 
@@ -760,7 +747,7 @@ class BibTexImporter extends Importer {
 
 	/**
 	 * Translates a raw author string to an author array
-	 * @todo github #6
+	 *
 	 * @param $authors
 	 * @return array
 	 */
