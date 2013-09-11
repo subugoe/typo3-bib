@@ -26,6 +26,8 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\FormProtection\Exception;
+
 class BibTexExporter extends Exporter {
 
 	/**
@@ -43,7 +45,7 @@ class BibTexExporter extends Exporter {
 		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.bib';
 
 		/** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
-		$bibTexTranslator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
+		$bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
 
 		$bibTexTranslator
 				->push('/\\\\/', '\\\\textbackslash')
@@ -203,16 +205,19 @@ class BibTexExporter extends Exporter {
 				case 'bibtype':
 				case 'citeid':
 					$append = FALSE;
+					$publication['citeid'] = $this->formatCiteKey($publication['citeid']);
 					break;
 				case 'authors':
 					$value = $publication['authors'];
-					if (sizeof($value) == 0)
+					if (sizeof($value) == 0) {
 						$append = FALSE;
+					}
 					break;
 				default:
 					$value = trim($publication[$publicationField]);
-					if ((strlen($value) == 0) || ($value == '0'))
+					if ((strlen($value) == 0) || ($value == '0')) {
 						$append = FALSE;
+					}
 			}
 
 			if ($append) {
@@ -242,6 +247,25 @@ class BibTexExporter extends Exporter {
 	}
 
 	/**
+	 * Replaces characters not matching [A-Za-z0-9_-] from cite keys
+	 *
+	 * @param string $publicationCiteId
+	 * @return string
+	 */
+	protected function formatCiteKey($publicationCiteId) {
+
+		$matchPattern = '/^[A-Za-z0-9_-]+$/';
+		$matcher = preg_match($matchPattern, $publicationCiteId);
+
+		if ($matcher === 0) {
+			$replacePattern = '/[^a-zA-Z0-9_-]/';
+			$publicationCiteId = preg_replace($replacePattern, '_', $publicationCiteId);
+		}
+
+		return $publicationCiteId;
+	}
+
+	/**
 	 * @param string $content
 	 * @return mixed|string
 	 */
@@ -250,7 +274,7 @@ class BibTexExporter extends Exporter {
 		// Convert characters to html sequences
 		$charset = $this->pi1->extConf['charset']['upper'];
 		// Replace illegal html ampersands with &amp;
-		$content = Utility::fix_html_ampersand($content);
+		$content = \Ipf\Bib\Utility\Utility::fix_html_ampersand($content);
 		// Replaces &amp; with &amp;amp;
 		$content = htmlentities($content, ENT_QUOTES, $charset);
 		// Replaces &amp;amp; with &amp;
