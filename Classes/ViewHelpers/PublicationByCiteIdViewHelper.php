@@ -25,7 +25,6 @@ namespace Ipf\Bib\ViewHelpers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use TYPO3\CMS\Core\FormProtection\Exception;
 
 /**
  * Retrieve an array of the publication by providing a CiteId

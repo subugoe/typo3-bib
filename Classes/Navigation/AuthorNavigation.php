@@ -26,6 +26,8 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use \Ipf\Bib\Utility\Utility;
+
 class AuthorNavigation extends Navigation {
 
 	/**
@@ -41,12 +43,14 @@ class AuthorNavigation extends Navigation {
 	 */
 	public function initialize($pi1) {
 		parent::initialize($pi1);
-		if (is_array($pi1->conf['authorNav.']))
+		if (is_array($pi1->conf['authorNav.'])) {
 			$this->conf =& $pi1->conf['authorNav.'];
+		}
 
 		$this->extConf = array();
-		if (is_array($pi1->extConf['author_navi']))
+		if (is_array($pi1->extConf['author_navi'])) {
 			$this->extConf =& $pi1->extConf['author_navi'];
+		}
 
 		$this->pref = 'AUTHOR_NAVI';
 		$this->load_template('###AUTHOR_NAVI_BLOCK###');
@@ -117,8 +121,9 @@ class AuthorNavigation extends Navigation {
 			$txt = $sel_letter;
 			$spec = htmlentities($txt, ENT_QUOTES, $charset);
 			$pats = array($txt . '%');
-			if ($spec != $txt)
+			if ($spec != $txt) {
 				$pats[] = $spec . '%';
+			}
 
 			// Append surname letter to filter
 			foreach ($pats as $pat) {
@@ -170,8 +175,9 @@ class AuthorNavigation extends Navigation {
 					|| in_array($spec, $sel_surnames)
 			) {
 				$pats = array($sel_author);
-				if ($spec != $sel_author)
+				if ($spec != $sel_author) {
 					$pats[] = $spec;
+				}
 
 				// Reset filter with the surname only
 				$filter = array();
@@ -214,8 +220,16 @@ class AuthorNavigation extends Navigation {
 	protected function sel_get_link($text, $ii) {
 		$arg = strval($this->pi1->stat['authors']['sel_surnames'][$ii]);
 		$title = str_replace('%a', $text, $this->sel_link_title);
-		$lnk = $this->pi1->get_link($text, array('author' => $arg), TRUE,
-			array('title' => $title));
+		$lnk = $this->pi1->get_link(
+			$text,
+			array(
+				'author' => $arg
+			),
+			TRUE,
+			array(
+				'title' => $title
+			)
+		);
 		return $lnk;
 	}
 
@@ -234,13 +248,16 @@ class AuthorNavigation extends Navigation {
 		$letters = $this->first_letters($names, $charset);
 
 		// Acquire selected letter
-		$sel = strval($extConf['sel_letter']);
-		$idx = $this->string_index($sel, $letters, '', $charset);
-		if ($idx < 0) $sel = '';
-		else $sel = $letters[$idx];
+		$selectedLetter = strval($extConf['sel_letter']);
+		$idx = $this->string_index($selectedLetter, $letters, '', $charset);
+		if ($idx < 0) {
+			$selectedLetter = '';
+		} else {
+			$selectedLetter = $letters[$idx];
+		}
 
 		$extConf['letters'] = $letters;
-		$extConf['sel_letter'] = $sel;
+		$extConf['sel_letter'] = $selectedLetter;
 	}
 
 
@@ -266,9 +283,12 @@ class AuthorNavigation extends Navigation {
 				}
 			}
 			$up = mb_strtoupper($ll, $charset);
-			if ($up != $ll) $ll = $up;
-			if ($ll && !in_array($ll, $letters))
+			if ($up != $ll) {
+				$ll = $up;
+			}
+			if ($ll && !in_array($ll, $letters)) {
 				$letters[] = $ll;
+			}
 		}
 		usort($letters, 'strcoll');
 
@@ -293,9 +313,15 @@ class AuthorNavigation extends Navigation {
 		$index = -1;
 		if ($sel1 != $null) {
 			$index = array_search($sel1, $list);
-			if ($index === FALSE) $index = array_search($sel2, $list);
-			if ($index === FALSE) $index = array_search($sel3, $list);
-			if ($index === FALSE) $index = -1;
+			if ($index === FALSE) {
+				$index = array_search($sel2, $list);
+			}
+			if ($index === FALSE) {
+				$index = array_search($sel3, $list);
+			}
+			if ($index === FALSE) {
+				$index = -1;
+			}
 		}
 		return $index;
 	}
@@ -319,7 +345,9 @@ class AuthorNavigation extends Navigation {
 
 		// The label
 		$nlabel = $this->pi1->cObj->stdWrap(
-			$this->pi1->get_ll('authorNav_label'), $this->conf['label.']);
+			$this->pi1->get_ll('authorNav_label'),
+			$this->conf['label.']
+		);
 
 		$translator = array();
 		$translator['###NAVI_LABEL###'] = $nlabel;
@@ -350,15 +378,17 @@ class AuthorNavigation extends Navigation {
 		$indices = array(0, $cur, $max);
 
 		$numSel = 3;
-		if (array_key_exists('authors', $configurationSelection))
+		if (array_key_exists('authors', $configurationSelection)) {
 			$numSel = abs(intval($configurationSelection['authors']));
+		}
 
 		$sel = $this->selection($configurationSelection, $indices, $numSel);
 
 		// All and Separator
 		$sep = ' - ';
-		if (isset ($configurationSelection['all_sep']))
+		if (isset ($configurationSelection['all_sep'])) {
 			$sep = $configurationSelection['all_sep'];
+		}
 		$sep = $this->pi1->cObj->stdWrap($sep, $configurationSelection['all_sep.']);
 
 		$txt = $this->pi1->get_ll('authorNav_all_authors', 'All', TRUE);
@@ -421,21 +451,23 @@ class AuthorNavigation extends Navigation {
 			'name' => $this->pi1->prefix_pi1 . '[author]',
 			'onchange' => 'this.form.submit()'
 		);
-		if (strlen($this->conf['select_class']) > 0)
+		if (strlen($this->conf['select_class']) > 0) {
 			$attributes['class'] = $this->conf['select_class'];
-		$button = \Ipf\Bib\Utility\Utility::html_select_input(
-			$pairs, $sel_name, $attributes);
+		}
+		$button = Utility::html_select_input($pairs, $sel_name, $attributes);
 
 		$button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
 		$content .= $button;
 
 		// Go button
 		$attributes = array();
-		if (strlen($this->conf['go_btn_class']) > 0)
+		if (strlen($this->conf['go_btn_class']) > 0) {
 			$attributes['class'] = $this->conf['go_btn_class'];
-		$button = \Ipf\Bib\Utility\Utility::html_submit_input(
+		}
+		$button = Utility::html_submit_input(
 			$this->pi1->prefix_pi1 . '[action][select_author]',
-			$this->pi1->get_ll('button_go'), $attributes);
+			$this->pi1->get_ll('button_go'), $attributes
+		);
 		$button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
 		$content .= $button;
 
@@ -472,8 +504,9 @@ class AuthorNavigation extends Navigation {
 		// Create list
 		// The letter separator
 		$letterSeparator = ', ';
-		if (isset ($letterConfiguration['separator']))
+		if (isset ($letterConfiguration['separator'])) {
 			$letterSeparator = $letterConfiguration['separator'];
+		}
 		$letterSeparator = $cObj->stdWrap($letterSeparator, $letterConfiguration['separator.']);
 
 		$titleTemplate = $this->pi1->get_ll('authorNav_LetterLinkTitle', '%l', TRUE);

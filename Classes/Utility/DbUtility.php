@@ -73,7 +73,7 @@ class DbUtility {
 		if (is_object($referenceReader)) {
 			$this->referenceReader =& $referenceReader;
 		} else {
-			$this->referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+			$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		}
 	}
 
@@ -102,7 +102,7 @@ class DbUtility {
 
 		$count = sizeof($uids);
 		if ($count > 0) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $uids);
+			$csv = Utility::implode_intval(',', $uids);
 
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 				$this->referenceReader->getAuthorTable(),
@@ -158,7 +158,7 @@ class DbUtility {
 		$whereClause = array();
 
 		if (sizeof($this->referenceReader->pid_list) > 0) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->referenceReader->pid_list);
+			$csv = Utility::implode_intval(',', $this->referenceReader->pid_list);
 			$whereClause[] = 'pid IN (' . $csv . ')';
 		}
 		$whereClause[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';

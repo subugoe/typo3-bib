@@ -46,11 +46,20 @@ abstract class Navigation {
 	public $pref;
 
 	/**
+	 * @var array
+	 */
+	protected $conf = array();
+
+	/**
+	 * @var string
+	 */
+	protected $sel_link_title;
+
+	/**
 	 * @param \tx_bib_pi1 $pi1
 	 */
 	public function initialize($pi1) {
 		$this->pi1 =& $pi1;
-		$this->conf = array();
 	}
 
 	/**
@@ -109,6 +118,12 @@ abstract class Navigation {
 	 */
 	abstract protected function sel_get_text($index);
 
+	/**
+	 * @param $text
+	 * @param $index
+	 * @return mixed
+	 */
+	abstract protected function sel_get_link($text, $index);
 	/*
 	 * Returns a selection translator
 	 *
@@ -201,10 +216,12 @@ abstract class Navigation {
 			}
 
 			// Create link
-			if ($cr_link)
+			if ($cr_link) {
 				$text = $this->sel_get_link($text, $ii);
-			if (is_array($wrap))
+			}
+			if (is_array($wrap)) {
 				$text = $cObj->stdWrap($text, $wrap);
+			}
 
 			$sel[$key][] = $text;
 			$ii += 1;

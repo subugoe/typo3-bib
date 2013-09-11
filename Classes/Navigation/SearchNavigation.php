@@ -26,6 +26,9 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \Ipf\Bib\Utility\Utility;
+
 class SearchNavigation extends Navigation {
 
 	/**
@@ -33,6 +36,10 @@ class SearchNavigation extends Navigation {
 	 */
 	public $hidden_input = array();
 
+	/**
+	 * @var array
+	 */
+	protected $extConf;
 	/*
 	 * Intialize
 	 *
@@ -56,6 +63,13 @@ class SearchNavigation extends Navigation {
 	}
 
 	protected function sel_get_text($index) {}
+
+	/**
+	 * @param $text
+	 * @param $index
+	 * @return mixed
+	 */
+	protected function sel_get_link($text, $index) {}
 
 	/*
 	 * Hook in to pi1 at init stage
@@ -180,14 +194,13 @@ class SearchNavigation extends Navigation {
 
 		$strings = array();
 		if (strlen($sconf['string']) > 0) {
-			$sep = $sconf['sep'];
-			if ($sep == 'none') {
+			$delimiter = $sconf['sep'];
+			if ($delimiter == 'none') {
 				$strings[] = $sconf['string'];
 			} else {
 				// Explode search string
-				$sep = $sconf['all_sep'][$sep];
-				$strings = \Ipf\Bib\Utility\Utility::explode_trim(
-					$sep, $sconf['string'], TRUE);
+				$delimiter = $sconf['all_sep'][$delimiter];
+				$strings = GeneralUtility::trimExplode($delimiter, $sconf['string'], TRUE);
 			}
 		}
 		$filter = array();
@@ -277,7 +290,7 @@ class SearchNavigation extends Navigation {
 			$value = htmlspecialchars($extConf['string'], ENT_QUOTES, $charset);
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_text_input(
+		$button = Utility::html_text_input(
 			$this->pi1->prefix_pi1 . '[search][text]', $value, $attributes
 		);
 		$button = $cObj->stdWrap($button, $lcfg['input.']);
@@ -292,7 +305,7 @@ class SearchNavigation extends Navigation {
 			$attributes['class'] = $lcfg['search_btn_class'];
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_submit_input(
+		$button = Utility::html_submit_input(
 			$this->pi1->prefix_pi1 . '[action][search]',
 			$txt,
 			$attributes
@@ -309,7 +322,7 @@ class SearchNavigation extends Navigation {
 			$attributes['class'] = $lcfg['clear_btn_class'];
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_submit_input(
+		$button = Utility::html_submit_input(
 			$this->pi1->prefix_pi1 . '[action][clear_search]',
 			$txt,
 			$attributes
@@ -335,7 +348,7 @@ class SearchNavigation extends Navigation {
 			$attributes['class'] = $lcfg['btn_class'];
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_check_input(
+		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[search][extra]',
 			'1',
 			$extConf['extra'],
@@ -400,7 +413,7 @@ class SearchNavigation extends Navigation {
 			$attributes['class'] = $abstractConfiguration['btn_class'];
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_check_input(
+		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[search][abstracts]',
 			'1',
 			$extConf['abstracts'],
@@ -423,7 +436,7 @@ class SearchNavigation extends Navigation {
 			$attributes['class'] = $abstractConfiguration['btn_class'];
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_check_input(
+		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[search][full_text]',
 			'1',
 			$extConf['full_text'],
@@ -458,7 +471,7 @@ class SearchNavigation extends Navigation {
 			$attributes['class'] = $abstractConfiguration['select_class'];
 		}
 
-		$button = \Ipf\Bib\Utility\Utility::html_select_input(
+		$button = Utility::html_select_input(
 			$pairs,
 			$extConf['sep'],
 			$attributes
@@ -484,7 +497,7 @@ class SearchNavigation extends Navigation {
 		$label = $this->pi1->get_ll('searchNav_OR');
 		$label = $cObj->stdWrap($label, $abstractConfiguration['btn_label.']);
 		$checked = ($extConf['rule'] == 'OR');
-		$button = \Ipf\Bib\Utility\Utility::html_radio_input(
+		$button = Utility::html_radio_input(
 			$name,
 			'OR',
 			$checked,
@@ -497,7 +510,7 @@ class SearchNavigation extends Navigation {
 		$label = $this->pi1->get_ll('searchNav_AND');
 		$label = $cObj->stdWrap($label, $abstractConfiguration['btn_label.']);
 		$checked = ($extConf['rule'] == 'AND');
-		$button = \Ipf\Bib\Utility\Utility::html_radio_input(
+		$button = Utility::html_radio_input(
 			$name,
 			'AND',
 			$checked,
@@ -523,7 +536,7 @@ class SearchNavigation extends Navigation {
 	 */
 	protected function append_hidden($key, $val) {
 		if (is_bool($val)) $val = $val ? '1' : '0';
-		$this->hidden_input[] = \Ipf\Bib\Utility\Utility::html_hidden_input(
+		$this->hidden_input[] = Utility::html_hidden_input(
 			$this->pi1->prefix_pi1 . '[search][' . $key . ']',
 			$val
 		);

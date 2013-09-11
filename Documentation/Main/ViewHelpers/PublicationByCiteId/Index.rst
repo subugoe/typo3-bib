@@ -35,3 +35,4 @@ Than create an alias block for the result and call the properties inside this bl
   <f:alias map="{bib:\"{bib:publicationByCiteId(citeId:'2r')}\"}">
     {bib.publisher}
   </f:alias>
+

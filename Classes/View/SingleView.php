@@ -191,7 +191,6 @@ class SingleView {
 
 					$value = $cObj->stdWrap($value, $stdWrap);
 
-
 					$translator['###' . $field_up . '###'] = $value;
 					$translator['###FL_' . $field_up . '###'] = $label;
 				}

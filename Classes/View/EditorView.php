@@ -516,11 +516,13 @@ class EditorView {
 						}
 						// Add the id generation button
 						if ($this->isNew) {
-							if ($editorConfiguration['citeid_gen_new'] == $pi1::AUTOID_HALF)
+							if ($editorConfiguration['citeid_gen_new'] == $pi1::AUTOID_HALF) {
 								$widget .= $citeIdeGeneratorButton;
+							}
 						} else {
-							if ($editorConfiguration['citeid_gen_old'] == $pi1::AUTOID_HALF)
+							if ($editorConfiguration['citeid_gen_old'] == $pi1::AUTOID_HALF) {
 								$widget .= $citeIdeGeneratorButton;
+							}
 						}
 						break;
 					case 'year':
@@ -586,9 +588,10 @@ class EditorView {
 		// Invisible 'uid' and 'mod_key' field
 		if (!$this->isNew) {
 			if (isset ($publicationData['mod_key'])) {
-				$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
+				$content .= Utility::html_hidden_input(
 					$prefixId . '[DATA][pub][mod_key]',
-					htmlspecialchars($publicationData['mod_key'], ENT_QUOTES));
+					htmlspecialchars($publicationData['mod_key'], ENT_QUOTES)
+				);
 				$content .= "\n";
 			}
 		}
@@ -674,8 +677,9 @@ class EditorView {
 			if (is_array($cfg_arr)) {
 				foreach ($all_types as $type) {
 					$cfg_fields[$group][$type] = array();
-					$ff = \Ipf\Bib\Utility\Utility::multi_explode_trim(
-						array(',', '|'), $cfg_arr[$type], TRUE);
+					$ff = Utility::multi_explode_trim(
+						array(',', '|'), $cfg_arr[$type], TRUE
+					);
 					$cfg_fields[$group][$type] = $ff;
 				}
 			}
@@ -687,8 +691,9 @@ class EditorView {
 		foreach ($all_types as $type) {
 			$fields[$type] = array();
 			$cur =& $fields[$type];
-			if (is_array($cfg_fields[$bib_str][$type]))
+			if (is_array($cfg_fields[$bib_str][$type])) {
 				$cur = $cfg_fields[$bib_str][$type];
+			}
 			if (is_array($cfg_fields['all'][$type])) {
 				foreach ($cfg_fields['all'][$type] as $field) {
 					$cur[] = $field;
@@ -1330,8 +1335,9 @@ class EditorView {
 
 		$pi1 =& $this->pi1;
 
-		$this->referenceWriter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
-		$this->referenceWriter->initialize($this->referenceReader);
+		/** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
+		$referenceWriter = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
+		$referenceWriter->initialize($this->referenceReader);
 
 		switch ($pi1->extConf['dialog_mode']) {
 
@@ -1344,18 +1350,16 @@ class EditorView {
 				$checkFields[] = 'hidden';
 				foreach ($checkFields as $ff) {
 					if ($publication[$ff]) {
-						if ($this->conf['no_edit.'][$ff] ||
-								$this->conf['no_show.'][$ff]
-						) {
+						if ($this->conf['no_edit.'][$ff] || $this->conf['no_show.'][$ff]) {
 							unset ($publication[$ff]);
 						}
 					}
 				}
 
-				if ($this->referenceWriter->savePublication($publication)) {
+				if ($referenceWriter->savePublication($publication)) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
-					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
+					$content .= '<p>' . $referenceWriter->html_error_message() . '</p>';
 					$content .= '</div>' . "\n";
 				} else {
 					$content .= '<p>' . $this->get_ll('msg_save_success') . '</p>';
@@ -1366,10 +1370,10 @@ class EditorView {
 
 			case $pi1::DIALOG_DELETE_CONFIRMED :
 				$publication = $this->getPublicationDataFromHttpRequest();
-				if ($this->referenceWriter->delete_publication($pi1->piVars['uid'], $publication['mod_key'])) {
+				if ($referenceWriter->deletePublication($pi1->piVars['uid'], $publication['mod_key'])) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
-					$content .= '<p>' . $this->referenceWriter->html_error_message() . '</p>';
+					$content .= '<p>' . $referenceWriter->html_error_message() . '</p>';
 					$content .= '</div>' . "\n";
 				} else {
 					$content .= '<p>' . $this->get_ll('msg_delete_success') . '</p>';
@@ -1379,7 +1383,7 @@ class EditorView {
 				break;
 
 			case $pi1::DIALOG_ERASE_CONFIRMED :
-				if ($this->referenceWriter->erase_publication($pi1->piVars['uid'])) {
+				if ($referenceWriter->erase_publication($pi1->piVars['uid'])) {
 					$content .= '<p>' . $this->get_ll('msg_erase_fail') . '</p>';
 				} else {
 					$content .= '<p>' . $this->get_ll('msg_erase_success') . '</p>';
@@ -1392,6 +1396,9 @@ class EditorView {
 				$content .= 'Unknown dialog mode: ' .
 						$pi1->extConf['dialog_mode'];
 		}
+
+		$this->referenceWriter = $referenceWriter;
+
 		return $content;
 	}
 

@@ -63,8 +63,9 @@ class CiteIdGenerator {
 		$tmpId = $id;
 
 		$uid = -1;
-		if (array_key_exists('uid', $row) && ($row['uid'] >= 0))
+		if (array_key_exists('uid', $row) && ($row['uid'] >= 0)) {
 			$uid = intval($row['uid']);
+		}
 
 		$num = 1;
 		while ($this->referenceReader->citeIdExists($tmpId, $uid)) {
@@ -82,7 +83,7 @@ class CiteIdGenerator {
 	 */
 	protected function generateBasicId($row) {
 		$authors = $row['authors'];
-		$editors = \Ipf\Bib\Utility\Utility::explode_author_str($row['editor']);
+		$editors = \Ipf\Bib\Utility\Utility::explodeAuthorString($row['editor']);
 
 		$persons = array($authors, $editors);
 
@@ -92,24 +93,26 @@ class CiteIdGenerator {
 				if (sizeof($list) > 0) {
 					$pp =& $list[0];
 					$a_str = '';
-					if (strlen($pp['surname']) > 0)
+					if (strlen($pp['surname']) > 0) {
 						$a_str = $pp['surname'];
-					else if (strlen($pp['forename']))
+					} else if (strlen($pp['forename'])) {
 						$a_str = $pp['forename'];
-					if (strlen($a_str) > 0)
+					}
+					if (strlen($a_str) > 0) {
 						$id = $this->simplifiedString($a_str);
+					}
 				}
 			}
 			for ($i = 1; $i < sizeof($list); $i++) {
 				$pp =& $list[$i];
 				$a_str = '';
-				if (strlen($pp['surname']) > 0)
+				if (strlen($pp['surname']) > 0) {
 					$a_str = $pp['surname'];
-				else if (strlen($pp['forename']))
+				} else if (strlen($pp['forename'])) {
 					$a_str = $pp['forename'];
+				}
 				if (strlen($a_str) > 0) {
-					$id .= mb_substr(
-						$this->simplifiedString($a_str), 0, 1, $this->charset);
+					$id .= mb_substr($this->simplifiedString($a_str), 0, 1, $this->charset);
 				}
 			}
 		}
@@ -117,8 +120,9 @@ class CiteIdGenerator {
 		if (strlen($id) == 0) {
 			$id = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(serialize($row));
 		}
-		if ($row['year'] > 0)
+		if ($row['year'] > 0) {
 			$id .= $row['year'];
+		}
 
 		return $this->simplifiedString($id);
 	}

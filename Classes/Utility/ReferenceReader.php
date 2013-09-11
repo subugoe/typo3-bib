@@ -257,7 +257,7 @@ class ReferenceReader {
 	/**
 	 * The constructor
 	 *
-	 * @return void
+	 * @return \Ipf\Bib\Utility\ReferenceReader
 	 */
 	public function __construct() {
 
@@ -312,7 +312,7 @@ class ReferenceReader {
 	protected function clearPageCache() {
 		if ($this->getClearCache()) {
 			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-			$dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+			$dataHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 			$clear_cache = array();
 
 			if (is_object($GLOBALS['BE_USER']) || is_array($GLOBALS['BE_USER']->user)) {
@@ -369,6 +369,7 @@ class ReferenceReader {
 								);
 							}
 						}
+						break;
 					default:
 						if (is_string($publication[$key]))
 							$publication[$key] = $GLOBALS['TSFE']->csConvObj->conv(
@@ -612,13 +613,13 @@ class ReferenceReader {
 
 		// Filter by UID
 		if (is_array($filter['uid']) && (sizeof($filter['uid']) > 0)) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['uid']);
+			$csv = Utility::implode_intval(',', $filter['uid']);
 			$whereClause[] = $this->getReferenceTableAlias() . '.uid IN (' . $csv . ')';
 		}
 
 		// Filter by storage PID
 		if (is_array($filter['pid']) && (sizeof($filter['pid']) > 0)) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['pid']);
+			$csv = Utility::implode_intval(',', $filter['pid']);
 			$whereClause[] = $this->getReferenceTableAlias() . '.pid IN (' . $csv . ')';
 		}
 
@@ -627,7 +628,7 @@ class ReferenceReader {
 			$wca = '';
 			// years
 			if (is_array($filter['year']['years']) && (sizeof($filter['year']['years']) > 0)) {
-				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $filter['year']['years']);
+				$csv = Utility::implode_intval(',', $filter['year']['years']);
 				$wca .= ' ' . $this->getReferenceTableAlias() . '.year IN (' . $csv . ')' . "\n";
 			}
 			// ranges
@@ -721,7 +722,7 @@ class ReferenceReader {
 		if (is_array($filter['bibtype']) && (sizeof($filter['bibtype']) > 0)) {
 			$f =& $filter['bibtype'];
 			if (is_array($f['types']) && (sizeof($f['types']) > 0)) {
-				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['types']);
+				$csv = Utility::implode_intval(',', $f['types']);
 				$whereClause[] = $this->getReferenceTableAlias() . '.bibtype IN (' . $csv . ')';
 			}
 		}
@@ -730,7 +731,7 @@ class ReferenceReader {
 		if (is_array($filter['state']) && (sizeof($filter['state']) > 0)) {
 			$f =& $filter['state'];
 			if (is_array($f['states']) && (sizeof($f['states']) > 0)) {
-				$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $f['states']);
+				$csv = Utility::implode_intval(',', $f['states']);
 				$whereClause[] = $this->getReferenceTableAlias() . '.state IN (' . $csv . ')';
 			}
 		}
@@ -740,8 +741,9 @@ class ReferenceReader {
 			$f =& $filter['origin'];
 			if (is_numeric($f['origin'])) {
 				$wca = $this->getReferenceTableAlias() . '.extern = \'0\'';
-				if (intval($f['origin']) != 0)
+				if (intval($f['origin']) != 0) {
 					$wca = $this->getReferenceTableAlias() . '.extern != \'0\'';
+				}
 				$whereClause[] = $wca;
 			}
 		}
@@ -1083,7 +1085,7 @@ class ReferenceReader {
 		}
 
 		if (sizeof($this->pid_list) > 0) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $this->pid_list);
+			$csv = Utility::implode_intval(',', $this->pid_list);
 			$whereClause[] = 'pid IN (' . $csv . ')';
 		}
 
@@ -1234,7 +1236,7 @@ class ReferenceReader {
 		}
 		$whereClause[] = '(' . implode(' OR ', $wca) . ')';
 		if (is_array($pids)) {
-			$csv = \Ipf\Bib\Utility\Utility::implode_intval(',', $pids);
+			$csv = Utility::implode_intval(',', $pids);
 			$whereClause[] = 'pid IN (' . $csv . ')';
 		} else {
 			$whereClause[] = 'pid=' . intval($pids);
@@ -1299,7 +1301,7 @@ class ReferenceReader {
 	 * Checked is against the forename and the surname.
 	 *
 	 * @param array $author
-	 * @param array $pids
+	 * @param array|int $pids
 	 * @return array Not defined
 	 */
 	public function fetch_author_uids($author, $pids) {

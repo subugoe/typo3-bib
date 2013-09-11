@@ -43,7 +43,7 @@ class BibTexExporter extends Exporter {
 		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.bib';
 
 		/** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
-		$bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
+		$bibTexTranslator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
 
 		$bibTexTranslator
 				->push('/\\\\/', '\\\\textbackslash')
@@ -250,7 +250,7 @@ class BibTexExporter extends Exporter {
 		// Convert characters to html sequences
 		$charset = $this->pi1->extConf['charset']['upper'];
 		// Replace illegal html ampersands with &amp;
-		$content = \Ipf\Bib\Utility\Utility::fix_html_ampersand($content);
+		$content = Utility::fix_html_ampersand($content);
 		// Replaces &amp; with &amp;amp;
 		$content = htmlentities($content, ENT_QUOTES, $charset);
 		// Replaces &amp;amp; with &amp;

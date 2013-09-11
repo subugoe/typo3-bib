@@ -25,6 +25,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class provides functions to write or manipulate
@@ -91,7 +92,7 @@ class ReferenceWriter {
 	protected function clear_page_cache() {
 		if ($this->clear_cache) {
 			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-			$dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
+			$dataHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
 			$clear_cache = array();
 
 			$be_user = $GLOBALS['BE_USER'];
@@ -257,7 +258,7 @@ class ReferenceWriter {
 	 * @param int $pub_uid
 	 * @param int $pid
 	 * @param array $authors
-	 * @return int The uid of the inserted author
+	 * @return bool
 	 */
 	public function save_publication_authors($pub_uid, $pid, $authors) {
 		// Fetches missing author uids and
@@ -278,7 +279,7 @@ class ReferenceWriter {
 					$ia = $author;
 					$ia['pid'] = intval($pid);
 
-					$author['uid'] = $this->insert_author($ia);
+					$author['uid'] = $this->insertAuthor($ia);
 					if ($author['uid'] > 0) {
 
 					} else {
@@ -301,7 +302,7 @@ class ReferenceWriter {
 				$as_delete[] = $db_aships[$ii]['uid'];
 			}
 
-			$this->delete_authorships($as_delete);
+			$this->deleteAuthorships($as_delete);
 			$db_aships = array_slice($db_aships, $as_new);
 
 			$as_new = 0;
@@ -359,7 +360,7 @@ class ReferenceWriter {
 	 * @param array $author
 	 * @return int The uid of the inserted author
 	 */
-	public function insert_author($author) {
+	protected function insertAuthor($author) {
 		$author['pid'] = intval($author['pid']);
 
 		// Creation user id if available
@@ -386,10 +387,12 @@ class ReferenceWriter {
 	/**
 	 * Deletes an authorship
 	 *
+	 * @deprecated since 1.2.0 will be removed in 1.5.0
 	 * @param int $uid;
 	 * @return void
 	 */
 	public function delete_authorship($uid) {
+		GeneralUtility::logDeprecatedFunction();
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 			$this->referenceReader->getAuthorshipTable(),
 			'uid=' . intval($uid) . ' AND deleted=0',
@@ -406,12 +409,13 @@ class ReferenceWriter {
 	 * @param array $uids
 	 * @return void
 	 */
-	public function delete_authorships($uids) {
+	protected function deleteAuthorships($uids) {
 		$uid_list = '';
 
 		for ($ii = 0; $ii < sizeof($uids); $ii++) {
-			if ($ii > 0)
+			if ($ii > 0) {
 				$uid_list .= ',';
+			}
 			$uid_list .= intval($uids[$ii]);
 		}
 
@@ -432,7 +436,7 @@ class ReferenceWriter {
 	 * @param bool $hidden
 	 * @return void
 	 */
-	public function hide_publication($uid, $hidden = TRUE) {
+	public function hidePublication($uid, $hidden = TRUE) {
 		$uid = intval($uid);
 
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
@@ -459,7 +463,7 @@ class ReferenceWriter {
 	 * @param string $mod_key
 	 * @return bool
 	 */
-	public function delete_publication($uid, $mod_key) {
+	public function deletePublication($uid, $mod_key) {
 		$deleted = 1;
 
 		$uid = intval($uid);

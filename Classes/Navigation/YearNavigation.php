@@ -26,7 +26,9 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
+use \Ipf\Bib\Utility\Utility;
+
+class YearNavigation extends Navigation {
 
 	/*
 	 * Intialize
@@ -55,8 +57,17 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 	 */
 	function sel_get_link($text, $ii) {
 		$title = str_replace('%y', $text, $this->sel_link_title);
-		$lnk = $this->pi1->get_link($text, array('year' => $text, 'page' => ''), TRUE,
-			array('title' => $title));
+		$lnk = $this->pi1->get_link(
+			$text,
+			array(
+				'year' => $text,
+				'page' => ''
+			),
+			TRUE,
+			array(
+				'title' => $title
+			)
+		);
 		return $lnk;
 	}
 
@@ -68,8 +79,7 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 		$cObj =& $this->pi1->cObj;
 		$content = '';
 
-		$cfg =& $this->conf;
-		$cfgSel = is_array($cfg['selection.']) ? $cfg['selection.'] : array();
+		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
 
 		// The data
 		$year = $this->pi1->extConf['year'];
@@ -77,13 +87,11 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 
 		// The label
 		$label = $this->pi1->get_ll('yearNav_label');
-		$label = $cObj->stdWrap($label, $cfg['label.']);
+		$label = $cObj->stdWrap($label, $this->conf['label.']);
 
 		$lbl_all = $this->pi1->get_ll('yearNav_all_years', 'All', TRUE);
 
-		//
 		// The year select form
-		//
 		$sel = '';
 		if (sizeof($years) > 0) {
 			$name = $this->pi1->prefix_pi1 . '-year_select_form';
@@ -91,7 +99,7 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 			$sel .= '<form name="' . $name . '" ';
 			$sel .= 'action="' . $action . '"';
 			$sel .= ' method="post"';
-			$sel .= strlen($cfg['form_class']) ? ' class="' . $cfg['form_class'] . '"' : '';
+			$sel .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
 			$sel .= '>' . "\n";
 
 			$pairs = array('all' => $lbl_all);
@@ -103,71 +111,73 @@ class YearNavigation extends \Ipf\Bib\Navigation\Navigation {
 				$pairs = array($year => $year);
 			}
 
-			$attribs = array(
+			$attributes = array(
 				'name' => $this->pi1->prefix_pi1 . '[year]',
 				'onchange' => 'this.form.submit()'
 			);
-			if (strlen($cfg['select_class']) > 0)
-				$attribs['class'] = $cfg['select_class'];
-			$btn = \Ipf\Bib\Utility\Utility::html_select_input(
-				$pairs, $year, $attribs);
-			$btn = $cObj->stdWrap($btn, $cfg['select.']);
-			$sel .= $btn;
+			if (strlen($this->conf['select_class']) > 0) {
+				$attributes['class'] = $this->conf['select_class'];
+			}
+			$button = Utility::html_select_input(
+				$pairs, $year, $attributes);
+			$button = $cObj->stdWrap($button, $this->conf['select.']);
+			$sel .= $button;
 
-			$attribs = array();
-			if (strlen($cfg['go_btn_class']) > 0)
-				$attribs['class'] = $cfg['go_btn_class'];
-			$btn = \Ipf\Bib\Utility\Utility::html_submit_input(
+			$attributes = array();
+			if (strlen($this->conf['go_btn_class']) > 0) {
+				$attributes['class'] = $this->conf['go_btn_class'];
+			}
+			$button = Utility::html_submit_input(
 				$this->pi1->prefix_pi1 . '[action][select_year]',
-				$this->pi1->get_ll('button_go'), $attribs);
-			$btn = $cObj->stdWrap($btn, $cfg['go_btn.']);
-			$sel .= $btn;
+				$this->pi1->get_ll('button_go'), $attributes);
+			$button = $cObj->stdWrap($button, $this->conf['go_btn.']);
+			$sel .= $button;
 
 			// End of form
 			$sel .= '</form>';
-			$sel = $cObj->stdWrap($sel, $cfg['form.']);
+			$sel = $cObj->stdWrap($sel, $this->conf['form.']);
 		}
 
-
-		//
 		// The year selection
-		//
 		$selection = '';
 		if (sizeof($years) > 0) {
 
 			// The all link
 			$sep = ' - ';
-			if (isset ($cfgSel['all_sep']))
-				$sep = $cfgSel['all_sep'];
-			$sep = $cObj->stdWrap($sep, $cfgSel['all_sep.']);
+			if (isset ($selectionConfiguration['all_sep'])) {
+				$sep = $selectionConfiguration['all_sep'];
+			}
+			$sep = $cObj->stdWrap($sep, $selectionConfiguration['all_sep.']);
 
 			$txt = $lbl_all;
 			if (is_numeric($year)) {
 				$txt = $this->pi1->get_link($txt, array('year' => 'all'));
 			} else {
-				$txt = $cObj->stdWrap($txt, $cfgSel['current.']);
+				$txt = $cObj->stdWrap($txt, $selectionConfiguration['current.']);
 			}
 
 			$cur = array_search($year, $years);
-			if ($cur === FALSE) $cur = -1;
+			if ($cur === FALSE) {
+				$cur = -1;
+			}
 			$indices = array(0, $cur, sizeof($years) - 1);
 
 			$numSel = 3;
-			if (array_key_exists('years', $cfgSel)) {
-				$numSel = abs(intval($cfgSel['years']));
+			if (array_key_exists('years', $selectionConfiguration)) {
+				$numSel = abs(intval($selectionConfiguration['years']));
 			}
 
-			$selection = $this->selection($cfgSel, $indices, $numSel);
-			$selection = $cObj->stdWrap($txt . $sep . $selection, $cfgSel['all_wrap.']);
+			$selection = $this->selection($selectionConfiguration, $indices, $numSel);
+			$selection = $cObj->stdWrap($txt . $sep . $selection, $selectionConfiguration['all_wrap.']);
 		}
 
-		$trans = array();
-		$trans['###NAVI_LABEL###'] = $label;
-		$trans['###SELECTION###'] = $selection;
-		$trans['###SELECT_FORM###'] = $sel;
+		$translator = array();
+		$translator['###NAVI_LABEL###'] = $label;
+		$translator['###SELECTION###'] = $selection;
+		$translator['###SELECT_FORM###'] = $sel;
 
-		$tmpl = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$content = $cObj->substituteMarkerArrayCached($tmpl, $trans);
+		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
+		$content = $cObj->substituteMarkerArrayCached($template, $translator);
 
 		return $content;
 	}

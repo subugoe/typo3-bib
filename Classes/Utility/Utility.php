@@ -66,7 +66,7 @@ class Utility {
 		$titles = array();
 		foreach ($uids as $uid) {
 			$uid = intval($uid);
-			$title = \Ipf\Bib\Utility\Utility::get_page_title($uid);
+			$title = self::get_page_title($uid);
 			if ($title) {
 				$titles[$uid] = $title;
 			}
@@ -78,6 +78,9 @@ class Utility {
 	/**
 	 * Crops a string to a maximal length by cutting in the middle
 	 *
+	 * @param string $str
+	 * @param int $len
+	 * @param string $charset
 	 * @return string The string filtered for html output
 	 */
 	public static function crop_middle($str, $len, $charset = 'UTF-8') {
@@ -92,7 +95,7 @@ class Utility {
 	}
 
 	/**
-	 * This replaces unneccessary tags and prepares the argument string
+	 * This replaces unnecessary tags and prepares the argument string
 	 * for html output
 	 *
 	 * @param string $content
@@ -151,7 +154,7 @@ class Utility {
 
 
 	/**
-	 * Fixes illegal occurences of ampersands (&) in html strings
+	 * Fixes illegal occurrences of ampersands (&) in html strings
 	 * Well TYPO3 seems to handle this as well
 	 *
 	 * @param string $str
@@ -193,10 +196,10 @@ class Utility {
 				if (!(strpos($groups, 'all') === FALSE)) {
 					return TRUE;
 				}
-				$groups = \Ipf\Bib\Utility\Utility::explode_intval(',', $groups);
+				$groups = GeneralUtility::intExplode(',', $groups);
 			}
 			$cur =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
-			if (\Ipf\Bib\Utility\Utility::intval_list_check($groups, $cur)) {
+			if (self::intval_list_check($groups, $cur)) {
 				return TRUE;
 			}
 		}
@@ -207,6 +210,10 @@ class Utility {
 	/**
 	 * Returns a html input element
 	 *
+	 * @param $type
+	 * @param $name
+	 * @param $value
+	 * @param array $attributes
 	 * @return string The hidden input element
 	 */
 	public static function html_input($type, $name, $value, $attributes = array()) {
@@ -230,13 +237,17 @@ class Utility {
 	/**
 	 * Returns a checkbox input
 	 *
+	 * @param $name
+	 * @param $value
+	 * @param $checked
+	 * @param array $attributes
 	 * @return string The checkbox input element
 	 */
-	public static function html_check_input($name, $value, $checked, $attribs = array()) {
-		if ($checked)
-			$attribs['checked'] = 'checked';
-		return \Ipf\Bib\Utility\Utility::html_input(
-			'checkbox', $name, $value, $attribs);
+	public static function html_check_input($name, $value, $checked, $attributes = array()) {
+		if ($checked) {
+			$attributes['checked'] = 'checked';
+		}
+		return self::html_input('checkbox', $name, $value, $attributes);
 	}
 
 
@@ -245,44 +256,50 @@ class Utility {
 	 *
 	 * @return string The checkbox input element
 	 */
-	public static function html_radio_input($name, $value, $checked, $attribs = array()) {
+	public static function html_radio_input($name, $value, $checked, $attributes = array()) {
 		if ($checked)
-			$attribs['checked'] = 'checked';
-		return \Ipf\Bib\Utility\Utility::html_input(
-			'radio', $name, $value, $attribs);
+			$attributes['checked'] = 'checked';
+		return self::html_input('radio', $name, $value, $attributes);
 	}
 
 	/**
 	 * Returns a submit input
 	 *
+	 * @param $name
+	 * @param $value
+	 * @param array $attributes
 	 * @return string The submit input element
 	 */
-	public static function html_submit_input($name, $value, $attribs = array()) {
-		return \Ipf\Bib\Utility\Utility::html_input(
-			'submit', $name, $value, $attribs);
+	public static function html_submit_input($name, $value, $attributes = array()) {
+		return self::html_input('submit', $name, $value, $attributes);
 	}
 
 
 	/**
 	 * Returns a image input
 	 *
+	 * @param $name
+	 * @param $value
+	 * @param $src
+	 * @param array $attributes
 	 * @return string The image input element
 	 */
-	public static function html_image_input($name, $value, $src, $attribs = array()) {
-		$attribs = array_merge($attribs, array('src' => $src));
-		return \Ipf\Bib\Utility\Utility::html_input(
-			'image', $name, $value, $attribs);
+	public static function html_image_input($name, $value, $src, $attributes = array()) {
+		$attributes = array_merge($attributes, array('src' => $src));
+		return self::html_input('image', $name, $value, $attributes);
 	}
 
 
 	/**
 	 * Returns a hidden input
 	 *
+	 * @param $name
+	 * @param $value
+	 * @param array $attributes
 	 * @return string The hidden input element
 	 */
-	public static function html_hidden_input($name, $value, $attribs = array()) {
-		return \Ipf\Bib\Utility\Utility::html_input(
-			'hidden', $name, $value, $attribs);
+	public static function html_hidden_input($name, $value, $attributes = array()) {
+		return self::html_input('hidden', $name, $value, $attributes);
 	}
 
 
@@ -291,23 +308,26 @@ class Utility {
 	 *
 	 * @return string The text input element
 	 */
-	public static function html_text_input($name, $value, $attribs = array()) {
-		return \Ipf\Bib\Utility\Utility::html_input(
-			'text', $name, $value, $attribs);
+	public static function html_text_input($name, $value, $attributes = array()) {
+		return self::html_input('text', $name, $value, $attributes);
 	}
 
 
 	/**
 	 * Returns a select input
 	 *
+	 * @param $pairs
+	 * @param $value
+	 * @param array $attributes
 	 * @return String The select element
 	 */
-	static public function html_select_input($pairs, $value, $attribs = array()) {
+	static public function html_select_input($pairs, $value, $attributes = array()) {
 		$value = strval($value);
 		$content = '<select';
-		foreach ($attribs as $a_key => $a_value) {
-			if (!($a_value === FALSE))
+		foreach ($attributes as $a_key => $a_value) {
+			if (!($a_value === FALSE)) {
 				$content .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
+			}
 		}
 		$content .= '>' . "\n";
 		foreach ($pairs as $p_value => $p_name) {
@@ -328,6 +348,7 @@ class Utility {
 	/**
 	 * A layout table the contains all the strings in $rows
 	 *
+	 * @param $rows
 	 * @return string The html table code
 	 */
 	public static function html_layout_table($rows) {
@@ -351,6 +372,7 @@ class Utility {
 	/**
 	 * Counts strings in an array of strings
 	 *
+	 * @param $messages
 	 * @return array An associative array contatining the input strings and their counts
 	 */
 	public static function string_counter($messages) {
@@ -383,6 +405,8 @@ class Utility {
 	 * Finds the nearest integer in a stack.
 	 * The stack must be sorted
 	 *
+	 * @param $value
+	 * @param $stack
 	 * @return mixed The value fitted into the given range
 	 */
 	public static function find_nearest_int($value, $stack) {
@@ -412,14 +436,17 @@ class Utility {
 	/**
 	 * Returns true if an integer in $allowed is in $current
 	 *
+	 * @static
+	 * @param array|string $allowed
+	 * @param array|string $current
 	 * @return bool TRUE if there is an overlap FALSE otherwise
 	 */
 	public static function intval_list_check($allowed, $current) {
 		if (!is_array($allowed)) {
-			$allowed = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($allowed));
+			$allowed = GeneralUtility::intExplode(',', strval($allowed));
 		}
 		if (!is_array($current)) {
-			$current = \Ipf\Bib\Utility\Utility::explode_intval(',', strval($current));
+			$current = GeneralUtility::intExplode(',', strval($current));
 		}
 
 		foreach ($current as $cur) {
@@ -433,12 +460,15 @@ class Utility {
 	/**
 	 * Applies intval() to each element of an array
 	 *
+	 * @static
+	 * @param array $arr
 	 * @return array The intvaled array
 	 */
 	public static function intval_array($arr) {
 		$res = array();
-		foreach ($arr as $val)
+		foreach ($arr as $val) {
 			$res[] = intval($val);
+		}
 		return $res;
 	}
 
@@ -446,6 +476,10 @@ class Utility {
 	/**
 	 * Implodes an array and applies intval to each element
 	 *
+	 * @static
+	 * @param string $sep
+	 * @param array $list
+	 * @param bool $noEmpty
 	 * @return string The imploded array
 	 */
 	public static function implode_intval($sep, $list, $noEmpty = TRUE) {
@@ -458,7 +492,7 @@ class Utility {
 				}
 			}
 		} else {
-			$res = \Ipf\Bib\Utility\Utility::intval_array($list);
+			$res = self::intval_array($list);
 		}
 
 		return implode($sep, $res);
@@ -468,33 +502,23 @@ class Utility {
 	/**
 	 * Explodes a string and applies intval to each element
 	 *
-	 * @deprecated Use GeneralUtility::intExplode()
-	 *
+	 * @deprecated since 1.2.0, will be removed in 1.5.0. Use GeneralUtility::intExplode()
+	 * @static
 	 * @param string $sep
 	 * @param string $str
 	 * @param bool $noEmpty
 	 * @return array The exploded string
 	 */
 	public static function explode_intval($sep, $str, $noEmpty = TRUE) {
-		$res = array();
-		$list = explode($sep, $str);
-		if ($noEmpty) {
-			foreach ($list as $val) {
-				$val = trim($val);
-				if (strlen($val) > 0)
-					$res[] = intval($val);
-			}
-		} else {
-			$res = \Ipf\Bib\Utility\Utility::intval_array($list);
-		}
-		return $res;
+		GeneralUtility::logDeprecatedFunction();
+		return GeneralUtility::intExplode($sep, $str, $noEmpty);
 	}
 
 
 	/**
 	 * Returns and array with the exploded string and
 	 * the values trimmed
-	 * @deprecated Use GeneralUtility::trimExplode()
+	 * @deprecated since 1.2.0 will be removed in 1.5.0. Use GeneralUtility::trimExplode()
 	 *
 	 * @param string $sep
 	 * @param string $str
@@ -502,14 +526,8 @@ class Utility {
 	 * @return array The exploded string
 	 */
 	public static function explode_trim($sep, $str, $noEmpty = FALSE) {
-		$res = array();
-		$tmp = explode($sep, $str);
-		foreach ($tmp as $val) {
-			$val = trim($val);
-			if ((strlen($val) > 0) || !$noEmpty)
-				$res[] = $val;
-		}
-		return $res;
+		GeneralUtility::logDeprecatedFunction();
+		return GeneralUtility::trimExplode($sep, $str, $noEmpty);
 	}
 
 
@@ -517,6 +535,9 @@ class Utility {
 	 * Returns and array with the exploded string and
 	 * the values trimmed and converted to lowercase
 	 *
+	 * @param $sep
+	 * @param $str
+	 * @param bool $noEmpty
 	 * @return array The exploded string
 	 */
 	public static function explode_trim_lower($sep, $str, $noEmpty = FALSE) {
@@ -534,17 +555,22 @@ class Utility {
 	/**
 	 * Explodes a string by multiple separators
 	 *
+	 * @deprecated Since 1.2.0, will be removed in 1.5.0. Does not seem to be used
+	 * @static
+	 * @param array $delimiters
+	 * @param string $str
 	 * @return array The exploded string
 	 */
-	public static function multi_explode($seps, $str) {
-		if (is_array($seps)) {
-			$sep = strval($seps[0]);
-			for ($ii = 1; $ii < sizeof($seps); $ii++) {
+	public static function multi_explode($delimiters, $str) {
+		GeneralUtility::logDeprecatedFunction();
+		if (is_array($delimiters)) {
+			$sep = strval($delimiters[0]);
+			for ($ii = 1; $ii < sizeof($delimiters); $ii++) {
 				$nsep = strval($sep[$ii]);
 				$str = str_replace($nsep, $sep, $str);
 			}
 		} else {
-			$sep = strval($seps);
+			$sep = strval($delimiters);
 		}
 		return explode($sep, $str);
 	}
@@ -553,33 +579,38 @@ class Utility {
 	/**
 	 * Explodes a string by multiple separators and trims the results
 	 *
+	 * @static
+	 * @param array $delimiters
+	 * @param string $str
+	 * @param bool $noEmpty
 	 * @return array The exploded string
 	 */
-	public static function multi_explode_trim($seps, $str, $noEmpty = FALSE) {
-		if (is_array($seps)) {
-			$sep = strval($seps[0]);
-			for ($ii = 1; $ii < sizeof($seps); $ii++) {
-				$nsep = strval($seps[$ii]);
+	public static function multi_explode_trim($delimiters, $str, $noEmpty = FALSE) {
+		if (is_array($delimiters)) {
+			$sep = strval($delimiters[0]);
+			for ($ii = 1; $ii < sizeof($delimiters); $ii++) {
+				$nsep = strval($delimiters[$ii]);
 				$str = str_replace($nsep, $sep, $str);
 			}
 		} else {
-			$sep = strval($seps);
+			$sep = strval($delimiters);
 		}
-		return \Ipf\Bib\Utility\Utility::explode_trim($sep, $str, $noEmpty);
+		return GeneralUtility::trimExplode($sep, $str, $noEmpty);
 	}
 
 
 	/**
 	 * Explodes an ' and ' separated author string
 	 *
-	 * @return bool|string FALSE or the error message array
+	 * @param string $authorString
+	 * @return bool|array FALSE or the error message array
 	 */
-	public static function explode_author_str($str) {
+	public static function explodeAuthorString($authorString) {
 		$res = array();
-		$lst = explode(' and ', $str);
+		$lst = explode(' and ', $authorString);
 		foreach ($lst as $a_str) {
 			$name = array();
-			$parts = \Ipf\Bib\Utility\Utility::explode_trim(',', $a_str, TRUE);
+			$parts = GeneralUtility::trimExplode(',', $a_str, TRUE);
 			if (sizeof($parts) > 1) {
 				$name['forename'] = $parts[1];
 			}
@@ -596,6 +627,7 @@ class Utility {
 	 * Implodes an array with $sep as separator
 	 * and $and as the last separator element
 	 *
+	 * @static
 	 * @param array $arr
 	 * @param string $sep
 	 * @param string $and
@@ -618,6 +650,7 @@ class Utility {
 	/**
 	 * Checks if a local file exists
 	 *
+	 * @static
 	 * @param string $file
 	 * @return bool FALSE if the file exists TRUE if it does not exist
 	 */

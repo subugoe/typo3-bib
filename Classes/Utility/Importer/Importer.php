@@ -27,6 +27,7 @@ namespace Ipf\Bib\Utility\Importer;
  * ************************************************************* */
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \Ipf\Bib\Utility\Utility;
 
 abstract class Importer {
 
@@ -105,8 +106,8 @@ abstract class Importer {
 		$this->databaseUtility = $databaseUtility;
 
 		// Create an instance of the citeid generator
-		if (isset ($this->conf['citeid_generator_file'])) {
-			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->conf['citeid_generator_file']);
+		if (isset ($this->pi1->conf['citeid_generator_file'])) {
+			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->pi1->conf['citeid_generator_file']);
 			if (file_exists($ext_file)) {
 				require_once($ext_file);
 				$this->idGenerator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\AuthorsCiteIdGenerator');
@@ -174,12 +175,12 @@ abstract class Importer {
 
 		if (sizeof($pids) > 1) {
 			// Fetch page titles
-			$pages = \Ipf\Bib\Utility\Utility::get_page_titles($pids);
+			$pages = Utility::get_page_titles($pids);
 
 			$val = $this->pi1->get_ll('import_storage_info', 'import_storage_info', TRUE);
 			$content .= '<p>' . $val . '</p>' . "\n";
 
-			$val = \Ipf\Bib\Utility\Utility::html_select_input(
+			$val = Utility::html_select_input(
 				$pages,
 				$default_pid,
 				array('name' => $this->pi1->prefixId . '[import_pid]')
@@ -269,7 +270,7 @@ abstract class Importer {
 			case 2:
 				$this->acquireStoragePid();
 				$content = $this->importStateTwo();
-				$content .= $this->postImport();
+				$this->postImport();
 				$content .= $this->getImportStatistics();
 				break;
 			default:
@@ -310,7 +311,7 @@ abstract class Importer {
 
 		// The submit button
 		$val = $this->pi1->get_ll('import_file', 'import_file', TRUE);
-		$button = \Ipf\Bib\Utility\Utility::html_submit_input('submit', $val, $buttonAttributes);
+		$button = Utility::html_submit_input('submit', $val, $buttonAttributes);
 		$content .= '<p>' . $button . '</p>' . "\n";
 
 		$content .= '</form>';
@@ -418,7 +419,7 @@ abstract class Importer {
 
 		if (is_array($stat['warnings']) && (count($stat['warnings']) > 0)) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = \Ipf\Bib\Utility\Utility::string_counter($stat['warnings']);
+			$messages = Utility::string_counter($stat['warnings']);
 			foreach ($messages as $msg => $count) {
 				$str = $this->getMessageOccurrenceCounter($msg, $count);
 				$val .= '<li>' . $str . '</li>' . "\n";
@@ -430,7 +431,7 @@ abstract class Importer {
 
 		if (is_array($stat['errors']) && (count($stat['errors']) > 0)) {
 			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = \Ipf\Bib\Utility\Utility::string_counter($stat['errors']);
+			$messages = Utility::string_counter($stat['errors']);
 			foreach ($messages as $msg => $count) {
 				$str = $this->getMessageOccurrenceCounter($msg, $count);
 				$val .= '<li>' . $str . '</li>' . "\n";

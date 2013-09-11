@@ -26,6 +26,9 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \Ipf\Bib\Utility\Utility;
+
 class PreferenceNavigation extends Navigation {
 
 	public $extConf;
@@ -38,18 +41,27 @@ class PreferenceNavigation extends Navigation {
 	 */
 	public function initialize($pi1) {
 		parent::initialize($pi1);
-		if (is_array($pi1->conf['prefNav.']))
+		if (is_array($pi1->conf['prefNav.'])) {
 			$this->conf =& $pi1->conf['prefNav.'];
+		}
 
 		$this->extConf = array();
-		if (is_array($pi1->extConf['pref_navi']))
+		if (is_array($pi1->extConf['pref_navi'])) {
 			$this->extConf =& $pi1->extConf['pref_navi'];
+		}
 
 		$this->pref = 'PREF_NAVI';
 		$this->load_template('###PREF_NAVI_BLOCK###');
 	}
 
 	protected function sel_get_text($index){}
+
+	/**
+	 * @param $text
+	 * @param $index
+	 * @return mixed
+	 */
+	protected function sel_get_link($text, $index) {}
 
 	/*
 	 * Hook in to pi1 at init stage
@@ -61,8 +73,7 @@ class PreferenceNavigation extends Navigation {
 		$iPP =& $extConf['sub_page']['ipp'];
 
 		// Available ipp values
-		$this->extConf['pref_ipps'] = \Ipf\Bib\Utility\Utility::explode_intval(
-			',', $this->conf['ipp_values']);
+		$this->extConf['pref_ipps'] = GeneralUtility::intExplode(',', $this->conf['ipp_values']);
 
 		// Default ipp value
 		if (is_numeric($this->conf['ipp_default'])) {
@@ -143,25 +154,25 @@ class PreferenceNavigation extends Navigation {
 			'name' => $this->pi1->prefix_pi1 . '[items_per_page]',
 			'onchange' => 'this.form.submit()'
 		);
-		if (strlen($lcfg['select_class']) > 0)
+		if (strlen($lcfg['select_class']) > 0) {
 			$attributes['class'] = $lcfg['select_class'];
-		$button = \Ipf\Bib\Utility\Utility::html_select_input(
+		}
+		$button = Utility::html_select_input(
 			$pairs, $this->pi1->extConf['sub_page']['ipp'], $attributes);
 		$button = $cObj->stdWrap($button, $lcfg['select.']);
 		$ipp_sel = $cObj->stdWrap($lbl . $button, $lcfg['widget.']);
 
-		//
 		// show abstracts
-		//
 		$lcfg =& $cfg['abstract.'];
 		$attributes = array('onchange' => 'this.form.submit()');
-		if (strlen($lcfg['btn_class']) > 0)
+		if (strlen($lcfg['btn_class']) > 0) {
 			$attributes['class'] = $lcfg['btn_class'];
+		}
 
 		$lbl = $this->pi1->get_ll('prefNav_show_abstracts');
 		$lbl = $cObj->stdWrap($lbl, $lcfg['label.']);
 		$check = $this->pi1->extConf['hide_fields']['abstract'] ? FALSE : TRUE;
-		$button = \Ipf\Bib\Utility\Utility::html_check_input(
+		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[show_abstracts]',
 			'1',
 			$check,
@@ -175,13 +186,14 @@ class PreferenceNavigation extends Navigation {
 		//
 		$lcfg =& $cfg['keywords.'];
 		$attributes = array('onchange' => 'this.form.submit()');
-		if (strlen($lcfg['btn_class']) > 0)
+		if (strlen($lcfg['btn_class']) > 0) {
 			$attributes['class'] = $lcfg['btn_class'];
+		}
 
 		$lbl = $this->pi1->get_ll('prefNav_show_keywords');
 		$lbl = $cObj->stdWrap($lbl, $lcfg['label.']);
 		$check = $this->pi1->extConf['hide_fields']['keywords'] ? FALSE : TRUE;
-		$button = \Ipf\Bib\Utility\Utility::html_check_input(
+		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[show_keywords]',
 			'1',
 			$check,
@@ -190,13 +202,12 @@ class PreferenceNavigation extends Navigation {
 		$button = $cObj->stdWrap($button, $lcfg['btn.']);
 		$chk_keys = $cObj->stdWrap($lbl . $button, $lcfg['widget.']);
 
-		//
 		// Go button
-		//
 		$attributes = array();
-		if (strlen($cfg['go_btn_class']) > 0)
+		if (strlen($cfg['go_btn_class']) > 0) {
 			$attributes['class'] = $cfg['go_btn_class'];
-		$widget = \Ipf\Bib\Utility\Utility::html_submit_input(
+		}
+		$widget = Utility::html_submit_input(
 			$this->pi1->prefix_pi1 . '[action][eval_pref]',
 			$this->pi1->get_ll('button_go'),
 			$attributes

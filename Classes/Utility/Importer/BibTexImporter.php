@@ -248,7 +248,6 @@ class BibTexImporter extends Importer {
 			'sim' => '&sim;',
 			'rfloor' => '&rfloor;',
 			'prime' => '&prime;',
-			'sim' => '&sim;',
 			'times' => '&times;',
 		);
 
@@ -545,7 +544,6 @@ class BibTexImporter extends Importer {
 
 				case self::PARSER_READ_PAIR_NAME:
 					$matches = array();
-					$str = '';
 					if (preg_match('/^([a-zA-Z_0-9]+)/', $this->getBuffer(), $matches) > 0) {
 						$str = $matches[1];
 						$this->pair_name .= $str;
@@ -763,6 +761,7 @@ class BibTexImporter extends Importer {
 	/**
 	 * Translates a raw author string to an author array
 	 * @todo github #6
+	 * @param $authors
 	 * @return array
 	 */
 	protected function convertRawAuthorToAuthor($authors) {
@@ -813,6 +812,7 @@ class BibTexImporter extends Importer {
 	/**
 	 * Used to display debug messages
 	 *
+	 * @param $str
 	 * @return void
 	 */
 	protected function debug($str) {

@@ -72,3 +72,4 @@ publication reference database.
   GROUP BY tx_bib_domain_model_authors.uid
   ORDER BY tx_bib_domain_model_authors.pid,
   tx_bib_domain_model_authors.surname;
+

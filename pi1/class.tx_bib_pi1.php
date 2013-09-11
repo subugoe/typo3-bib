@@ -944,10 +944,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	public function getStoragePid() {
 		$pidList = array();
 		if (isset ($this->conf['pid_list'])) {
-			$this->pidList = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->conf['pid_list']);
+			$this->pidList = GeneralUtility::intExplode(',', $this->conf['pid_list']);
 		}
 		if (isset ($this->cObj->data['pages'])) {
-			$tmp = \Ipf\Bib\Utility\Utility::explode_intval(',', $this->cObj->data['pages']);
+			$tmp = GeneralUtility::intExplode(',', $this->cObj->data['pages']);
 			$this->pidList = array_merge($pidList, $tmp);
 		}
 	}
@@ -1003,11 +1003,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function isValidBackendUser() {
 		if (is_object($GLOBALS['BE_USER'])) {
 			if ($GLOBALS['BE_USER']->isAdmin())
-				return TRUE;
+				$validBackendUser = TRUE;
 			else {
-				return $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable());
+				$validBackendUser = $GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable());
 			}
 		}
+		return $validBackendUser;
 	}
 
 	/**
@@ -1017,8 +1018,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function isValidFrontendUser($validBackendUser) {
 		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
 			$groups = $this->conf['FE_edit_groups'];
-			if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups))
+			if (Utility::check_fe_user_groups($groups)) {
 				return TRUE;
+			}
 		}
 	}
 
@@ -1105,7 +1107,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				// Reveal on FE user groups
 				$groups = strtolower($rcfg['FE_user_groups']);
 				if (strpos($groups, 'all') === FALSE) {
-					$groups = \Ipf\Bib\Utility\Utility::explode_intval(',', $groups);
+					$groups = GeneralUtility::intExplode(',', $groups);
 				} else {
 					$groups = 'all';
 				}
@@ -1155,7 +1157,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					}
 				} else {
 					$range = array();
-					$elms = \Ipf\Bib\Utility\Utility::explode_trim('-', $year, FALSE);
+					$elms = GeneralUtility::trimExplode('-', $year, FALSE);
 					if (is_numeric($elms[0])) {
 						$range['from'] = intval($elms[0]);
 					}
@@ -1463,7 +1465,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Publication ids
 		if (is_string($this->piVars['search']['ref_ids'])) {
 			$ids = $this->piVars['search']['ref_ids'];
-			$ids = \Ipf\Bib\Utility\Utility::explode_intval(',', $ids);
+			$ids = GeneralUtility::intExplode(',', $ids);
 
 			if (sizeof($ids) > 0) {
 				$filter['uid'] = $ids;
@@ -1473,7 +1475,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// General search
 		if (is_string($this->piVars['search']['all'])) {
 			$words = $this->piVars['search']['all'];
-			$words = \Ipf\Bib\Utility\Utility::explode_trim(',', $words, TRUE);
+			$words = GeneralUtility::trimExplode(',', $words, TRUE);
 			if (sizeof($words) > 0) {
 				$filter['all']['words'] = $words;
 				$filter['all']['rule'] = 1; // AND
@@ -1585,8 +1587,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$list = array_merge($list, $more);
 		}
 
+		// @todo can't figure out $base
 		foreach ($list as $key => $val) {
-			$this->icon_src[$key] = $GLOBALS['TSFE']->tmpl->getFileName($base . $val);
+			$this->icon_src[$key] = $GLOBALS['TSFE']->tmpl->getFileName($val);
 		}
 	}
 
@@ -2172,6 +2175,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				case 'DOI':
 					$publicationData[$referenceField] = $val;
 					$publicationData['DOI_url'] = 'http://dx.doi.org/' . $val;
+					break;
 				default:
 					$publicationData[$referenceField] = $val;
 			}
@@ -2208,7 +2212,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Editors
 		if (strlen($publicationData['editor']) > 0) {
-			$editors = Utility::explode_author_str($publicationData['editor']);
+			$editors = Utility::explodeAuthorString($publicationData['editor']);
 			$lst = array();
 			foreach ($editors as $ed) {
 				$app = '';
@@ -2235,7 +2239,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		// Automatic url
-		$order = Utility::explode_trim(',', $this->conf['auto_url_order'], TRUE);
+		$order = GeneralUtility::trimExplode(',', $this->conf['auto_url_order'], TRUE);
 		$publicationData['auto_url'] = $this->getAutoUrl($publicationData, $order);
 		$publicationData['auto_url_short'] = Utility::crop_middle(
 			$publicationData['auto_url'],
@@ -2522,9 +2526,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 						}
 					}
 
-					if (is_array($wrap)) {
-						$etAl = $this->cObj->stdWrap($app, $wrap);
-					}
 					$wrap = $this->conf['authors.']['et_al.'];
 					$etAl = $this->cObj->stdWrap($etAl, $wrap);
 					$elements[] = $etAl;
@@ -2566,9 +2567,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 		$this->extConf['author_lfields'] = 'url';
 		if (isset ($conf['authors.']['url_icon_fields'])) {
-			$this->extConf['author_lfields'] =
-					\Ipf\Bib\Utility\Utility::explode_trim(',',
-						$conf['authors.']['url_icon_fields'], TRUE);
+			$this->extConf['author_lfields'] = GeneralUtility::trimExplode(',', $conf['authors.']['url_icon_fields'], TRUE);
 		}
 
 		// Acquire author url icon
@@ -2992,7 +2991,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 *
 	 * @param array $processedPublicationData The processed publication data
 	 * @param array $order
-	 * @return stirng The generated url
+	 * @return string The generated url
 	 */
 	protected function getAutoUrl($processedPublicationData, $order) {
 
@@ -3125,7 +3124,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		/** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
 		$referenceWriter = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
 		$referenceWriter->initialize($this->referenceReader);
-		$referenceWriter->hide_publication($this->piVars['uid'], $hide);
+		$referenceWriter->hidePublication($this->piVars['uid'], $hide);
 	}
 
 

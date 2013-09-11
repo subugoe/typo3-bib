@@ -51,6 +51,14 @@ class StatisticsNavigation extends Navigation {
 	 */
 	protected function sel_get_text($index){}
 
+	/**
+	 * @param $text
+	 * @param $index
+	 * @return mixed
+	 */
+	protected function sel_get_link($text, $index) {}
+
+
 	/*
 	 * Returns content
 	 *
@@ -60,17 +68,19 @@ class StatisticsNavigation extends Navigation {
 		$translator = array();
 
 		$label = '';
+		$stat_str = '';
+		$pi1 =& $this->pi1;
 
 		// Setup mode
 		$d_mode = $this->pi1->extConf['d_mode'];
 		$mode = intval($this->pi1->extConf['stat_mode']);
-		if ($d_mode != $this->pi1->D_Y_NAV) {
-			if ($mode == $this->pi1->STAT_YEAR_TOTAL) {
-				$mode = $this->pi1->STAT_TOTAL;
+		if ($d_mode != $pi1::D_Y_NAV) {
+			if ($mode == $pi1::STAT_YEAR_TOTAL) {
+				$mode = $pi1::STAT_TOTAL;
 			}
 		} else {
 			if (!is_numeric($this->pi1->extConf['year'])) {
-				$mode = $this->pi1->STAT_TOTAL;
+				$mode = $pi1::STAT_TOTAL;
 			}
 		}
 
@@ -84,11 +94,11 @@ class StatisticsNavigation extends Navigation {
 
 		// Setup strings
 		switch ($mode) {
-			case $this->pi1->STAT_TOTAL:
+			case $pi1::STAT_TOTAL:
 				$label = $this->pi1->get_ll('stat_total_label', 'total', TRUE);
 				$stat_str = $total_str;
 				break;
-			case $this->pi1->STAT_YEAR_TOTAL:
+			case $pi1::STAT_YEAR_TOTAL:
 				$label = $this->pi1->get_ll('stat_year_total_label', 'this year', TRUE);
 				$stat_str = $year_str . ' / ' . $total_str;
 				break;
