@@ -1365,27 +1365,29 @@ class EditorView {
 				} catch (DataException $e) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
-					$content .= '<p>' . $referenceWriter->html_error_message() . '</p>';
+					$content .= '<p>' . $e->getMessage() . '</p>';
 					$content .= '</div>' . "\n";
 				}
 				break;
 
 			case $pi1::DIALOG_DELETE_CONFIRMED :
 				$publication = $this->getPublicationDataFromHttpRequest();
-				if ($referenceWriter->deletePublication($pi1->piVars['uid'], $publication['mod_key'])) {
-					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
-					$content .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
-					$content .= '<p>' . $referenceWriter->html_error_message() . '</p>';
-					$content .= '</div>' . "\n";
-				} else {
+				try {
+					$referenceWriter->deletePublication($pi1->piVars['uid'], $publication['mod_key']);
 					$content .= '<p>' . $this->get_ll('msg_delete_success') . '</p>';
 					$messages = $this->postDatabaseWriteActions();
 					$content .= $this->createHtmlTextFromPostDatabaseWrite($messages);
+				} catch (DataException $e) {
+					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
+					$content .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
+					$content .= '<p>' . $e->getMessage() . '</p>';
+					$content .= '<small>' . $e->getCode() . '</small>';
+					$content .= '</div>' . "\n";
 				}
 				break;
 
 			case $pi1::DIALOG_ERASE_CONFIRMED :
-				if ($referenceWriter->erase_publication($pi1->piVars['uid'])) {
+				if ($referenceWriter->erasePublication($pi1->piVars['uid'])) {
 					$content .= '<p>' . $this->get_ll('msg_erase_fail') . '</p>';
 				} else {
 					$content .= '<p>' . $this->get_ll('msg_erase_success') . '</p>';
@@ -1395,8 +1397,7 @@ class EditorView {
 				break;
 
 			default :
-				$content .= 'Unknown dialog mode: ' .
-						$pi1->extConf['dialog_mode'];
+				$content .= 'Unknown dialog mode: ' . $pi1->extConf['dialog_mode'];
 		}
 
 		$this->referenceWriter = $referenceWriter;
@@ -1420,10 +1421,10 @@ class EditorView {
 		$fields = $this->getEditFields($bib_str, TRUE);
 
 		$cond = array();
-		$parts = \Ipf\Bib\Utility\Utility::explode_trim(',', $this->conf['groups.'][$bib_str . '.']['required']);
+		$parts = GeneralUtility::trimExplode(',', $this->conf['groups.'][$bib_str . '.']['required']);
 		foreach ($parts as $part) {
 			if (!(strpos($part, '|') === FALSE)) {
-				$cond[] = \Ipf\Bib\Utility\Utility::explode_trim('|', $part);
+				$cond[] = GeneralUtility::trimExplode('|', $part);
 			}
 		}
 
@@ -1433,20 +1434,17 @@ class EditorView {
 			$empty = array();
 			// Find empty fields
 			foreach ($fields['required'] as $ff) {
-				if (!$this->conf['no_edit.'][$ff] &&
-						!$this->conf['no_show.'][$ff]
-				) {
+				if (!$this->conf['no_edit.'][$ff] && !$this->conf['no_show.'][$ff]) {
 					switch ($ff) {
 						case 'authors':
-							if (!is_array($pub[$ff]) ||
-									(sizeof($pub[$ff]) == 0)
-							) {
+							if (!is_array($pub[$ff]) || (sizeof($pub[$ff]) == 0)) {
 								$empty[] = $ff;
 							}
 							break;
 						default:
-							if (strlen(trim($pub[$ff])) == 0)
+							if (strlen(trim($pub[$ff])) == 0) {
 								$empty[] = $ff;
+							}
 					}
 				}
 			}
@@ -1464,10 +1462,14 @@ class EditorView {
 								break;
 							}
 						}
-						if ($ok) break;
+						if ($ok) {
+							break;
+						}
 					}
 				}
-				if ($ok) $clear[] = $em;
+				if ($ok) {
+					$clear[] = $em;
+				}
 			}
 
 			$empty = array_diff($empty, $clear);
@@ -1495,7 +1497,7 @@ class EditorView {
 		$type = 'file_nexist';
 		if ($this->conf['warnings.'][$type]) {
 			$file = $pub['file_url'];
-			if (\Ipf\Bib\Utility\Utility::check_file_nexist($file)) {
+			if (Utility::check_file_nexist($file)) {
 				$message = $this->get_ll('editor_error_file_nexist');
 				$message = str_replace('%f', $file, $message);
 				$d_err[] = array('type' => $type, 'msg' => $message);
@@ -1536,7 +1538,8 @@ class EditorView {
 		foreach ($errors as $error) {
 			$errorIterator = '<li>';
 			$msg = htmlspecialchars($error['msg'], ENT_QUOTES, $charset);
-			$errorIterator .= $this->pi1->cObj->stdWrap($msg,
+			$errorIterator .= $this->pi1->cObj->stdWrap(
+						$msg,
 						$this->conf['warn_box.']['msg.']) . "\n";
 
 			$list =& $error['list'];
