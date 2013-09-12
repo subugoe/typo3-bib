@@ -18,6 +18,9 @@
 Introduction
 ------------
 
+The repository is hosted on `github`_, issues may be added to the bugtracker on https://github.com/subugoe/typo3-bib/issues
+
+.. _github: https://github.com/subugoe/typo3-bib
 
 .. toctree::
    :maxdepth: 5

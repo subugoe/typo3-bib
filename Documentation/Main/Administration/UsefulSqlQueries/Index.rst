@@ -26,50 +26,50 @@ publication reference database.
 ::
 
   SELECT pid,surname,forename
-  FROM tx_bib_domain_model_authors
+  FROM tx_bib_domain_model_author
   ORDER BY pid,surname;
 
 - *Show the authors of a publication with id XXX*
 
 ::
 
-  SELECT tx_bib_domain_model_authors.surname,tx_bib_domain_model_authors.forename
-  FROM tx_bib_domain_model_authors
+  SELECT tx_bib_domain_model_author.surname,tx_bib_domain_model_author.forename
+  FROM tx_bib_domain_model_author
   JOIN tx_bib_domain_model_authorships
-  ON tx_bib_domain_model_authorships.author_id=tx_bib_domain_model_authors.uid
-  JOIN tx_bib_domain_model_references
-  ON tx_bib_domain_model_authorships.pub_id=tx_bib_domain_model_references.uid
-  WHERE tx_bib_domain_model_references.uid=XXX
+  ON tx_bib_domain_model_authorships.author_id=tx_bib_domain_model_author.uid
+  JOIN tx_bib_domain_model_reference
+  ON tx_bib_domain_model_authorships.pub_id=tx_bib_domain_model_reference.uid
+  WHERE tx_bib_domain_model_reference.uid=XXX
   ORDER BY tx_bib_domain_model_authorships.sorting;
 
 - *Show the number of authors per publication*
 
 ::
 
-  SELECT tx_bib_domain_model_references.uid,count(tx_bib_domain_model_authors.uid)
-  FROM tx_bib_domain_model_authors
+  SELECT tx_bib_domain_model_reference.uid,count(tx_bib_domain_model_author.uid)
+  FROM tx_bib_domain_model_author
   JOIN tx_bib_domain_model_authorships
-  ON tx_bib_domain_model_authorships.author_id=tx_bib_domain_model_authors.uid
-  JOIN tx_bib_domain_model_references
-  ON tx_bib_domain_model_authorships.pub_id=tx_bib_domain_model_references.uid
-  WHERE tx_bib_domain_model_references.deleted=0
-  GROUP BY tx_bib_domain_model_references.uid;
+  ON tx_bib_domain_model_authorships.author_id=tx_bib_domain_model_author.uid
+  JOIN tx_bib_domain_model_reference
+  ON tx_bib_domain_model_authorships.pub_id=tx_bib_domain_model_reference.uid
+  WHERE tx_bib_domain_model_reference.deleted=0
+  GROUP BY tx_bib_domain_model_reference.uid;
 
 - *Show the number of publications per author*
 
 ::
 
-  SELECT tx_bib_domain_model_authors.pid,
-  tx_bib_domain_model_authors.surname,
-  tx_bib_domain_model_authors.forename,
-  count(tx_bib_domain_model_references.uid)
-  FROM tx_bib_domain_model_authors
+  SELECT tx_bib_domain_model_author.pid,
+  tx_bib_domain_model_author.surname,
+  tx_bib_domain_model_author.forename,
+  count(tx_bib_domain_model_reference.uid)
+  FROM tx_bib_domain_model_author
   JOIN tx_bib_domain_model_authorships
-  ON tx_bib_domain_model_authorships.author_id=tx_bib_domain_model_authors.uid
-  JOIN tx_bib_domain_model_references
-  ON tx_bib_domain_model_authorships.pub_id=tx_bib_domain_model_references.uid
-  WHERE tx_bib_domain_model_references.deleted=0
-  GROUP BY tx_bib_domain_model_authors.uid
-  ORDER BY tx_bib_domain_model_authors.pid,
-  tx_bib_domain_model_authors.surname;
+  ON tx_bib_domain_model_authorships.author_id=tx_bib_domain_model_author.uid
+  JOIN tx_bib_domain_model_reference
+  ON tx_bib_domain_model_authorships.pub_id=tx_bib_domain_model_reference.uid
+  WHERE tx_bib_domain_model_reference.deleted=0
+  GROUP BY tx_bib_domain_model_author.uid
+  ORDER BY tx_bib_domain_model_author.pid,
+  tx_bib_domain_model_author.surname;
 
