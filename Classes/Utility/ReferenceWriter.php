@@ -376,6 +376,9 @@ class ReferenceWriter {
 			$cruser_id = intval($backendUser->user['uid']);
 		}
 
+		// field not present in the database causes write fails
+		unset($author['sorting']);
+
 		$author['tstamp'] = time();
 		$author['crdate'] = time();
 		$author['cruser_id'] = $cruser_id;
