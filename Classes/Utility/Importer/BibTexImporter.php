@@ -703,6 +703,9 @@ class BibTexImporter extends Importer {
 				case 'urldate':
 					$publication['web_url_date'] = $r_val;
 					break;
+				case 'annote':
+					$publication['annotation'] = $r_val;
+					break;
 				case 'file_url':
 					$publication['file_url'] = $r_val;
 					break;
