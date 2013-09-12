@@ -42,7 +42,7 @@
 							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.2</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
-					</items>   
+					</items>
 					<maxitems>1</maxitems>
 					<size>1</size>
 					<default>-1</default>
@@ -122,6 +122,19 @@
 			</TCEforms>
 		</show_pref>
 
+		<!-- general sorting -->
+		<sorting>
+			<TCEforms>
+				<label>Sortierung</label>
+				<config>
+					<type>select</type>
+					<itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addFieldsToFlexForm</itemsProcFunc>
+					<maxitems>5</maxitems>
+					<size>3</size>
+				</config>
+			</TCEforms>
+		</sorting>
+		<!-- general sorting -->
 
 		<!-- Date sorting -->
 		<date_sorting>
@@ -142,7 +155,7 @@
 							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.1</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
-					</items>   
+					</items>
 					<maxitems>1</maxitems>
 					<size>1</size>
 					<default>-1</default>
@@ -242,7 +255,7 @@
 							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.2</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
-					</items>   
+					</items>
 					<maxitems>1</maxitems>
 					<size>1</size>
 					<default>-1</default>
@@ -333,12 +346,12 @@
 						<type>radio</type>
 						<items>
 							<numIndex index="0">
-								<numIndex 
+								<numIndex
 											 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule.OR</numIndex>
 								<numIndex index="1">0</numIndex>
 							</numIndex>
 							<numIndex index="1">
-								<numIndex 
+								<numIndex
 											 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule.AND</numIndex>
 								<numIndex index="1">1</numIndex>
 							</numIndex>
@@ -369,7 +382,7 @@
 					</config>
 				</TCEforms>
 			</enable_tags>
-			
+
 			<!-- Tags list -->
 			<tags>
 				<TCEforms>
@@ -381,7 +394,7 @@
 					</config>
 				</TCEforms>
 			</tags>
-			
+
 			<!-- Tags rule -->
 			<tags_rule>
 				<TCEforms>
@@ -402,8 +415,8 @@
 					</config>
 				</TCEforms>
 			</tags_rule>
-			
-			
+
+
 			<!-- Keyword filter -->
 			<!-- Enable filter -->
 			<enable_keywords>
@@ -847,17 +860,17 @@
 					<type>radio</type>
 					<items>
 						<numIndex index="0">
-							<numIndex 
+							<numIndex
 								  index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1">
-							<numIndex 
+							<numIndex
 								  index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>
 						<numIndex index="2">
-							<numIndex 
+							<numIndex
 								  index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.full_automatic</numIndex>
 							<numIndex index="1">2</numIndex>
 						</numIndex>
@@ -876,12 +889,12 @@
 					<type>radio</type>
 					<items>
 						<numIndex index="0">
-							<numIndex 
+							<numIndex
 										 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
 							<numIndex index="1">0</numIndex>
 						</numIndex>
 						<numIndex index="1">
-							<numIndex 
+							<numIndex
 										 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
 							<numIndex index="1">1</numIndex>
 						</numIndex>

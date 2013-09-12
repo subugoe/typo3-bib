@@ -44,6 +44,55 @@
 			<label index="tx_bib_domain_model_reference_hidden">Hidden</label>
 			<label index="tx_bib_domain_model_reference_pid">Storage folder</label>
 			<label index="tx_bib_domain_model_reference_uid">uid</label>
+			<label index="tx_bib_domain_model_reference_bibtype">Bibliography type</label>
+			<label index="tx_bib_domain_model_reference_ISBN">ISBN</label>
+			<label index="tx_bib_domain_model_reference_ISSN">ISSN</label>
+			<label index="tx_bib_domain_model_reference_abstract">Abstract</label>
+			<label index="tx_bib_domain_model_reference_address">Publisher address</label>
+			<label index="tx_bib_domain_model_reference_affiliation">Affiliation</label>
+			<label index="tx_bib_domain_model_reference_annotation">Annotation</label>
+			<label index="tx_bib_domain_model_reference_booktitle">Book title</label>
+			<label index="tx_bib_domain_model_reference_borrowed_by">Borrowed by</label>
+			<label index="tx_bib_domain_model_reference_chapter">Chapter</label>
+			<label index="tx_bib_domain_model_reference_citeid">Citation ID</label>
+			<label index="tx_bib_domain_model_reference_day">Day</label>
+			<label index="tx_bib_domain_model_reference_DOI">DOI</label>
+			<label index="tx_bib_domain_model_reference_edition">Edition</label>
+			<label index="tx_bib_domain_model_reference_editor">Editor</label>
+			<label index="tx_bib_domain_model_reference_event_date">Event date</label>
+			<label index="tx_bib_domain_model_reference_event_name">Event name</label>
+			<label index="tx_bib_domain_model_reference_event_place">Event place</label>
+			<label index="tx_bib_domain_model_reference_extern">External</label>
+			<label index="tx_bib_domain_model_reference_file_url">File URL</label>
+			<label index="tx_bib_domain_model_reference_howpublished">How published</label>
+			<label index="tx_bib_domain_model_reference_in_library">Is in library</label>
+			<label index="tx_bib_domain_model_reference_institute">Institute</label>
+			<label index="tx_bib_domain_model_reference_institution">Institution</label>
+			<label index="tx_bib_domain_model_reference_journal">Journal</label>
+			<label index="tx_bib_domain_model_reference_keywords">Keywords</label>
+			<label index="tx_bib_domain_model_reference_language">Language</label>
+			<label index="tx_bib_domain_model_reference_misc">Custom</label>
+			<label index="tx_bib_domain_model_reference_misc2">Custom 2</label>
+			<label index="tx_bib_domain_model_reference_month">Month</label>
+			<label index="tx_bib_domain_model_reference_note">Note</label>
+			<label index="tx_bib_domain_model_reference_number">Number</label>
+			<label index="tx_bib_domain_model_reference_number2">Number 2</label>
+			<label index="tx_bib_domain_model_reference_organization">Organization</label>
+			<label index="tx_bib_domain_model_reference_pages">Pages</label>
+			<label index="tx_bib_domain_model_reference_publisher">Publisher</label>
+			<label index="tx_bib_domain_model_reference_reviewed">Reviewed</label>
+			<label index="tx_bib_domain_model_reference_school">School</label>
+			<label index="tx_bib_domain_model_reference_series">Series</label>
+			<label index="tx_bib_domain_model_reference_state">State</label>
+			<label index="tx_bib_domain_model_reference_tags">Tags</label>
+			<label index="tx_bib_domain_model_reference_title">Title</label>
+			<label index="tx_bib_domain_model_reference_type">Work type</label>
+			<label index="tx_bib_domain_model_reference_volume">Volume</label>
+			<label index="tx_bib_domain_model_reference_web_url">Web URL</label>
+			<label index="tx_bib_domain_model_reference_web_url_date">Web URL Last Checked</label>
+			<label index="tx_bib_domain_model_reference_web_url2">Web URL 2</label>
+			<label index="tx_bib_domain_model_reference_web_url2_date">Web URL 2 Last Checked</label>
+			<label index="tx_bib_domain_model_reference_year">Year</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="editor_btn_cancel">Abbruch</label>
@@ -84,6 +133,8 @@
 			<label index="tx_bib_domain_model_reference_hidden">Versteckt</label>
 			<label index="tx_bib_domain_model_reference_pid">Ablage Ordner</label>
 			<label index="tx_bib_domain_model_reference_uid">uid</label>
+			<label index="tx_bib_domain_model_reference_bibtype">Bibliographie-Typ</label>
+
 		</languageKey>
 		<languageKey index="it" type="array">
 			<label index="editor_btn_cancel">Annulla</label>
@@ -111,6 +162,7 @@
 			<label index="editor_yes">Sì</label>
 			<label index="tx_bib_domain_model_reference_hidden">Nascosto</label>
 			<label index="tx_bib_domain_model_reference_pid">Cartella di sistema</label>
+			<label index="tx_bib_domain_model_reference_bibtype">Tipologia bibliografica</label>
 		</languageKey>
 	</data>
 </T3locallang>

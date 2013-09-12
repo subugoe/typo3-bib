@@ -113,7 +113,7 @@ class EditorView {
 		$this->referenceReader =& $pi1->referenceReader;
 		$this->referenceReader->setClearCache($this->pi1->extConf['editor']['clear_page_cache']);
 		// Load editor language data
-		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
+		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang.xml');
 
 		// setup db_utility
 		/** @var \Ipf\Bib\Utility\DbUtility $databaseUtility */

@@ -306,16 +306,26 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$defaultSorting = 'ASC';
 		}
 
-		$this->extConf['filters']['sort']['sorting'] = array(
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
-			array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
-		);
-
+		// add custom sorting with values from flexform
+		if (!empty($this->extConf['sorting'])) {
+			$sortFields = GeneralUtility::trimExplode(',', $this->extConf['sorting']);
+			foreach ($sortFields as $sortField) {
+				$this->extConf['filters']['sort']['sorting'] = array(
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.' . $sortField . ' ', 'dir' => $defaultSorting),
+				);
+			}
+		} else {
+			// pre-defined sorting
+			$this->extConf['filters']['sort']['sorting'] = array(
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+				array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
+			);
+		}
 		// Adjust sorting for bibtype split
 		if ($this->extConf['split_bibtypes']) {
 			if ($this->extConf['d_mode'] == self::D_SIMPLE) {
@@ -680,7 +690,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$GLOBALS['TSFE']->set_no_cache();
 
 			// Load edit labels
-			$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang_editor.xml');
+			$this->extend_ll('EXT:' . $this->extKey . '/Resources/Private/Language/locallang.xml');
 
 			// Do an action type evaluation
 			if (is_array($this->piVars['action'])) {
@@ -873,6 +883,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['stat_mode'] = $this->pi_getFFvalue($this->flexFormData, 'stat_mode', $fSheet);
 		$this->extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
 		$this->extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
+		$this->extConf['sorting'] = $this->pi_getFFvalue($this->flexFormData, 'sorting', $fSheet);
 
 		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
 		$show_fields = explode(',', $show_fields);
