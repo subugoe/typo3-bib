@@ -26,6 +26,7 @@ namespace Ipf\Bib\Utility\Importer;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Exception\DataException;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \Ipf\Bib\Utility\Utility;
 
@@ -238,13 +239,12 @@ abstract class Importer {
 		// Save publications
 		if ($s_ok) {
 
-			$s_fail = $this->referenceWriter->savePublication($publication);
-
-			if ($s_fail) {
-				$this->statistics['failed']++;
-				$this->statistics['errors'][] = $this->referenceWriter->error_message();
-			} else {
+			try {
+				$this->referenceWriter->savePublication($publication);
 				$this->statistics['succeeded']++;
+			} catch (DataException $e) {
+				$this->statistics['failed']++;
+				$this->statistics['errors'][] = $e->getMessage();
 			}
 		}
 

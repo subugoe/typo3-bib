@@ -25,6 +25,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Exception\DataException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -123,6 +124,7 @@ class ReferenceWriter {
 	 * This function updates a publication with all data
 	 * found in the HTTP request
 	 *
+	 * @throws DataException
 	 * @param array $publication
 	 * @return bool TRUE on error FALSE otherwise
 	 */
@@ -143,9 +145,11 @@ class ReferenceWriter {
 			if (is_array($pub_db)) {
 				$uid = intval($pub_db['uid']);
 			} else {
-				$this->error = 'The publication reference could not be updated' .
-						' because it does not exist in the database (anymore?).';
-				$this->referenceLog($this->error, $publication['uid'], 1);
+				throw new DataException(
+					'The publication reference with uid ' . $publication['uid'] . ' could not be updated' .
+										' because it does not exist in the database (anymore?).',
+					1378973300
+				);
 				return TRUE;
 			}
 		}
@@ -161,9 +165,11 @@ class ReferenceWriter {
 
 		// Check if the pid is in the allowed list
 		if (!in_array($publication['pid'], $this->referenceReader->pid_list)) {
-			$this->error = 'The given storage folder (pid=' . strval($publication['pid']) .
-					') is not in the list of allowed publication storage folders';
-			$this->log($this->error, 1);
+			throw new DataException(
+				'The given storage folder (pid=' . strval($publication['pid']) .
+								') is not in the list of allowed publication storage folders',
+				1378973653
+			);
 			return TRUE;
 		}
 
@@ -196,15 +202,16 @@ class ReferenceWriter {
 				);
 
 				if ($ret == FALSE) {
-					$this->error = 'A publication reference could not be updated uid=' . strval($uid);
-					$this->log($this->error, 2);
+					throw new DataException('A publication reference could not be updated uid=' . strval($uid), 1378973748);
 					return TRUE;
 				}
 			} else {
-				$this->error = 'The publication reference could not be updated' .
-						' because the modification key does not match.' . "\n";
-				$this->error .= ' Maybe someone edited this reference meanwhile.';
-				$this->referenceLog($this->error, $uid, 1);
+				throw new DataException(
+					'The publication reference could not be updated' .
+						' because the modification key does not match.' .
+						' Maybe someone edited this reference meanwhile.',
+					1378973836
+				);
 				return TRUE;
 			}
 		} else {
@@ -228,14 +235,13 @@ class ReferenceWriter {
 			if ($uid > 0) {
 
 			} else {
-				$this->error = 'A publication reference could not be inserted into the database';
-				$this->log($this->error, 2);
+				throw new DataException('A publication reference could not be inserted into the database', 1378973908);
 				return TRUE;
 			}
 		}
 
 		if (($uid > 0) && (sizeof($publication['authors']) > 0)) {
-			$ret = $this->save_publication_authors($uid, $publication['pid'], $publication['authors']);
+			$ret = $this->savePublicationAuthors($uid, $publication['pid'], $publication['authors']);
 			if ($ret) {
 				return TRUE;
 			}
@@ -260,7 +266,7 @@ class ReferenceWriter {
 	 * @param array $authors
 	 * @return bool
 	 */
-	public function save_publication_authors($pub_uid, $pid, $authors) {
+	protected function savePublicationAuthors($pub_uid, $pid, $authors) {
 		// Fetches missing author uids and
 		// inserts new authors on demand
 		$sort = 0;

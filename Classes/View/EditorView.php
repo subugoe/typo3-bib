@@ -26,6 +26,7 @@ namespace Ipf\Bib\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\Utility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -1356,15 +1357,16 @@ class EditorView {
 					}
 				}
 
-				if ($referenceWriter->savePublication($publication)) {
+				try {
+					$referenceWriter->savePublication($publication);
+					$content .= '<p>' . $this->get_ll('msg_save_success') . '</p>';
+					$messages = $this->postDatabaseWriteActions();
+					$content .= $this->createHtmlTextFromPostDatabaseWrite($messages);
+				} catch (DataException $e) {
 					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
 					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
 					$content .= '<p>' . $referenceWriter->html_error_message() . '</p>';
 					$content .= '</div>' . "\n";
-				} else {
-					$content .= '<p>' . $this->get_ll('msg_save_success') . '</p>';
-					$messages = $this->postDatabaseWriteActions();
-					$content .= $this->createHtmlTextFromPostDatabaseWrite($messages);
 				}
 				break;
 
