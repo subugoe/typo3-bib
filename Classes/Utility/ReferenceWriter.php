@@ -540,11 +540,13 @@ class ReferenceWriter {
 	 * The entry must have been marked deleted beforehand.
 	 * This erases the reference and the authorships but not the author
 	 *
+	 * @deprecated since 1.3.0, will be removed in 1.5.0. Use only soft deletes
 	 * @param int $uid
 	 * @return bool
 	 */
 	public function erasePublication($uid) {
 
+		GeneralUtility::logDeprecatedFunction();
 		// Delete authorships
 		$authorshipEraser = $GLOBALS['TYPO3_DB']->exec_DELETEquery(
 			$this->referenceReader->getAuthorshipTable(),
