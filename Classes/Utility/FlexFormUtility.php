@@ -25,7 +25,8 @@ namespace Ipf\Bib\Utility;
 	 *
 	 *  This copyright notice MUST APPEAR in all copies of the script!
 	 * ************************************************************* */
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Description
@@ -40,7 +41,7 @@ class FlexFormUtility {
 
 		foreach($referenceReader->getReferenceFields() as $key => $referenceField) {
 			$optionList[] = array(
-				0 => \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('tx_bib_domain_model_reference_' . $referenceField, 'bib'),
+				0 => LocalizationUtility::translate($referenceReader->getReferenceTable() . '_' . $referenceField, 'bib'),
 				1 => $referenceField
 			);
 		}
