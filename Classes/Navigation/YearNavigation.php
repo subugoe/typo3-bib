@@ -39,7 +39,7 @@ class YearNavigation extends Navigation {
 			$this->conf =& $pi1->conf['yearNav.'];
 		}
 
-		$this->pref = 'YEAR_NAVI';
+		$this->prefix = 'YEAR_NAVI';
 		$this->load_template('###YEAR_NAVI_BLOCK###');
 		$this->sel_link_title = $pi1->get_ll('yearNav_yearLinkTitle', '%y', TRUE);
 	}

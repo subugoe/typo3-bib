@@ -43,7 +43,7 @@ abstract class Navigation {
 	 * A prefix string
 	 * @var string
 	 */
-	public $pref;
+	public $prefix;
 
 	/**
 	 * @var array
@@ -88,7 +88,7 @@ abstract class Navigation {
 	 */
 	public function translator() {
 
-		$pref = '###' . $this->pref;
+		$pref = '###' . $this->prefix;
 		$content = $this->get();
 
 		$res = array();

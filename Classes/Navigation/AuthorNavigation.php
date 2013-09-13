@@ -52,7 +52,7 @@ class AuthorNavigation extends Navigation {
 			$this->extConf =& $pi1->extConf['author_navi'];
 		}
 
-		$this->pref = 'AUTHOR_NAVI';
+		$this->prefix = 'AUTHOR_NAVI';
 		$this->load_template('###AUTHOR_NAVI_BLOCK###');
 		$this->sel_link_title = $pi1->get_ll('authorNav_authorLinkTitle', '%a', TRUE);
 	}

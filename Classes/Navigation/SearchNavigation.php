@@ -58,7 +58,7 @@ class SearchNavigation extends Navigation {
 			$this->extConf =& $pi1->extConf['search_navi'];
 		}
 
-		$this->pref = 'SEARCH_NAVI';
+		$this->prefix = 'SEARCH_NAVI';
 		$this->load_template('###SEARCH_NAVI_BLOCK###');
 	}
 

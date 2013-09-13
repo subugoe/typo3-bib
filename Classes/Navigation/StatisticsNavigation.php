@@ -41,7 +41,7 @@ class StatisticsNavigation extends Navigation {
 			$this->conf =& $pi1->conf['statNav.'];
 		}
 
-		$this->pref = 'STAT_NAVI';
+		$this->prefix = 'STAT_NAVI';
 		$this->load_template('###STAT_NAVI_BLOCK###');
 	}
 

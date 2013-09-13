@@ -40,7 +40,7 @@ class PageNavigation extends Navigation {
 			$this->conf =& $pi1->conf['pageNav.'];
 		}
 
-		$this->pref = 'PAGE_NAVI';
+		$this->prefix = 'PAGE_NAVI';
 		$this->load_template('###PAGE_NAVI_BLOCK###');
 		$this->sel_link_title = $pi1->get_ll('pageNav_pageLinkTitle', '%p', TRUE);
 	}
