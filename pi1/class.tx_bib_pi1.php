@@ -26,6 +26,8 @@
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \Ipf\Bib\Utility\Utility;
+use \TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use \TYPO3\CMS\Core\Messaging\FlashMessage;
 
 /**
  * Plugin 'Publication List' for the 'bib' extension.
@@ -233,12 +235,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Initialize the html templates
 		try {
 			$this->initializeHtmlTemplate();
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			return $this->finalize($e->getMessage());
 		}
 
 		// Switch to requested view mode
-		return $this->finalize($this->switchToRequestedViewMode());
+		try {
+			return $this->finalize($this->switchToRequestedViewMode());
+		} catch (\Exception $e) {
+			return $this->finalize($e->getMessage());
+		}
 	}
 
 	/**
@@ -495,6 +501,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	/**
 	 * Determine the requested view mode (List, Single, Editor, Dialog)
 	 *
+	 * @throws \Exception
 	 * @return string
 	 */
 	protected function switchToRequestedViewMode() {
@@ -513,7 +520,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				return $this->dialogView();
 				break;
 			default:
-				return $this->errorMessage('An illegal view mode occured');
+				throw new \Exception('An illegal view mode occurred', 1379064350);
 		}
 	}
 
@@ -796,7 +803,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				}
 			}
 
-
 			// The selected year has no publications so select the closest year
 			if (($this->stat['num_all'] > 0) && is_numeric($this->extConf['year'])) {
 				$this->extConf['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
@@ -937,12 +943,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Overwrite editor configuration from TSsetup
 		if (is_array($this->conf['editor.'])) {
 			$editorOverride =& $this->conf['editor.'];
-			if (array_key_exists('enabled', $editorOverride))
+			if (array_key_exists('enabled', $editorOverride)) {
 				$this->extConf['editor']['enabled'] = $editorOverride['enabled'] ? TRUE : FALSE;
-			if (array_key_exists('citeid_gen_new', $editorOverride))
+			}
+			if (array_key_exists('citeid_gen_new', $editorOverride)) {
 				$this->extConf['editor']['citeid_gen_new'] = $editorOverride['citeid_gen_new'] ? TRUE : FALSE;
-			if (array_key_exists('citeid_gen_old', $editorOverride))
+			}
+			if (array_key_exists('citeid_gen_old', $editorOverride)) {
 				$this->extConf['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? TRUE : FALSE;
+			}
 		}
 		$this->referenceReader->setClearCache($this->extConf['editor']['clear_page_cache']);
 	}
@@ -1012,6 +1021,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return bool
 	 */
 	protected function isValidBackendUser() {
+
+		$validBackendUser = FALSE;
+
 		if (is_object($GLOBALS['BE_USER'])) {
 			if ($GLOBALS['BE_USER']->isAdmin())
 				$validBackendUser = TRUE;
@@ -1027,22 +1039,28 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return bool
 	 */
 	protected function isValidFrontendUser($validBackendUser) {
+
+		$validFrontendUser = FALSE;
+
 		if (!$validBackendUser && isset ($this->conf['FE_edit_groups'])) {
 			$groups = $this->conf['FE_edit_groups'];
 			if (Utility::check_fe_user_groups($groups)) {
-				return TRUE;
+				$validFrontendUser = TRUE;
 			}
 		}
+		return $validFrontendUser;
 	}
 
 
 	/**
-	 * Returns the error message wrapped into a mesage container
+	 * Returns the error message wrapped into a message container
 	 *
+	 * @deprecated Since 1.3.0 will be removed in 1.5.0. Use TYPO3 Flash Messaging Service
 	 * @param String $errorString
 	 * @return String The wrapper error message
 	 */
 	public function errorMessage($errorString) {
+		GeneralUtility::logDeprecatedFunction();
 		$errorMessage = '<div class="' . $this->prefixShort . '-warning_box">' . "\n";
 		$errorMessage .= '<h3>' . $this->prefix_pi1 . ' error</h3>' . "\n";
 		$errorMessage .= '<div>' . $errorString . '</div>' . "\n";
@@ -2114,7 +2132,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$publicationData['bibtype_short'] = $this->referenceReader->allBibTypes[$publicationData['bibtype']];
 		$publicationData['bibtype'] = $this->get_ll(
 			$this->referenceReader->getReferenceTable() . '_bibtype_I_' . $publicationData['bibtype'],
-			'Unknown bibtype: ' . $publicationData['bibtype'],
+				'Unknown bibtype: ' . $publicationData['bibtype'],
 			TRUE
 		);
 
@@ -2144,7 +2162,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			default :
 				$publicationData['state'] = $this->get_ll(
 					$this->referenceReader->getReferenceTable() . '_state_I_' . $publicationData['state'],
-					'Unknown state: ' . $publicationData['state'],
+						'Unknown state: ' . $publicationData['state'],
 					TRUE
 				);
 		}
@@ -3187,6 +3205,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$editorView->initialize($this);
 				$content .= $editorView->dialogView();
 		}
+		$content .= FlashMessageQueue::renderFlashMessages();
 		$content .= '<p>';
 		$content .= $this->get_link($this->get_ll('link_back_to_list'));
 		$content .= '</p>' . "\n";
@@ -3308,8 +3327,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function importDialog() {
 
-		$title = $this->get_ll('import_title');
-		$content = '<h2>' . $title . '</h2>' . "\n";
+		$content = '<h2>' . $this->get_ll('import_title') . '</h2>' . "\n";
 		$mode = $this->piVars['import'];
 
 		if (($mode == self::IMP_BIBTEX) || ($mode == self::IMP_XML)) {
@@ -3330,10 +3348,20 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			try {
 				$content .= $importer->import();
 			} catch (\Exception $e) {
-				$this->errorMessage($e->getMessage());
+				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+					$e->getMessage(),
+					'',
+					FlashMessage::ERROR
+				);
+				FlashMessageQueue::addMessage($message);
 			}
 		} else {
-			$content .= $this->errorMessage('Unknown import mode');
+			$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+				'Unknown import mode',
+				'',
+				FlashMessage::ERROR
+			);
+			FlashMessageQueue::addMessage($message);
 		}
 
 		return $content;
@@ -3373,7 +3401,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				"fe_user_id",
 				"tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m",
-				"a.uid = m.author_id AND m.pub_id = " . $publicationId
+					"a.uid = m.author_id AND m.pub_id = " . $publicationId
 			);
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
