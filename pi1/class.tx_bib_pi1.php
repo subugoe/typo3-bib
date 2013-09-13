@@ -2706,12 +2706,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Determine publication numbers
 		$publicationsBefore = 0;
-		if (($this->extConf['d_mode'] == self::D_Y_NAV) &&
-				is_numeric($this->extConf['year'])
-		) {
+		if (($this->extConf['d_mode'] == self::D_Y_NAV) && is_numeric($this->extConf['year'])) {
 			foreach ($this->stat['year_hist'] as $y => $n) {
-				if ($y == $this->extConf['year'])
+				if ($y == $this->extConf['year']) {
 					break;
+				}
 				$publicationsBefore += $n;
 			}
 		}
@@ -2745,8 +2744,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			// Determine evenOdd
 			if ($this->extConf['split_bibtypes']) {
-				if ($pub['bibtype'] != $prevBibType)
+				if ($pub['bibtype'] != $prevBibType) {
 					$i_bibtype = 1;
+				}
 				$evenOdd = $i_bibtype % 2;
 			} else {
 				$evenOdd = $i_subpage % 2;
@@ -2757,10 +2757,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			if (strlen($listViewTemplate) == 0) {
 				$key = strtoupper($pdata['bibtype_short']) . '_DATA';
 				$listViewTemplate = $this->template[$key];
-				if (strlen($listViewTemplate) == 0)
+
+				if (strlen($listViewTemplate) == 0) {
 					$data_block = $this->template['DEFAULT_DATA'];
-				$listViewTemplate = $this->cObj->substituteMarker($itemBlockTemplate,
-					'###ITEM_DATA###', $listViewTemplate);
+				}
+
+				$listViewTemplate = $this->cObj->substituteMarker(
+					$itemBlockTemplate,
+					'###ITEM_DATA###',
+					$listViewTemplate
+				);
 				$itemTemplate[$pdata['bibtype']] = $listViewTemplate;
 			}
 
@@ -3388,9 +3394,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// always allow BE users with sufficient rights
 		if (is_object($GLOBALS['BE_USER'])) {
 			if ($GLOBALS['BE_USER']->isAdmin()) {
-				return true;
+				return TRUE;
 			} else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable())) {
-				return true;
+				return FALSE;
 			}
 		}
 
@@ -3406,16 +3412,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
 				// check if author == FE user and allow editing
-				if ($row[0] == $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->userid_column])
-					return true;
+				if ($row[0] == $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->userid_column]) {
+					return TRUE;
+				}
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-			return false;
+			return FALSE;
 		}
 
 		// default behavior, FE user can edit all records
-		return true;
+		return TRUE;
 	}
 
 }
