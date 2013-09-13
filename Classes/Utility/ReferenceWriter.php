@@ -64,9 +64,11 @@ class ReferenceWriter {
 	 * Returns the error message and resets it.
 	 * The returned message is either a string or FALSE
 	 *
+	 * @deprecated Use TYPO3 FlashMessage service
 	 * @return string The last error message
 	 */
 	public function error_message() {
+		GeneralUtility::logDeprecatedFunction();
 		$err = $this->error;
 		$this->error = FALSE;
 		return $err;
@@ -76,9 +78,11 @@ class ReferenceWriter {
 	/**
 	 * Same as error_message() but returns a html version
 	 *
+	 * @deprecated use TYPO3 FlashMessage service
 	 * @return string The last error message
 	 */
 	public function html_error_message() {
+		GeneralUtility::logDeprecatedFunction();
 		$err = $this->error_message();
 		$err = str_replace("\n", "<br/>\n", $err);
 		return $err;
