@@ -1161,7 +1161,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function initializeFilters() {
 		$this->extConf['filters'] = array();
 		$this->initializeFlexformFilter();
-		$this->initializeSelectionFilter();
+
+		try {
+			$this->initializeSelectionFilter();
+		} catch (\Exception $e) {
+			$message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+				$e->getMessage(),
+				'',
+				FlashMessage::ERROR
+			);
+			FlashMessageQueue::addMessage($message);
+		}
 	}
 
 	/**
@@ -1173,7 +1183,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['years'] = array();
 			$flexFormFilter['ranges'] = array();
 			$ffStr = $this->pi_getFFvalue($this->flexForm, 'years', $this->flexFormFilterSheet);
-			$arr = \Ipf\Bib\Utility\Utility::multi_explode_trim(
+			$arr = Utility::multi_explode_trim(
 				array(',', "\r", "\n"),
 				$ffStr,
 				TRUE
@@ -1479,13 +1489,14 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 
 	/**
-	 * This initializes the selction filter array from the piVars
+	 * This initializes the selection filter array from the piVars
 	 *
-	 * @return string|bool FALSE or an error message
+	 * @throws \Exception
+	 * @return void
 	 */
 	protected function initializeSelectionFilter() {
 		if (!$this->conf['allow_selection']) {
-			return FALSE;
+			throw new \Exception('Selection not allowed in configuration' . 1379074450);
 		}
 
 		$this->extConf['filters']['selection'] = array();
@@ -1507,10 +1518,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$words = GeneralUtility::trimExplode(',', $words, TRUE);
 			if (sizeof($words) > 0) {
 				$filter['all']['words'] = $words;
-				$filter['all']['rule'] = 1; // AND
+
+				// AND
+				$filter['all']['rule'] = 1;
 				$rule = strtoupper(trim($this->piVars['search']['all_rule']));
 				if (strpos($rule, 'AND') === FALSE) {
-					$filter['all']['rule'] = 0; // OR
+					// OR
+					$filter['all']['rule'] = 0;
 				}
 			}
 		}
@@ -2543,9 +2557,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 							$a_et = $authors[$j];
 							foreach ($filter_authors as $fa) {
 								if ($a_et['surname'] == $fa['surname']) {
-									if (!$fa['forename']
-											|| ($a_et['forename'] == $fa['forename'])
-									) {
+									if (!$fa['forename'] || ($a_et['forename'] == $fa['forename'])) {
 										$wrap = $this->conf['authors.']['highlight.'];
 										$j = sizeof($authors);
 										break;

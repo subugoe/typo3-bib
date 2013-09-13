@@ -198,8 +198,7 @@ class Utility {
 				}
 				$groups = GeneralUtility::intExplode(',', $groups);
 			}
-			$cur =& $GLOBALS['TSFE']->fe_user->groupData['uid'];
-			if (self::intval_list_check($groups, $cur)) {
+			if (self::intval_list_check($groups, $GLOBALS['TSFE']->fe_user->groupData['uid'])) {
 				return TRUE;
 			}
 		}
@@ -254,11 +253,16 @@ class Utility {
 	/**
 	 * Returns a checkbox input
 	 *
+	 * @param $name
+	 * @param $value
+	 * @param $checked
+	 * @param array $attributes
 	 * @return string The checkbox input element
 	 */
 	public static function html_radio_input($name, $value, $checked, $attributes = array()) {
-		if ($checked)
+		if ($checked) {
 			$attributes['checked'] = 'checked';
+		}
 		return self::html_input('radio', $name, $value, $attributes);
 	}
 
@@ -306,6 +310,9 @@ class Utility {
 	/**
 	 * Returns a text input
 	 *
+	 * @param $name
+	 * @param $value
+	 * @param array $attributes
 	 * @return string The text input element
 	 */
 	public static function html_text_input($name, $value, $attributes = array()) {
@@ -392,6 +399,9 @@ class Utility {
 	/**
 	 * Crops the first argument to a given range
 	 *
+	 * @param $value
+	 * @param $min
+	 * @param $max
 	 * @return mixed The value fitted into the given range
 	 */
 	public static function crop_to_range($value, $min, $max) {
@@ -640,8 +650,11 @@ class Utility {
 		$a_idx = $size - 1;
 		for ($ii = 0; $ii < $size; $ii++) {
 			$res[] = strval($arr[$ii]);
-			if ($ii < $c_idx) $res[] = strval($sep);
-			else if ($ii < $a_idx) $res[] = strval($and);
+			if ($ii < $c_idx) {
+				$res[] = strval($sep);
+			} else if ($ii < $a_idx) {
+				$res[] = strval($and);
+			}
 		}
 		return implode('', $res);
 	}
