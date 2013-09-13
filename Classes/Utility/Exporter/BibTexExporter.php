@@ -26,14 +26,12 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use TYPO3\CMS\Core\FormProtection\Exception;
-
 class BibTexExporter extends Exporter {
 
 	/**
 	 * @var \Ipf\Bib\Utility\PRegExpTranslator
 	 */
-	public $bibTexTranslator;
+	protected $bibTexTranslator;
 
 	/**
 	 * @param \tx_bib_pi1 $pi1
@@ -42,7 +40,7 @@ class BibTexExporter extends Exporter {
 	public function initialize($pi1) {
 		parent::initialize($pi1);
 
-		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.bib';
+		$this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.bib');
 
 		/** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
 		$bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
@@ -190,16 +188,16 @@ class BibTexExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	public function formatPublicationForExport($publication, $infoArr = array()) {
+	protected function formatPublicationForExport($publication, $infoArr = array()) {
 
-		$bibliographyType = ucfirst($this->referenceReader->allBibTypes[$publication['bibtype']]);
+		$bibliographyType = ucfirst($this->getReferenceReader()->allBibTypes[$publication['bibtype']]);
 
 		$content = '@';
 		$content .= $bibliographyType . ' { ';
 		$content .= trim($publication['citeid']) . ",\n";
 
 		$entries = array();
-		foreach ($this->referenceReader->getPublicationFields() as $publicationField) {
+		foreach ($this->getReferenceReader()->getPublicationFields() as $publicationField) {
 			$append = TRUE;
 			switch ($publicationField) {
 				case 'bibtype':
@@ -322,16 +320,16 @@ class BibTexExporter extends Exporter {
 					} else {
 						$value .= ' and ';
 					}
-					$fn = $this->bibTexFormatString($a['forename']);
-					$sn = $this->bibTexFormatString($a['surname']);
-					if (strlen($sn) && strlen($fn))
-						$value .= $sn . ', ' . $fn;
+					$forename = $this->bibTexFormatString($a['forename']);
+					$surname = $this->bibTexFormatString($a['surname']);
+					if (strlen($surname) && strlen($forename))
+						$value .= $surname . ', ' . $forename;
 					else
-						$value .= $sn . $fn;
+						$value .= $surname . $forename;
 				}
 				break;
 			case 'state':
-				$value = $this->referenceReader->allStates[$value];
+				$value = $this->getReferenceReader()->allStates[$value];
 				$value = $this->bibTexFormatString($value);
 				break;
 			default:

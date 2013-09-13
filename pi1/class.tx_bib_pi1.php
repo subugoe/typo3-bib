@@ -3201,10 +3201,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return String The export dialog
 	 */
 	protected function exportDialog() {
-		$content = '';
 		$mode = $this->extConf['export_navi']['do'];
-		$title = $this->get_ll('export_title');
-		$content .= '<h2>' . $title . '</h2>' . "\n";
+		$content = '<h2>' . $this->get_ll('export_title') . '</h2>' . "\n";
 
 		$label = '';
 		switch ($mode) {
@@ -3217,7 +3215,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$label = 'export_xml';
 				break;
 			default:
-				return $this->errorMessage('Unknown export mode');
+				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+					'Unknown export mode',
+					'',
+					FlashMessage::ERROR
+				);
+				FlashMessageQueue::addMessage($message);
 		}
 
 		/** @var \Ipf\Bib\Utility\Exporter\Exporter $exporter */
@@ -3228,7 +3231,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			try {
 				$exporter->initialize($this);
 			} catch (\Exception $e) {
-				$e->getMessage();
+				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+					$e->getMessage(),
+					$label,
+					FlashMessage::ERROR
+				);
+				FlashMessageQueue::addMessage($message);
 			}
 
 			$dynamic = $this->conf['export.']['dynamic'] ? TRUE : FALSE;
@@ -3237,39 +3245,61 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$dynamic = TRUE;
 			}
 
-			$exporter->dynamic = $dynamic;
+			$exporter->setDynamic($dynamic);
 
-			if ($exporter->export()) {
-				$content .= $this->errorMessage($exporter->error);
-			} else {
+			try {
+				$exporter->export();
 				if ($dynamic) {
-					// Dump the export data and exit
-					$exporterFileName = $exporter->file_name;
-					header('Content-Type: text/plain');
-					header('Content-Disposition: attachment; filename="' . $exporterFileName . '"');
-					header('Cache-Control: no-cache, must-revalidate');
-					echo $exporter->data;
-					exit ();
+					$this->dumpExportDataAndExit($exporter);
 				} else {
-					// Create link to file
-					$link = $this->cObj->getTypoLink(
-						$exporter->file_name,
-						$exporter->getRelativeFilePath()
-					);
-					$content .= '<ul><li><div>';
-					$content .= $link;
-					if ($exporter->file_new) {
-						$content .= ' (' . $this->get_ll('export_file_new') . ')';
-					}
-					$content .= '</div></li>';
-					$content .= '</ul>' . "\n";
+					$content .= $this->createLinkToExportFile($exporter);
 				}
+			} catch (\TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException $e) {
+				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+					$e->getMessage(),
+					'',
+					FlashMessage::ERROR
+				);
+				FlashMessageQueue::addMessage($message);
 			}
+
 		}
 
 		return $content;
 	}
 
+	/**
+	 * @param \Ipf\Bib\Utility\Exporter\Exporter $exporter
+	 * @return string
+	 */
+	protected function createLinkToExportFile($exporter) {
+		$link = $this->cObj->getTypoLink(
+			$exporter->getFileName(),
+			$exporter->getRelativeFilePath()
+		);
+		$content = '<ul><li><div>';
+		$content .= $link;
+		if ($exporter->getIsNewFile()) {
+			$content .= ' (' . $this->get_ll('export_file_new') . ')';
+		}
+		$content .= '</div></li>';
+		$content .= '</ul>' . "\n";
+
+		return $content;
+	}
+
+	/**
+	 * @param \Ipf\Bib\Utility\Exporter\Exporter $exporter
+	 */
+	protected function dumpExportDataAndExit($exporter) {
+		// Dump the export data and exit
+		$exporterFileName = $exporter->getFileName();
+		header('Content-Type: text/plain');
+		header('Content-Disposition: attachment; filename="' . $exporterFileName . '"');
+		header('Cache-Control: no-cache, must-revalidate');
+		echo $exporter->getData();
+		exit ();
+	}
 
 	/**
 	 * The import dialog

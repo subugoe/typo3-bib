@@ -31,12 +31,12 @@ class XmlExporter extends Exporter {
 	/**
 	 * @var array
 	 */
-	public $pattern = array();
+	protected $pattern = array();
 
 	/**
 	 * @var array
 	 */
-	public $replacement = array();
+	protected $replacement = array();
 
 	/**
 	 * @param \tx_bib_pi1 $pi1
@@ -53,7 +53,7 @@ class XmlExporter extends Exporter {
 		$this->pattern[] = '/>/';
 		$this->replacement[] = '&gt;';
 
-		$this->file_name = $this->pi1->extKey . '_' . $this->filter_key . '.xml';
+		$this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.xml');
 	}
 
 	/**
@@ -61,34 +61,31 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	public function formatPublicationForExport($publication, $infoArr = array()) {
-		$content = '';
+	protected function formatPublicationForExport($publication, $infoArr = array()) {
 
-		$pi1 =& $this->pi1;
-
-		$charset = $pi1->extConf['charset']['lower'];
+		$charset = $this->pi1->extConf['charset']['lower'];
 
 		if ($charset != 'utf-8') {
-			$publication = $this->referenceReader->change_pub_charset($publication, $charset, 'utf-8');
+			$publication = $this->getReferenceReader()->change_pub_charset($publication, $charset, 'utf-8');
 		}
 
-		$content .= '<reference>' . "\n";
+		$content = '<reference>' . "\n";
 
-		$entries = array();
-		foreach ($this->referenceReader->getPublicationFields() as $key) {
-			$value = '';
+		foreach ($this->getReferenceReader()->getPublicationFields() as $key) {
 			$append = TRUE;
 
 			switch ($key) {
 				case 'authors':
 					$value = $publication['authors'];
-					if (sizeof($value) == 0)
+					if (sizeof($value) == 0) {
 						$append = FALSE;
+					}
 					break;
 				default:
 					$value = trim($publication[$key]);
-					if ((strlen($value) == 0) || ($value == '0'))
+					if ((strlen($value) == 0) || ($value == '0')) {
 						$append = FALSE;
+					}
 			}
 
 			if ($append) {
@@ -126,12 +123,15 @@ class XmlExporter extends Exporter {
 					$a_str = '';
 					$foreName = $this->xmlFormatString($author['forename']);
 					$surName = $this->xmlFormatString($author['surname']);
-					if (strlen($foreName))
+					if (strlen($foreName)) {
 						$a_str .= '<fn>' . $foreName . '</fn>';
-					if (strlen($surName))
+					}
+					if (strlen($surName)) {
 						$a_str .= '<sn>' . $surName . '</sn>';
-					if (strlen($a_str))
+					}
+					if (strlen($a_str)) {
 						$aXML[] = $a_str;
+					}
 				}
 				if (sizeof($aXML)) {
 					$value .= "\n";
@@ -141,11 +141,11 @@ class XmlExporter extends Exporter {
 				}
 				break;
 			case 'bibtype':
-				$value = $this->referenceReader->allBibTypes[$value];
+				$value = $this->getReferenceReader()->allBibTypes[$value];
 				$value = $this->xmlFormatString($value);
 				break;
 			case 'state':
-				$value = $this->referenceReader->allStates[$value];
+				$value = $this->getReferenceReader()->allStates[$value];
 				$value = $this->xmlFormatString($value);
 				break;
 			default:
@@ -161,8 +161,7 @@ class XmlExporter extends Exporter {
 	 * @return string
 	 */
 	protected function fileIntro($infoArr = array()) {
-		$content = '';
-		$content .= '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+		$content = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 		$content .= '<bib>' . "\n";
 		$content .= '<comment>' . "\n";
 		$content .= $this->xmlFormatString($this->getGeneralInformationText($infoArr));
@@ -175,8 +174,7 @@ class XmlExporter extends Exporter {
 	 * @return string
 	 */
 	protected function fileOutro($infoArr = array()) {
-		$content = '';
-		$content .= '</bib>' . "\n";
+		$content = '</bib>' . "\n";
 		return $content;
 	}
 
