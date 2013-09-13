@@ -29,6 +29,8 @@ namespace Ipf\Bib\View;
 use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\Utility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use \TYPO3\CMS\Core\Messaging\FlashMessage;
 
 class EditorView {
 
@@ -1165,8 +1167,7 @@ class EditorView {
 		if ($publication['year'] == 0) {
 			if (is_numeric($this->pi1->extConf['year'])) {
 				$publication['year'] = intval($this->pi1->extConf['year']);
-			}
-			else
+			} else
 				$publication['year'] = intval(date('Y'));
 		}
 
@@ -1332,8 +1333,6 @@ class EditorView {
 	 * @return string The requested dialog
 	 */
 	public function dialogView() {
-		$content = '';
-
 		$pi1 =& $this->pi1;
 
 		/** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
@@ -1359,14 +1358,21 @@ class EditorView {
 
 				try {
 					$referenceWriter->savePublication($publication);
-					$content .= '<p>' . $this->get_ll('msg_save_success') . '</p>';
-					$messages = $this->postDatabaseWriteActions();
-					$content .= $this->createHtmlTextFromPostDatabaseWrite($messages);
+					/** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
+					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+						$this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
+						$this->get_ll('msg_save_success'),
+						\TYPO3\CMS\Core\Messaging\FlashMessage::OK
+					);
+					FlashMessageQueue::addMessage($message);
+
 				} catch (DataException $e) {
-					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
-					$content .= '<p>' . $this->get_ll('msg_save_fail') . '</p>';
-					$content .= '<p>' . $e->getMessage() . '</p>';
-					$content .= '</div>' . "\n";
+					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+						$e->getMessage(),
+						$this->get_ll('msg_save_fail'),
+						\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+					);
+					FlashMessageQueue::addMessage($message);
 				}
 				break;
 
@@ -1374,35 +1380,33 @@ class EditorView {
 				$publication = $this->getPublicationDataFromHttpRequest();
 				try {
 					$referenceWriter->deletePublication($pi1->piVars['uid'], $publication['mod_key']);
-					$content .= '<p>' . $this->get_ll('msg_delete_success') . '</p>';
-					$messages = $this->postDatabaseWriteActions();
-					$content .= $this->createHtmlTextFromPostDatabaseWrite($messages);
+					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+						$this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
+						$this->get_ll('msg_delete_success'),
+						\TYPO3\CMS\Core\Messaging\FlashMessage::OK
+					);
+					FlashMessageQueue::addMessage($message);
 				} catch (DataException $e) {
-					$content .= '<div class="' . $pi1->prefixShort . '-warning_box">' . "\n";
-					$content .= '<p>' . $this->get_ll('msg_delete_fail') . '</p>';
-					$content .= '<p>' . $e->getMessage() . '</p>';
-					$content .= '<small>' . $e->getCode() . '</small>';
-					$content .= '</div>' . "\n";
+					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+						$e->getMessage(),
+						$this->get_ll('msg_delete_fail'),
+						\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+					);
+					FlashMessageQueue::addMessage($message);
 				}
 				break;
-
-			case $pi1::DIALOG_ERASE_CONFIRMED :
-				if ($referenceWriter->erasePublication($pi1->piVars['uid'])) {
-					$content .= '<p>' . $this->get_ll('msg_erase_fail') . '</p>';
-				} else {
-					$content .= '<p>' . $this->get_ll('msg_erase_success') . '</p>';
-					$messages = $this->postDatabaseWriteActions();
-					$content .= $this->createHtmlTextFromPostDatabaseWrite($messages);
-				}
-				break;
-
 			default :
-				$content .= 'Unknown dialog mode: ' . $pi1->extConf['dialog_mode'];
-		}
+				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+					'Unknown dialog mode: ' . $pi1->extConf['dialog_mode'],
+					$this->get_ll('msg_delete_fail'),
+					\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+				);
+				FlashMessageQueue::addMessage($message);
+			}
 
 		$this->referenceWriter = $referenceWriter;
 
-		return $content;
+		return FlashMessageQueue::renderFlashMessages();
 	}
 
 
