@@ -45,7 +45,6 @@ class PageNavigation extends Navigation {
 		$this->sel_link_title = $pi1->get_ll('pageNav_pageLinkTitle', '%p', TRUE);
 	}
 
-
 	/*
 	 * Creates a text for a given index
 	 *
@@ -55,7 +54,6 @@ class PageNavigation extends Navigation {
 	protected function sel_get_text($index) {
 		return strval($index + 1);
 	}
-
 
 	/*
 	 * Creates a link for the selection
@@ -86,28 +84,23 @@ class PageNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function get() {
-		$cObj =& $this->pi1->cObj;
-		$translation = array();
 
-		$configuration =& $this->conf;
-		$selectionConfiguration = is_array($configuration['selection.']) ? $configuration['selection.'] : array();
-		$navigationConfiguration = is_array($configuration['navigation.']) ? $configuration['navigation.'] : array();
+		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
+		$navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : array();
 
 		// The data
 		$subPage =& $this->pi1->extConf['sub_page'];
-		$idxCur = $subPage['current'];
-		$idxMax = $subPage['max'];
 
 		// The label
-		$label = $cObj->stdWrap(
+		$label = $this->pi1->cObj->stdWrap(
 			$this->pi1->get_ll('pageNav_label'),
-			$configuration['label.']
+			$this->conf['label.']
 		);
 
 		// The previous/next buttons
 		$nav_prev = $this->pi1->get_ll('pageNav_previous', 'previous', TRUE);
-		if ($idxCur > 0) {
-			$page = max($idxCur - 1, 0);
+		if ($subPage['current'] > 0) {
+			$page = max($subPage['current'] - 1, 0);
 			$title = $this->pi1->get_ll('pageNav_previousLinkTitle', 'previous', TRUE);
 			$nav_prev = $this->pi1->get_link(
 				$nav_prev,
@@ -122,8 +115,8 @@ class PageNavigation extends Navigation {
 		}
 
 		$nav_next = $this->pi1->get_ll('pageNav_next', 'next', TRUE);
-		if ($idxCur < $idxMax) {
-			$page = min($idxCur + 1, $idxMax);
+		if ($subPage['current'] < $subPage['max']) {
+			$page = min($subPage['current'] + 1, $subPage['max']);
 			$title = $this->pi1->get_ll('pageNav_nextLinkTitle', 'next', TRUE);
 			$nav_next = $this->pi1->get_link(
 				$nav_next,
@@ -138,24 +131,23 @@ class PageNavigation extends Navigation {
 		}
 
 		// Wrap
-		$nav_prev = $cObj->stdWrap($nav_prev, $navigationConfiguration['previous.']);
-		$nav_next = $cObj->stdWrap($nav_next, $navigationConfiguration['next.']);
+		$nav_prev = $this->pi1->cObj->stdWrap($nav_prev, $navigationConfiguration['previous.']);
+		$nav_next = $this->pi1->cObj->stdWrap($nav_next, $navigationConfiguration['next.']);
 
 		$navigationSeparator = '&nbsp;';
 		if (array_key_exists('separator', $navigationConfiguration)) {
 			$navigationSeparator = $navigationConfiguration['separator'];
 		}
 		if (is_array($navigationConfiguration['separator.'])) {
-			$navigationSeparator = $cObj->stdWrap($navigationSeparator, $navigationConfiguration['separator.']);
+			$navigationSeparator = $this->pi1->cObj->stdWrap($navigationSeparator, $navigationConfiguration['separator.']);
 		}
 
 		// Replace separator
 		$nav_prev = str_replace('###SEPARATOR###', $navigationSeparator, $nav_prev);
 		$nav_next = str_replace('###SEPARATOR###', $navigationSeparator, $nav_next);
 
-
 		// Create selection
-		$indices = array(0, $idxCur, $idxMax);
+		$indices = array(0, $subPage['current'], $subPage['max']);
 
 		// Number of pages to display in the selection
 		$numSel = 5;
@@ -163,15 +155,13 @@ class PageNavigation extends Navigation {
 			$numSel = abs(intval($selectionConfiguration['pages']));
 		}
 
-		$translation['###SELECTION###'] = $this->selection($selectionConfiguration, $indices, $numSel);
-		$translation['###NAVI_LABEL###'] = $label;
-		$translation['###NAVI_BACKWARDS###'] = $nav_prev;
-		$translation['###NAVI_FORWARDS###'] = $nav_next;
+		$this->view
+				->assign('selection', $this->selection($selectionConfiguration, $indices, $numSel))
+				->assign('label', $label)
+				->assign('forward', $nav_next)
+				->assign('backward', $nav_prev);
 
-		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$content = $cObj->substituteMarkerArrayCached($template, $translation);
-
-		return $content;
+		return $this->view->render();
 	}
 
 }
