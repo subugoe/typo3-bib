@@ -26,6 +26,8 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 abstract class Navigation {
 
 	/**
@@ -56,10 +58,32 @@ abstract class Navigation {
 	protected $sel_link_title;
 
 	/**
+	 * @var \TYPO3\CMS\Fluid\View\StandaloneView
+	 */
+	protected $view;
+
+	/**
 	 * @param \tx_bib_pi1 $pi1
 	 */
 	public function initialize($pi1) {
 		$this->pi1 =& $pi1;
+
+		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
+		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view->setTemplatePathAndFilename($this->getTemplateFileFromCallingClass());
+		$this->view = $view;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getTemplateFileFromCallingClass() {
+
+
+		$classParts = explode("\\", get_called_class());
+		$templateName = str_replace('Navigation', '', $classParts[3]);
+		$templateFile = 'typo3conf/ext/' . $this->pi1->extKey . '/Resources/Private/Templates/Navigation/'. $templateName .'.html';
+		return $templateFile;
 	}
 
 	/**
