@@ -1,0 +1,358 @@
+<div class="tx_bib-single_view">
+
+<h2>{pageTitle -> f:format.raw()}</h2>
+
+{preText -> f:format.raw()}
+
+<f:if condition="{bibtype}">
+	<h3>{bibtype}</h3>
+</f:if>
+
+<table class="tx_bib-single_item">
+<tbody>
+
+<f:if condition="{title}">
+	<tr>
+		<th class="tx_bib-single_label">{labelTitle}</th>
+		<td class="tx_bib-single_value">{title -> f:format.raw()}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{authors}">
+	<tr>
+		<th class="tx_bib-single_label">{labelAuthors}</th>
+		<td class="tx_bib-single_value">{authors -> f:format.raw()}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{journal}">
+	<tr>
+		<th class="tx_bib-single_label">{labelJournal}</th>
+		<td class="tx_bib-single_value">{journal}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{editor}">
+	<tr>
+		<th class="tx_bib-single_label">{labelEditor}</th>
+		<td class="tx_bib-single_value">{editor}</td>
+	</tr>
+</f:if>
+
+
+<f:if condition="{type}">
+	<tr>
+		<th class="tx_bib-single_label">{labelType}</th>
+		<td class="tx_bib-single_value">{type}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{year}">
+	<tr>
+		<th class="tx_bib-single_label">{labelYear}</th>
+		<td class="tx_bib-single_value">{year}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{month}">
+	<tr>
+		<th class="tx_bib-single_label">{labelMonth}</th>
+		<td class="tx_bib-single_value">{month}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{day}">
+	<tr>
+		<th class="tx_bib-single_label">{labelDay}</th>
+		<td class="tx_bib-single_value">{day}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{booktitle}">
+	<tr>
+		<th class="tx_bib-single_label">{labelBooktitle}</th>
+		<td class="tx_bib-single_value">{booktitle}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{volume}">
+	<tr>
+		<th class="tx_bib-single_label">{labelVolume}</th>
+		<td class="tx_bib-single_value">{volume}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{number}">
+	<tr>
+		<th class="tx_bib-single_label">{labelNumber}</th>
+		<td class="tx_bib-single_value">{number}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{number2}">
+	<tr>
+		<th class="tx_bib-single_label">{labelNumber2}</th>
+		<td class="tx_bib-single_value">{number2}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{series}">
+	<tr>
+		<th class="tx_bib-single_label">{labelSeries}</th>
+		<td class="tx_bib-single_value">{series}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{edition}">
+	<tr>
+		<th class="tx_bib-single_label">{labelEdition}</th>
+		<td class="tx_bib-single_value">{edition}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{chapter}">
+	<tr>
+		<th class="tx_bib-single_label">{labelChapter}</th>
+		<td class="tx_bib-single_value">{chapter}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{pages}">
+	<tr>
+		<th class="tx_bib-single_label">{labelPages}</th>
+		<td class="tx_bib-single_value">{pages}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{publisher}">
+	<tr>
+		<th class="tx_bib-single_label">{labelPpublisher}</th>
+		<td class="tx_bib-single_value">{publisher}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{address}">
+	<tr>
+		<th class="tx_bib-single_label">{labelAddress}</th>
+		<td class="tx_bib-single_value">{address}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{institution}">
+	<tr>
+		<th class="tx_bib-single_label">{labelInstitution}</th>
+		<td class="tx_bib-single_value">{institution}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{organization}">
+	<tr>
+		<th class="tx_bib-single_label">{labelOrganization}</th>
+		<td class="tx_bib-single_value">{organization}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{school}">
+	<tr>
+		<th class="tx_bib-single_label">{labelSchool}</th>
+		<td class="tx_bib-single_value">{school}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{institute}">
+	<tr>
+		<th class="tx_bib-single_label">{labelInstitute}</th>
+		<td class="tx_bib-single_value">{institute}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{event_name}">
+	<tr>
+		<th class="tx_bib-single_label">{labelEvent_name}</th>
+		<td class="tx_bib-single_value">{event_name}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{event_place}">
+	<tr>
+		<th class="tx_bib-single_label">{labelEVENT_PLACE}</th>
+		<td class="tx_bib-single_value">{event_place}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{event_date}">
+	<tr>
+		<th class="tx_bib-single_label">{labelEvent_date}</th>
+		<td class="tx_bib-single_value">{event_date}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{howpublished}">
+	<tr>
+		<th class="tx_bib-single_label">{labelHowpublished}</th>
+		<td class="tx_bib-single_value">{howpublished}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{affiliation}">
+	<tr>
+		<th class="tx_bib-single_label">{labelAffiliation}</th>
+		<td class="tx_bib-single_value">{affiliation}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{extern}">
+	<tr>
+		<th class="tx_bib-single_label">{labelExtern}</th>
+		<td class="tx_bib-single_value">{extern}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{misc}">
+	<tr>
+		<th class="tx_bib-single_label">{labelMisc}</th>
+		<td class="tx_bib-single_value">{misc}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{misc2}">
+	<tr>
+		<th class="tx_bib-single_label">{labelMisc}</th>
+		<td class="tx_bib-single_value">{misc2}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{state}">
+	<tr>
+		<th class="tx_bib-single_label">{labelState}</th>
+		<td class="tx_bib-single_value">{state}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{reviewed}">
+	<tr>
+		<th class="tx_bib-single_label">{labelReviewed}</th>
+		<td class="tx_bib-single_value">{reviewed}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{in_library}">
+	<tr>
+		<th class="tx_bib-single_label">{labelIn_library}</th>
+		<td class="tx_bib-single_value">{in_library}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{borrowed_by}">
+	<tr>
+		<th class="tx_bib-single_label">{labelBorrowed_by}</th>
+		<td class="tx_bib-single_value">{borrowed_by}</td>
+	</tr>
+</f:if>
+
+
+<f:if condition="{citeid}">
+	<tr>
+		<th class="tx_bib-single_label">{labelCiteid}</th>
+		<td class="tx_bib-single_value">{citeid}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{doi}">
+	<tr>
+		<th class="tx_bib-single_label">{labelDoi}</th>
+		<td class="tx_bib-single_value">{doi}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{isbn}">
+	<tr>
+		<th class="tx_bib-single_label">{labelIsbn}</th>
+		<td class="tx_bib-single_value">{isbn}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{issn}">
+	<tr>
+		<th class="tx_bib-single_label">{labelIssn}</th>
+		<td class="tx_bib-single_value">{issn}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{file_url}">
+	<tr>
+		<th class="tx_bib-single_label">{labelFile_url}</th>
+		<td class="tx_bib-single_value">{file_url}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{web_url}">
+	<tr>
+		<th class="tx_bib-single_label">{labelWeb_url}</th>
+		<td class="tx_bib-single_value">{web_url}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{web_url2}">
+	<tr>
+		<th class="tx_bib-single_label">{labelWeb_url2}</th>
+		<td class="tx_bib-single_value">{web_url2}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{keywords}">
+	<tr>
+		<th class="tx_bib-single_label">{labelKeywords}</th>
+		<td class="tx_bib-single_value">{keywords}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{tags}">
+	<tr>
+		<th class="tx_bib-single_label">{labelTags}</th>
+		<td class="tx_bib-single_value">{tags}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{abstract}">
+	<tr>
+		<th class="tx_bib-single_label">{labelAbstract}</th>
+		<td class="tx_bib-single_value">{abstract}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{annotation}">
+	<tr>
+		<th class="tx_bib-single_label">{labelAnnotation}</th>
+		<td class="tx_bib-single_value">{annotation}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{note}">
+	<tr>
+		<th class="tx_bib-single_label">{labelNote}</th>
+		<td class="tx_bib-single_value">{note}</td>
+	</tr>
+</f:if>
+
+
+<f:if condition="{pid}">
+	<tr>
+		<th class="tx_bib-single_label">{labelPid}</th>
+		<td class="tx_bib-single_value">{pid}</td>
+	</tr>
+</f:if>
+
+<f:if condition="{uid}">
+	<tr>
+		<th class="tx_bib-single_label">{labelUid}</th>
+		<td class="tx_bib-single_value">{uid}</td>
+	</tr>
+</f:if>
+
+</tbody>
+</table>
+
+{postText -> f:format.raw()}
+
+</div>

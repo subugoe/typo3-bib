@@ -26,6 +26,8 @@ namespace Ipf\Bib\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class SingleView {
 
 	/**
@@ -68,6 +70,11 @@ class SingleView {
 	 */
 	public $isNewFirst = FALSE;
 
+	/**
+	 * @var \TYPO3\CMS\Fluid\View\StandaloneView
+	 */
+	protected $template;
+
 
 	/**
 	 * Initializes this class
@@ -76,6 +83,12 @@ class SingleView {
 	 * @return void
 	 */
 	public function initialize($pi1) {
+
+		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
+		$template = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$template->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
+		$this->template = $template;
+
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['single_view.'];
 		$this->referenceReader =& $pi1->referenceReader;
@@ -98,7 +111,7 @@ class SingleView {
 
 		if (is_array($ref)) {
 			try {
-				$content .= $this->typeReference($ref);
+				$this->typeReference($ref);
 			} catch (\Exception $e) {
 				$content .= $e->getMessage();
 			}
@@ -115,7 +128,7 @@ class SingleView {
 		// remove multiple line breaks
 		$content = preg_replace("/\n+/", "\n", $content);
 
-		return $content;
+		return $this->template->render();
 	}
 
 	/**
@@ -131,48 +144,32 @@ class SingleView {
 
 		$warnings = array();
 
-		$templateFile = $conf['template'];
-		$template = $cObj->fileResource($templateFile);
-		if (strlen($template) == 0) {
-			throw new \Exception('The HTML single view template file \'' . $templateFile . '\' is not readable or empty', 1378818667);
-		}
-
-		$template = $cObj->getSubpart($template, '##SINGLE_VIEW###');
-
 		// Store the cObj Data for later recovery
 		$contentObjectBackup = $cObj->data;
 
 		// Prepare the publication data and environment
-		$pi1->prepareItemSetup();
-		$publicationData = $pi1->preparePublicationData($ref, $warnings, true);
-		$pi1->prepare_pub_cObj_data($publicationData);
+		$this->pi1->prepareItemSetup();
+		$publicationData = $this->pi1->preparePublicationData($ref, $warnings, true);
+		$this->pi1->prepare_pub_cObj_data($publicationData);
 
 		$bib_str = $publicationData['bibtype_short'];
 
-		// The translator array
-		$translator = array();
-
 		// The filed list
 		$fields = $this->referenceReader->pubAllFields;
-		$dont_show = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $conf['dont_show'], TRUE);
+		$dont_show = GeneralUtility::trimExplode(',', $conf['dont_show'], TRUE);
 
 		// Remove condition fields and setup the translator
 		foreach ($fields as $field) {
-			$field_up = strtoupper($field);
-
-			// "Has field" conditions
-			$has_str = '';
 			if ((strlen($publicationData[$field]) > 0)) {
 				if (!in_array($field, $dont_show)) {
-					$has_str = array('', '');
 					$label = $this->getFieldLabel($field, $bib_str);
-					$label = $pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
+					$label = $this->pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
 
 					$value = strval($publicationData[$field]);
-					$stdWrap = $pi1->conf['field.'][$field . '.'];
+					$stdWrap = $this->pi1->conf['field.'][$field . '.'];
 
-					if (isset ($pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
-						$stdWrap = $pi1->conf['field.'][$bib_str . '.'][$field . '.'];
+					if (isset ($this->pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
+						$stdWrap = $this->pi1->conf['field.'][$bib_str . '.'][$field . '.'];
 					}
 
 					if (isset ($this->conf['field_wrap.'][$field . '.'])) {
@@ -180,7 +177,7 @@ class SingleView {
 					}
 
 					if (isset ($stdWrap['single_view_link'])) {
-						$value = $pi1->get_link(
+						$value = $this->pi1->get_link(
 							$value,
 							array(
 								'show_uid' => strval($publicationData['uid']
@@ -191,35 +188,33 @@ class SingleView {
 
 					$value = $cObj->stdWrap($value, $stdWrap);
 
-					$translator['###' . $field_up . '###'] = $value;
-					$translator['###FL_' . $field_up . '###'] = $label;
+					$this->template->assign($field, $value);
+					$this->template->assign('label' . ucfirst($field), $label);
 				}
 			}
-			$template = $cObj->substituteSubpart($template, '###HAS_' . $field_up . '###', $has_str);
 		}
 
-		// Insert field data
-		$template = $cObj->substituteMarkerArrayCached($template, $translator);
-
 		// Single view title
-		$title = $pi1->get_ll('single_view_title');
-		$title = $pi1->cObj->stdWrap($title, $this->conf['title.']);
-		$template = $cObj->substituteMarker($template, '###SINGLE_VIEW_TITLE###', $title);
+		$title = $this->pi1->get_ll('single_view_title');
+		$title = $this->pi1->cObj->stdWrap($title, $this->conf['title.']);
 
 		// Pre and post text
-		$txt = strval($this->conf['pre_text']);
-		$txt = $pi1->cObj->stdWrap($txt, $this->conf['pre_text.']);
-		$template = $cObj->substituteMarker($template, '###PRE_TEXT###', $txt);
+		$preText = strval($this->conf['pre_text']);
+		$preText = $this->pi1->cObj->stdWrap($preText, $this->conf['pre_text.']);
 
-		$txt = strval($this->conf['post_text']);
-		$txt = $pi1->cObj->stdWrap($txt, $this->conf['post_text.']);
-		$template = $cObj->substituteMarker($template, '###POST_TEXT###', $txt);
+		$postText = strval($this->conf['post_text']);
+		$postText = $this->pi1->cObj->stdWrap($postText, $this->conf['post_text.']);
 
+		$this->template->assignMultiple(
+			array(
+				'pageTitle' => $title,
+				'preText' => $preText,
+				'postText' => $postText
+			)
+		);
 
 		// Restore cObj data
-		$pi1->cObj->data = $contentObjectBackup;
-
-		return $template;
+		$this->pi1->cObj->data = $contentObjectBackup;
 	}
 
 

@@ -26,8 +26,8 @@ namespace Ipf\Bib\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use Ipf\Bib\Exception\DataException;
-use Ipf\Bib\Utility\Utility;
+use \Ipf\Bib\Exception\DataException;
+use \Ipf\Bib\Utility\Utility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use \TYPO3\CMS\Core\Messaging\FlashMessage;
@@ -881,7 +881,7 @@ class EditorView {
 				}
 				$attributes['size'] = strval($size);
 
-				$content .= \Ipf\Bib\Utility\Utility::html_text_input(
+				$content .= Utility::html_text_input(
 					$fieldAttr,
 					$htmlValue,
 					$attributes
@@ -913,7 +913,7 @@ class EditorView {
 					$pairs[$p_val] = $p_desc;
 				}
 
-				$content .= \Ipf\Bib\Utility\Utility::html_select_input(
+				$content .= Utility::html_select_input(
 					$pairs,
 					$value,
 					$attributes
@@ -922,7 +922,7 @@ class EditorView {
 				break;
 
 			case 'check' :
-				$content .= \Ipf\Bib\Utility\Utility::html_check_input(
+				$content .= Utility::html_check_input(
 					$fieldAttr,
 					'1',
 					($value == 1),
@@ -981,7 +981,7 @@ class EditorView {
 
 		} else if ($mode == self::WIDGET_SILENT) {
 
-			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
+			$content .= Utility::html_hidden_input(
 				$fieldAttributes,
 				$htmlValue
 			);
@@ -1032,29 +1032,29 @@ class EditorView {
 
 				$row_con[0] = strval($i + 1);
 				if ($mode == self::WIDGET_SHOW) {
-					$row_con[1] = \Ipf\Bib\Utility\Utility::html_hidden_input(
+					$row_con[1] = Utility::html_hidden_input(
 						$key_data . '[' . $i . '][forename]', $foreName);
 					$row_con[1] .= $foreName;
 
-					$row_con[2] = \Ipf\Bib\Utility\Utility::html_hidden_input(
+					$row_con[2] = Utility::html_hidden_input(
 						$key_data . '[' . $i . '][surname]', $surName);
 					$row_con[2] .= $surName;
 
 				} else if ($mode == self::WIDGET_EDIT) {
 
-					$lowerBtn = \Ipf\Bib\Utility\Utility::html_image_input(
+					$lowerBtn = Utility::html_image_input(
 						$key_action . '[lower_author]',
 						strval($i), $pi1->icon_src['down']);
 
-					$raiseBtn = \Ipf\Bib\Utility\Utility::html_image_input(
+					$raiseBtn = Utility::html_image_input(
 						$key_action . '[raise_author]',
 						strval($i), $pi1->icon_src['up']);
 
-					$row_con[1] = \Ipf\Bib\Utility\Utility::html_text_input(
+					$row_con[1] = Utility::html_text_input(
 						$key_data . '[' . $i . '][forename]', $foreName,
 						array('size' => $isize, 'maxlength' => 255, 'class' => $cclass));
 
-					$row_con[2] .= \Ipf\Bib\Utility\Utility::html_text_input(
+					$row_con[2] .= Utility::html_text_input(
 						$key_data . '[' . $i . '][surname]', $surName,
 						array('size' => $isize, 'maxlength' => 255, 'class' => $cclass));
 
@@ -1106,11 +1106,11 @@ class EditorView {
 			// Bottom buttons
 			if ($mode == self::WIDGET_EDIT) {
 				$content .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">' . "\n";
-				$content .= \Ipf\Bib\Utility\Utility::html_submit_input(
+				$content .= Utility::html_submit_input(
 					$key_action . '[more_authors]', '+'
 				);
 				$content .= ' ';
-				$content .= \Ipf\Bib\Utility\Utility::html_submit_input(
+				$content .= Utility::html_submit_input(
 					$key_action . '[less_authors]', '-'
 				);
 				$content .= '</div>' . "\n";
@@ -1160,10 +1160,10 @@ class EditorView {
 		$attributes['class'] = $pi1->prefixShort . '-editor_input';
 
 		// Fetch page titles
-		$pages = \Ipf\Bib\Utility\Utility::get_page_titles($pids);
+		$pages = Utility::get_page_titles($pids);
 
 		if ($mode == self::WIDGET_SHOW) {
-			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
+			$content .= Utility::html_hidden_input(
 				$fieldAttr,
 				$value
 			);
@@ -1171,14 +1171,14 @@ class EditorView {
 
 		} else if ($mode == self::WIDGET_EDIT) {
 			$attributes['name'] = $fieldAttr;
-			$content .= \Ipf\Bib\Utility\Utility::html_select_input(
+			$content .= Utility::html_select_input(
 				$pages,
 				$value,
 				$attributes
 			);
 
 		} else if ($mode == self::WIDGET_SILENT) {
-			$content .= \Ipf\Bib\Utility\Utility::html_hidden_input(
+			$content .= Utility::html_hidden_input(
 				$fieldAttr,
 				$value
 			);
@@ -1371,7 +1371,7 @@ class EditorView {
 	 * @return string The html message string
 	 */
 	protected function createHtmlTextFromPostDatabaseWriteEvent($messages) {
-		$messages = \Ipf\Bib\Utility\Utility::string_counter($messages);
+		$messages = Utility::string_counter($messages);
 		$content = '<ul>' . "\n";
 		foreach ($messages as $msg => $count) {
 			$msg = htmlspecialchars($msg, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
@@ -1423,7 +1423,7 @@ class EditorView {
 					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
 						$this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
 						$this->get_ll('msg_save_success'),
-						\TYPO3\CMS\Core\Messaging\FlashMessage::OK
+						FlashMessage::OK
 					);
 					FlashMessageQueue::addMessage($message);
 
@@ -1431,7 +1431,7 @@ class EditorView {
 					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
 						$e->getMessage(),
 						$this->get_ll('msg_save_fail'),
-						\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+						FlashMessage::ERROR
 					);
 					FlashMessageQueue::addMessage($message);
 				}
@@ -1444,14 +1444,14 @@ class EditorView {
 					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
 						$this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
 						$this->get_ll('msg_delete_success'),
-						\TYPO3\CMS\Core\Messaging\FlashMessage::OK
+						FlashMessage::OK
 					);
 					FlashMessageQueue::addMessage($message);
 				} catch (DataException $e) {
 					$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
 						$e->getMessage(),
 						$this->get_ll('msg_delete_fail'),
-						\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+						FlashMessage::ERROR
 					);
 					FlashMessageQueue::addMessage($message);
 				}
@@ -1460,7 +1460,7 @@ class EditorView {
 				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
 					'Unknown dialog mode: ' . $pi1->extConf['dialog_mode'],
 					$this->get_ll('msg_delete_fail'),
-					\TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+					FlashMessage::ERROR
 				);
 				FlashMessageQueue::addMessage($message);
 			}
