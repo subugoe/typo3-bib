@@ -73,7 +73,7 @@ class SingleView {
 	/**
 	 * @var \TYPO3\CMS\Fluid\View\StandaloneView
 	 */
-	protected $template;
+	protected $view;
 
 
 	/**
@@ -85,9 +85,9 @@ class SingleView {
 	public function initialize($pi1) {
 
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
-		$template = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
-		$template->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
-		$this->template = $template;
+		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
+		$this->view = $view;
 
 		$this->pi1 =& $pi1;
 		$this->conf =& $pi1->conf['single_view.'];
@@ -103,10 +103,9 @@ class SingleView {
 	 * @return string
 	 */
 	public function singleView() {
-		$pi1 =& $this->pi1;
 		$content = '';
 
-		$uid = intval($pi1->extConf['single_view']['uid']);
+		$uid = intval($this->pi1->extConf['single_view']['uid']);
 		$ref = $this->referenceReader->getPublicationDetails($uid);
 
 		if (is_array($ref)) {
@@ -121,14 +120,12 @@ class SingleView {
 			$content .= '</p>' . "\n";
 		}
 
-		$content .= '<p>';
-		$content .= $pi1->get_link($pi1->get_ll('link_back_to_list'));
-		$content .= '</p>' . "\n";
+		$this->view->assign('linkBack', $this->pi1->get_link($this->pi1->get_ll('link_back_to_list')));
 
 		// remove multiple line breaks
 		$content = preg_replace("/\n+/", "\n", $content);
 
-		return $this->template->render();
+		return $this->view->render();
 	}
 
 	/**
@@ -188,8 +185,8 @@ class SingleView {
 
 					$value = $cObj->stdWrap($value, $stdWrap);
 
-					$this->template->assign($field, $value);
-					$this->template->assign('label' . ucfirst($field), $label);
+					$this->view->assign($field, $value);
+					$this->view->assign('label' . ucfirst($field), $label);
 				}
 			}
 		}
@@ -205,7 +202,7 @@ class SingleView {
 		$postText = strval($this->conf['post_text']);
 		$postText = $this->pi1->cObj->stdWrap($postText, $this->conf['post_text.']);
 
-		$this->template->assignMultiple(
+		$this->view->assignMultiple(
 			array(
 				'pageTitle' => $title,
 				'preText' => $preText,

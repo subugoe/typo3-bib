@@ -64,23 +64,19 @@ class AuthorNavigation extends Navigation {
 	 * @return void
 	 */
 	public function hook_init() {
-		$extConf =& $this->pi1->extConf;
-		$aconf =& $extConf['author_navi'];
-		$lvars =& $extConf['link_vars'];
-
-		$lvars['author_letter'] = '';
+		$this->pi1->extConf['link_vars']['author_letter'] = '';
 		$pvar = $this->pi1->piVars['author_letter'];
 		if (strlen($pvar) > 0) {
-			$aconf['sel_letter'] = $pvar;
-			$lvars['author_letter'] = $pvar;
+			$this->pi1->extConf['author_navi']['sel_letter'] = $pvar;
+			$this->pi1->extConf['link_vars']['author_letter'] = $pvar;
 		}
 
-		$lvars['author'] = '';
+		$this->pi1->extConf['link_vars']['author'] = '';
 		$pvar = $this->pi1->piVars['author'];
-		$aconf['sel_author'] = '0';
+		$this->pi1->extConf['author_navi']['sel_author'] = '0';
 		if (strlen($pvar) > 0) {
-			$aconf['sel_author'] = $pvar;
-			$lvars['author'] = $pvar;
+			$this->pi1->extConf['author_navi']['sel_author'] = $pvar;
+			$this->pi1->extConf['link_vars']['author'] = $pvar;
 		}
 
 	}
