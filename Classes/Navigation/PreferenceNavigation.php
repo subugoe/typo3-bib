@@ -26,7 +26,7 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \Ipf\Bib\Utility\Utility;
 
 class PreferenceNavigation extends Navigation {
@@ -72,20 +72,15 @@ class PreferenceNavigation extends Navigation {
 	 */
 	protected function get() {
 
-		// Translator
-		$translator = array();
-		$translator['###NAVI_LABEL###'] = $this->getPreferenceNavigationLabel();
-		$translator['###FORM_START###'] = $this->getFormTagStart();
-		$translator['###IPP_SEL###'] = $this->getItemsPerPageSelection();
-		$translator['###SHOW_ABSTRACTS###'] = $this->getAbstractSelection();
-		$translator['###SHOW_KEYS###'] = $this->getKeywordSelection();
-		$translator['###GO###'] = $this->getGoButton();
-		$translator['###FORM_END###'] = $this->getFormTagEnd();
+		$this->view
+				->assign('label', $this->getPreferenceNavigationLabel())
+				->assign('formStart', $this->getFormTagStart())
+				->assign('itemsPerPageSelection', $this->getItemsPerPageSelection())
+				->assign('showKeywords', $this->getKeywordSelection())
+				->assign('showAbstracts', $this->getAbstractSelection())
+				->assign('goButton', $this->getGoButton());
 
-		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
-
-		return $content;
+		return $this->view->render();
 	}
 
 	/**
@@ -257,15 +252,6 @@ class PreferenceNavigation extends Navigation {
 		$formStart .= '>' . "\n";
 
 		return $formStart;
-	}
-
-	/**
-	 * Returns the closing form tag
-	 *
-	 * @return string
-	 */
-	protected function getFormTagEnd() {
-		return '</form>';
 	}
 
 	protected function sel_get_text($index){}
