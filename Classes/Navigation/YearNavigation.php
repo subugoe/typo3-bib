@@ -40,7 +40,6 @@ class YearNavigation extends Navigation {
 		}
 
 		$this->prefix = 'YEAR_NAVI';
-		$this->load_template('###YEAR_NAVI_BLOCK###');
 		$this->sel_link_title = $pi1->get_ll('yearNav_yearLinkTitle', '%y', TRUE);
 	}
 
@@ -76,35 +75,75 @@ class YearNavigation extends Navigation {
 	 * Returns content
 	 */
 	protected function get() {
-		$cObj =& $this->pi1->cObj;
-		$content = '';
-
-		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
-
-		// The data
-		$year = $this->pi1->extConf['year'];
-		$years = $this->pi1->stat['years'];
 
 		// The label
 		$label = $this->pi1->get_ll('yearNav_label');
-		$label = $cObj->stdWrap($label, $this->conf['label.']);
+		$label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
 
-		$lbl_all = $this->pi1->get_ll('yearNav_all_years', 'All', TRUE);
+		$this->view
+				->assign('label', $label)
+				->assign('selection', $this->getYearSelection())
+				->assign('selectForm', $this->getYearSelectionForm());
 
-		// The year select form
-		$sel = '';
-		if (sizeof($years) > 0) {
+		return $this->view->render();
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getYearSelection() {
+
+		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
+
+		if (sizeof($this->pi1->stat['years']) > 0) {
+
+			// The all link
+			$delimiter = ' - ';
+			if (isset ($selectionConfiguration['all_sep'])) {
+				$delimiter = $selectionConfiguration['all_sep'];
+			}
+			$delimiter = $this->pi1->cObj->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
+
+			$txt = $this->pi1->get_ll('yearNav_all_years', 'All', TRUE);
+			if (is_numeric($this->pi1->extConf['year'])) {
+				$txt = $this->pi1->get_link($txt, array('year' => 'all'));
+			} else {
+				$txt = $this->pi1->cObj->stdWrap($txt, $selectionConfiguration['current.']);
+			}
+
+			$cur = array_search($this->pi1->extConf['year'], $this->pi1->stat['years']);
+			if ($cur === FALSE) {
+				$cur = -1;
+			}
+			$indices = array(0, $cur, sizeof($this->pi1->stat['years']) - 1);
+
+			$numSel = 3;
+			if (array_key_exists('years', $selectionConfiguration)) {
+				$numSel = abs(intval($selectionConfiguration['years']));
+			}
+
+			$selection = $this->selection($selectionConfiguration, $indices, $numSel);
+			return $this->pi1->cObj->stdWrap($txt . $delimiter . $selection, $selectionConfiguration['all_wrap.']);
+		}
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getYearSelectionForm() {
+		$selectForm = '';
+		if (sizeof($this->pi1->stat['years']) > 0) {
 			$name = $this->pi1->prefix_pi1 . '-year_select_form';
 			$action = $this->pi1->get_link_url(array('year' => ''), FALSE);
-			$sel .= '<form name="' . $name . '" ';
-			$sel .= 'action="' . $action . '"';
-			$sel .= ' method="post"';
-			$sel .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
-			$sel .= '>' . "\n";
+			$selectForm .= '<form name="' . $name . '" ';
+			$selectForm .= 'action="' . $action . '"';
+			$selectForm .= ' method="post"';
+			$selectForm .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+			$selectForm .= '>' . "\n";
 
-			$pairs = array('all' => $lbl_all);
-			if (sizeof($years) > 0) {
-				foreach (array_reverse($years) as $y)
+			$pairs = array('all' => $this->pi1->get_ll('yearNav_all_years', 'All', TRUE));
+			if (sizeof($this->pi1->stat['years']) > 0) {
+				foreach (array_reverse($this->pi1->stat['years']) as $y)
 					$pairs[$y] = $y;
 			} else {
 				$year = strval(intval(date('Y')));
@@ -120,8 +159,8 @@ class YearNavigation extends Navigation {
 			}
 			$button = Utility::html_select_input(
 				$pairs, $year, $attributes);
-			$button = $cObj->stdWrap($button, $this->conf['select.']);
-			$sel .= $button;
+			$button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
+			$selectForm .= $button;
 
 			$attributes = array();
 			if (strlen($this->conf['go_btn_class']) > 0) {
@@ -130,56 +169,14 @@ class YearNavigation extends Navigation {
 			$button = Utility::html_submit_input(
 				$this->pi1->prefix_pi1 . '[action][select_year]',
 				$this->pi1->get_ll('button_go'), $attributes);
-			$button = $cObj->stdWrap($button, $this->conf['go_btn.']);
-			$sel .= $button;
+			$button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
+			$selectForm .= $button;
 
 			// End of form
-			$sel .= '</form>';
-			$sel = $cObj->stdWrap($sel, $this->conf['form.']);
+			$selectForm .= '</form>';
 		}
+		return $this->pi1->cObj->stdWrap($selectForm, $this->conf['form.']);
 
-		// The year selection
-		$selection = '';
-		if (sizeof($years) > 0) {
-
-			// The all link
-			$sep = ' - ';
-			if (isset ($selectionConfiguration['all_sep'])) {
-				$sep = $selectionConfiguration['all_sep'];
-			}
-			$sep = $cObj->stdWrap($sep, $selectionConfiguration['all_sep.']);
-
-			$txt = $lbl_all;
-			if (is_numeric($year)) {
-				$txt = $this->pi1->get_link($txt, array('year' => 'all'));
-			} else {
-				$txt = $cObj->stdWrap($txt, $selectionConfiguration['current.']);
-			}
-
-			$cur = array_search($year, $years);
-			if ($cur === FALSE) {
-				$cur = -1;
-			}
-			$indices = array(0, $cur, sizeof($years) - 1);
-
-			$numSel = 3;
-			if (array_key_exists('years', $selectionConfiguration)) {
-				$numSel = abs(intval($selectionConfiguration['years']));
-			}
-
-			$selection = $this->selection($selectionConfiguration, $indices, $numSel);
-			$selection = $cObj->stdWrap($txt . $sep . $selection, $selectionConfiguration['all_wrap.']);
-		}
-
-		$translator = array();
-		$translator['###NAVI_LABEL###'] = $label;
-		$translator['###SELECTION###'] = $selection;
-		$translator['###SELECT_FORM###'] = $sel;
-
-		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$content = $cObj->substituteMarkerArrayCached($template, $translator);
-
-		return $content;
 	}
 
 }
