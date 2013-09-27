@@ -28,6 +28,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \Ipf\Bib\Utility\Utility;
 use \TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use \TYPO3\CMS\Core\Messaging\FlashMessage;
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * Plugin 'Publication List' for the 'bib' extension.
@@ -146,6 +147,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected $pidList;
 
+	/**
+	 * @var array
+	 */
 	protected $flexForm;
 
 	/**
@@ -176,6 +180,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->pi_initPIflexForm();
 
 		$this->flexFormData = $this->cObj->data['pi_flexform'];
+
+		$this->initializeFluidTemplate();
 
 		$this->includeJavaScript();
 
@@ -299,6 +305,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		$referenceReader->set_cObj($this->cObj);
 		$this->referenceReader = $referenceReader;
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function initializeFluidTemplate() {
+		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
+		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath($this->extKey) . '/Resources/Private/Templates/');
+		$this->view = $view;
 	}
 
 	/**
