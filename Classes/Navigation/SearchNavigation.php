@@ -40,6 +40,7 @@ class SearchNavigation extends Navigation {
 	 * @var array
 	 */
 	protected $extConf;
+
 	/*
 	 * Intialize
 	 *
@@ -59,17 +60,18 @@ class SearchNavigation extends Navigation {
 		}
 
 		$this->prefix = 'SEARCH_NAVI';
-		$this->load_template('###SEARCH_NAVI_BLOCK###');
 	}
 
-	protected function sel_get_text($index) {}
+	protected function sel_get_text($index) {
+	}
 
 	/**
 	 * @param $text
 	 * @param $index
 	 * @return mixed
 	 */
-	protected function sel_get_link($text, $index) {}
+	protected function sel_get_link($text, $index) {
+	}
 
 	/*
 	 * Hook in to pi1 at init stage
@@ -77,9 +79,6 @@ class SearchNavigation extends Navigation {
 	 * @return void
 	 */
 	public function hook_init() {
-		$sconf =& $this->pi1->extConf['search_navi'];
-		$lvars =& $this->pi1->extConf['link_vars'];
-		$pivars =& $this->pi1->piVars['search'];
 
 		// Clear string
 		if (isset ($this->pi1->piVars['action']['clear_search'])) {
@@ -87,11 +86,11 @@ class SearchNavigation extends Navigation {
 		}
 
 		// Search string
-		$p_val = $pivars['text'];
+		$p_val = $this->pi1->piVars['search']['text'];
 
 		if ((strlen($p_val) > 0) && !$clear) {
-			$sconf['string'] = $p_val;
-			$lvars['search']['text'] = $p_val;
+			$this->pi1->extConf['search_navi']['string'] = $p_val;
+			$this->pi1->extConf['link_vars']['search']['text'] = $p_val;
 		}
 
 		// Search rule
@@ -103,65 +102,65 @@ class SearchNavigation extends Navigation {
 			$rule = $pvar;
 		}
 
-		$pvar = strtoupper($pivars['rule']);
+		$pvar = strtoupper($this->pi1->piVars['search']['rule']);
 
 		if (in_array($pvar, $rules)) {
 			$rule = $pvar;
 		}
 
-		$sconf['rule'] = $rule;
-		$lvars['search']['rule'] = $rule;
+		$this->pi1->extConf['search_navi']['rule'] = $rule;
+		$this->pi1->extConf['link_vars']['search']['rule'] = $rule;
 
 		// extra_b indicates that the page has been visited 'b'efore
 		// So that the default values should not be applied
-		if ($pivars['extra_b']) {
-			$lvars['search']['extra_b'] = 1;
+		if ($this->pi1->piVars['search']['extra_b']) {
+			$this->pi1->extConf['link_vars']['search']['extra_b'] = 1;
 		}
 
 		// Show extra
-		$sconf['extra'] = TRUE;
+		$this->pi1->extConf['search_navi']['extra'] = TRUE;
 
-		if (!$pivars['extra']) {
-			$sconf['extra'] = FALSE;
-			if (!$pivars['extra_b']) {
-				$sconf['extra'] = $this->pi1->conf['searchNav.']['extra.']['def'] ? TRUE : FALSE;
+		if (!$this->pi1->piVars['search']['extra']) {
+			$this->pi1->extConf['search_navi']['extra'] = FALSE;
+			if (!$this->pi1->piVars['search']['extra_b']) {
+				$this->pi1->extConf['search_navi']['extra'] = $this->pi1->conf['searchNav.']['extra.']['def'] ? TRUE : FALSE;
 			}
 		}
 
-		if ($sconf['extra']) {
-			$lvars['search']['extra'] = 1;
+		if ($this->pi1->extConf['search_navi']['extra']) {
+			$this->pi1->extConf['link_vars']['search']['extra'] = 1;
 		}
 
 		// Search in abstracts
-		$sconf['abstracts'] = TRUE;
+		$this->pi1->extConf['search_navi']['abstracts'] = TRUE;
 
-		if (!$pivars['abstracts']) {
-			$sconf['abstracts'] = FALSE;
-			if (!$pivars['extra_b']) {
-				$sconf['abstracts'] = $this->pi1->conf['searchNav.']['abstracts.']['def'] ? TRUE : FALSE;
+		if (!$this->pi1->piVars['search']['abstracts']) {
+			$this->pi1->extConf['search_navi']['abstracts'] = FALSE;
+			if (!$this->pi1->piVars['search']['extra_b']) {
+				$this->pi1->extConf['search_navi']['abstracts'] = $this->pi1->conf['searchNav.']['abstracts.']['def'] ? TRUE : FALSE;
 			}
 		}
 
-		if ($sconf['abstracts']) {
-			$lvars['search']['abstracts'] = 1;
+		if ($this->pi1->extConf['search_navi']['abstracts']) {
+			$this->pi1->extConf['link_vars']['search']['abstracts'] = 1;
 		}
 
 		// Search in full text
-		$sconf['full_text'] = TRUE;
+		$this->pi1->extConf['search_navi']['full_text'] = TRUE;
 
-		if (!$pivars['full_text']) {
-			$sconf['full_text'] = FALSE;
-			if (!$pivars['extra_b']) {
-				$sconf['full_text'] = $this->pi1->conf['searchNav.']['full_text.']['def'] ? TRUE : FALSE;
+		if (!$this->pi1->piVars['search']['full_text']) {
+			$this->pi1->extConf['search_navi']['full_text'] = FALSE;
+			if (!$this->pi1->piVars['search']['extra_b']) {
+				$this->pi1->extConf['search_navi']['full_text'] = $this->pi1->conf['searchNav.']['full_text.']['def'] ? TRUE : FALSE;
 			}
 		}
 
-		if ($sconf['full_text']) {
-			$lvars['search']['full_text'] = 1;
+		if ($this->pi1->extConf['search_navi']['full_text']) {
+			$this->pi1->extConf['link_vars']['search']['full_text'] = 1;
 		}
 
 		// Separator selection
-		$sconf['all_sep'] = array(
+		$this->pi1->extConf['search_navi']['all_sep'] = array(
 			'none' => '',
 			'space' => ' ',
 			'semi' => ';',
@@ -174,33 +173,30 @@ class SearchNavigation extends Navigation {
 			$sep_id = $this->pi1->conf['searchNav.']['separator.']['def'];
 		}
 
-		if (strlen($pivars['sep']) > 0) {
-			if (array_key_exists($pivars['sep'], $sconf['all_sep'])) {
-				$sep_id = $pivars['sep'];
+		if (strlen($this->pi1->piVars['search']['sep']) > 0) {
+			if (array_key_exists($this->pi1->piVars['search']['sep'], $this->pi1->extConf['search_navi']['all_sep'])) {
+				$sep_id = $this->pi1->piVars['search']['sep'];
 			}
 		}
 
-		$sconf['sep'] = $sep_id;
-		$lvars['search']['sep'] = $sep_id;
+		$this->pi1->extConf['search_navi']['sep'] = $sep_id;
+		$this->pi1->extConf['link_vars']['search']['sep'] = $sep_id;
 	}
 
 	/**
 	 * @return void
 	 */
 	public function hook_filter() {
-		$extConf =& $this->pi1->extConf;
-		$charset =& $extConf['charset']['upper'];
-		$sconf =& $extConf['search_navi'];
 
 		$strings = array();
-		if (strlen($sconf['string']) > 0) {
-			$delimiter = $sconf['sep'];
+		if (strlen($this->pi1->extConf['search_navi']['string']) > 0) {
+			$delimiter = $this->pi1->extConf['search_navi']['sep'];
 			if ($delimiter == 'none') {
-				$strings[] = $sconf['string'];
+				$strings[] = $this->pi1->extConf['search_navi']['string'];
 			} else {
 				// Explode search string
-				$delimiter = $sconf['all_sep'][$delimiter];
-				$strings = GeneralUtility::trimExplode($delimiter, $sconf['string'], TRUE);
+				$delimiter = $this->pi1->extConf['search_navi']['all_sep'][$delimiter];
+				$strings = GeneralUtility::trimExplode($delimiter, $this->pi1->extConf['search_navi']['string'], TRUE);
 			}
 		}
 		$filter = array();
@@ -208,20 +204,20 @@ class SearchNavigation extends Navigation {
 			// Setup search patterns
 			$words = array();
 			foreach ($strings as $txt) {
-				$words[] = $this->pi1->referenceReader->getSearchTerm($txt, $charset);
+				$words[] = $this->pi1->referenceReader->getSearchTerm($txt, $this->pi1->extConf['charset']['upper']);
 			}
 
 			$exclude = array();
-			if (!$sconf['abstracts']) $exclude[] = 'abstract';
-			if (!$sconf['full_text']) $exclude[] = 'full_text';
+			if (!$this->pi1->extConf['search_navi']['abstracts']) $exclude[] = 'abstract';
+			if (!$this->pi1->extConf['search_navi']['full_text']) $exclude[] = 'full_text';
 
 			$all = array();
 			$all['words'] = $words;
-			$all['rule'] = $sconf['rule'] == 'AND' ? 1 : 0;
+			$all['rule'] = $this->pi1->extConf['search_navi']['rule'] == 'AND' ? 1 : 0;
 			$all['exclude'] = $exclude;
 			$filter['all'] = $all;
 		} else {
-			$extConf['post_items'] = $this->pi1->get_ll(
+			$this->pi1->extConf['post_items'] = $this->pi1->get_ll(
 				'searchNav_insert_request');
 			if ($this->conf['clear_start']) {
 				$filter['FALSE'] = TRUE;
@@ -229,7 +225,7 @@ class SearchNavigation extends Navigation {
 		}
 
 		if (sizeof($filter) > 0) {
-			$extConf['filters']['search'] = $filter;
+			$this->pi1->extConf['filters']['search'] = $filter;
 		}
 	}
 
@@ -239,37 +235,66 @@ class SearchNavigation extends Navigation {
 	 * @return string
 	 */
 	function get() {
-		$cObj =& $this->pi1->cObj;
-		$content = '';
 
-		$cfg =& $this->conf;
-		$extConf =& $this->extConf;
+		// Append hidden input
+		$this->append_hidden('extra_b', TRUE);
+		if (!$this->extConf['extra']) {
+			$this->append_hidden('rule', $this->extConf['rule']);
+			$this->append_hidden('abstracts', $this->extConf['abstracts']);
+			$this->append_hidden('full_text', $this->extConf['full_text']);
+		}
 
-		// The data
-		$charset = $this->pi1->extConf['charset']['upper'];
+		$this->view
+				->assign('label', $this->getLabel())
+				->assign('formStart', $this->getFormStart())
+				->assign('extraButton', $this->getExtraButton())
+				->assign('searchBar', $this->getSearchBar())
+				->assign('formEnd', $this->getFormEnd());
 
-		// The label
+		if ($this->extConf['extra']) {
+			$this->view->assign('advancedSearch', TRUE);
+			$this->getAdvancedSearch();
+		}
+
+		return $this->view->render();
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function getAdvancedSearch() {
+		$this->view
+				->assign('abstractsButton', $this->getAbstractCheck())
+				->assign('separatorSelection', $this->getSeparatorSelection())
+				->assign('ruleSelection', $this->getRuleSelection())
+				->assign('fullTextButton', $this->getFulltextCheck());
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getLabel() {
 		$label = $this->pi1->get_ll('searchNav_label');
-		$label = $cObj->stdWrap($label, $cfg['label.']);
+		$label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
+		return $label;
+	}
 
-		// Form start
-		$attributes = array(
-			'search' => ''
-		);
-		$txt = '';
-		$txt .= '<form name="' . $this->pi1->prefix_pi1 . '-search_form" ';
-		$txt .= 'action="' . $this->pi1->get_link_url($attributes, FALSE) . '"';
-		$txt .= ' method="post"';
-		$txt .= strlen($cfg['form_class']) ? ' class="' . $cfg['form_class'] . '"' : '';
-		$txt .= '>' . "\n";
-		$form_start = $txt;
+	/**
+	 * @return string
+	 */
+	protected function getFormEnd() {
+		$form_end = implode("\n", $this->hidden_input);
+		$form_end .= '</form>';
+		return $form_end;
+	}
 
-		//
-		// The search bar
-		//
-		$lcfg =& $cfg['search.'];
-		$size = intval($lcfg['input_size']);
-		$length = intval($lcfg['input_maxlength']);
+	/**
+	 * @return string
+	 */
+	protected function getSearchBar() {
+
+		$size = intval($this->conf['search.']['input_size']);
+		$length = intval($this->conf['search.']['input_maxlength']);
 
 		if ($size == 0) {
 			$size = 24;
@@ -287,13 +312,13 @@ class SearchNavigation extends Navigation {
 		$value = '';
 
 		if (strlen($this->extConf['string']) > 0) {
-			$value = htmlspecialchars($extConf['string'], ENT_QUOTES, $charset);
+			$value = htmlspecialchars($this->extConf['string'], ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
 		}
 
 		$button = Utility::html_text_input(
 			$this->pi1->prefix_pi1 . '[search][text]', $value, $attributes
 		);
-		$button = $cObj->stdWrap($button, $lcfg['input.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['search.']['input.']);
 		$sea = $button;
 
 		// The search button
@@ -301,8 +326,8 @@ class SearchNavigation extends Navigation {
 
 		$attributes = array();
 
-		if (strlen($lcfg['search_btn_class']) > 0) {
-			$attributes['class'] = $lcfg['search_btn_class'];
+		if (strlen($this->conf['search.']['search_btn_class']) > 0) {
+			$attributes['class'] = $this->conf['search.']['search_btn_class'];
 		}
 
 		$button = Utility::html_submit_input(
@@ -310,7 +335,7 @@ class SearchNavigation extends Navigation {
 			$txt,
 			$attributes
 		);
-		$button = $cObj->stdWrap($button, $lcfg['search_btn.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['search.']['search_btn.']);
 		$sea .= $button;
 
 		// The clear button
@@ -318,8 +343,8 @@ class SearchNavigation extends Navigation {
 
 		$attributes = array();
 
-		if (strlen($lcfg['clear_btn_class']) > 0) {
-			$attributes['class'] = $lcfg['clear_btn_class'];
+		if (strlen($this->conf['search.']['clear_btn_class']) > 0) {
+			$attributes['class'] = $this->conf['search.']['clear_btn_class'];
 		}
 
 		$button = Utility::html_submit_input(
@@ -327,134 +352,162 @@ class SearchNavigation extends Navigation {
 			$txt,
 			$attributes
 		);
-		$button = $cObj->stdWrap($button, $lcfg['clear_btn.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['search.']['clear_btn.']);
 		$sea .= $button;
 
 		// Search widget wrap
-		$sea = $cObj->stdWrap($sea, $lcfg['widget.']);
+		return $this->pi1->cObj->stdWrap($sea, $this->conf['search.']['widget.']);
+	}
 
-		//
-		// The extra check
-		//
-		$lcfg =& $cfg['extra.'];
+	/**
+	 * @return string
+	 */
+	protected function getExtraButton() {
 		$txt = $this->pi1->get_ll('searchNav_extra');
-		$txt = $cObj->stdWrap($txt, $lcfg['label.']);
+		$txt = $this->pi1->cObj->stdWrap($txt, $this->conf['extra.']['label.']);
 
 		$attributes = array(
 			'onchange' => 'this.form.submit()'
 		);
 
-		if (strlen($lcfg['btn_class']) > 0) {
-			$attributes['class'] = $lcfg['btn_class'];
+		if (strlen($this->conf['extra.']['btn_class']) > 0) {
+			$attributes['class'] = $this->conf['extra.']['btn_class'];
 		}
 
 		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[search][extra]',
 			'1',
-			$extConf['extra'],
+			$this->extConf['extra'],
 			$attributes
 		);
 
-		$button = $cObj->stdWrap($button, $lcfg['btn.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['extra.']['btn.']);
 
-		$extra = $cObj->stdWrap($txt . $button, $lcfg['widget.']);
-
-		// Append hidden input
-		$this->append_hidden('extra_b', TRUE);
-		if (!$extConf['extra']) {
-			$this->append_hidden('rule', $extConf['rule']);
-			$this->append_hidden('abstracts', $extConf['abstracts']);
-			$this->append_hidden('full_text', $extConf['full_text']);
-		}
-
-		// End of form
-		$form_end = implode("\n", $this->hidden_input);
-		$form_end .= '</form>';
-
-
-		$translator = array();
-		$translator['###NAVI_LABEL###'] = $label;
-		$translator['###FORM_START###'] = $form_start;
-		$translator['###SEARCH_BAR###'] = $sea;
-		$translator['###EXTRA_BTN###'] = $extra;
-		$translator['###FORM_END###'] = $form_end;
-		if ($extConf['extra']) {
-			$this->get_extra($translator);
-		}
-
-		$has_extra = $extConf['extra'] ? array('', '') : '';
-
-		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$template = $cObj->substituteSubpart($template, '###HAS_EXTRA###', $has_extra);
-		$content = $cObj->substituteMarkerArrayCached($template, $translator);
-
-		return $content;
+		return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['extra.']['widget.']);
 	}
 
+	/**
+	 * @return string
+	 */
+	protected function getFormStart() {
+		$attributes = array(
+			'search' => ''
+		);
+		$formTag = '<form name="' . $this->pi1->prefix_pi1 . '-search_form" ';
+		$formTag .= 'action="' . $this->pi1->get_link_url($attributes, FALSE) . '"';
+		$formTag .= ' method="post"';
+		$formTag .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+		$formTag .= '>' . "\n";
+		return $formTag;
+	}
 
 	/**
-	 * @param array $translator
+	 * @return string
 	 */
-	protected function get_extra(&$translator) {
-		$cObj =& $this->pi1->cObj;
-		$cfg =& $this->conf;
-		$extConf =& $this->extConf;
-
-		// The abstract check
-		$abstractConfiguration =& $cfg['abstracts.'];
+	protected function getAbstractCheck() {
 		$txt = $this->pi1->get_ll('searchNav_abstract');
-		$txt = $cObj->stdWrap($txt, $abstractConfiguration['label.']);
+		$txt = $this->pi1->cObj->stdWrap($txt, $this->conf['abstracts.']['label.']);
 
 		$attributes = array(
 			'onchange' => 'this.form.submit()'
 		);
 
-		if (strlen($abstractConfiguration['btn_class']) > 0) {
-			$attributes['class'] = $abstractConfiguration['btn_class'];
+		if (strlen($this->conf['abstracts.']['btn_class']) > 0) {
+			$attributes['class'] = $this->conf['abstracts.']['btn_class'];
 		}
 
 		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[search][abstracts]',
 			'1',
-			$extConf['abstracts'],
+			$this->extConf['abstracts'],
 			$attributes
 		);
-		$button = $cObj->stdWrap($button, $abstractConfiguration['btn.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['abstracts.']['btn.']);
 
-		$abstr = $cObj->stdWrap($txt . $button, $abstractConfiguration['widget.']);
+		return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['abstracts.']['widget.']);
+	}
 
-		// The full text check
-		$abstractConfiguration =& $cfg['full_text.'];
+	/**
+	 * @return string
+	 */
+	protected function getFulltextCheck() {
 		$txt = $this->pi1->get_ll('searchNav_full_text');
-		$txt = $cObj->stdWrap($txt, $abstractConfiguration['label.']);
+		$txt = $this->pi1->cObj->stdWrap($txt, $this->conf['full_text.']['label.']);
 
 		$attributes = array(
 			'onchange' => 'this.form.submit()'
 		);
 
-		if (strlen($abstractConfiguration['btn_class']) > 0) {
-			$attributes['class'] = $abstractConfiguration['btn_class'];
+		if (strlen($this->conf['full_text.']['btn_class']) > 0) {
+			$attributes['class'] = $this->conf['full_text.']['btn_class'];
 		}
 
 		$button = Utility::html_check_input(
 			$this->pi1->prefix_pi1 . '[search][full_text]',
 			'1',
-			$extConf['full_text'],
+			$this->extConf['full_text'],
 			$attributes
 		);
-		$button = $cObj->stdWrap($button, $abstractConfiguration['btn.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['full_text.']['btn.']);
 
-		$full_txt = $cObj->stdWrap($txt . $button, $abstractConfiguration['widget.']);
+		return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['full_text.']['widget.']);
+	}
 
+	/**
+	 * @return string
+	 */
+	protected function getRuleSelection() {
+		$rule = '';
+		$txt = $this->pi1->get_ll('searchNav_rule');
+		$txt = $this->pi1->cObj->stdWrap($txt, $this->conf['rule.']['label.']);
+		$name = $this->pi1->prefix_pi1 . '[search][rule]';
 
-		// The separator selection
-		$abstractConfiguration =& $cfg['separator.'];
+		$attributes = array(
+			'onchange' => 'this.form.submit()'
+		);
+		if (strlen($this->conf['rule.']['btn_class']) > 0)
+			$attributes['class'] = $this->conf['rule.']['btn_class'];
+
+		// OR
+		$label = $this->pi1->get_ll('searchNav_OR');
+		$label = $this->pi1->cObj->stdWrap($label, $this->conf['rule.']['btn_label.']);
+		$checked = ($this->extConf['rule'] == 'OR');
+		$button = Utility::html_radio_input(
+			$name,
+			'OR',
+			$checked,
+			$attributes
+		);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['rule.']['btn.']);
+		$rule .= $label . $button;
+
+		// AND
+		$label = $this->pi1->get_ll('searchNav_AND');
+		$label = $this->pi1->cObj->stdWrap($label, $this->conf['rule.']['btn_label.']);
+		$checked = ($this->extConf['rule'] == 'AND');
+		$button = Utility::html_radio_input(
+			$name,
+			'AND',
+			$checked,
+			$attributes
+		);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['rule.']['btn.']);
+
+		$rule .= $label . $button;
+
+		return $this->pi1->cObj->stdWrap($txt . $rule, $this->conf['rule.']['widget.']);
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getSeparatorSelection() {
 		$txt = $this->pi1->get_ll('searchNav_separator');
-		$txt = $cObj->stdWrap($txt, $abstractConfiguration['label.']);
+		$txt = $this->pi1->cObj->stdWrap($txt, $this->conf['separator.']['label.']);
 
 		$types = array('space', 'semi', 'pipe');
 		$pairs = array(
-			'none' => $this->pi1->get_ll('searchNav_sep_none' . $type),
+			'none' => $this->pi1->get_ll('searchNav_sep_none' . $types),
 			'space' => '&nbsp;', 'semi' => ';', 'pipe' => '|'
 		);
 		foreach ($types as $type) {
@@ -467,68 +520,19 @@ class SearchNavigation extends Navigation {
 			'onchange' => 'this.form.submit()'
 		);
 
-		if (strlen($abstractConfiguration['select_class']) > 0) {
-			$attributes['class'] = $abstractConfiguration['select_class'];
+		if (strlen($this->conf['separator.']['select_class']) > 0) {
+			$attributes['class'] = $this->conf['separator.']['select_class'];
 		}
 
 		$button = Utility::html_select_input(
 			$pairs,
-			$extConf['sep'],
+			$this->extConf['sep'],
 			$attributes
 		);
-		$button = $cObj->stdWrap($button, $abstractConfiguration['select.']);
+		$button = $this->pi1->cObj->stdWrap($button, $this->conf['separator.']['select.']);
 
-		$sep = $cObj->stdWrap($txt . $button, $abstractConfiguration['widget.']);
-
-		// The rule selection
-		$abstractConfiguration =& $cfg['rule.'];
-		$rule = '';
-		$txt = $this->pi1->get_ll('searchNav_rule');
-		$txt = $cObj->stdWrap($txt, $abstractConfiguration['label.']);
-		$name = $this->pi1->prefix_pi1 . '[search][rule]';
-
-		$attributes = array(
-			'onchange' => 'this.form.submit()'
-		);
-		if (strlen($abstractConfiguration['btn_class']) > 0)
-			$attributes['class'] = $abstractConfiguration['btn_class'];
-
-		// OR
-		$label = $this->pi1->get_ll('searchNav_OR');
-		$label = $cObj->stdWrap($label, $abstractConfiguration['btn_label.']);
-		$checked = ($extConf['rule'] == 'OR');
-		$button = Utility::html_radio_input(
-			$name,
-			'OR',
-			$checked,
-			$attributes
-		);
-		$button = $cObj->stdWrap($button, $abstractConfiguration['btn.']);
-		$rule .= $label . $button;
-
-		// AND
-		$label = $this->pi1->get_ll('searchNav_AND');
-		$label = $cObj->stdWrap($label, $abstractConfiguration['btn_label.']);
-		$checked = ($extConf['rule'] == 'AND');
-		$button = Utility::html_radio_input(
-			$name,
-			'AND',
-			$checked,
-			$attributes
-		);
-		$button = $cObj->stdWrap($button, $abstractConfiguration['btn.']);
-
-		$rule .= $label . $button;
-
-		$rule = $cObj->stdWrap($txt . $rule, $abstractConfiguration['widget.']);
-
-		// Setup the translator
-		$translator['###ABSTRACTS_BTN###'] = $abstr;
-		$translator['###FULL_TEXT_BTN###'] = $full_txt;
-		$translator['###SEPARATOR_SEL###'] = $sep;
-		$translator['###RULE_SEL###'] = $rule;
+		return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['separator.']['widget.']);
 	}
-
 
 	/**
 	 * @param $key
