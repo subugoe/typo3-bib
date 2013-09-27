@@ -53,7 +53,6 @@ class AuthorNavigation extends Navigation {
 		}
 
 		$this->prefix = 'AUTHOR_NAVI';
-		$this->load_template('###AUTHOR_NAVI_BLOCK###');
 		$this->sel_link_title = $pi1->get_ll('authorNav_authorLinkTitle', '%a', TRUE);
 	}
 
