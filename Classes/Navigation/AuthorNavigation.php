@@ -88,33 +88,24 @@ class AuthorNavigation extends Navigation {
 	 * @return void
 	 */
 	public function hook_filter() {
-		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
-		$referenceReader =& $this->pi1->referenceReader;
 
 		// Init statistics
 		$this->pi1->stat['authors'] = array();
-		$astat =& $this->pi1->stat['authors'];
 
 		$filter = array();
 
 		// Fetch all surnames and initialize letters
-		$astat['surnames'] = $referenceReader->getSurnamesOfAllAuthors();
-		$astat['sel_surnames'] = array();
-		$this->initializeLetters($astat['surnames']);
-
-		// aliases
-		$surnames =& $astat['surnames'];
-		$sel_author =& $extConf['sel_author'];
-		$sel_letter =& $extConf['sel_letter'];
-		$sel_surnames =& $astat['sel_surnames'];
+		$this->pi1->stat['authors']['surnames'] = $this->pi1->referenceReader->getSurnamesOfAllAuthors();
+		$this->pi1->stat['authors']['sel_surnames'] = array();
+		$this->initializeLetters($this->pi1->stat['authors']['surnames']);
 
 		// Filter for selected author letter
 		// with a temporary filter
-		if (strlen($sel_letter) > 0) {
+		if (strlen($this->extConf['sel_letter']) > 0) {
 			$filters = $this->pi1->extConf['filters'];
 
-			$txt = $sel_letter;
+			$txt = $this->extConf['sel_letter'];
 			$spec = htmlentities($txt, ENT_QUOTES, $charset);
 			$pats = array($txt . '%');
 			if ($spec != $txt) {
@@ -131,15 +122,15 @@ class AuthorNavigation extends Navigation {
 			$filters['temp']['author']['authors'] = $filter;
 
 			// Fetch selected surnames
-			$referenceReader->set_filters($filters);
-			$sel_surnames = $referenceReader->getSurnamesOfAllAuthors();
+			$this->pi1->referenceReader->set_filters($filters);
+			$this->pi1->stat['authors']['sel_surnames'] = $this->pi1->referenceReader->getSurnamesOfAllAuthors();
 
 			// Remove ampersand strings from surname list
 			$lst = array();
 			$spec = FALSE;
-			$sel_up = mb_strtoupper($sel_letter, $charset);
-			$sel_low = mb_strtolower($sel_letter, $charset);
-			foreach ($sel_surnames as $name) {
+			$sel_up = mb_strtoupper($this->extConf['sel_letter'], $charset);
+			$sel_low = mb_strtolower($this->extConf['sel_letter'], $charset);
+			foreach ($this->pi1->stat['authors']['sel_surnames'] as $name) {
 				if (!(strpos($name, '&') === FALSE)) {
 					$name = html_entity_decode($name, ENT_COMPAT, $charset);
 					$spec = TRUE;
@@ -156,22 +147,22 @@ class AuthorNavigation extends Navigation {
 			if ($spec) {
 				usort($lst, 'strcoll');
 			}
-			$sel_surnames = $lst;
+			$this->pi1->stat['authors']['sel_surnames'] = $lst;
 
 			// Restore filter
-			$referenceReader->set_filters($this->pi1->extConf['filters']);
+			$this->pi1->referenceReader->set_filters($this->pi1->extConf['filters']);
 		}
 
 		// Setup filter for selected author
-		if ($sel_author != '0') {
-			$spec = htmlentities($sel_author, ENT_QUOTES, $charset);
+		if ($this->extConf['sel_author'] != '0') {
+			$spec = htmlentities($this->extConf['sel_author'], ENT_QUOTES, $charset);
 
 			// Check if the selected author is available
-			if (in_array($sel_author, $sel_surnames)
-					|| in_array($spec, $sel_surnames)
+			if (in_array($this->extConf['sel_author'], $this->pi1->stat['authors']['sel_surnames'])
+					|| in_array($spec, $this->pi1->stat['authors']['sel_surnames'])
 			) {
-				$pats = array($sel_author);
-				if ($spec != $sel_author) {
+				$pats = array($this->extConf['sel_author']);
+				if ($spec != $this->extConf['sel_author']) {
 					$pats[] = $spec;
 				}
 
@@ -181,18 +172,17 @@ class AuthorNavigation extends Navigation {
 					$filter[] = array('surname' => $pat);
 				}
 			} else {
-				$sel_author = '0';
+				$this->extConf['sel_author'] = '0';
 			}
 		}
 
 		// Append filter
 		if (sizeof($filter) > 0) {
-			$ff =& $this->pi1->extConf['filters'];
-			$ff['author'] = array();
-			$ff['author']['author'] = array();
-			$ff['author']['author']['authors'] = $filter;
+			$this->pi1->extConf['filters']['author'] = array();
+			$this->pi1->extConf['filters']['author']['author'] = array();
+			$this->pi1->extConf['filters']['author']['author']['authors'] = $filter;
 
-			$referenceReader->set_filters($ff);
+			$this->pi1->referenceReader->set_filters($this->pi1->extConf['filters']);
 		}
 	}
 
@@ -340,22 +330,18 @@ class AuthorNavigation extends Navigation {
 		);
 
 		// The label
-		$nlabel = $this->pi1->cObj->stdWrap(
+		$navigationLabel = $this->pi1->cObj->stdWrap(
 			$this->pi1->get_ll('authorNav_label'),
 			$this->conf['label.']
 		);
 
-		$translator = array();
-		$translator['###NAVI_LABEL###'] = $nlabel;
-		$translator['###LETTER_SELECTION###'] = $this->get_letter_selection();
+		$this->view
+				->assign('label', $navigationLabel)
+				->assign('letterSelection', $this->getLetterSelection())
+				->assign('selection', $this->getAuthorSelection())
+				->assign('surnameSelection', $this->getHtmlSelectFormField());
 
-		$translator['###SELECTION###'] = $this->getAuthorSelection();
-		$translator['###SURNAME_SELECT###'] = $this->getHtmlSelectFormField();
-
-		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
-
-		return $content;
+		return $this->view->render();
 	}
 
 
@@ -486,14 +472,14 @@ class AuthorNavigation extends Navigation {
 	 *
 	 * @return string
 	 */
-	protected function get_letter_selection() {
+	protected function getLetterSelection() {
 		$cObj =& $this->pi1->cObj;
 		$cfg =& $this->conf;
 		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
 		$letterConfiguration = is_array($cfg['letters.']) ? $cfg['letters.'] : array();
 
-		if (sizeof($extConf['letters']) == 0) {
+		if (sizeof($extConf['letters']) === 0) {
 			return '';
 		}
 

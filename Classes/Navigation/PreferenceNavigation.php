@@ -242,8 +242,11 @@ class PreferenceNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function getFormTagStart() {
-		$emptySelection = array('items_per_page' => '',
-			'show_abstracts' => '', 'show_keywords' => '');
+		$emptySelection = array(
+			'items_per_page' => '',
+			'show_abstracts' => '',
+			'show_keywords' => ''
+		);
 		$formStart = '';
 		$formStart .= '<form name="' . $this->pi1->prefix_pi1 . '-preferences_form" ';
 		$formStart .= 'action="' . $this->pi1->get_link_url($emptySelection, FALSE) . '"';
