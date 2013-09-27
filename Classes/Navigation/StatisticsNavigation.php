@@ -65,7 +65,6 @@ class StatisticsNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function get() {
-		$translator = array();
 
 		$label = '';
 		$stat_str = '';
@@ -107,13 +106,11 @@ class StatisticsNavigation extends Navigation {
 		$stat_str = $this->pi1->cObj->stdWrap($stat_str, $this->conf['values.']);
 
 		// Setup translator
-		$translator['###NAVI_LABEL###'] = $label;
-		$translator['###STATISTIC###'] = $stat_str;
+		$this->view
+				->assign('label', $label)
+				->assign('statistics', $stat_str);
 
-		$template = $this->pi1->setupEnumerationConditionBlock($this->template);
-		$content = $this->pi1->cObj->substituteMarkerArrayCached($template, $translator);
-
-		return $content;
+		return $this->view->render();
 	}
 
 }
