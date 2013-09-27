@@ -149,6 +149,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected $flexForm;
 
 	/**
+	 * @var \TYPO3\CMS\Fluid\View\StandaloneView
+	 */
+	protected $view;
+
+	/**
 	 * @var string
 	 */
 	protected $flexFormFilterSheet;

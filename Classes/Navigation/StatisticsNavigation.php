@@ -42,7 +42,6 @@ class StatisticsNavigation extends Navigation {
 		}
 
 		$this->prefix = 'STAT_NAVI';
-		$this->load_template('###STAT_NAVI_BLOCK###');
 	}
 
 	/**

@@ -27,6 +27,7 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 abstract class Navigation {
 
@@ -78,32 +79,11 @@ abstract class Navigation {
 	 * @return string
 	 */
 	protected function getTemplateFileFromCallingClass() {
-
-
 		$classParts = explode("\\", get_called_class());
 		$templateName = str_replace('Navigation', '', $classParts[3]);
-		$templateFile = 'typo3conf/ext/' . $this->pi1->extKey . '/Resources/Private/Templates/Navigation/'. $templateName .'.html';
+		$templateFile = ExtensionManagementUtility::extPath($this->pi1->extKey) . '/Resources/Private/Templates/Navigation/'. $templateName .'.html';
 		return $templateFile;
 	}
-
-	/**
-	 * @param string $subpart
-	 * @return void
-	 */
-	protected function load_template($subpart) {
-		$templates = '<p>ERROR: The html template file ' . $this->template .
-				' is not readable or empty</p>';
-
-		$file = strval($this->conf['template']);
-		if (strlen($file) > 0) {
-			$file = $this->pi1->cObj->fileResource($file);
-			if (strlen($file) > 0) {
-				$templates = $this->pi1->cObj->getSubpart($file, $subpart);
-			}
-		}
-		$this->template = $templates;
-	}
-
 
 	/*
 	 * Returns the translator for the main template
