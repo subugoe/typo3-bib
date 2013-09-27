@@ -53,7 +53,6 @@ class PreferenceNavigation extends Navigation {
 		}
 
 		$this->prefix = 'PREF_NAVI';
-		$this->load_template('###PREF_NAVI_BLOCK###');
 	}
 
 	/*
