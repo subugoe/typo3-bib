@@ -118,7 +118,7 @@ class RenderPublicationViewHelper extends  \TYPO3\CMS\Fluid\Core\ViewHelper\Abst
 				if ($fieldInfo['xml']) {
 					$childXML = new \DOMDocument();
 					$childXML->loadXML($content);
-					if ($childXML) {
+					if ($childXML && $childXML->firstChild) {
 						$contentXML = $doc->importNode($childXML->firstChild, TRUE);
 					}
 				}
