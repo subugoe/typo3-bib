@@ -53,7 +53,7 @@ class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 		parent::initializeArguments();
 		$this->registerArgument('bibliographyItem', 'array', 'the bibliography item to create output for', TRUE);
 
-		foreach ($this::$variables as $variableName => $variableConfig) {
+		foreach (self::$variables as $variableName => $variableConfig) {
 			$this->registerArgument($variableName, 'string', $variableConfig['description'], FALSE, $variableConfig['default']);
 		}
 	}
@@ -67,21 +67,21 @@ class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 		$bibliographyItem = $this->arguments['bibliographyItem'];
 
 		// Set up template variables for RenderPublicationField View Helper.
-		$this->templateVariableContainer->add($this::$bibliographyItemVariableName, $bibliographyItem);
-		$this->templateVariableContainer->add($this::$containerVariableName, array());
-		foreach (array_keys($this::$variables) as $variableName) {
-			$this->templateVariableContainer->add($this::$prefixString . $variableName, $this->arguments[$variableName]);
+		$this->templateVariableContainer->add(self::$bibliographyItemVariableName, $bibliographyItem);
+		$this->templateVariableContainer->add(self::$containerVariableName, array());
+		foreach (array_keys(self::$variables) as $variableName) {
+			$this->templateVariableContainer->add(self::$prefixString . $variableName, $this->arguments[$variableName]);
 		}
 
 		// Render contained RenderPublicationField View Helpers and retrieve the data.
 		$this->renderChildren();
-		$fieldArray = $this->templateVariableContainer->get($this::$containerVariableName);
+		$fieldArray = $this->templateVariableContainer->get(self::$containerVariableName);
 
 		// Unset template variables.
-		$this->templateVariableContainer->remove($this::$containerVariableName);
-		$this->templateVariableContainer->remove($this::$bibliographyItemVariableName);
-		foreach (array_keys($this::$variables) as $variableName) {
-			$this->templateVariableContainer->remove($this::$prefixString . $variableName);
+		$this->templateVariableContainer->remove(self::$containerVariableName);
+		$this->templateVariableContainer->remove(self::$bibliographyItemVariableName);
+		foreach (array_keys(self::$variables) as $variableName) {
+			$this->templateVariableContainer->remove(self::$prefixString . $variableName);
 		}
 
 		return $this->createMarkup($bibliographyItem, $fieldArray);
@@ -100,7 +100,7 @@ class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 	private function createMarkup ($bibliographyItem, $fieldArray) {
 		$document = new \DomDocument();
 		$recordSpan = $document->createElement('span');
-		$recordSpan->setAttribute('class', $this::$prefixString . 'record recordType-' . $bibliographyItem['bibtype']);
+		$recordSpan->setAttribute('class', self::$prefixString . 'record recordType-' . $bibliographyItem['bibtype']);
 		$recordSpan->setAttribute('id', 'citekey-' . $this->arguments['citeId']);
 		$document->appendChild($recordSpan);
 
@@ -127,9 +127,9 @@ class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 
 			if ($contentXML) {
 				$fieldSpan = $document->createElement('span');
-				$fieldClass = $this::$prefixString . 'field';
+				$fieldClass = self::$prefixString . 'field';
 				if ($fieldInfo['field']) {
-					$fieldClass .= ' ' . $this::$prefixString . 'field-' . $fieldInfo['field'];
+					$fieldClass .= ' ' . self::$prefixString . 'field-' . $fieldInfo['field'];
 				}
 				$fieldSpan->setAttribute('class', $fieldClass);
 
