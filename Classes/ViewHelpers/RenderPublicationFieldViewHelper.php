@@ -29,6 +29,29 @@ namespace Ipf\Bib\ViewHelpers;
 
 
 /**
+ * Prepares the data to use for displaying a bibliography item.
+ * May only be used inside a renderPublication View Helper.
+ *
+ * with the namespace configuration:
+ * {namespace bib=Ipf\Bib\ViewHelpers}
+ *
+ * Simple usage with default setup:
+ * Append the edition field to the list of fields, using the default suffix »,«
+ * in the middle of the record and the suffix ».« at the end.
+ * <bib:renderPublicationField field="edition"/>
+ *
+ * Usage with custom setup:
+ * Append the editor field to the list of fields, changing the suffix to » (Ed.),«
+ * in the middle of the record and to » (Ed.).« at the end.
+ * <bib:renderPublicationField field="editor" suffix=" (Ed.)," suffixIfLast=" (Ed.)."/>
+ *
+ * Advanced usage with custom XML as the tag’s content:
+ * Create an anchor tag linking to a DOI. The tag content will be validated
+ * as XML before it is used.
+ * <bib:renderPublicationField field="doi" xml="1" prefix="DOI: " prefixIfFirst="DOI: ">
+ * 	<f:link.external uri="http://dx.doi.org/{bibitem.DOI}">{bibitem.DOI}</f:link.external>
+ * </bib:renderPublicationField>
+ *
  */
 class RenderPublicationFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 

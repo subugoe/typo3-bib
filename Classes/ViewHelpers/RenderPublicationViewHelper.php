@@ -29,6 +29,38 @@ namespace Ipf\Bib\ViewHelpers;
 
 
 /**
+ * Renders HTML output for a bibliography entry.
+ *
+ * Set up the renderPublication View Helper with a bibliography item array.
+ * Express the citation format to use, by adding renderPublicationField View Helpers
+ * inside the renderPublication View Helper.
+ *
+ * The order, fields, prefixes and suffixes of the renderPublicationField View Helpers
+ * will be recorded and turned into HTML markup.
+ *
+ * Usage:
+ * with {bibitem} being a bibliographic item array as returned by the
+ * publicationByCiteId View Helper.
+ *
+ * {namespace bib=Ipf\Bib\ViewHelpers}
+ * <bib:renderPublication bibliographyItem="{bibitem}">
+ * 	<f:if condition="{f:count(subject:bibitem.authors)} > 0">
+ * 		<bib:renderPublicationField field="authors" xml="1" suffix=":">
+ * 			<f:render partial="Bib/Authors" arguments="{_all}"/>
+ * 		</bib:renderPublicationField>
+ * 	</f:if>
+ *
+ * 	<bib:renderPublicationField field="title" suffix="."/>
+ * 	<bib:renderPublicationField field="year"/>
+ * 	<bib:renderPublicationField field="pages" prefix="p. "/>
+ *
+ * 	<f:if condition="{bibitem.DOI}">
+ * 		<bib:renderPublicationField field="doi" xml="1" prefix="DOI: " prefixIfFirst="DOI: ">
+ * 			<f:link.external uri="http://dx.doi.org/{bibitem.DOI}">{bibitem.DOI}</f:link.external>
+ * 		</bib:renderPublicationField>
+ * 	</f:if>
+ * </bib:renderPublication>
+ *
  */
 class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
