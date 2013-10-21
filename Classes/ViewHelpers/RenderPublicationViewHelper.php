@@ -26,52 +26,33 @@
 
 namespace Ipf\Bib\ViewHelpers;
 
-/* * *************************************************************
- *  Copyright notice
- *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
- *      Goettingen State Library
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+
 
 /**
  */
-class RenderPublicationViewHelper extends  \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
-	static $variables = array(
+	public static $variables = array(
 		'prefixIfFirst' => array('description' => 'default prefix for the first field that is displayed', 'default' => ''),
 		'prefix' => array('description' => 'default prefix for fields', 'default' => ''),
 		'suffix' => array('description' => 'default suffix for fields', 'default' => ','),
 		'suffixIfLast' => array('description' => 'default suffix for the last field that is displayed', 'default' => '.')
 	);
 
-	static $prefixString = 'tx_bib_';
-	static $containerVariableName = 'tx_bib_containerVariable';
-	static $bibitemVariableName = 'tx_bib_bibitemVariable';
+	protected static $prefixString = 'tx_bib_';
+	public static $containerVariableName = 'tx_bib_containerVariable';
+	public static $bibliographyItemVariableName = 'tx_bib_bibliographyItemVariable';
+
+
 
 	/**
 	 * Register arguments.
+	 * @return void
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
-		$this->registerArgument('bibitem', 'array', 'the bibitem to create output for', TRUE);
+		$this->registerArgument('bibliographyItem', 'array', 'the bibliography item to create output for', TRUE);
+
 		foreach ($this::$variables as $variableName => $variableConfig) {
 			$this->registerArgument($variableName, 'string', $variableConfig['description'], FALSE, $variableConfig['default']);
 		}
@@ -80,17 +61,15 @@ class RenderPublicationViewHelper extends  \TYPO3\CMS\Fluid\Core\ViewHelper\Abst
 
 
 	/**
-	 * @throws \Exception
 	 * @return array
 	 */
 	public function render() {
-		// Get data.
-		$bibitem = $this->arguments['bibitem'];
+		$bibliographyItem = $this->arguments['bibliographyItem'];
 
 		// Set up template variables for RenderPublicationField View Helper.
-		$this->templateVariableContainer->add($this::$bibitemVariableName, $bibitem);
+		$this->templateVariableContainer->add($this::$bibliographyItemVariableName, $bibliographyItem);
 		$this->templateVariableContainer->add($this::$containerVariableName, array());
-		foreach ($this::$variables as $variableName => $variableConfig) {
+		foreach (array_keys($this::$variables) as $variableName) {
 			$this->templateVariableContainer->add($this::$prefixString . $variableName, $this->arguments[$variableName]);
 		}
 
@@ -100,17 +79,30 @@ class RenderPublicationViewHelper extends  \TYPO3\CMS\Fluid\Core\ViewHelper\Abst
 
 		// Unset template variables.
 		$this->templateVariableContainer->remove($this::$containerVariableName);
-		$this->templateVariableContainer->remove($this::$bibitemVariableName);
-		foreach ($this::$variables as $variableName => $variableConfig) {
+		$this->templateVariableContainer->remove($this::$bibliographyItemVariableName);
+		foreach (array_keys($this::$variables) as $variableName) {
 			$this->templateVariableContainer->remove($this::$prefixString . $variableName);
 		}
 
-		// Create the output.
-		$doc = new \DomDocument();
-		$recordSpan = $doc->createElement('span');
-		$recordSpan->setAttribute('class', $this::$prefixString . 'record recordType-' . $bibitem['bibtype']);
+		return $this->createMarkup($bibliographyItem, $fieldArray);
+	}
+
+
+
+	/**
+	 * Returns a string with HTML markup for the passed $bibliographyItem with
+	 * the fields configured in $fieldArray.
+	 *
+	 * @param array $bibliographyItem the bibliography item to display
+	 * @param array $fieldArray field configuration to use for the display
+	 * @return string
+	 */
+	private function createMarkup ($bibliographyItem, $fieldArray) {
+		$document = new \DomDocument();
+		$recordSpan = $document->createElement('span');
+		$recordSpan->setAttribute('class', $this::$prefixString . 'record recordType-' . $bibliographyItem['bibtype']);
 		$recordSpan->setAttribute('id', 'citekey-' . $this->arguments['citeId']);
-		$doc->appendChild($recordSpan);
+		$document->appendChild($recordSpan);
 
 		foreach ($fieldArray as $fieldIndex => $fieldInfo) {
 			$content = $fieldInfo['children'];
@@ -119,22 +111,22 @@ class RenderPublicationViewHelper extends  \TYPO3\CMS\Fluid\Core\ViewHelper\Abst
 					$childXML = new \DOMDocument();
 					$childXML->loadXML($content);
 					if ($childXML && $childXML->firstChild) {
-						$contentXML = $doc->importNode($childXML->firstChild, TRUE);
+						$contentXML = $document->importNode($childXML->firstChild, TRUE);
 					}
 				}
 				if (!$contentXML) {
-					$contentXML = $doc->createTextNode($content);
+					$contentXML = $document->createTextNode($content);
 				}
 			}
 			else {
-				$fieldContent = $bibitem[$fieldInfo['field']];
+				$fieldContent = $bibliographyItem[$fieldInfo['field']];
 				if ($fieldContent) {
-					$contentXML = $doc->createTextNode($fieldContent);
+					$contentXML = $document->createTextNode($fieldContent);
 				}
 			}
 
 			if ($contentXML) {
-				$fieldSpan = $doc->createElement('span');
+				$fieldSpan = $document->createElement('span');
 				$fieldClass = $this::$prefixString . 'field';
 				if ($fieldInfo['field']) {
 					$fieldClass .= ' ' . $this::$prefixString . 'field-' . $fieldInfo['field'];
@@ -142,22 +134,20 @@ class RenderPublicationViewHelper extends  \TYPO3\CMS\Fluid\Core\ViewHelper\Abst
 				$fieldSpan->setAttribute('class', $fieldClass);
 
 				$prefixKey = 'prefix' . (($fieldIndex === 0) ? 'IfFirst' : '');
-				$fieldSpan->appendChild($doc->createTextNode($fieldInfo[$prefixKey]));
+				$fieldSpan->appendChild($document->createTextNode($fieldInfo[$prefixKey]));
 
 				$fieldSpan->appendChild($contentXML);
 
 				$suffixKey = 'suffix' . ($fieldIndex < count($fieldArray) - 1 ? '' : 'IfLast');
-				$fieldSpan->appendChild($doc->createTextNode($fieldInfo[$suffixKey]));
+				$fieldSpan->appendChild($document->createTextNode($fieldInfo[$suffixKey]));
 
 				$recordSpan->appendChild($fieldSpan);
-				$recordSpan->appendChild($doc->createTextNode(' '));
+				$recordSpan->appendChild($document->createTextNode(' '));
 			}
 			unset($contentXML);
 		}
 
-		$result = $doc->saveHTML();
-
-		return $result;
+		return $document->saveHTML();
 	}
 
 }
