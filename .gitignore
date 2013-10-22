@@ -2,3 +2,5 @@
 .sass-cache
 /vendor/
 ext_emconf.php
+composer.lock
+Classes/Contrib

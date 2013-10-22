@@ -1,13 +1,16 @@
 {
-    "name": "subugoe/bib",
-    "description": "Bibliography management for TYPO3",
-    "authors": [
-        {
-            "name": "Ingo Pfennigstorf",
-            "email": "i.pfennigstorf@gmail.com"
-        }
-    ],
-    "require": {
-
-    }
+	"name": "subugoe/bib",
+	"description": "Bibliography management for TYPO3",
+	"authors": [
+		{
+			"name": "Ingo Pfennigstorf",
+			"email": "i.pfennigstorf@gmail.com"
+		}
+	],
+	"require": {
+		"rjerome/citeproc-php": "dev-topics/composer"
+	},
+	"config": {
+		"vendor-dir": "Classes/Contrib/"
+	}
 }
