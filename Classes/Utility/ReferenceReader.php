@@ -1424,8 +1424,19 @@ class ReferenceReader {
 	 * @return array The publication data from the database
 	 */
 	public function getPublicationDetails($uid) {
-		$whereClause = 'uid = ' . intval($uid);
+
+		$whereClause = array();
+
+		$whereClause[] = 'uid = ' . intval($uid);
+
+		if (sizeof($this->pid_list) > 0) {
+			$csv = Utility::implode_intval(',', $this->pid_list);
+			$whereClause[] = 'pid IN (' . $csv . ')';
+		}
+
+		$whereClause = implode(' AND ', $whereClause);
 		$whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
+
 		$field_csv = implode(',', $this->refAllFields);
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -1560,10 +1571,22 @@ class ReferenceReader {
 
 		$citationId = filter_var($citationId, FILTER_SANITIZE_STRING);
 
+		$whereClause = array();
+
+		if (sizeof($this->pid_list) > 0) {
+			$csv = Utility::implode_intval(',', $this->pid_list);
+			$whereClause[] = 'pid IN (' . $csv . ')';
+		}
+
+		$whereClause[] = 'citeid = "' . $citationId . '"';
+
+		$whereClause = implode(' AND ', $whereClause);
+		$whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
+
 		$query = $GLOBALS['TYPO3_DB']->exec_SELECTQuery(
 			'uid',
 			$this->getReferenceTable(),
-			'citeid = "' . $citationId . '"',
+			$whereClause,
 			'',
 			'',
 			1
