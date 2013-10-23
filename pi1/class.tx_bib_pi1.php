@@ -30,6 +30,8 @@ use \TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use \TYPO3\CMS\Core\Messaging\FlashMessage;
 use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
+require(ExtensionManagementUtility::extPath('bib') . 'Classes/Contrib/rjerome/citeproc-php/CiteProc.php');
+
 /**
  * Plugin 'Publication List' for the 'bib' extension.
  */
