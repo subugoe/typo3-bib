@@ -64,7 +64,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 			$citationId = $this->renderChildren();
 		}
 
-		$this->hasArgument('storagePid') ? $storagePid = $this->arguments['storagePid'] : $storagePid = NULL;
+		$this->hasArgument('storagePid') ? $storagePid = intval($this->arguments['storagePid']) : $storagePid = NULL;
 
 		if (empty($citationId)) {
 			throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
@@ -88,14 +88,13 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
 		$referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 
+		$referenceReader->setPidList(array($storagePid));
+
 		if ($referenceReader->citeIdExists($citationId)) {
 			$referenceReader->append_filter(
 				array(
 					'citeid' => array(
 						'ids' => $citationId
-					),
-					'pid' => array(
-						$storagePid
 					)
 				)
 			);
