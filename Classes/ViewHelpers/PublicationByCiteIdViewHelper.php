@@ -49,6 +49,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('citeId', 'string', 'Citation id');
+		$this->registerArgument('storagePid', 'int', 'Storage PID where the bibliography records are stored');
 	}
 
 	/**
@@ -63,11 +64,13 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 			$citationId = $this->renderChildren();
 		}
 
+		$this->hasArgument('storagePid') ? $storagePid = $this->arguments['storagePid'] : $storagePid = NULL;
+
 		if (empty($citationId)) {
 			throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
 		} else {
 			try {
-				return $this->getBibliographicDataFromCitationId($citationId);
+				return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
 			} catch (\Exception $e) {
 				return array('exception' => $e->getMessage());
 			}
@@ -77,9 +80,10 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 	/**
 	 * @throws \Exception
 	 * @param string $citationId
+	 * @param int $storagePid
 	 * @return array
 	 */
-	protected function getBibliographicDataFromCitationId($citationId) {
+	protected function getBibliographicDataFromCitationId($citationId, $storagePid) {
 
 		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
 		$referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
@@ -89,6 +93,9 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 				array(
 					'citeid' => array(
 						'ids' => $citationId
+					),
+					'pid' => array(
+						$storagePid
 					)
 				)
 			);
