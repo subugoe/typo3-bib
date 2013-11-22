@@ -32,8 +32,8 @@ if (!defined ('TYPO3_MODE')) {
 		'
 	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference = < plugin.' . \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getCN($_EXTKEY) . '_pi1
 	tt_content.shortcut.20.0.conf.tx_bib_domain_model_reference.CMD = singleView
-'
-	,43
+',
+	43
 );
 
 // provide automagic realUrl configuration

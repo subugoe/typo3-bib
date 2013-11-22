@@ -79,7 +79,7 @@ abstract class Navigation {
 	 * @return string
 	 */
 	protected function getTemplateFileFromCallingClass() {
-		$classParts = explode("\\", get_called_class());
+		$classParts = explode('\\', get_called_class());
 		$templateName = str_replace('Navigation', '', $classParts[3]);
 		$templateFile = ExtensionManagementUtility::extPath($this->pi1->extKey) . '/Resources/Private/Templates/Navigation/'. $templateName .'.html';
 		return $templateFile;

@@ -28,7 +28,7 @@ namespace Ipf\Bib\Utility\Generator;
 
 class AuthorsCiteIdGenerator extends CiteIdGenerator {
 
-	function generateBasicId($row) {
+	protected function generateBasicId($row) {
 		$authors = $row['authors'];
 		return $this->simplifiedString($authors[0]['sn']);
 	}

@@ -103,7 +103,7 @@ class Utility {
 	 * @param string $charset
 	 * @return string The string filtered for html output
 	 */
-	public static function filter_pub_html_display($content, $htmlSpecialChars = FALSE, $charset="UTF-8") {
+	public static function filter_pub_html_display($content, $htmlSpecialChars = FALSE, $charset = 'UTF-8') {
 		$rand = strval(rand()) . strval(rand());
 		$content = str_replace(array('<prt>', '</prt>'), '', $content);
 
@@ -429,7 +429,8 @@ class Utility {
 			} else {
 				// Find nearest
 				$res = end($stack);
-				for ($ii = 1; $ii < sizeof($stack); $ii++) {
+				$stackSize = sizeof($stack);
+				for ($ii = 1; $ii < $stackSize; $ii++) {
 					$d0 = abs($value - $stack[$ii - 1]);
 					$d1 = abs($value - $stack[$ii]);
 					if ($d0 <= $d1) {
@@ -575,7 +576,8 @@ class Utility {
 		GeneralUtility::logDeprecatedFunction();
 		if (is_array($delimiters)) {
 			$sep = strval($delimiters[0]);
-			for ($ii = 1; $ii < sizeof($delimiters); $ii++) {
+			$delimiterSize = sizeof($delimiters);
+			for ($ii = 1; $ii < $delimiterSize; $ii++) {
 				$nsep = strval($sep[$ii]);
 				$str = str_replace($nsep, $sep, $str);
 			}
@@ -598,7 +600,8 @@ class Utility {
 	public static function multi_explode_trim($delimiters, $str, $noEmpty = FALSE) {
 		if (is_array($delimiters)) {
 			$sep = strval($delimiters[0]);
-			for ($ii = 1; $ii < sizeof($delimiters); $ii++) {
+			$delimiterSize = sizeof($delimiters);
+			for ($ii = 1; $ii < $delimiterSize; $ii++) {
 				$nsep = strval($delimiters[$ii]);
 				$str = str_replace($nsep, $sep, $str);
 			}

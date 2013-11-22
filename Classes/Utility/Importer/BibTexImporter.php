@@ -204,15 +204,12 @@ class BibTexImporter extends Importer {
 		// Environments
 		$pRegExpTranslator->push('/\\\\emph\{([^\{]+)\}/', '<em>\\1</em>');
 
-		// Mathematics
-
 		// Math expressions
 		$pRegExpTranslator
 				->push('/([^\\\\])\\^\{\\\\circ\}/', '\\1&deg;')
 				->push('/\\\\sqrt([^\w]|$)/', '&radic;\\1')
 				->push('/([^\\\\])\\^\{([^\{]+)\}/', '\\1<sup>\\2</sup>')
 				->push('/([^\\\\])\\_\{([^\{]+)\}/', '\\1<sub>\\2</sub>');
-
 
 		$replace = array(
 			// Relational symbols
@@ -461,7 +458,7 @@ class BibTexImporter extends Importer {
 				case self::PARSER_SEARCH_REFERENCE_BEGIN:
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
-						if (substr($this->getBuffer(), 0, 1) == "{") {
+						if (substr($this->getBuffer(), 0, 1) == '{') {
 
 							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_SEARCH_CITE_ID;
@@ -499,10 +496,10 @@ class BibTexImporter extends Importer {
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
 						$char = substr($this->getBuffer(), 0, 1);
-						if ($char === ",") {
+						if ($char === ',') {
 							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_SEARCH_PAIR_NAME;
-						} else if ($char === "}") {
+						} else if ($char === '}') {
 							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->pushCurrentRawReferenceToList();
 							$this->parserState = self::PARSER_SEARCH_REFERENCE;
@@ -518,7 +515,7 @@ class BibTexImporter extends Importer {
 						if (preg_match('/^[a-zA-Z_0-9]/', $char) > 0) {
 							$this->pair_name = '';
 							$this->parserState = self::PARSER_READ_PAIR_NAME;
-						} else if ($char === "}") {
+						} else if ($char === '}') {
 							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->pushCurrentRawReferenceToList();
 							$this->parserState = self::PARSER_SEARCH_REFERENCE;
@@ -544,7 +541,7 @@ class BibTexImporter extends Importer {
 					$this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
 					if (strlen($this->getBuffer()) > 0) {
 						$char = substr($this->getBuffer(), 0, 1);
-						if ($char === "=") {
+						if ($char === '=') {
 							$this->setBuffer(substr($this->getBuffer(), 1));
 							$this->parserState = self::PARSER_SEARCH_PAIR_VALUE;
 						} else {
@@ -558,7 +555,7 @@ class BibTexImporter extends Importer {
 						$char = substr($this->getBuffer(), 0, 1);
 						if (preg_match('/^[^}=]/', $char) > 0) {
 
-							if (($char == "{") || ($char == "'") || ($char == "\"")) {
+							if (($char == '{') || ($char == "'") || ($char == "\"")) {
 								$this->pair_start = $char;
 								$this->pair_value = '';
 							} else {
@@ -577,7 +574,7 @@ class BibTexImporter extends Importer {
 					$go_on = TRUE;
 					$ii = 0;
 					$last = 0;
-					$prev_char = "";
+					$prev_char = '';
 
 					while ($go_on) {
 						if ($ii > 0) {
@@ -587,9 +584,9 @@ class BibTexImporter extends Importer {
 						$last = $ii;
 
 						switch ($char) {
-							case "\"":
+							case '"':
 							case "'":
-								if (($prev_char != "\\") && ($this->pair_start == $char)) {
+								if (($prev_char != '\\') && ($this->pair_start == $char)) {
 									if ($this->pair_brace != 0) {
 										throw new ParserException('Unbalanced brace count', 1378736624);
 									}
@@ -598,21 +595,21 @@ class BibTexImporter extends Importer {
 									$this->pair_value .= $char;
 								}
 								break;
-							case "{":
+							case '{':
 								$this->pair_value .= $char;
-								if ($prev_char != "\\") {
+								if ($prev_char != '\\') {
 									$this->pair_brace++;
 								}
 								break;
 							case "}":
-								if ($prev_char == "\\") {
+								if ($prev_char == '\\') {
 									$this->pair_value .= $char;
 								} else {
 									$this->pair_brace--;
 									if ($this->pair_brace >= 0) {
 										$this->pair_value .= $char;
 									} else {
-										if ($this->pair_start == "{") {
+										if ($this->pair_start == '{') {
 											$go_on = FALSE;
 										} else {
 											throw new ParserException('Unbalanced brace count', 1378736661);
@@ -620,10 +617,10 @@ class BibTexImporter extends Importer {
 									}
 								}
 								break;
-							case " ":
+							case ' ':
 							case "\t":
-							case ",":
-								if ($this->pair_start == "") {
+							case ',':
+								if ($this->pair_start == '') {
 									$last--;
 									$go_on = FALSE;
 								} else {

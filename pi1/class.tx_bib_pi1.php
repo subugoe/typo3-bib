@@ -1244,7 +1244,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['highlight_authors'] = $this->pi_getFFvalue($this->flexForm, 'highlight_authors', $this->flexFormFilterSheet);
 
 		if ($this->pi_getFFvalue($this->flexForm, 'enable_author', $this->flexFormFilterSheet) != 0) {
-			$flexFormFilter = array();;
+			$flexFormFilter = array();
 			$flexFormFilter['authors'] = array();
 			$flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'author_rule', $this->flexFormFilterSheet);
 			$flexFormFilter['rule'] = intval($flexFormFilter['rule']);
@@ -1285,7 +1285,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$states = intval($this->pi_getFFvalue($this->flexForm, 'states', $this->flexFormFilterSheet));
 
 			$j = 1;
-			for ($i = 0; $i < sizeof($this->referenceReader->allStates); $i++) {
+			$referenceReaderStateSize = sizeof($this->referenceReader->allStates);
+			for ($i = 0; $i < $referenceReaderStateSize; $i++) {
 				if ($states & $j) {
 					$flexFormFilter['states'][] = $i;
 				}
@@ -1780,7 +1781,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$record = '';
 		if ($this->extConf['ce_links'] && $currentRecord) {
-			$record = "#c" . strval($this->cObj->data['uid']);
+			$record = '#c' . strval($this->cObj->data['uid']);
 		}
 
 		$this->pi_linkTP('x', $linkVariables, $autoCache);
@@ -2329,7 +2330,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		}
 
-		$warnings = $d_err;;
+		$warnings = $d_err;
 
 		return $publicationData;
 	}
@@ -2576,7 +2577,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 					// Highlight "et al." on demand
 					if ($highlightAuthors) {
-						for ($j = $lastAuthor + 1; $j < sizeof($authors); $j++) {
+						$authorsSize = sizeof($authors);
+						for ($j = $lastAuthor + 1; $j < $authorsSize; $j++) {
 							$a_et = $authors[$j];
 							foreach ($filter_authors as $fa) {
 								if ($a_et['surname'] == $fa['surname']) {
@@ -2873,7 +2875,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 			$translator['###ITEM_APPEND###'] = $append;
 
-
 			// Apply translator
 			$listViewTemplate = $this->cObj->substituteMarkerArrayCached($listViewTemplate, $translator);
 
@@ -2994,7 +2995,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @param bool $showHidden
 	 * @return bool TRUE (restricted) or FALSE (not restricted)
 	 */
-	protected function checkFieldRestriction($table, $field, $value, $showHidden = false) {
+	protected function checkFieldRestriction($table, $field, $value, $showHidden = FALSE) {
 		// No value no restriction
 		if (strlen($value) == 0) {
 			return FALSE;
@@ -3440,9 +3441,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			// query all authors of this publication
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				"fe_user_id",
-				"tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m",
-					"a.uid = m.author_id AND m.pub_id = " . $publicationId
+				'fe_user_id',
+				'tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m',
+					'a.uid = m.author_id AND m.pub_id = ' . $publicationId
 			);
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
@@ -3462,8 +3463,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_pi1.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/pi1/class.tx_bib_pi1.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_pi1.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_pi1.php']);
 }
 
 ?>

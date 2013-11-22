@@ -140,7 +140,7 @@ class ReferenceWriter {
 			);
 		}
 
-		$new = False;
+		$new = FALSE;
 		$uid = -1;
 
 		$referenceTable =& $this->referenceReader->getReferenceTable();
@@ -238,9 +238,7 @@ class ReferenceWriter {
 			);
 
 			$uid = $GLOBALS['TYPO3_DB']->sql_insert_id();
-			if ($uid > 0) {
-
-			} else {
+			if (!(intval($uid) > 0)) {
 				throw new DataException(
 					'A publication reference could not be inserted into the database',
 					1378973908
@@ -296,9 +294,7 @@ class ReferenceWriter {
 					$ia['pid'] = intval($pid);
 
 					$author['uid'] = $this->insertAuthor($ia);
-					if ($author['uid'] > 0) {
-
-					} else {
+					if (!(intval($author['uid']) > 0)) {
 						throw new DataException(
 							'An author ' . $ia['surename'] . '  could not be inserted into the database',
 							1378976979
@@ -327,7 +323,8 @@ class ReferenceWriter {
 		$as_present = sizeof($authors) - $as_new;
 
 		// Inserts new and updates old authorships
-		for ($ii = 0; $ii < sizeof($authors); $ii++) {
+		$authorsSize = sizeof($authors);
+		for ($ii = 0; $ii < $authorsSize; $ii++) {
 			$author =& $authors[$ii];
 			if (is_numeric($author['uid'])) {
 				$as = array();
@@ -358,10 +355,7 @@ class ReferenceWriter {
 						$this->referenceReader->getAuthorshipTable(),
 						$as
 					);
-
-					if ($as_uid > 0) {
-
-					} else {
+					if (!(intval($as_uid) > 0)) {
 						throw new DataException(
 							'An authorship could not be inserted into the database',
 							1378977350
@@ -433,8 +427,8 @@ class ReferenceWriter {
 	 */
 	protected function deleteAuthorships($uids) {
 		$uid_list = '';
-
-		for ($ii = 0; $ii < sizeof($uids); $ii++) {
+		$uidSize = sizeof($uids);
+		for ($ii = 0; $ii < $uidSize; $ii++) {
 			if ($ii > 0) {
 				$uid_list .= ',';
 			}
@@ -596,8 +590,8 @@ class ReferenceWriter {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceWriter.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceWriter.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/ReferenceWriter.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/ReferenceWriter.php']);
 }
 
 ?>

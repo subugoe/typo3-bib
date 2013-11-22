@@ -388,7 +388,6 @@ abstract class Importer {
 			$this->getPageTitle($stat['storage'])
 		);
 
-
 		if (isset ($stat['succeeded'])) {
 			$content .= $this->getTableRowAsString(
 				'Successful imports:',
@@ -443,7 +442,6 @@ abstract class Importer {
 
 		$content .= '</tbody>';
 		$content .= '</table>';
-
 
 		return $content;
 	}

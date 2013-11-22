@@ -94,7 +94,6 @@ class BibTexExporter extends Exporter {
 				->push('/&(.)ring;/', '{\\\\\\1\\1}')
 				->push('/&([oO])slash;/', '{\\\\\\1}');
 
-
 		$bibTexTranslator
 				->push('/&euro;/', '{\euro}')
 				->push('/&pound;/', '{\pounds}');
@@ -293,7 +292,8 @@ class BibTexExporter extends Exporter {
 					$tmp2 = explode('</prt>', $v);
 
 					$content .= '{' . $tmp2[0] . '}';
-					for ($i = 1; $i < sizeof($tmp2); $i++) {
+					$partSize = sizeof($tmp2);
+					for ($i = 1; $i < $partSize; $i++) {
 						$content .= $tmp2[$i];
 					}
 				}

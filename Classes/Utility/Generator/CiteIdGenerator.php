@@ -103,7 +103,8 @@ class CiteIdGenerator {
 					}
 				}
 			}
-			for ($i = 1; $i < sizeof($list); $i++) {
+			$listSize = sizeof($list);
+			for ($i = 1; $i < $listSize; $i++) {
 				$pp =& $list[$i];
 				$a_str = '';
 				if (strlen($pp['surname']) > 0) {
@@ -143,7 +144,8 @@ class CiteIdGenerator {
 
 		// Replace remaining special characters with ASCII characters
 		$tmpId = '';
-		for ($i = 0; $i < mb_strlen($id, $this->charset); $i++) {
+		$idLength = mb_strlen($id, $this->charset);
+		for ($i = 0; $i < $idLength; $i++) {
 			$c = mb_substr($id, $i, 1, $this->charset);
 			if (ctype_alnum($c) || ($c == '_')) {
 				$tmpId .= $c;

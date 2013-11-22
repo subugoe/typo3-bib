@@ -469,7 +469,8 @@ class ReferenceReader {
 			$base =& $tables[0];
 			$joins = '';
 			$aliases = array($base['alias']);
-			for ($i = 1; $i < sizeof($tables); $i++) {
+			$tableSize = sizeof($tables);
+			for ($i = 1; $i < $tableSize; $i++) {
 				$previous = $tables[$i - 1];
 				$current = $tables[$i];
 
@@ -634,7 +635,8 @@ class ReferenceReader {
 			// ranges
 			if (is_array($filter['year']['ranges']) && sizeof($filter['year']['ranges'])) {
 				if (sizeof($filter['year']['ranges'])) {
-					for ($i = 0; $i < sizeof($filter['year']['ranges']); $i++) {
+					$yearRangeFilterSize = sizeof($filter['year']['ranges']);
+					for ($i = 0; $i < $yearRangeFilterSize; $i++) {
 						$both = (isset ($filter['year']['ranges'][$i]['from']) && isset ($filter['year']['ranges'][$i]['to'])) ? TRUE : FALSE;
 						if (strlen($wca)) {
 							$wca .= ' OR ';
@@ -667,7 +669,8 @@ class ReferenceReader {
 				// AND
 				if (is_array($f['sets']) && (sizeof($f['sets']) > 0)) {
 					$wc_set = array();
-					for ($i = 0; $i < sizeof($f['sets']); $i++) {
+					$authorFilterSize = sizeof($f['sets']);
+					for ($i = 0; $authorFilterSize; $i++) {
 						$set = $f['sets'][$i];
 						$uid_lst = array();
 						foreach ($set as $au) {
@@ -753,8 +756,9 @@ class ReferenceReader {
 			$f =& $filter['reviewed'];
 			if (is_numeric($f['value'])) {
 				$wca = $this->getReferenceTableAlias() . '.reviewed = \'0\'';
-				if (intval($f['value']) != 0)
+				if (intval($f['value']) != 0) {
 					$wca = $this->getReferenceTableAlias() . '.reviewed != \'0\'';
+				}
 				$whereClause[] = $wca;
 			}
 		}
@@ -764,8 +768,9 @@ class ReferenceReader {
 			$f =& $filter['borrowed'];
 			if (is_numeric($f['value'])) {
 				$wca = 'LENGTH(' . $this->getReferenceTableAlias() . '.borrowed_by) = \'0\'';
-				if (intval($f['value']) != 0)
+				if (intval($f['value']) != 0) {
 					$wca = 'LENGTH(' . $this->getReferenceTableAlias() . '.borrowed_by) != \'0\'';
+				}
 				$whereClause[] = $wca;
 			}
 		}
@@ -775,8 +780,9 @@ class ReferenceReader {
 			$f =& $filter['in_library'];
 			if (is_numeric($f['value'])) {
 				$wca = $this->getReferenceTableAlias() . '.in_library = \'0\'';
-				if (intval($f['value']) != 0)
+				if (intval($f['value']) != 0) {
 					$wca = $this->getReferenceTableAlias() . '.in_library != \'0\'';
+				}
 				$whereClause[] = $wca;
 			}
 		}
@@ -786,15 +792,16 @@ class ReferenceReader {
 			$f =& $filter['citeid'];
 			if (is_array($f['ids']) && (sizeof($f['ids']) > 0)) {
 				$wca = $this->getReferenceTableAlias() . '.citeid IN (';
-				for ($i = 0; $i < sizeof($f['ids']); $i++) {
-					if ($i > 0) $wca .= ',';
-					$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $this->getReferenceTable());
+				$citeIdSize = sizeof($f['ids']);
+				for ($i = 0; $i < $citeIdSize; $i++) {
+					if ($i > 0) $wca .= ','; {
+						$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $this->getReferenceTable());
+					}
 				}
 				$wca .= ')';
 				$whereClause[] = $wca;
 			}
 		}
-
 
 		// Filter by tags
 		if (is_array($filter['tags']) && (sizeof($filter['tags']) > 0)) {
@@ -815,7 +822,6 @@ class ReferenceReader {
 				}
 			}
 		}
-
 
 		// Filter by keywords
 		if (is_array($filter['keywords']) && (sizeof($filter['keywords']) > 0)) {
@@ -966,12 +972,11 @@ class ReferenceReader {
 		$orderClause = '';
 		foreach ($this->filters as $filter) {
 			if (is_array($filter['sorting'])) {
-				$sortings =& $filter['sorting'];
 				$orderClause = array();
-				for ($i = 0; $i < sizeof($sortings); $i++) {
-					$s =& $sortings[$i];
-					if (isset ($s['field']) && isset ($s['dir'])) {
-						$orderClause[] = $s['field'] . ' ' . $s['dir'];
+				$sortingFilterSize = sizeof($filter['sorting']);
+				for ($i = 0; $i < $sortingFilterSize; $i++) {
+					if (isset ($filter['sorting'][$i]['field']) && isset ($filter['sorting'][$i]['dir'])) {
+						$orderClause[] = $filter['sorting'][$i]['field'] . ' ' . $filter['sorting'][$i]['dir'];
 					}
 				}
 				$orderClause = implode(',', $orderClause);
@@ -1037,7 +1042,7 @@ class ReferenceReader {
 		}
 
 		foreach ($columns as $column) {
-			if (!(strpos($column, $this->authorshipTableAlias) === False)) {
+			if (!(strpos($column, $this->authorshipTableAlias) === FALSE)) {
 				$table = $this->t_as_default;
 				$table['alias'] = $column;
 
@@ -1360,7 +1365,8 @@ class ReferenceReader {
 					if (isset ($filter['pid']))
 						$pid = $filter['pid'];
 					$uids = $this->fetch_author_uids($a, $pid);
-					for ($i = 0; $i < sizeof($uids); $i++) {
+					$uidSize = sizeof($uids);
+					for ($i = 0; $i < $uidSize; $i++) {
 						$uid = $uids[$i];
 						if ($i == 0) {
 							$a['uid'] = $uid['uid'];
@@ -1800,8 +1806,8 @@ class ReferenceReader {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceReader.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/Utility/ReferenceReader.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/ReferenceReader.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/ReferenceReader.php']);
 }
 
 ?>

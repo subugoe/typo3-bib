@@ -438,9 +438,9 @@ class EditorView {
 		foreach ($fieldGroups as $fg) {
 			$class_str = ' class="' . $this->pi1->prefixShort . '-editor_' . $fg . '"';
 
-			$rows_vis = "";
-			$rows_silent = "";
-			$rows_hidden = "";
+			$rows_vis = '';
+			$rows_silent = '';
+			$rows_hidden = '';
 			foreach ($fields[$fg] as $ff) {
 
 				// Field label
@@ -503,7 +503,7 @@ class EditorView {
 
 			}
 
-			# Append header and table if there are rows
+			// Append header and table if there are rows
 			if (strlen($rows_vis) > 0) {
 				$content .= '<h3>';
 				$content .= $this->get_ll($this->LLPrefix . 'fields_' . $fg);
@@ -907,7 +907,8 @@ class EditorView {
 				}
 
 				$pairs = array();
-				for ($ii = 0; $ii < sizeof($cfg['items']); $ii++) {
+				$itemConfigurationSize = sizeof($cfg['items']);
+				for ($ii = 0; $ii < $itemConfigurationSize; $ii++) {
 					$p_desc = $this->get_db_ll($cfg['items'][$ii][0], $cfg['items'][$ii][0]);
 					$p_val = $cfg['items'][$ii][1];
 					$pairs[$p_val] = $p_desc;
@@ -1117,8 +1118,8 @@ class EditorView {
 			}
 
 		} else if ($mode == self::WIDGET_SILENT) {
-
-			for ($i = 0; $i < sizeof($authors); $i++) {
+			$authorsSize = sizeof($authors);
+			for ($i = 0; $i < $authorsSize; $i++) {
 				$foreName = Utility::filter_pub_html($authors[$i]['forename'], TRUE, $pi1->extConf['charset']['upper']);
 				$surName = Utility::filter_pub_Html($authors[$i]['surname'], TRUE, $pi1->extConf['charset']['upper']);
 
@@ -1624,8 +1625,8 @@ class EditorView {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/EditorView.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/EditorView.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/EditorView.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/EditorView.php']);
 }
 
 ?>

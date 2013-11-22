@@ -47,14 +47,14 @@ class YearNavigation extends Navigation {
 	/*
 	 * Creates a text for a given index
 	 */
-	function sel_get_text($index) {
+	protected function sel_get_text($index) {
 		return strval($this->pi1->stat['years'][$index]);
 	}
 
 	/*
 	 * Creates a link for the selection
 	 */
-	function sel_get_link($text, $ii) {
+	protected function sel_get_link($text, $ii) {
 		$title = str_replace('%y', $text, $this->sel_link_title);
 		$lnk = $this->pi1->get_link(
 			$text,

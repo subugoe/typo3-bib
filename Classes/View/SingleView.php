@@ -146,7 +146,7 @@ class SingleView {
 
 		// Prepare the publication data and environment
 		$this->pi1->prepareItemSetup();
-		$publicationData = $this->pi1->preparePublicationData($ref, $warnings, true);
+		$publicationData = $this->pi1->preparePublicationData($ref, $warnings, TRUE);
 		$this->pi1->prepare_pub_cObj_data($publicationData);
 
 		$bib_str = $publicationData['bibtype_short'];
@@ -254,8 +254,8 @@ class SingleView {
 
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/SingleView.php"]) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/Classes/View/SingleView.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']);
 }
 
 ?>
