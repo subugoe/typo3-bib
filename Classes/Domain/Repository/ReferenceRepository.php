@@ -1,11 +1,10 @@
 <?php
-namespace Ipf\Bib\Controller;
-
+namespace Ipf\Bib\Domain\Repository;
 
 /* * *************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *  (c) 2014 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
  *  
  *  All rights reserved
@@ -28,17 +27,18 @@ namespace Ipf\Bib\Controller;
  * ************************************************************* */
 
 /**
- * Main controller for the extension 'bib'
+ * Reference repository
  */
-class IndexController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
+class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
-	public function listAction() {
+	public function findBibliographyByStoragePid($storagePid) {
+		$query = $this->createQuery();
 
-	}
-
-
-	public function detailAction() {
-
+		$query->getQuerySettings()->setRespectStoragePage(FALSE);
+				$query->matching(
+		  $query->equals('pid', $storagePid)
+		);
+		return $query->execute();
 	}
 
 }

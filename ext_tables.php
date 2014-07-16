@@ -99,4 +99,10 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . '_pi1'] = 'pi
 	'Publication list CSS'
 );
 
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+		'Ipf.' . $_EXTKEY,
+		'rest',
+		'Bib REST Service'
+);
+
 ?>

@@ -769,4 +769,33 @@ plugin.tx_bib_pi1 {
 	}
 }
 
+plugin.tx_bib {
+	persistence {
+		classes {
+			Ipf\Bib\Domain\Model\Reference {
+				mapping {
+					tableName = tx_bib_domain_model_reference
+					columns {
+						ISBN.mapOnProperty = ISBN
+						ISSN.mapOnProperty = ISSN
+						DOI.mapOnProperty = DOI
+					}
+				}
+			}
+		}
+	}
+	features {
+		skipDefaultArguments = 1
+	}
+}
 
+# json / rest controller
+tx_bib_page = PAGE
+tx_bib_page {
+	typeNum = 1405527928
+	10 < tt_content.list.20.bib_rest
+	config {
+		disableAllHeaderCode = 1
+		additionalHeaders = Content-type:application/json;charset=utf-8
+	}
+}

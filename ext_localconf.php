@@ -36,6 +36,14 @@ if (!defined ('TYPO3_MODE')) {
 	43
 );
 
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+	'Ipf.' . $_EXTKEY,
+	'rest',
+	array(
+		'Rest' => 'list'
+	)
+);
+
 // provide automagic realUrl configuration
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/realurl/class.tx_realurl_autoconfgen.php']['extensionConfiguration'][$_EXTKEY] = 'EXT:' . $_EXTKEY . '/Classes/Hooks/RealUrl.php:Ipf\\Bib\Hooks\RealUrl->addRealUrlConfiguration';
 

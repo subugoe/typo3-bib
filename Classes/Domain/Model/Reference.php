@@ -6,7 +6,7 @@ namespace Ipf\Bib\Domain\Model;
  *
  *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -37,17 +37,17 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	protected $bibtype;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $citeid;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $title;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $journal;
 
@@ -67,32 +67,32 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	protected $day;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $volume;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $number;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $number2;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $pages;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $abstract;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $fullText;
 
@@ -102,132 +102,142 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	protected $fullTextTstamp;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $fullTextFileUrl;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $affiliation;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $note;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $annotation;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $keywords;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $tags;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $fileUrl;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $webUrl;
 
 	/**
-	 * @var String
+	 * @var string
+	 */
+	protected $webUrlDate;
+
+	/**
+	 * @var string
 	 */
 	protected $webUrl2;
 
 	/**
-	 * @var String
+	 * @var string
+	 */
+	protected $webUrl2Date;
+
+	/**
+	 * @var string
 	 */
 	protected $misc;
 
 	/**
-	 * @var
+	 * @var string
 	 */
 	protected $misc2;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $editor;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $publisher;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $howpublished;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $address;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $series;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $edition;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $chapter;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $booktitle;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $school;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $institute;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $organization;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $institution;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $eventName;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $eventPlace;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $eventDate;
 
@@ -237,27 +247,27 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	protected $state;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $type;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $language;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $ISBN;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $ISSN;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $DOI;
 
@@ -277,47 +287,47 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	protected $inLibrary;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $borrowedBy;
 
 	/**
-	 * @param String $DOI
+	 * @param string $DOI
 	 */
 	public function setDOI($DOI) {
 		$this->DOI = $DOI;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getDOI() {
 		return $this->DOI;
 	}
 
 	/**
-	 * @param String $ISBN
+	 * @param string $ISBN
 	 */
 	public function setISBN($ISBN) {
 		$this->ISBN = $ISBN;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getISBN() {
 		return $this->ISBN;
 	}
 
 	/**
-	 * @param String $ISSN
+	 * @param string $ISSN
 	 */
 	public function setISSN($ISSN) {
 		$this->ISSN = $ISSN;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getISSN() {
 		return $this->ISSN;
@@ -352,56 +362,56 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $abstract
+	 * @param string $abstract
 	 */
 	public function setAbstract($abstract) {
 		$this->abstract = $abstract;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getAbstract() {
 		return $this->abstract;
 	}
 
 	/**
-	 * @param String $address
+	 * @param string $address
 	 */
 	public function setAddress($address) {
 		$this->address = $address;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getAddress() {
 		return $this->address;
 	}
 
 	/**
-	 * @param String $affiliation
+	 * @param string $affiliation
 	 */
 	public function setAffiliation($affiliation) {
 		$this->affiliation = $affiliation;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getAffiliation() {
 		return $this->affiliation;
 	}
 
 	/**
-	 * @param String $annotation
+	 * @param string $annotation
 	 */
 	public function setAnnotation($annotation) {
 		$this->annotation = $annotation;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getAnnotation() {
 		return $this->annotation;
@@ -422,56 +432,56 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $booktitle
+	 * @param string $booktitle
 	 */
 	public function setBooktitle($booktitle) {
 		$this->booktitle = $booktitle;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getBooktitle() {
 		return $this->booktitle;
 	}
 
 	/**
-	 * @param String $borrowedBy
+	 * @param string $borrowedBy
 	 */
 	public function setBorrowedBy($borrowedBy) {
 		$this->borrowedBy = $borrowedBy;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getBorrowedBy() {
 		return $this->borrowedBy;
 	}
 
 	/**
-	 * @param String $chapter
+	 * @param string $chapter
 	 */
 	public function setChapter($chapter) {
 		$this->chapter = $chapter;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getChapter() {
 		return $this->chapter;
 	}
 
 	/**
-	 * @param String $citeid
+	 * @param string $citeid
 	 */
 	public function setCiteid($citeid) {
 		$this->citeid = $citeid;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getCiteid() {
 		return $this->citeid;
@@ -492,70 +502,70 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $edition
+	 * @param string $edition
 	 */
 	public function setEdition($edition) {
 		$this->edition = $edition;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getEdition() {
 		return $this->edition;
 	}
 
 	/**
-	 * @param String $editor
+	 * @param string $editor
 	 */
 	public function setEditor($editor) {
 		$this->editor = $editor;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getEditor() {
 		return $this->editor;
 	}
 
 	/**
-	 * @param String $eventDate
+	 * @param string $eventDate
 	 */
 	public function setEventDate($eventDate) {
 		$this->eventDate = $eventDate;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getEventDate() {
 		return $this->eventDate;
 	}
 
 	/**
-	 * @param String $eventName
+	 * @param string $eventName
 	 */
 	public function setEventName($eventName) {
 		$this->eventName = $eventName;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getEventName() {
 		return $this->eventName;
 	}
 
 	/**
-	 * @param String $eventPlace
+	 * @param string $eventPlace
 	 */
 	public function setEventPlace($eventPlace) {
 		$this->eventPlace = $eventPlace;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getEventPlace() {
 		return $this->eventPlace;
@@ -576,42 +586,42 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $fileUrl
+	 * @param string $fileUrl
 	 */
 	public function setFileUrl($fileUrl) {
 		$this->fileUrl = $fileUrl;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getFileUrl() {
 		return $this->fileUrl;
 	}
 
 	/**
-	 * @param String $fullText
+	 * @param string $fullText
 	 */
 	public function setFullText($fullText) {
 		$this->fullText = $fullText;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getFullText() {
 		return $this->fullText;
 	}
 
 	/**
-	 * @param String $fullTextFileUrl
+	 * @param string $fullTextFileUrl
 	 */
 	public function setFullTextFileUrl($fullTextFileUrl) {
 		$this->fullTextFileUrl = $fullTextFileUrl;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getFullTextFileUrl() {
 		return $this->fullTextFileUrl;
@@ -632,14 +642,14 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $howpublished
+	 * @param string $howpublished
 	 */
 	public function setHowpublished($howpublished) {
 		$this->howpublished = $howpublished;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getHowpublished() {
 		return $this->howpublished;
@@ -660,84 +670,84 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $institute
+	 * @param string $institute
 	 */
 	public function setInstitute($institute) {
 		$this->institute = $institute;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getInstitute() {
 		return $this->institute;
 	}
 
 	/**
-	 * @param String $institution
+	 * @param string $institution
 	 */
 	public function setInstitution($institution) {
 		$this->institution = $institution;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getInstitution() {
 		return $this->institution;
 	}
 
 	/**
-	 * @param String $journal
+	 * @param string $journal
 	 */
 	public function setJournal($journal) {
 		$this->journal = $journal;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getJournal() {
 		return $this->journal;
 	}
 
 	/**
-	 * @param String $keywords
+	 * @param string $keywords
 	 */
 	public function setKeywords($keywords) {
 		$this->keywords = $keywords;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getKeywords() {
 		return $this->keywords;
 	}
 
 	/**
-	 * @param String $language
+	 * @param string $language
 	 */
 	public function setLanguage($language) {
 		$this->language = $language;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getLanguage() {
 		return $this->language;
 	}
 
 	/**
-	 * @param String $misc
+	 * @param string $misc
 	 */
 	public function setMisc($misc) {
 		$this->misc = $misc;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getMisc() {
 		return $this->misc;
@@ -772,84 +782,84 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $note
+	 * @param string $note
 	 */
 	public function setNote($note) {
 		$this->note = $note;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getNote() {
 		return $this->note;
 	}
 
 	/**
-	 * @param String $number
+	 * @param string $number
 	 */
 	public function setNumber($number) {
 		$this->number = $number;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getNumber() {
 		return $this->number;
 	}
 
 	/**
-	 * @param String $number2
+	 * @param string $number2
 	 */
 	public function setNumber2($number2) {
 		$this->number2 = $number2;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getNumber2() {
 		return $this->number2;
 	}
 
 	/**
-	 * @param String $organization
+	 * @param string $organization
 	 */
 	public function setOrganization($organization) {
 		$this->organization = $organization;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getOrganization() {
 		return $this->organization;
 	}
 
 	/**
-	 * @param String $pages
+	 * @param string $pages
 	 */
 	public function setPages($pages) {
 		$this->pages = $pages;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getPages() {
 		return $this->pages;
 	}
 
 	/**
-	 * @param String $publisher
+	 * @param string $publisher
 	 */
 	public function setPublisher($publisher) {
 		$this->publisher = $publisher;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getPublisher() {
 		return $this->publisher;
@@ -870,28 +880,28 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $school
+	 * @param string $school
 	 */
 	public function setSchool($school) {
 		$this->school = $school;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getSchool() {
 		return $this->school;
 	}
 
 	/**
-	 * @param String $series
+	 * @param string $series
 	 */
 	public function setSeries($series) {
 		$this->series = $series;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getSeries() {
 		return $this->series;
@@ -912,84 +922,84 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
-	 * @param String $tags
+	 * @param string $tags
 	 */
 	public function setTags($tags) {
 		$this->tags = $tags;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getTags() {
 		return $this->tags;
 	}
 
 	/**
-	 * @param String $title
+	 * @param string $title
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getTitle() {
 		return $this->title;
 	}
 
 	/**
-	 * @param String $type
+	 * @param string $type
 	 */
 	public function setType($type) {
 		$this->type = $type;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getType() {
 		return $this->type;
 	}
 
 	/**
-	 * @param String $volume
+	 * @param string $volume
 	 */
 	public function setVolume($volume) {
 		$this->volume = $volume;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getVolume() {
 		return $this->volume;
 	}
 
 	/**
-	 * @param String $webUrl
+	 * @param string $webUrl
 	 */
 	public function setWebUrl($webUrl) {
 		$this->webUrl = $webUrl;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getWebUrl() {
 		return $this->webUrl;
 	}
 
 	/**
-	 * @param String $webUrl2
+	 * @param string $webUrl2
 	 */
 	public function setWebUrl2($webUrl2) {
 		$this->webUrl2 = $webUrl2;
 	}
 
 	/**
-	 * @return String
+	 * @return string
 	 */
 	public function getWebUrl2() {
 		return $this->webUrl2;
@@ -1009,6 +1019,33 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 		return $this->year;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getWebUrl2Date() {
+		return $this->webUrl2Date;
+	}
+
+	/**
+	 * @param string $webUrl2Date
+	 */
+	public function setWebUrl2Date($webUrl2Date) {
+		$this->webUrl2Date = $webUrl2Date;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getWebUrlDate() {
+		return $this->webUrlDate;
+	}
+
+	/**
+	 * @param string $webUrlDate
+	 */
+	public function setWebUrlDate($webUrlDate) {
+		$this->webUrlDate = $webUrlDate;
+	}
 
 
 }
