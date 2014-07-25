@@ -1,11 +1,10 @@
 <?php
 namespace Ipf\Bib\Controller;
 
-
 /* * *************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *  (c) 2014 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
  *
  *  All rights reserved
@@ -53,7 +52,9 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController 
 			throw new \Ipf\Bib\Exception\DataException('No parameter pageUid provided in request', 1405590895);
 		}
 		$references = $this->referenceRepository->findBibliographyByStoragePid($pageUid);
-		$this->view->setVariablesToRender(array('references'));
+		if (version_compare(TYPO3_version, '6.2.0', '>=')) {
+			$this->view->setVariablesToRender(array('references'));
+		}
 		$this->view->assign('references', $references);
 	}
 }
