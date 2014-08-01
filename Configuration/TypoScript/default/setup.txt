@@ -795,7 +795,7 @@ tx_bib_page {
 	typeNum = 1405527928
 	10 < tt_content.list.20.bib_rest
 	config {
-		#disableAllHeaderCode = 1
-		#additionalHeaders = Content-type:application/json;charset=utf-8
+		disableAllHeaderCode = 1
+		additionalHeaders = Content-type:application/json;charset=utf-8
 	}
 }
