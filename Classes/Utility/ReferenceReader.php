@@ -79,6 +79,11 @@ class ReferenceReader {
 	public $sortPrefix = 'sort_fields';
 
 	/**
+	 * @var string
+	 */
+	public $authorshipTableAlias = 't_aships';
+
+	/**
 	 * @var array
 	 */
 	public $t_ref_default = array();
@@ -576,10 +581,11 @@ class ReferenceReader {
 				break;
 		}
 
-		$aliases[] = $join['table'];
-		$joinStatement .= ' INNER JOIN ' . $join['table'] . ' AS ' . $join['table'];
-		$joinStatement .= ' ON ' . $table['table'] . '.' . $tableMatchField;
-		$joinStatement .= '=' . $join['table'] . '.' . $joinMatchField;
+		$aliases[] = $join['alias'];
+		$joinStatement .= ' LEFT JOIN ' . $join['table'] . ' AS ' . $join['alias'];
+		$joinStatement .= ' ON ' . $table['alias'] . '.' . $tableMatchField;
+		$joinStatement .= '=' . $join['alias'] . '.' . $joinMatchField;
+		$joinStatement .= "\n";
 
 		return $joinStatement;
 	}
@@ -1050,17 +1056,58 @@ class ReferenceReader {
 								}
 								$orderClause[] = $oc;
 							}
-						} else {
-							$orderClause[] = $filter['sorting'][$i]['field'] . ' ' . $filter['sorting'][$i]['dir'];
+						}
+						else {
+							if ($sortingFilterSize == 1 && trim($filter['sorting'][$i]['field']) == 't_authors.surname') {
+								if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
+									$titleStopWords = explode('#', $this->title_stop_words);
+									$oc = '';
+									for ($k=0; $k<count($titleStopWords); $k++) {
+										$oc .= 'REPLACE(';
+									}
+									$oc .= 't_ref.title';
+									$oc .= ',';
+									foreach ($titleStopWords as $key => $titleStopWord) {
+										$oc .= "'" . $titleStopWord . "',";
+										switch ($titleStopWord) {
+											case 'Ä':
+												$oc .= "'Ae')";
+											break;
+											case 'ä':
+												$oc .= "'ae')";
+											break;
+											case 'Ö':
+												$oc .= "'Oe')";
+											break;
+											case 'ö':
+												$oc .= "'oe')";
+											break;
+											case 'Ü':
+												$oc .= "'Ue')";
+											break;
+											case 'ü':
+												$oc .= "'ue')";
+											break;
+											default:
+												$oc .= "'')";
+											}
+											if ($key < count($titleStopWords) - 1) $oc .= ',';
+									}
+								}
+								$orderClause[] = 'CASE WHEN ' . $filter['sorting'][$i]['field'] . '!=\'\' THEN ' . $filter['sorting'][$i]['field'] . 'ELSE ' . $oc . ' END ' . $filter['sorting'][$i]['dir'];
+							}
+							else {
+								$orderClause[] = $filter['sorting'][$i]['field'] . ' ' . $filter['sorting'][$i]['dir'];
+							}
 						}
 					}
 				}
 				$orderClause = implode(',', $orderClause);
 			}
 		}
-
 		return $orderClause;
 	}
+
 
 	/**
 	 * This function returns the SQL LIMIT clause configured
@@ -1453,6 +1500,7 @@ class ReferenceReader {
 		}
 	}
 
+
 	/**
 	 * Fetches the authors of a publication
 	 *
@@ -1532,13 +1580,11 @@ class ReferenceReader {
 	 * @return void
 	 */
 	public function initializeReferenceFetching() {
-		$field_csv = $this->getReferenceTable() . '.' . implode(',' . $this->getReferenceTable() . '.', $this->refAllFields);
-		$field_csv1 = $this->getAuthorTable() . '.' . implode(',' . $this->getReferenceTable() . '.', $this->sortExtraFields);
+		$field_csv = $this->getReferenceTableAlias() . '.' . implode(',' . $this->getReferenceTableAlias() . '.', $this->refAllFields);
+		$field_csv1 = $this->getAuthorTableAlias() . '.' . implode(',' . $this->getReferenceTableAlias() . '.', $this->sortExtraFields);
 		$field_csv = $field_csv . ',' . $field_csv1;
-
 		$query = $this->getReferenceSelectClause($field_csv);
-
-		$this->setDatabaseResource($this->db->sql_query($query));
+		$this->setDatabaseResource($GLOBALS['TYPO3_DB']->sql_query($query));
 	}
 
 	/**
