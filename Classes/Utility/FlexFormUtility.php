@@ -50,4 +50,21 @@ class FlexFormUtility {
 		return $configuration;
 	}
 
+	public function addSearchFieldsToFlexForm(&$configuration) {
+
+		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
+		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+		$optionList = array();
+
+		foreach($referenceReader->getSearchFields() as $searchField) {
+			$optionList[] = array(
+				0 => LocalizationUtility::translate($referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
+				1 => $searchField
+			);
+		}
+
+		$configuration['items'] = array_merge($configuration['items'], $optionList);
+		return $configuration;
+	}
+
 } 
