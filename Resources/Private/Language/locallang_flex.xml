@@ -62,6 +62,7 @@
 			<label index="tt_content.pi_flexform.keywords">Keywords - comma separated</label>
 			<label index="tt_content.pi_flexform.keywords_rule">Keywords filter rule</label>
 			<label index="tt_content.pi_flexform.max_authors">Nr. of authors to display (0=all, -1=TypoScript)</label>
+			<label index="tt_content.pi_flexform.separator">Author name separator</label>
 			<label index="tt_content.pi_flexform.off">Off</label>
 			<label index="tt_content.pi_flexform.origins">Intern/Extern</label>
 			<label index="tt_content.pi_flexform.origins.0">Internal only</label>

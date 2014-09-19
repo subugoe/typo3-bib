@@ -232,6 +232,18 @@
 			</TCEforms>
 		</max_authors>
 
+		<!-- GENERAL: Author name separator -->
+		<separator>
+			<TCEforms>
+				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.separator</label>
+				<config>
+					<type>input</type>
+					<size>3</size>
+					<default>;</default>
+				</config>
+			</TCEforms>
+		</separator>
+
 		<!-- Statistic mode -->
 		<stat_mode>
 			<TCEforms>

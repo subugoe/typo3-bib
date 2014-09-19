@@ -912,7 +912,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
 		$this->extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
 		$this->extConf['sorting'] = $this->pi_getFFvalue($this->flexFormData, 'sorting', $fSheet);
-
+		$this->extConf['separator'] = $this->pi_getFFvalue($this->flexFormData, 'separator', $fSheet);
 		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
 		$show_fields = explode(',', $show_fields);
 
@@ -2456,8 +2456,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$contentObjectBackup = $cObj->data;
 
 		// Format the author string$this->
-		$and = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
-
+		$separator = $this->extConf['separator'];
+		if (isset($separator) && !empty($separator)) {
+			$name_separator = $separator;
+		}
+		else {
+			$name_separator = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
+		}
 		$max_authors = abs(intval($this->extConf['max_authors']));
 		$lastAuthor = sizeof($authors) - 1;
 		$cutAuthors = FALSE;
@@ -2468,7 +2473,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			} else {
 				$lastAuthor = $max_authors - 1;
 			}
-			$and = '';
+			$name_separator = '';
 		}
 		$lastAuthor = max($lastAuthor, 0);
 
@@ -2598,7 +2603,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			}
 		}
 
-		$res = Utility::implode_and_last($elements, $a_sep, $and);
+		$res = Utility::implode_and_last($elements, $a_sep, $name_separator);
 		// Restore cObj data
 		$cObj->data = $contentObjectBackup;
 
