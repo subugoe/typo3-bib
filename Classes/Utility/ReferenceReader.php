@@ -93,6 +93,11 @@ class ReferenceReader {
 	public $authorshipTableAlias = 't_aships';
 
 	/**
+	 * @var string
+	 */
+	public $searchPrefix = 'search_fields';
+
+	/**
 	 * @var array
 	 */
 	public $t_ref_default = array();
@@ -198,7 +203,6 @@ class ReferenceReader {
 	 */
 	public $refAllFields;
 
-
 	/**
 	 * These are the publication relevant fields
 	 * that can be found in a php publication array.
@@ -292,6 +296,11 @@ class ReferenceReader {
 
 		// setup pubAllFields
 		$this->pubAllFields = array_merge($typo3_fields, $this->getPublicationFields());
+
+		$searchFields = $this->getReferenceFields();
+		array_push($searchFields, 'authors');
+		natcasesort($searchFields);
+		$this->setSearchFields($searchFields);
 	}
 
 	/**
@@ -429,6 +438,16 @@ class ReferenceReader {
 		}
 	}
 
+	/**
+	 * This sets the selected search fields to be used in search query
+	 * query compositions
+	 *
+	 * @param array $search_fields
+	 * @return void
+	 */
+	public function set_searchFields($search_fields) {
+		$this->search_fields = $search_fields;
+	}
 
 	/**
 	 * Returns the where clause part for a table
@@ -849,9 +868,9 @@ class ReferenceReader {
 
 			if (is_array($f['words']) && (sizeof($f['words']) > 0)) {
 				$wca = array();
-
-				$fields = $this->getPublicationFields();
+				$fields = explode(',', $this->search_fields);
 				$fields[] = 'full_text';
+
 				if (is_array($f['exclude'])) {
 					$fields = array_diff($fields, $f['exclude']);
 				}
@@ -906,6 +925,7 @@ class ReferenceReader {
 		// Fields
 		$refFields = $this->getReferenceFields();
 		$refFields[] = 'full_text';
+
 		foreach ($fields as $field) {
 			if (in_array($field, $refFields)) {
 				foreach ($proc_words as $word) {
@@ -1690,6 +1710,34 @@ class ReferenceReader {
 	 */
 	public function getReferenceFields() {
 		return $this->referenceFields;
+	}
+
+	/**
+	 * @param string $searchPrefix
+	 */
+	public function setSearchPrefix($searchPrefix) {
+		$this->$searchPrefix = $searchPrefix;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSearchPrefix() {
+		return $this->searchPrefix;
+	}
+
+	/**
+	 * @param array $searchFields
+	 */
+	public function setSearchFields($searchFields) {
+		$this->searchFields = $searchFields;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSearchFields() {
+		return $this->searchFields;
 	}
 
 	/**

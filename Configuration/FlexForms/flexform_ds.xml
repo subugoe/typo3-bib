@@ -136,6 +136,20 @@
 		</sorting>
 		<!-- general sorting -->
 
+		<!-- default search fields -->
+		<search_fields>
+			<TCEforms>
+				<label>Search Fields</label>
+				<config>
+					<type>select</type>
+					<itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSearchFieldsToFlexForm</itemsProcFunc>
+					<maxitems>5</maxitems>
+					<size>3</size>
+				</config>
+			</TCEforms>
+		</search_fields>
+		<!-- default search fields -->
+
 		<!-- Date sorting -->
 		<date_sorting>
 			<TCEforms>

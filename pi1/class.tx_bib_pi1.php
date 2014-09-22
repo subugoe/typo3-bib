@@ -232,6 +232,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$this->referenceReader->set_filters($this->extConf['filters']);
 
+		$this->referenceReader->set_searchFields($this->extConf['search_fields']);
+
 		$this->callAuthorNavigationHook();
 
 		$this->getYearNavigation();
@@ -257,6 +259,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		} catch (\Exception $e) {
 			return $this->finalize($e->getMessage());
 		}
+
 	}
 
 	/**
@@ -912,6 +915,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
 		$this->extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
 		$this->extConf['sorting'] = $this->pi_getFFvalue($this->flexFormData, 'sorting', $fSheet);
+
+		$this->extConf['search_fields'] = $this->pi_getFFvalue($this->flexFormData, 'search_fields', $fSheet);
+
 		$this->extConf['separator'] = $this->pi_getFFvalue($this->flexFormData, 'separator', $fSheet);
 		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
 		$show_fields = explode(',', $show_fields);
