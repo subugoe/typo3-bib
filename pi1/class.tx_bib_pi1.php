@@ -234,6 +234,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$this->referenceReader->set_searchFields($this->extConf['search_fields']);
 
+		$this->referenceReader->set_editorStopWords($this->extConf['editor_stop_words']);
+
+		$this->referenceReader->set_titleStopWords($this->extConf['title_stop_words']);
+
 		$this->callAuthorNavigationHook();
 
 		$this->getYearNavigation();
@@ -341,43 +345,47 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (!empty($this->extConf['sorting'])) {
 			$sortFields = GeneralUtility::trimExplode(',', $this->extConf['sorting']);
 			foreach ($sortFields as $sortField) {
-				$this->extConf['filters']['sort']['sorting'] = array(
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.' . $sortField . ' ', 'dir' => $defaultSorting),
-				);
+
+				if ($sortField == 'surname') {
+					$sort = array('field' => $this->referenceReader->getAuthorTableAlias() . '.' . $sortField . ' ', 'dir' => 'ASC');
+				} else {
+					$sort = array('field' => $this->referenceReader->getReferenceTableAlias() . '.' . $sortField . ' ', 'dir' => $defaultSorting);
+				}
+				$this->extConf['filters']['sort']['sorting'][] = $sort;
 			}
 		} else {
 			// pre-defined sorting
 			$this->extConf['filters']['sort']['sorting'] = array(
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
-				array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+					array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
 			);
 		}
 		// Adjust sorting for bibtype split
 		if ($this->extConf['split_bibtypes']) {
 			if ($this->extConf['d_mode'] == self::D_SIMPLE) {
 				$this->extConf['filters']['sort']['sorting'] = array(
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
 				);
 			} else {
 				$this->extConf['filters']['sort']['sorting'] = array(
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
-					array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.year', 'dir' => $defaultSorting),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.bibtype', 'dir' => 'ASC'),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.month', 'dir' => $defaultSorting),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.day', 'dir' => $defaultSorting),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.state', 'dir' => 'ASC'),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.sorting', 'dir' => 'ASC'),
+						array('field' => $this->referenceReader->getReferenceTableAlias() . '.title', 'dir' => 'ASC')
 				);
 			}
 		}
@@ -646,14 +654,14 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function finalize($pluginContent) {
 		if ($this->extConf['debug']) {
 			$pluginContent .= \TYPO3\CMS\Core\Utility\DebugUtility::viewArray(
-				array(
-					'extConf' => $this->extConf,
-					'conf' => $this->conf,
-					'piVars' => $this->piVars,
-					'stat' => $this->stat,
-					'HTTP_POST_VARS' => $GLOBALS['HTTP_POST_VARS'],
-					'HTTP_GET_VARS' => $GLOBALS['HTTP_GET_VARS'],
-				)
+					array(
+							'extConf' => $this->extConf,
+							'conf' => $this->conf,
+							'piVars' => $this->piVars,
+							'stat' => $this->stat,
+							'HTTP_POST_VARS' => $GLOBALS['HTTP_POST_VARS'],
+							'HTTP_GET_VARS' => $GLOBALS['HTTP_GET_VARS'],
+					)
 			);
 		}
 		return $this->pi_wrapInBaseClass($pluginContent);
@@ -831,7 +839,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// The selected year has no publications so select the closest year
 			if (($this->stat['num_all'] > 0) && is_numeric($this->extConf['year'])) {
 				$this->extConf['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
-					$this->extConf['year'], $this->stat['years']);
+						$this->extConf['year'], $this->stat['years']);
 			}
 			// Append default link variable
 			$this->extConf['link_vars']['year'] = $this->extConf['year'];
@@ -868,9 +876,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if ($this->extConf['sub_page']['ipp'] > 0) {
 			$this->extConf['sub_page']['max'] = floor(($this->stat['num_page'] - 1) / $this->extConf['sub_page']['ipp']);
 			$this->extConf['sub_page']['current'] = \Ipf\Bib\Utility\Utility::crop_to_range(
-				$this->piVars['page'],
-				0,
-				$this->extConf['sub_page']['max']
+					$this->piVars['page'],
+					0,
+					$this->extConf['sub_page']['max']
 			);
 		}
 
@@ -915,19 +923,20 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
 		$this->extConf['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
 		$this->extConf['sorting'] = $this->pi_getFFvalue($this->flexFormData, 'sorting', $fSheet);
-
 		$this->extConf['search_fields'] = $this->pi_getFFvalue($this->flexFormData, 'search_fields', $fSheet);
-
 		$this->extConf['separator'] = $this->pi_getFFvalue($this->flexFormData, 'separator', $fSheet);
+		$this->extConf['editor_stop_words'] = $this->pi_getFFvalue($this->flexFormData, 'editor_stop_words', $fSheet);
+		$this->extConf['title_stop_words'] = $this->pi_getFFvalue($this->flexFormData, 'title_stop_words', $fSheet);
+
 		$show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
 		$show_fields = explode(',', $show_fields);
 
 		$this->extConf['hide_fields'] = array(
-			'abstract' => 1,
-			'annotation' => 1,
-			'note' => 1,
-			'keywords' => 1,
-			'tags' => 1
+				'abstract' => 1,
+				'annotation' => 1,
+				'note' => 1,
+				'keywords' => 1,
+				'tags' => 1
 		);
 
 		foreach ($show_fields as $f) {
@@ -1019,9 +1028,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$modes = $this->conf['export.']['enable_export'];
 		if (strlen($modes) > 0) {
 			$modes = \Ipf\Bib\Utility\Utility::explode_trim_lower(
-				',',
-				$modes,
-				TRUE
+					',',
+					$modes,
+					TRUE
 			);
 		}
 
@@ -1114,8 +1123,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// This is a nested array containing fields
 		// that may have restrictions
 		$fields = array(
-			'ref' => array(),
-			'author' => array()
+				'ref' => array(),
+				'author' => array()
 		);
 		$allFields = array();
 		// Acquire field configurations
@@ -1159,7 +1168,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 				// Hide on string extensions
 				$ext = \Ipf\Bib\Utility\Utility::explode_trim_lower(
-					',', $rcfg['hide_file_ext'], TRUE);
+						',', $rcfg['hide_file_ext'], TRUE);
 
 				// Reveal on FE user groups
 				$groups = strtolower($rcfg['FE_user_groups']);
@@ -1171,9 +1180,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 				if ($all || (sizeof($ext) > 0)) {
 					$restrictions[$table][$field] = array(
-						'hide_all' => $all,
-						'hide_ext' => $ext,
-						'fe_groups' => $groups
+							'hide_all' => $all,
+							'hide_ext' => $ext,
+							'fe_groups' => $groups
 					);
 				}
 			}
@@ -1194,9 +1203,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$this->initializeSelectionFilter();
 		} catch (\Exception $e) {
 			$message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
-				$e->getMessage(),
-				'',
-				FlashMessage::ERROR
+					$e->getMessage(),
+					'',
+					FlashMessage::ERROR
 			);
 			FlashMessageQueue::addMessage($message);
 		}
@@ -1212,9 +1221,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$flexFormFilter['ranges'] = array();
 			$ffStr = $this->pi_getFFvalue($this->flexForm, 'years', $this->flexFormFilterSheet);
 			$arr = Utility::multi_explode_trim(
-				array(',', "\r", "\n"),
-				$ffStr,
-				TRUE
+					array(',', "\r", "\n"),
+					$ffStr,
+					TRUE
 			);
 
 			foreach ($arr as $year) {
@@ -1256,9 +1265,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			$authors = $this->pi_getFFvalue($this->flexForm, 'authors', $this->flexFormFilterSheet);
 			$authors = \Ipf\Bib\Utility\Utility::multi_explode_trim(
-				array("\r", "\n"),
-				$authors,
-				TRUE
+					array("\r", "\n"),
+					$authors,
+					TRUE
 			);
 
 			foreach ($authors as $a) {
@@ -1393,13 +1402,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$ids = $this->pi_getFFvalue($this->flexForm, 'citeids', $this->flexFormFilterSheet);
 			if (strlen($ids) > 0) {
 				$ids = \Ipf\Bib\Utility\Utility::multi_explode_trim(
-					array(
-						',',
-						"\r",
-						"\n"
-					),
-					$ids,
-					TRUE
+						array(
+								',',
+								"\r",
+								"\n"
+						),
+						$ids,
+						TRUE
 				);
 				$flexFormFilter['ids'] = array_unique($ids);
 				$this->extConf['filters']['flexform']['citeid'] = $flexFormFilter;
@@ -1418,13 +1427,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			$kw = $this->pi_getFFvalue($this->flexForm, 'tags', $this->flexFormFilterSheet);
 			if (strlen($kw) > 0) {
 				$words = \Ipf\Bib\Utility\Utility::multi_explode_trim(
-					array(
-						',',
-						"\r",
-						"\n"
-					),
-					$kw,
-					TRUE
+						array(
+								',',
+								"\r",
+								"\n"
+						),
+						$kw,
+						TRUE
 				);
 				foreach ($words as &$word) {
 					$word = $this->referenceReader->getSearchTerm($word, $this->extConf['charset']['upper']);
@@ -1580,7 +1589,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// List blocks
 		$list_blocks = array(
-			'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK'
+				'YEAR_BLOCK', 'BIBTYPE_BLOCK', 'SPACER_BLOCK'
 		);
 
 		// Bibtype data blocks
@@ -1593,9 +1602,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Misc navigation blocks
 		$navi_blocks = array(
-			'EXPORT_NAVI_BLOCK',
-			'IMPORT_NAVI_BLOCK',
-			'NEW_ENTRY_NAVI_BLOCK'
+				'EXPORT_NAVI_BLOCK',
+				'IMPORT_NAVI_BLOCK',
+				'NEW_ENTRY_NAVI_BLOCK'
 		);
 
 		// Fetch the template file list
@@ -1605,23 +1614,23 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		}
 
 		$info = array(
-			'main' => array(
-				'file' => $tlist['main'],
-				'parts' => array('LIST_VIEW')
-			),
-			'list_blocks' => array(
-				'file' => $tlist['list_blocks'],
-				'parts' => $list_blocks
-			),
-			'list_items' => array(
-				'file' => $tlist['list_items'],
-				'parts' => $bib_types,
-				'no_warn' => TRUE
-			),
-			'navi_misc' => array(
-				'file' => $tlist['navi_misc'],
-				'parts' => $navi_blocks,
-			)
+				'main' => array(
+						'file' => $tlist['main'],
+						'parts' => array('LIST_VIEW')
+				),
+				'list_blocks' => array(
+						'file' => $tlist['list_blocks'],
+						'parts' => $list_blocks
+				),
+				'list_items' => array(
+						'file' => $tlist['list_items'],
+						'parts' => $bib_types,
+						'no_warn' => TRUE
+				),
+				'navi_misc' => array(
+						'file' => $tlist['navi_misc'],
+						'parts' => $navi_blocks,
+				)
 		);
 
 		foreach ($info as $key => $val) {
@@ -1673,7 +1682,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function initializeListViewIcons() {
 		$list = array(
-			'default' => 'EXT:cms/tslib/media/fileicons/default.gif');
+				'default' => 'EXT:cms/tslib/media/fileicons/default.gif');
 		$more = $this->conf['file_icons.'];
 		if (is_array($more)) {
 			$list = array_merge($list, $more);
@@ -2045,10 +2054,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					$title = $this->get_ll('export_' . $mode . 'LinkTitle', $mode, TRUE);
 					$txt = $this->get_ll('export_' . $mode);
 					$link = $this->get_link(
-						$txt,
-						array('export' => $mode),
-						FALSE,
-						array('title' => $title)
+							$txt,
+							array('export' => $mode),
+							FALSE,
+							array('title' => $title)
 					);
 					$link = $this->cObj->stdWrap($link, $cfg[$mode . '.']);
 					$exports[] = $link;
@@ -2100,13 +2109,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// Import bibtex
 			$title = $this->get_ll('import_bibtexLinkTitle', 'bibtex', TRUE);
 			$link = $this->get_link($this->get_ll('import_bibtex'), array('import' => self::IMP_BIBTEX),
-				FALSE, array('title' => $title));
+					FALSE, array('title' => $title));
 			$imports[] = $this->cObj->stdWrap($link, $cfg['bibtex.']);
 
 			// Import xml
 			$title = $this->get_ll('import_xmlLinkTitle', 'xml', TRUE);
 			$link = $this->get_link($this->get_ll('import_xml'), array('import' => self::IMP_XML),
-				FALSE, array('title' => $title));
+					FALSE, array('title' => $title));
 			$imports[] = $this->cObj->stdWrap($link, $cfg['xml.']);
 
 			$sep = '&nbsp;';
@@ -2115,7 +2124,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			// Import label
 			$translator['###LABEL###'] = $this->cObj->stdWrap(
-				$this->get_ll($cfg['label']), $cfg['label.']);
+					$this->get_ll($cfg['label']), $cfg['label.']);
 			$translator['###IMPORTS###'] = implode($sep, $imports);
 
 			$str = $this->cObj->substituteMarkerArrayCached($str, $translator, array());
@@ -2174,9 +2183,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		// Bibtype
 		$publicationData['bibtype_short'] = $this->referenceReader->allBibTypes[$publicationData['bibtype']];
 		$publicationData['bibtype'] = $this->get_ll(
-			$this->referenceReader->getReferenceTable() . '_bibtype_I_' . $publicationData['bibtype'],
+				$this->referenceReader->getReferenceTable() . '_bibtype_I_' . $publicationData['bibtype'],
 				'Unknown bibtype: ' . $publicationData['bibtype'],
-			TRUE
+				TRUE
 		);
 
 		// External
@@ -2204,9 +2213,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				break;
 			default :
 				$publicationData['state'] = $this->get_ll(
-					$this->referenceReader->getReferenceTable() . '_state_I_' . $publicationData['state'],
+						$this->referenceReader->getReferenceTable() . '_state_I_' . $publicationData['state'],
 						'Unknown state: ' . $publicationData['state'],
-					TRUE
+						TRUE
 				);
 		}
 
@@ -2255,7 +2264,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		// Multi fields
 		$multi = array(
-			'authors' => $this->referenceReader->getAuthorFields()
+				'authors' => $this->referenceReader->getAuthorFields()
 		);
 		foreach ($multi as $table => $fields) {
 			$elements =& $publicationData[$table];
@@ -2300,9 +2309,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			$and = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
 			$publicationData['editor'] = Utility::implode_and_last(
-				$lst,
-				', ',
-				$and
+					$lst,
+					', ',
+					$and
 			);
 
 			// reset processed data @todo check if the above block may be removed
@@ -2314,9 +2323,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$order = GeneralUtility::trimExplode(',', $this->conf['auto_url_order'], TRUE);
 		$publicationData['auto_url'] = $this->getAutoUrl($publicationData, $order);
 		$publicationData['auto_url_short'] = Utility::crop_middle(
-			$publicationData['auto_url'],
-			$url_max,
-			$charset
+				$publicationData['auto_url'],
+				$url_max,
+				$charset
 		);
 
 		// Do data checks
@@ -2465,8 +2474,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$separator = $this->extConf['separator'];
 		if (isset($separator) && !empty($separator)) {
 			$name_separator = $separator;
-		}
-		else {
+		} else {
 			$name_separator = ' ' . $this->get_ll('label_and', 'and', TRUE) . ' ';
 		}
 		$max_authors = abs(intval($this->extConf['max_authors']));
@@ -2495,7 +2503,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			foreach ($this->extConf['filters'] as $filter) {
 				if (is_array($filter['author']['authors'])) {
 					$filter_authors = array_merge(
-						$filter_authors, $filter['author']['authors']);
+							$filter_authors, $filter['author']['authors']);
 				}
 			}
 		}
@@ -2548,8 +2556,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			// Compose names
 			$a_str = str_replace(
-				array('###SURNAME###', '###FORENAME###', '###URL_ICON###'),
-				array($authorSurname, $authorForename, $authorIcon), $authorTemplate);
+					array('###SURNAME###', '###FORENAME###', '###URL_ICON###'),
+					array($authorSurname, $authorForename, $authorIcon), $authorTemplate);
 
 			// apply stdWrap
 			$stdWrap = $this->conf['field.']['author.'];
@@ -2564,7 +2572,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					if ($author['surname'] == $fa['surname']) {
 						if (!$fa['forename'] || ($author['forename'] == $fa['forename'])) {
 							$a_str = $this->cObj->stdWrap(
-								$a_str, $this->conf['authors.']['highlight.']);
+									$a_str, $this->conf['authors.']['highlight.']);
 							break;
 						}
 					}
@@ -2632,13 +2640,13 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->extConf['author_tmpl'] = '###FORENAME### ###SURNAME###';
 		if (isset ($conf['authors.']['template'])) {
 			$this->extConf['author_tmpl'] = $cObj->stdWrap(
-				$conf['authors.']['template'], $conf['authors.']['template.']
+					$conf['authors.']['template'], $conf['authors.']['template.']
 			);
 		}
 		$this->extConf['author_sep'] = ', ';
 		if (isset ($conf['authors.']['separator'])) {
 			$this->extConf['author_sep'] = $cObj->stdWrap(
-				$conf['authors.']['separator'], $conf['authors.']['separator.']
+					$conf['authors.']['separator'], $conf['authors.']['separator.']
 			);
 		}
 		$this->extConf['author_lfields'] = 'url';
@@ -2688,24 +2696,24 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->labelTranslator = array();
 		$labelTranslator =& $this->labelTranslator;
 		$labels = array(
-			'abstract',
-			'annotation',
-			'chapter',
-			'doc_number',
-			'doi',
-			'edition',
-			'editor',
-			'ISBN',
-			'ISSN',
-			'keywords',
-			'tags',
-			'note',
-			'of_series',
-			'page',
-			'publisher',
-			'references',
-			'report_number',
-			'volume',
+				'abstract',
+				'annotation',
+				'chapter',
+				'doc_number',
+				'doi',
+				'edition',
+				'editor',
+				'ISBN',
+				'ISSN',
+				'keywords',
+				'tags',
+				'note',
+				'of_series',
+				'page',
+				'publisher',
+				'references',
+				'report_number',
+				'volume',
 		);
 
 		foreach ($labels as $label) {
@@ -2810,9 +2818,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				}
 
 				$listViewTemplate = $this->cObj->substituteMarker(
-					$itemBlockTemplate,
-					'###ITEM_DATA###',
-					$listViewTemplate
+						$itemBlockTemplate,
+						'###ITEM_DATA###',
+						$listViewTemplate
 				);
 				$itemTemplate[$pdata['bibtype']] = $listViewTemplate;
 			}
@@ -2850,7 +2858,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 					$manip_all = \Ipf\Bib\Utility\Utility::html_layout_table(array($manip_all));
 
 					$translator['###MANIPULATORS###'] = $this->cObj->stdWrap(
-						$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
+							$manip_all, $conf['editor.']['list.']['manipulators.']['all.']
 					);
 				}
 			}
@@ -2867,8 +2875,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 			// Bibtype separator label
 			if ($this->extConf['split_bibtypes'] && ($pub['bibtype'] != $prevBibType)) {
 				$bibStr = $this->cObj->stdWrap(
-					$this->get_ll('bibtype_plural_' . $pub['bibtype'], $pub['bibtype'], TRUE),
-					$conf['label.']['bibtype.']
+						$this->get_ll('bibtype_plural_' . $pub['bibtype'], $pub['bibtype'], TRUE),
+						$conf['label.']['bibtype.']
 				);
 				$items[] = $this->cObj->substituteMarker($bibliographyTypeBlockTemplate, '###BIBTYPE###', $bibStr);
 			}
@@ -2958,8 +2966,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				'class="' . $this->prefixShort . '-edit_icon" />';
 
 		$res = $this->get_link($img,
-			array('action' => array('edit' => 1), 'uid' => $publication['uid']),
-			TRUE, array('title' => $label));
+				array('action' => array('edit' => 1), 'uid' => $publication['uid']),
+				TRUE, array('title' => $label));
 
 		$res = $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['edit.']);
 
@@ -2986,8 +2994,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$img = '<img ' . $imgSrc . ' alt="' . $label . '" ' .
 				'class="' . $this->prefixShort . '-hide_icon" />';
 		$res = $this->get_link($img,
-			array('action' => $action, 'uid' => $publication['uid']),
-			TRUE, array('title' => $label));
+				array('action' => $action, 'uid' => $publication['uid']),
+				TRUE, array('title' => $label));
 
 		$res = $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['hide.']);
 
@@ -3178,7 +3186,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	public function setupEnumerationConditionBlock($template) {
 		$sub = $this->extConf['has_enum'] ? array() : '';
 		$template = $this->cObj->substituteSubpart(
-			$template, '###HAS_ENUM###', $sub);
+				$template, '###HAS_ENUM###', $sub);
 		return $template;
 	}
 
@@ -3287,9 +3295,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				break;
 			default:
 				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
-					'Unknown export mode',
-					'',
-					FlashMessage::ERROR
+						'Unknown export mode',
+						'',
+						FlashMessage::ERROR
 				);
 				FlashMessageQueue::addMessage($message);
 		}
@@ -3303,9 +3311,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$exporter->initialize($this);
 			} catch (\Exception $e) {
 				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
-					$e->getMessage(),
-					$label,
-					FlashMessage::ERROR
+						$e->getMessage(),
+						$label,
+						FlashMessage::ERROR
 				);
 				FlashMessageQueue::addMessage($message);
 			}
@@ -3327,9 +3335,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				}
 			} catch (\TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException $e) {
 				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
-					$e->getMessage(),
-					'',
-					FlashMessage::ERROR
+						$e->getMessage(),
+						'',
+						FlashMessage::ERROR
 				);
 				FlashMessageQueue::addMessage($message);
 			}
@@ -3345,8 +3353,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function createLinkToExportFile($exporter) {
 		$link = $this->cObj->getTypoLink(
-			$exporter->getFileName(),
-			$exporter->getRelativeFilePath()
+				$exporter->getFileName(),
+				$exporter->getRelativeFilePath()
 		);
 		$content = '<ul><li><div>';
 		$content .= $link;
@@ -3401,17 +3409,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				$content .= $importer->import();
 			} catch (\Exception $e) {
 				$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
-					$e->getMessage(),
-					'',
-					FlashMessage::ERROR
+						$e->getMessage(),
+						'',
+						FlashMessage::ERROR
 				);
 				FlashMessageQueue::addMessage($message);
 			}
 		} else {
 			$message = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
-				'Unknown import mode',
-				'',
-				FlashMessage::ERROR
+					'Unknown import mode',
+					'',
+					FlashMessage::ERROR
 			);
 			FlashMessageQueue::addMessage($message);
 		}
@@ -3451,8 +3459,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 			// query all authors of this publication
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'fe_user_id',
-				'tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m',
+					'fe_user_id',
+					'tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m',
 					'a.uid = m.author_id AND m.pub_id = ' . $publicationId
 			);
 
@@ -3476,5 +3484,3 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_pi1.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/pi1/class.tx_bib_pi1.php']);
 }
-
-?>
