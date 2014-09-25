@@ -28,6 +28,7 @@
 			<label index="tt_content.pi_flexform.display_mode.1">Year split</label>
 			<label index="tt_content.pi_flexform.display_mode.2">Year navigation</label>
 			<label index="tt_content.pi_flexform.display_mode.TS">TypoScript (default)</label>
+			<label index="tt_content.pi_flexform.editor_stop_words">Editor stop words (# separated)</label>
 			<label index="tt_content.pi_flexform.enable_author">Enable author filter</label>
 			<label index="tt_content.pi_flexform.enable_bibtype">Enable bibtype filter</label>
 			<label index="tt_content.pi_flexform.enable_borrowed">Enable lent filter</label>
@@ -62,7 +63,6 @@
 			<label index="tt_content.pi_flexform.keywords">Keywords - comma separated</label>
 			<label index="tt_content.pi_flexform.keywords_rule">Keywords filter rule</label>
 			<label index="tt_content.pi_flexform.max_authors">Nr. of authors to display (0=all, -1=TypoScript)</label>
-			<label index="tt_content.pi_flexform.separator">Author name separator</label>
 			<label index="tt_content.pi_flexform.off">Off</label>
 			<label index="tt_content.pi_flexform.origins">Intern/Extern</label>
 			<label index="tt_content.pi_flexform.origins.0">Internal only</label>
@@ -80,6 +80,7 @@
 			<label index="tt_content.pi_flexform.rule_OR">OR</label>
 			<label index="tt_content.pi_flexform.search_all">Search in all fields - comma separated</label>
 			<label index="tt_content.pi_flexform.search_all_rule">Search filter rule</label>
+			<label index="tt_content.pi_flexform.separator">Author name separator</label>
 			<label index="tt_content.pi_flexform.sheet_fe_editor">FE editor</label>
 			<label index="tt_content.pi_flexform.sheet_filter">Filter</label>
 			<label index="tt_content.pi_flexform.sheet_general">General</label>
@@ -100,6 +101,7 @@
 			<label index="tt_content.pi_flexform.stat_mode.TS">TypoScript (default)</label>
 			<label index="tt_content.pi_flexform.tags">Tags - comma separated</label>
 			<label index="tt_content.pi_flexform.tags_rule">Tags filter rule</label>
+			<label index="tt_content.pi_flexform.title_stop_words">Title stop words (# separated)</label>
 			<label index="tt_content.pi_flexform.years">Year(s) - comma separated / ranges with minus (-)</label>
 		</languageKey>
 		<languageKey index="de" type="array">

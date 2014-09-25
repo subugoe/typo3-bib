@@ -98,6 +98,11 @@ class ReferenceReader {
 	public $searchPrefix = 'search_fields';
 
 	/**
+	 * @var string
+	 */
+	public $sortPrefix = 'sort_fields';
+
+	/**
 	 * @var array
 	 */
 	public $t_ref_default = array();
@@ -125,7 +130,7 @@ class ReferenceReader {
 	 * @var array
 	 */
 	protected $authorFields = array(
-		'surname', 'forename', 'url', 'fe_user_id'
+			'surname', 'forename', 'url', 'fe_user_id'
 	);
 
 	/**
@@ -145,55 +150,55 @@ class ReferenceReader {
 	 * @var array
 	 */
 	protected $referenceFields = array(
-		'bibtype',
-		'citeid',
-		'title',
-		'journal',
-		'year',
-		'month',
-		'day',
-		'volume',
-		'number',
-		'number2',
-		'pages',
-		'abstract',
-		'affiliation',
-		'note',
-		'annotation',
-		'keywords',
-		'tags',
-		'file_url',
-		'web_url',
-		'web_url_date',
-		'web_url2',
-		'web_url2_date',
-		'misc',
-		'misc2',
-		'editor',
-		'publisher',
-		'address',
-		'howpublished',
-		'series',
-		'edition',
-		'chapter',
-		'booktitle',
-		'school',
-		'institute',
-		'organization',
-		'institution',
-		'event_place',
-		'event_name',
-		'event_date',
-		'state',
-		'type',
-		'language',
-		'ISBN',
-		'ISSN',
-		'DOI',
-		'extern',
-		'reviewed',
-		'in_library',
-		'borrowed_by'
+			'bibtype',
+			'citeid',
+			'title',
+			'journal',
+			'year',
+			'month',
+			'day',
+			'volume',
+			'number',
+			'number2',
+			'pages',
+			'abstract',
+			'affiliation',
+			'note',
+			'annotation',
+			'keywords',
+			'tags',
+			'file_url',
+			'web_url',
+			'web_url_date',
+			'web_url2',
+			'web_url2_date',
+			'misc',
+			'misc2',
+			'editor',
+			'publisher',
+			'address',
+			'howpublished',
+			'series',
+			'edition',
+			'chapter',
+			'booktitle',
+			'school',
+			'institute',
+			'organization',
+			'institution',
+			'event_place',
+			'event_name',
+			'event_date',
+			'state',
+			'type',
+			'language',
+			'ISBN',
+			'ISSN',
+			'DOI',
+			'extern',
+			'reviewed',
+			'in_library',
+			'borrowed_by'
 	);
 
 	/**
@@ -223,39 +228,39 @@ class ReferenceReader {
 	 * @var array
 	 */
 	public $allBibTypes = array(
-		0 => 'unknown',
-		1 => 'article',
-		2 => 'book',
-		3 => 'inbook',
-		4 => 'booklet',
-		5 => 'conference',
-		6 => 'incollection',
-		7 => 'proceedings',
-		8 => 'inproceedings',
-		9 => 'manual',
-		10 => 'mastersthesis',
-		11 => 'phdthesis',
-		12 => 'techreport',
-		13 => 'unpublished',
-		14 => 'miscellaneous',
-		15 => 'string',
-		16 => 'poster',
-		17 => 'thesis',
-		18 => 'manuscript',
-		19 => 'report',
-		20 => 'misc',
-		21 => 'url'
+			0 => 'unknown',
+			1 => 'article',
+			2 => 'book',
+			3 => 'inbook',
+			4 => 'booklet',
+			5 => 'conference',
+			6 => 'incollection',
+			7 => 'proceedings',
+			8 => 'inproceedings',
+			9 => 'manual',
+			10 => 'mastersthesis',
+			11 => 'phdthesis',
+			12 => 'techreport',
+			13 => 'unpublished',
+			14 => 'miscellaneous',
+			15 => 'string',
+			16 => 'poster',
+			17 => 'thesis',
+			18 => 'manuscript',
+			19 => 'report',
+			20 => 'misc',
+			21 => 'url'
 	);
 
 	/**
 	 * @var array
 	 */
 	public $allStates = array(
-		0 => 'published',
-		1 => 'accepted',
-		2 => 'submitted',
-		3 => 'unpublished',
-		4 => 'in_preparation'
+			0 => 'published',
+			1 => 'accepted',
+			2 => 'submitted',
+			3 => 'unpublished',
+			4 => 'in_preparation'
 	);
 
 	/**
@@ -276,17 +281,17 @@ class ReferenceReader {
 
 		// setup authorAllFields
 		$this->setAuthorAllFields(
-			array(
-				'uid', 'pid', 'tstamp', 'crdate', 'cruser_id'
-			)
+				array(
+						'uid', 'pid', 'tstamp', 'crdate', 'cruser_id'
+				)
 		);
 		$this->setAuthorAllFields(
-			array_merge($this->getAuthorAllFields(), $this->getAuthorFields())
+				array_merge($this->getAuthorAllFields(), $this->getAuthorFields())
 		);
 
 		// setup refAllFields
 		$typo3_fields = array(
-			'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
+				'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
 		);
 		$this->refAllFields = array_merge($typo3_fields, $this->getReferenceFields());
 
@@ -297,10 +302,16 @@ class ReferenceReader {
 		// setup pubAllFields
 		$this->pubAllFields = array_merge($typo3_fields, $this->getPublicationFields());
 
+		$this->sortExtraFields = array('surname');
+
 		$searchFields = $this->getReferenceFields();
 		array_push($searchFields, 'authors');
 		natcasesort($searchFields);
 		$this->setSearchFields($searchFields);
+
+		$sortFields = $this->getReferenceFields();
+		$sortFields = array_merge($sortFields, $this->sortExtraFields);
+		$this->setSortFields($sortFields);
 	}
 
 	/**
@@ -346,7 +357,6 @@ class ReferenceReader {
 		}
 	}
 
-
 	/**
 	 * This changes the character set of a publication (array)
 	 *
@@ -366,15 +376,15 @@ class ReferenceReader {
 						if (is_array($publication[$key])) {
 							foreach ($publication[$key] as &$author) {
 								$author['forename'] = $GLOBALS['TSFE']->csConvObj->conv(
-									$author['forename'],
-									$originalCharset,
-									$targetCharset
+										$author['forename'],
+										$originalCharset,
+										$targetCharset
 								);
 
 								$author['surname'] = $GLOBALS['TSFE']->csConvObj->conv(
-									$author['surname'],
-									$originalCharset,
-									$targetCharset
+										$author['surname'],
+										$originalCharset,
+										$targetCharset
 								);
 							}
 						}
@@ -382,9 +392,9 @@ class ReferenceReader {
 					default:
 						if (is_string($publication[$key]))
 							$publication[$key] = $GLOBALS['TSFE']->csConvObj->conv(
-								$publication[$key],
-								$originalCharset,
-								$targetCharset
+									$publication[$key],
+									$originalCharset,
+									$targetCharset
 							);
 				}
 			}
@@ -410,7 +420,6 @@ class ReferenceReader {
 		}
 	}
 
-
 	/**
 	 * This sets the filter which will be asked for most
 	 * query compositions
@@ -422,7 +431,6 @@ class ReferenceReader {
 		$this->filters = array();
 		$this->append_filter($filter);
 	}
-
 
 	/**
 	 * This sets the filters which will be asked for most
@@ -438,6 +446,7 @@ class ReferenceReader {
 		}
 	}
 
+
 	/**
 	 * This sets the selected search fields to be used in search query
 	 * query compositions
@@ -448,6 +457,31 @@ class ReferenceReader {
 	public function set_searchFields($search_fields) {
 		$this->search_fields = $search_fields;
 	}
+
+
+	/**
+	 * This sets the editor stop words to be used in order clause
+	 * query compositions
+	 *
+	 * @param array $editor_stop_words
+	 * @return void
+	 */
+	public function set_editorStopWords($editor_stop_words) {
+		$this->editor_stop_words = $editor_stop_words;
+	}
+
+
+	/**
+	 * This sets the title stop words to be used in order clause
+	 * query compositions
+	 *
+	 * @param array $title_stop_words
+	 * @return void
+	 */
+	public function set_titleStopWords($title_stop_words) {
+		$this->title_stop_words = $title_stop_words;
+	}
+
 
 	/**
 	 * Returns the where clause part for a table
@@ -471,7 +505,6 @@ class ReferenceReader {
 
 		return $whereClause;
 	}
-
 
 	/**
 	 * This function returns the SQL SELECT clause
@@ -507,9 +540,9 @@ class ReferenceReader {
 			$selectClause .= ' FROM ' . $base['table'] . ' ' . $base['alias'] . "\n";
 			$selectClause .= $joins;
 		}
+
 		return $selectClause;
 	}
-
 
 	/**
 	 * This function returns a SQL JOIN string for the requested
@@ -570,7 +603,6 @@ class ReferenceReader {
 		return $joinStatement;
 	}
 
-
 	/**
 	 * This function returns the SQL WHERE clause configured
 	 * by the filters
@@ -583,8 +615,8 @@ class ReferenceReader {
 		$WCA = array();
 		$columns = array();
 		$runvar = array(
-			'columns' => array(),
-			'aShip_count' => 0,
+				'columns' => array(),
+				'aShip_count' => 0,
 		);
 
 		// Get where parts for each filter
@@ -612,7 +644,6 @@ class ReferenceReader {
 
 		return $whereClause;
 	}
-
 
 	/**
 	 * This function returns the SQL WHERE clause parts for one filter
@@ -813,7 +844,8 @@ class ReferenceReader {
 				$wca = $this->getReferenceTableAlias() . '.citeid IN (';
 				$citeIdSize = sizeof($f['ids']);
 				for ($i = 0; $i < $citeIdSize; $i++) {
-					if ($i > 0) $wca .= ','; {
+					if ($i > 0) $wca .= ',';
+					{
 						$wca .= $GLOBALS['TYPO3_DB']->fullQuoteStr($f['ids'][$i], $this->getReferenceTable());
 					}
 				}
@@ -893,7 +925,6 @@ class ReferenceReader {
 		return $whereClause;
 	}
 
-
 	/**
 	 * This function returns the SQL WHERE clause part
 	 * for the search for keywords (OR)
@@ -954,7 +985,6 @@ class ReferenceReader {
 		return $res;
 	}
 
-
 	/**
 	 * Returns a search word object as it is required by the 'all' search
 	 * filter argument
@@ -981,7 +1011,6 @@ class ReferenceReader {
 		return $words;
 	}
 
-
 	/**
 	 * This function returns the SQL ORDER clause configured
 	 * by the filter
@@ -996,15 +1025,71 @@ class ReferenceReader {
 				$sortingFilterSize = sizeof($filter['sorting']);
 				for ($i = 0; $i < $sortingFilterSize; $i++) {
 					if (isset ($filter['sorting'][$i]['field']) && isset ($filter['sorting'][$i]['dir'])) {
-						$orderClause[] = $filter['sorting'][$i]['field'] . ' ' . $filter['sorting'][$i]['dir'];
+						if ($filter['sorting'][$i]['field'] == 't_ref.editor ') {
+							if (isset($this->editor_stop_words) && !empty($this->editor_stop_words)) {
+								$editorStopWords = explode('#', $this->editor_stop_words);
+								$oc = '';
+								for ($k = 0; $k < count($editorStopWords); $k++) {
+									$oc .= 'REPLACE(';
+								}
+								$oc .= trim($filter['sorting'][$i]['field']);
+								$oc .= ',';
+								foreach ($editorStopWords as $key => $editorStopWord) {
+									$oc .= "'" . $editorStopWord . "', '')";
+									if ($key < count($editorStopWords) - 1) {
+										$oc .= ',';
+									}
+								}
+								$orderClause[] = $oc;
+							}
+						} elseif ($filter['sorting'][$i]['field'] == 't_ref.title ') {
+							if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
+								$titleStopWords = explode('#', $this->title_stop_words);
+								$oc = '';
+								for ($k = 0; $k < count($titleStopWords); $k++) {
+									$oc .= 'REPLACE(';
+								}
+								$oc .= trim($filter['sorting'][$i]['field']);
+								$oc .= ',';
+								foreach ($titleStopWords as $key => $titleStopWord) {
+									$oc .= "'" . $titleStopWord . "',";
+									switch ($titleStopWord) {
+										case 'Ä':
+											$oc .= "'Ae')";
+											break;
+										case 'ä':
+											$oc .= "'ae')";
+											break;
+										case 'Ö':
+											$oc .= "'Oe')";
+											break;
+										case 'ö':
+											$oc .= "'oe')";
+											break;
+										case 'Ü':
+											$oc .= "'Ue')";
+											break;
+										case 'ü':
+											$oc .= "'ue')";
+											break;
+										default:
+											$oc .= "'')";
+									}
+									if ($key < count($titleStopWords) - 1) $oc .= ',';
+								}
+								$orderClause[] = $oc;
+							}
+						} else {
+							$orderClause[] = $filter['sorting'][$i]['field'] . ' ' . $filter['sorting'][$i]['dir'];
+						}
 					}
 				}
 				$orderClause = implode(',', $orderClause);
 			}
 		}
+
 		return $orderClause;
 	}
-
 
 	/**
 	 * This function returns the SQL LIMIT clause configured
@@ -1023,7 +1108,6 @@ class ReferenceReader {
 		}
 		return $limitClause;
 	}
-
 
 	/**
 	 * This function returns the SQL LIMIT clause configured
@@ -1085,7 +1169,6 @@ class ReferenceReader {
 		return $q;
 	}
 
-
 	/**
 	 * Checks if a publication that has not the given uid
 	 * but the citeId exists in the database. The lookup is restricted
@@ -1127,7 +1210,6 @@ class ReferenceReader {
 		return ($num > 0);
 	}
 
-
 	/**
 	 * Returns the number of publications  which match
 	 * the filtering criteria
@@ -1149,7 +1231,6 @@ class ReferenceReader {
 		return 0;
 	}
 
-
 	/**
 	 * Returns the latest timestamp found in the database
 	 *
@@ -1160,9 +1241,9 @@ class ReferenceReader {
 		$maximumValueFromAuthorTable = 'max(' . $this->getReferenceTableAlias() . '.tstamp)';
 
 		$query = $this->getReferenceSelectClause(
-			$maximalValueFromReferenceTable . ', ' . $maximumValueFromAuthorTable,
-			NULL,
-			NULL
+				$maximalValueFromReferenceTable . ', ' . $maximumValueFromAuthorTable,
+				NULL,
+				NULL
 		);
 		$res = $GLOBALS['TYPO3_DB']->sql_query($query);
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
@@ -1172,7 +1253,6 @@ class ReferenceReader {
 		}
 		return 0;
 	}
-
 
 	/**
 	 * Returns a publication histogram to a given key.
@@ -1205,7 +1285,6 @@ class ReferenceReader {
 		return $histogram;
 	}
 
-
 	/**
 	 * Fetches all author surnames
 	 *
@@ -1215,7 +1294,7 @@ class ReferenceReader {
 		$names = array();
 
 		$query = $this->getReferenceSelectClause(
-			'distinct(' . $this->getAuthorTableAlias() . '.surname)',
+				'distinct(' . $this->getAuthorTableAlias() . '.surname)',
 				$this->getAuthorTableAlias() . '.surname ASC',
 				$this->getAuthorTableAlias() . '.uid'
 		);
@@ -1227,7 +1306,6 @@ class ReferenceReader {
 		}
 		return $names;
 	}
-
 
 	/**
 	 * Searches and returns authors whose name looks like any of the
@@ -1273,9 +1351,9 @@ class ReferenceReader {
 		$field_csv = implode(',', $this->getAuthorAllFields());
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			$field_csv,
-			$this->getAuthorTable(),
-			$whereClause
+				$field_csv,
+				$this->getAuthorTable(),
+				$whereClause
 		);
 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1284,7 +1362,6 @@ class ReferenceReader {
 
 		return $authors;
 	}
-
 
 	/**
 	 * Searches and returns the authorships of authors whose name
@@ -1307,9 +1384,9 @@ class ReferenceReader {
 			$whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'*',
-				$this->getAuthorshipTable(),
-				$whereClause
+					'*',
+					$this->getAuthorshipTable(),
+					$whereClause
 			);
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1319,7 +1396,6 @@ class ReferenceReader {
 
 		return $authorships;
 	}
-
 
 	/**
 	 * Fetches the uid(s) of the given auhor.
@@ -1356,9 +1432,9 @@ class ReferenceReader {
 			$whereClause .= $this->enable_fields($this->getAuthorTable());
 
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-				'uid,pid',
-				$this->getAuthorTable(),
-				$whereClause
+					'uid,pid',
+					$this->getAuthorTable(),
+					$whereClause
 			);
 
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1368,7 +1444,6 @@ class ReferenceReader {
 
 		return $uids;
 	}
-
 
 	/**
 	 * Fetches the uids of the auhors in the author filter
@@ -1407,7 +1482,6 @@ class ReferenceReader {
 		}
 	}
 
-
 	/**
 	 * Fetches the authors of a publication
 	 *
@@ -1428,8 +1502,8 @@ class ReferenceReader {
 
 		$field_csv = $this->getAuthorTableAlias() . '.' . implode(',' . $this->getAuthorTableAlias() . '.', $this->getAuthorAllFields());
 		$query = $this->select_clause_start(
-			array($field_csv, $this->authorshipTableAlias . '.sorting'),
-			array($this->t_au_default, $this->t_as_default)
+				array($field_csv, $this->authorshipTableAlias . '.sorting'),
+				array($this->t_au_default, $this->t_as_default)
 		);
 		$query .= ' WHERE ' . $whereClause . "\n";
 		$query .= ' ORDER BY ' . $OC . "\n";
@@ -1441,7 +1515,6 @@ class ReferenceReader {
 		}
 		return $authors;
 	}
-
 
 	/**
 	 * This retrieves the publication data from the database
@@ -1466,9 +1539,9 @@ class ReferenceReader {
 		$field_csv = implode(',', $this->refAllFields);
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			$field_csv,
-			$this->getReferenceTable(),
-			$whereClause
+				$field_csv,
+				$this->getReferenceTable(),
+				$whereClause
 		);
 
 		$publication = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
@@ -1481,7 +1554,6 @@ class ReferenceReader {
 		return $publication;
 	}
 
-
 	/**
 	 * This initializes the reference fetching.
 	 * Executes a select query.
@@ -1490,10 +1562,15 @@ class ReferenceReader {
 	 */
 	public function initializeReferenceFetching() {
 		$field_csv = $this->getReferenceTableAlias() . '.' . implode(',' . $this->getReferenceTableAlias() . '.', $this->refAllFields);
+
+		$field_csv1 = $this->getAuthorTableAlias() . '.' . implode(',' . $this->getReferenceTableAlias() . '.', $this->sortExtraFields);
+
+		$field_csv = $field_csv . ',' . $field_csv1;
+
 		$query = $this->getReferenceSelectClause($field_csv);
+
 		$this->setDatabaseResource($GLOBALS['TYPO3_DB']->sql_query($query));
 	}
-
 
 	/**
 	 * Returns the number of references that will be fetched
@@ -1503,7 +1580,6 @@ class ReferenceReader {
 	public function numberOfReferencesToBeFetched() {
 		return $GLOBALS['TYPO3_DB']->sql_num_rows($this->getDatabaseResource());
 	}
-
 
 	/**
 	 * Fetches a reference
@@ -1519,7 +1595,6 @@ class ReferenceReader {
 		return $row;
 	}
 
-
 	/**
 	 * Finish reference fetching (clean up)
 	 *
@@ -1528,7 +1603,6 @@ class ReferenceReader {
 	public function finalizeReferenceFetching() {
 		$GLOBALS['TYPO3_DB']->sql_free_result($this->getDatabaseResource());
 	}
-
 
 	/**
 	 * This returns the modification key for a publication
@@ -1549,7 +1623,6 @@ class ReferenceReader {
 
 		return $hashedModificationKey;
 	}
-
 
 	/**
 	 * Fetches an authorship
@@ -1576,9 +1649,9 @@ class ReferenceReader {
 				$whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-					'*',
-					$this->getAuthorshipTable(),
-					$whereClause
+						'*',
+						$this->getAuthorshipTable(),
+						$whereClause
 				);
 
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1610,12 +1683,12 @@ class ReferenceReader {
 		$whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
 
 		$query = $GLOBALS['TYPO3_DB']->exec_SELECTQuery(
-			'uid',
-			$this->getReferenceTable(),
-			$whereClause,
-			'',
-			'',
-			1
+				'uid',
+				$this->getReferenceTable(),
+				$whereClause,
+				'',
+				'',
+				1
 		);
 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($query)) {
@@ -1682,7 +1755,6 @@ class ReferenceReader {
 		return $this->referenceTable;
 	}
 
-
 	/**
 	 * @param array $publicationFields
 	 */
@@ -1696,7 +1768,6 @@ class ReferenceReader {
 	public function getPublicationFields() {
 		return $this->publicationFields;
 	}
-
 
 	/**
 	 * @param array $referenceFields
@@ -1716,7 +1787,7 @@ class ReferenceReader {
 	 * @param string $searchPrefix
 	 */
 	public function setSearchPrefix($searchPrefix) {
-		$this->$searchPrefix = $searchPrefix;
+		$this->searchPrefix = $searchPrefix;
 	}
 
 	/**
@@ -1738,6 +1809,34 @@ class ReferenceReader {
 	 */
 	public function getSearchFields() {
 		return $this->searchFields;
+	}
+
+	/**
+	 * @param string $sortPrefix
+	 */
+	public function setSortPrefix($sortPrefix) {
+		$this->sortPrefix = $sortPrefix;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSortPrefix() {
+		return $this->sortPrefix;
+	}
+
+	/**
+	 * @param array $sortFields
+	 */
+	public function setSortFields($sortFields) {
+		$this->sortFields = $sortFields;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSortFields() {
+		return $this->sortFields;
 	}
 
 	/**

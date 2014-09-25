@@ -128,7 +128,7 @@
 				<label>Sortierung</label>
 				<config>
 					<type>select</type>
-					<itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addFieldsToFlexForm</itemsProcFunc>
+					<itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSortFieldsToFlexForm</itemsProcFunc>
 					<maxitems>5</maxitems>
 					<size>3</size>
 				</config>
@@ -257,6 +257,26 @@
 				</config>
 			</TCEforms>
 		</separator>
+
+		<!-- GENERAL: Editor Stop words -->
+		<editor_stop_words>
+			<TCEforms>
+				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.editor_stop_words</label>
+				<config>
+					<type>text</type>
+				</config>
+			</TCEforms>
+		</editor_stop_words>
+
+		<!-- GENERAL: Title Stop words -->
+		<title_stop_words>
+			<TCEforms>
+				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.title_stop_words</label>
+				<config>
+					<type>text</type>
+				</config>
+			</TCEforms>
+		</title_stop_words>
 
 		<!-- Statistic mode -->
 		<stat_mode>
