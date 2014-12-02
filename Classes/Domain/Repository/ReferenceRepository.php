@@ -43,10 +43,14 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 		$this->db = $GLOBALS['TYPO3_DB'];
 		$queryString = '
-						SELECT r.*, au.* FROM tx_bib_domain_model_reference r
-							inner join tx_bib_domain_model_authorships aus on r.uid = aus.pub_id
-							inner join tx_bib_domain_model_author au on aus.author_id = au.uid
-							where r.pid = ' . intval($storagePid);
+						SELECT
+								r.*,
+								au.forename, au.surname
+						FROM tx_bib_domain_model_reference r
+								LEFT JOIN tx_bib_domain_model_authorships aus on r.uid = aus.pub_id
+								LEFT JOIN tx_bib_domain_model_author au on aus.author_id = au.uid
+						WHERE r.pid = ' . intval($storagePid) . ' AND r.deleted = 0 AND r.hidden = 0 GROUP BY r.uid
+						';
 		$query = $this->db->sql_query($queryString);
 
 		$references = [];
