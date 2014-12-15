@@ -28,6 +28,7 @@ namespace Ipf\Bib\Utility\Importer;
 
 use \Ipf\Bib\Exception\ParserException;
 use \Ipf\Bib\Exception\TranslatorException;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -301,24 +302,9 @@ class BibTexImporter extends Importer {
 	 * @return string $content
 	 */
 	protected function displayInformationBeforeImport() {
-		$val = $this->pi1->get_ll('import_bibtex_title', 'import_bibtex_title', TRUE);
-		$content = '<p>' . $val . '</p>' . "\n";
-
-		$content .= '<ul>' . "\n";
-		$content .= '<li>';
-		$content .= 'The BibTeX format is not strictly defined anywhere. ';
-		$content .= 'Therefore this parser merely tries to get the best out of it. <br/>';
-		$content .= 'If in doubt try it on an empty storage folder first.';
-		$content .= '</li>' . "\n";
-		$content .= '<li>';
-		$content .= 'Non ASCII characters should be encoded in TeX syntax (e.g. \\"u for &uuml;)<br/>';
-		$content .= 'Everything else may cause unexpected behaviour.' . "\n";
-		$content .= '</li>' . "\n";
-		$content .= '<li>';
-		$content .= '@String( var = "some text" ) placeholders are not supported';
-		$content .= '</li>' . "\n";
-		$content .= '</ul>' . "\n";
-		return $content;
+		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/BibTexInformation.html');
+		return $view->render();
 	}
 
 	/**

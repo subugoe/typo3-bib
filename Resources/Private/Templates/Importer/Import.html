@@ -1,0 +1,9 @@
+{content -> f:format.raw()}
+
+<form action="{formAction -> f:format.raw()}" method="post" enctype="multipart/form-data" >
+	{storageSelector}
+	<p><f:translate key="LLL:EXT:bib/pi1/locallang.xml:import_select_file" /></p>
+	<p><input name="ImportFile" type="file" size="50" accept=".bib,text/*" /></p>
+	<p><label><f:form.checkbox name="import_clear_all" value="1" /> <f:translate key="LLL:EXT:bib/pi1/locallang.xml:import_clear_all" /></label></p>
+	<p><input type="submit" class="tx_bib-button" value="{f:translate(key: 'LLL:EXT:bib/pi1/locallang.xml:import_file')}"/></p>
+</form>

@@ -25,6 +25,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class provides the reference database interface
@@ -62,6 +63,14 @@ class DbUtility {
 	 */
 	public $tmp_dir = '/tmp';
 
+	/**
+	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+	 */
+	protected $db;
+
+	public function __construct() {
+		$this->db = $GLOBALS['TYPO3_DB'];
+	}
 
 	/**
 	 * Initializes the import. The argument must be the plugin class
@@ -95,8 +104,8 @@ class DbUtility {
 		$selectQuery .= ' HAVING count(t_as.uid) = 0;' . "\n";
 
 		$uids = array();
-		$res = $GLOBALS['TYPO3_DB']->sql_query($selectQuery);
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		$res = $this->db->sql_query($selectQuery);
+		while ($row = $this->db->sql_fetch_assoc($res)) {
 			$uids[] = $row['uid'];
 		}
 
@@ -104,7 +113,7 @@ class DbUtility {
 		if ($count > 0) {
 			$csv = Utility::implode_intval(',', $uids);
 
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+			$this->db->exec_UPDATEquery(
 				$this->referenceReader->getAuthorTable(),
 				'uid IN ( ' . $csv . ')',
 				array(
@@ -165,13 +174,13 @@ class DbUtility {
 
 		$whereClause = implode(' AND ', $whereClause);
 		$whereClause .= $this->referenceReader->enable_fields($this->referenceReader->getReferenceTable());
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+		$res = $this->db->exec_SELECTquery(
 			'uid',
 			$this->referenceReader->getReferenceTable(),
 			$whereClause
 		);
 
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		while ($row = $this->db->sql_fetch_assoc($res)) {
 			$uids[] = intval($row['uid']);
 		}
 
@@ -211,7 +220,7 @@ class DbUtility {
 	protected function update_full_text($uid, $force = FALSE) {
 
 		$whereClause = 'uid=' . intval($uid);
-		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
+		$rows = $this->db->exec_SELECTgetRows(
 			'file_url,full_text_tstamp,full_text_file_url',
 			$this->referenceReader->getReferenceTable(),
 			$whereClause
@@ -324,14 +333,14 @@ class DbUtility {
 
 		if ($db_update) {
 
-			$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+			$ret = $this->db->exec_UPDATEquery(
 				$this->referenceReader->getReferenceTable(),
 				$whereClause,
 				$db_data
 			);
 			if ($ret == FALSE) {
 				$err = array();
-				$err['msg'] = 'Full text update failed: ' . $GLOBALS['TYPO3_DB']->sql_error();
+				$err['msg'] = 'Full text update failed: ' . $this->db->sql_error();
 				return $err;
 			}
 			return TRUE;
@@ -340,10 +349,26 @@ class DbUtility {
 		return FALSE;
 	}
 
+	/**
+	 * @param int $pid
+	 */
+	public function deleteAllFromPid($pid) {
+		$this->db->exec_DELETEquery(
+				$this->referenceReader->getAuthorshipTable(),
+				'pid = ' . $pid
+		);
+		$this->db->exec_DELETEquery(
+				$this->referenceReader->getAuthorTable(),
+				'pid = ' . $pid
+		);
+		$this->db->exec_DELETEquery(
+				$this->referenceReader->getReferenceTable(),
+				'pid = ' . $pid
+		);
+	}
+
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']);
 }
-
-?>

@@ -273,6 +273,7 @@ class Utility {
 	 * @param $value
 	 * @param array $attributes
 	 * @return string The submit input element
+	 * @deprecated Use FLUIDTEMPLATE when possible
 	 */
 	public static function html_submit_input($name, $value, $attributes = array()) {
 		return self::html_input('submit', $name, $value, $attributes);

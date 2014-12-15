@@ -47,6 +47,7 @@
 			<label index="import_file">Import file</label>
 			<label index="import_label">Import from</label>
 			<label index="import_select_file">Please select an import file</label>
+			<label index="import_clear_all">Clear all literature before import</label>
 			<label index="import_storage_info">All publication references will be stored in the following folder</label>
 			<label index="import_title">Database import</label>
 			<label index="import_xml">XML</label>

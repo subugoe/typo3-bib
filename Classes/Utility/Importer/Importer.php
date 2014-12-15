@@ -27,8 +27,10 @@ namespace Ipf\Bib\Utility\Importer;
  * ************************************************************* */
 
 use Ipf\Bib\Exception\DataException;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 abstract class Importer {
 
@@ -80,6 +82,15 @@ abstract class Importer {
 	 */
 	public $idGenerator = FALSE;
 
+	/**
+	 * @var \TYPO3\CMS\Fluid\View\StandaloneView
+	 */
+	protected $view;
+
+	/**
+	 * @var \TYPO3\CMS\Dbal\Database\DatabaseConnection
+	 */
+	protected $db;
 
 	/**
 	 * Initializes the import. The argument must be the plugin class
@@ -90,6 +101,10 @@ abstract class Importer {
 	public function initialize($pi1) {
 		$this->pi1 = $pi1;
 		$this->referenceReader = $this->pi1->referenceReader;
+
+		$this->db = $GLOBALS['TYPO3_DB'];
+
+		$this->view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
 
 		$this->referenceWriter = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
 		$this->referenceWriter->initialize($this->referenceReader);
@@ -128,12 +143,12 @@ abstract class Importer {
 	 */
 	protected function getPageTitle($uid) {
 		$title = FALSE;
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+		$res = $this->db->exec_SELECTquery(
 			'title',
 			'pages',
 			'uid=' . intval($uid)
 		);
-		$page = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		$page = $this->db->sql_fetch_assoc($res);
 		$charset = $this->pi1->extConf['charset']['upper'];
 		if (is_array($page)) {
 			$title = htmlspecialchars($page['title'], ENT_NOQUOTES, $charset);
@@ -167,8 +182,6 @@ abstract class Importer {
 	 * @return string the storage selector string
 	 */
 	protected function getStorageSelector() {
-		// Pid
-		$pages = array();
 		$content = '';
 
 		$pids = $this->pi1->extConf['pid_list'];
@@ -179,14 +192,14 @@ abstract class Importer {
 			$pages = Utility::get_page_titles($pids);
 
 			$val = $this->pi1->get_ll('import_storage_info', 'import_storage_info', TRUE);
-			$content .= '<p>' . $val . '</p>' . "\n";
+			$content .= '<p>' . $val . '</p>';
 
 			$val = Utility::html_select_input(
 				$pages,
 				$default_pid,
 				array('name' => $this->pi1->prefixId . '[import_pid]')
 			);
-			$content .= '<p>' . "\n" . $val . '</p>' . "\n";
+			$content .= '<p>' . $val . '</p>';
 		}
 
 		return $content;
@@ -269,6 +282,10 @@ abstract class Importer {
 				break;
 			case 2:
 				$this->acquireStoragePid();
+				if (GeneralUtility::_GP('import_clear_all')) {
+					$this->clearAllDatasetsBeforeImport();
+				}
+
 				$content = $this->importStateTwo();
 				$this->postImport();
 				$content .= $this->getImportStatistics();
@@ -291,32 +308,15 @@ abstract class Importer {
 	 * @return string
 	 */
 	protected function importFileSelectionState() {
-		$buttonAttributes = array('class' => 'tx_bib-button');
+		$this->view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/Import.html');
 
 		// Pre import information
-		$content = $this->displayInformationBeforeImport();
-
+		$this->view->assign('content', $this->displayInformationBeforeImport());
 		$formAction = $this->pi1->get_link_url(array('import' => $this->import_type));
-		$content .= '<form action="' . $formAction . '" method="post" enctype="multipart/form-data" >';
+		$this->view->assign('formAction', $formAction);
+		$this->view->assign('storageSelector', $this->getStorageSelector());
 
-		// The storage selector
-		$content .= $this->getStorageSelector();
-
-		// The file selection
-		$val = $this->pi1->get_ll('import_select_file', 'import_select_file', TRUE);
-		$content .= '<p>' . $val . '</p>' . "\n";
-
-		$val = '<input name="ImportFile" type="file" size="50" accept=".bib,text/*" />';
-		$content .= '<p>' . $val . '</p>' . "\n";
-
-		// The submit button
-		$val = $this->pi1->get_ll('import_file', 'import_file', TRUE);
-		$button = Utility::html_submit_input('submit', $val, $buttonAttributes);
-		$content .= '<p>' . $button . '</p>' . "\n";
-
-		$content .= '</form>';
-
-		return $content;
+		return $this->view->render();
 	}
 
 	/**
@@ -346,104 +346,59 @@ abstract class Importer {
 		}
 	}
 
-
-	/**
-	 * Returns a html table row string
-	 *
-	 * @param string $th
-	 * @param string $td
-	 * @return string
-	 */
-	protected function getTableRowAsString($th, $td) {
-		$content = '<tr>' . "\n";
-		$content .= '<th>' . strval($th) . '</th>' . "\n";
-		$content .= '<td>' . strval($td) . '</td>' . "\n";
-		$content .= '</tr>' . "\n";
-		return $content;
-	}
-
-
 	/**
 	 * Returns an import statistics string
 	 *
 	 * @return string
 	 */
 	protected function getImportStatistics() {
-		$stat =& $this->statistics;
-		$charset = $this->pi1->extConf['charset']['upper'];
+		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
+		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/Statistics.html');
 
-		$content = '';
-		$content .= '<strong>Import statistics</strong>: ';
-		$content .= '<table class="tx_bib-editor_fields">';
-		$content .= '<tbody>';
+		$view->assign('fileName', $this->statistics['file_name']);
+		$view->assign('fileSize', $this->statistics['file_size']);
 
-		$content .= $this->getTableRowAsString(
-			'Import file:',
-				htmlspecialchars($stat['file_name'], ENT_QUOTES, $charset) .
-				' (' . strval($stat['file_size']) . ' Bytes)'
-		);
+		$view->assign('storageFolder', $this->getPageTitle($this->statistics['storage']));
 
-		$content .= $this->getTableRowAsString(
-			'Storage folder:',
-			$this->getPageTitle($stat['storage'])
-		);
+		$view->assign('succeeded', $this->statistics['succeeded']);
+		$view->assign('failed', $this->statistics['failed']);
 
-		if (isset ($stat['succeeded'])) {
-			$content .= $this->getTableRowAsString(
-				'Successful imports:',
-				intval($stat['succeeded']));
+		$view->assign('fullTextStatistics', is_array($this->statistics['full_text']) ? TRUE : FALSE);
+
+		if (is_array($this->statistics['full_text'])) {
+			$view->assign('updatedFullTexts', count($this->statistics['full_text']['updated']));
+			$view->assign('fullTextNumberLimit', $this->statistics['full_text']['limit_num'] ? TRUE : FALSE);
+			$view->assign('fullTextTimeLimit', $this->statistics['full_text']['limit_time'] ? TRUE : FALSE);
 		}
 
-		if (isset ($stat['failed']) && ($stat['failed'] > 0)) {
-			$content .= $this->getTableRowAsString(
-				'Failed imports:',
-				intval($stat['failed']));
-		}
+		$displayWarnings = is_array($this->statistics['warnings']) && (count($this->statistics['warnings']) > 0);
+		$view->assign('displayWarnings', $displayWarnings);
 
-		if (is_array($stat['full_text'])) {
-			$fts =& $stat['full_text'];
-			$content .= $this->getTableRowAsString(
-				'Updated full texts:', count($fts['updated']));
-			if ($fts['limit_num']) {
-				$content .= $this->getTableRowAsString(
-					$this->pi1->get_ll('msg_warn_ftc_limit'),
-					$this->pi1->get_ll('msg_warn_ftc_limit_num'));
-			}
-			if ($fts['limit_time']) {
-				$content .= $this->getTableRowAsString(
-					$this->pi1->get_ll('msg_warn_ftc_limit'),
-					$this->pi1->get_ll('msg_warn_ftc_limit_time'));
-			}
-		}
-
-		if (is_array($stat['warnings']) && (count($stat['warnings']) > 0)) {
-			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = Utility::string_counter($stat['warnings']);
+		if ($displayWarnings) {
+			$messages = Utility::string_counter($this->statistics['warnings']);
+			$val = '';
 			foreach ($messages as $msg => $count) {
 				$str = $this->getMessageOccurrenceCounter($msg, $count);
-				$val .= '<li>' . $str . '</li>' . "\n";
+				$val .= '<li>' . $str . '</li>';
 			}
-			$val .= '</ul>' . "\n";
-
-			$content .= $this->getTableRowAsString('Warnings:', $val);
+			$view->assign('warnings', $val);
 		}
 
-		if (is_array($stat['errors']) && (count($stat['errors']) > 0)) {
-			$val = '<ul style="padding-top:0px;margin-top:0px;">' . "\n";
-			$messages = Utility::string_counter($stat['errors']);
+		$displayErrors = is_array($this->statistics['errors']) && (count($this->statistics['errors']) > 0);
+		$view->assign('displayErrors', $displayErrors);
+
+		if ($displayErrors) {
+			$val = '';
+			$messages = Utility::string_counter($this->statistics['errors']);
 			foreach ($messages as $msg => $count) {
 				$str = $this->getMessageOccurrenceCounter($msg, $count);
-				$val .= '<li>' . $str . '</li>' . "\n";
+				$val .= '<li>' . $str . '</li>';
 			}
-			$val .= '</ul>' . "\n";
-
-			$content .= $this->getTableRowAsString('Errors:', $val);
+			$this->view->assign('errors', $val);
 		}
 
-		$content .= '</tbody>';
-		$content .= '</table>';
-
-		return $content;
+		return $view->render();
 	}
 
 	/**
@@ -475,9 +430,9 @@ abstract class Importer {
 			$translationTable = get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES);
 			$translationTable = array_flip($translationTable);
 			// These should stay alive
-			unset ($translationTable['&amp;']);
-			unset ($translationTable['&lt;']);
-			unset ($translationTable['&gt;']);
+			unset($translationTable['&amp;']);
+			unset($translationTable['&lt;']);
+			unset($translationTable['&gt;']);
 
 			foreach ($translationTable as $key => $val) {
 				$translationTable[$key] = $GLOBALS['TSFE']->csConvObj->conv($val, 'iso-8859-1', 'utf-8');
@@ -506,6 +461,11 @@ abstract class Importer {
 		return $content;
 	}
 
-}
+	/**
+	 * Removes all datasets from the storage on importing data
+	 */
+	protected function clearAllDatasetsBeforeImport() {
+		$this->databaseUtility->deleteAllFromPid($this->storage_pid);
+	}
 
-?>
+}
