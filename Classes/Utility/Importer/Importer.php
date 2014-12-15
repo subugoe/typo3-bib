@@ -30,7 +30,6 @@ use Ipf\Bib\Exception\DataException;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 use \Ipf\Bib\Utility\Utility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 abstract class Importer {
 
