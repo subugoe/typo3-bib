@@ -2959,7 +2959,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return string
 	 */
 	protected function getEditManipulator($publication) {
-		// The edit button
 		$label = $this->get_ll('manipulators_edit', 'Edit', TRUE);
 		$imgSrc = 'src="' . $this->icon_src['edit'] . '"';
 		$img = '<img ' . $imgSrc . ' alt="' . $label . '" ' .
@@ -3445,12 +3444,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return bool TRUE (allowed) FALSE (restricted)
 	 */
 	protected function checkFEauthorRestriction($publicationId) {
+
+		/** @var \TYPO3\CMS\Backend\FrontendBackendUserAuthentication $beUser */
+		$beUser = $GLOBALS['BE_USER'];
+
 		// always allow BE users with sufficient rights
-		if (is_object($GLOBALS['BE_USER'])) {
-			if ($GLOBALS['BE_USER']->isAdmin()) {
+		if (is_object($beUser)) {
+			if ($beUser->isAdmin()) {
 				return TRUE;
-			} else if ($GLOBALS['BE_USER']->check('tables_modify', $this->referenceReader->getReferenceTable())) {
-				return FALSE;
+			} else if ($beUser->check('tables_modify', $this->referenceReader->getReferenceTable())) {
+				return TRUE;
 			}
 		}
 
