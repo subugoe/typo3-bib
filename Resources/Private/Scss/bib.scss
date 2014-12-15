@@ -1,18 +1,18 @@
 div.tx_bib-top_navigation {
 	clear: both;
-	padding: 0px;
-	margin: 1ex 0px;
+	padding: 0;
+	margin: 1ex 0;
 	margin-bottom: 1.5ex;
-	border-width: 0px;
+	border-width: 0;
 	border-bottom: 1px solid black;
 }
 
 div.tx_bib-bottom_navigation {
 	clear: both;
-	padding: 1ex 0px;
+	padding: 1ex 0;
 	padding-top: 0.5ex;
-	margin: 1ex 0px;
-	border-width: 0px;
+	margin: 1ex 0;
+	border-width: 0;
 }
 
 div.tx_bib-navi_year,
@@ -20,9 +20,9 @@ div.tx_bib-navi_page,
 div.tx_bib-navi_pref,
 div.tx_bib-navi_author,
 div.tx_bib-navi_search {
-	padding: 0em;
-	margin: 0px;
-	border-width: 0px;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
 }
 
 div.tx_bib-navi_search_top,
@@ -31,9 +31,9 @@ div.tx_bib-navi_year_top,
 div.tx_bib-navi_page_top,
 div.tx_bib-navi_pref_top {
 	clear: both;
-	padding: 0px;
-	margin: 1.5ex 0em;
-	border-width: 0px;
+	padding: 0;
+	margin: 1.5ex 0;
+	border-width: 0;
 }
 
 div.tx_bib-navi_search_bottom,
@@ -42,9 +42,9 @@ div.tx_bib-navi_year_bottom,
 div.tx_bib-navi_page_bottom,
 div.tx_bib-navi_pref_bottom {
 	clear: both;
-	padding: 0px;
-	margin: 1.5ex 0em;
-	border-width: 0px;
+	padding: 0;
+	margin: 1.5ex 0;
+	border-width: 0;
 }
 
 .tx_bib-inline_form,
@@ -52,9 +52,9 @@ div.tx_bib-navi_pref_bottom {
 .tx_bib-author_select_form,
 .tx_bib-search_form {
 	display: inline;
-	padding: 0px;
-	margin: 0px;
-	border-width: 0px;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
 }
 
 .tx_bib-navi_search_details,
@@ -67,11 +67,11 @@ div.tx_bib-navi_pref_bottom {
 
 div.tx_bib-float_clear {
 	clear: both;
-	padding: 0px;
-	margin: 0px;
-	border-width: 0px;
-	height: 0px;
-	width: 0px;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
+	height: 0;
+	width: 0;
 }
 
 .tx_bib-year_select_form,
@@ -109,39 +109,39 @@ span.tx_bib-navi_current {
 }
 
 .tx_bib-navi_widget {
-	padding: 0px;
+	padding: 0;
 	padding-right: 1em;
 }
 
 .tx_bib-navi_label {
-	padding: 0px;
+	padding: 0;
 	margin-right: 0.5em;
 }
 
 div.tx_bib-navi_main_label {
 	font-weight: bold;
 	width: 12em;
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 	float: left;
 }
 
 span.tx_bib-navi_separator {
-	padding: 0px 0.75em;
+	padding: 0 0.75em;
 }
 
 .tx_bib-navi_new {
 	text-align: right;
-	margin: 0.5em 0em;
-	padding: 0px;
+	margin: 0.5em 0;
+	padding: 0;
 }
 
 div.tx_bib-navi_export,
 div.tx_bib-navi_import,
 div.tx_bib-navi_statistic {
 	text-align: left;
-	margin: 1em 0em;
-	padding: 0px;
+	margin: 1em 0;
+	padding: 0;
 	font-size: smaller;
 }
 
@@ -153,22 +153,22 @@ div.tx_bib-navi_statistic {
 }
 
 div.tx_bib-list_container {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	margin-left: 12em;
 }
 
 table.tx_bib-list {
 	float: left;
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	width: 100%;
 	border-collapse: collapse;
 }
 
 table.tx_bib-list th,
 table.tx_bib-list td {
-	border-width: 0px;
+	border-width: 0;
 }
 
 .tx_bib-year_row {
@@ -177,8 +177,8 @@ table.tx_bib-list td {
 }
 
 .tx_bib-year_row h3 {
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 }
 
 .tx_bib-bibtype_row {
@@ -187,8 +187,8 @@ table.tx_bib-list td {
 }
 
 .tx_bib-bibtype_row h4 {
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 }
 
 td.tx_bib-item_even,
@@ -208,14 +208,14 @@ td.tx_bib-item_odd {
 
 td.tx_bib-enum {
 	text-align: right;
-	padding-left: 0px;
+	padding-left: 0;
 	padding-right: 0.5em;
 	max-width: 4em;
 }
 
 div.tx_bib-file_url_icon {
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 	padding-top: 0.25ex;
 	width: 32px;
 }
@@ -246,26 +246,26 @@ div.tx_bib-file_url_icon {
 img.tx_bib-file_icon,
 img.tx_bib-person_icon {
 	display: inline;
-	padding: 0px;
-	margin: 0px;
-	border-width: 0px;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
 }
 
 .tx_bib-block {
 	display: block;
-	padding: 0px;
-	margin: 0px;
-	border-width: 0px;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
 }
 
 .tx_bib-author {
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 }
 
 .tx_bib-authors {
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 }
 
 .tx_bib-author_high {
@@ -294,74 +294,74 @@ img.tx_bib-person_icon {
 .tx_bib-misc_block,
 .tx_bib-keywords_block,
 .tx_bib-tags_block {
-	margin: 1ex 0px;
-	padding: 0px;
+	margin: 1ex 0;
+	padding: 0;
 }
 
 .tx_bib-url_block {
-	margin: 0.5ex 0px;
+	margin: 0.5ex 0;
 }
 
 div.tx_bib-missing_data {
 	font-weight: bold;
 	background-color: rgb(235, 0, 0);
-	margin: 0px;
+	margin: 0;
 	padding: 1ex 1em;
 }
 
 .tx_bib-warning_box {
 	padding: 1ex 1em;
-	margin: 1ex 0px;
+	margin: 1ex 0;
 	background-color: #eba533;
 	border: 4px solid black;
 }
 
 .tx_bib-manipulator_block {
-	border-width: 0px;
-	padding: 0px;
-	margin: 0px 0px 2px 0.75em;
+	border-width: 0;
+	padding: 0;
+	margin: 0 0 2px 0.75em;
 	float: right;
 }
 
 .tx_bib-manip {
-	border-width: 0px;
-	padding: 0px;
-	margin: 0px;
+	border-width: 0;
+	padding: 0;
+	margin: 0;
 }
 
 .tx_bib-edit_icon,
 .tx_bib-hide_icon,
 .tx_bib-delete_icon,
 .tx_bib-new_icon {
-	border-width: 0px;
+	border-width: 0;
 	padding: 0.25em 0.25em;
 }
 
 table.tx_bib-layout {
 	border-collapse: collapse;
-	border-width: 0px;
-	padding: 0px;
-	margin: 0px;
+	border-width: 0;
+	padding: 0;
+	margin: 0;
 }
 
 table.tx_bib-layout td,
 table.tx_bib-layout th,
 table.tx_bib-layout tr {
-	border-width: 0px;
-	padding: 0px;
-	margin: 0px;
+	border-width: 0;
+	padding: 0;
+	margin: 0;
 }
 
 table.tx_bib-single_item {
 	border-collapse: collapse;
-	border-width: 0px;
-	padding: 0px;
-	margin: 0px;
+	border-width: 0;
+	padding: 0;
+	margin: 0;
 }
 
 th.tx_bib-single_label,
 td.tx_bib-single_value {
-	padding: 0.5ex 0px;
+	padding: 0.5ex 0;
 }
 
 th.tx_bib-single_label {
@@ -378,20 +378,20 @@ td.tx_bib-single_value {
 
 div.tx_bib-editor {
 	padding: 1em;
-	margin: 1em 0em;
+	margin: 1em 0;
 	border: 1px solid black;
 }
 
 table.tx_bib-editor_fields {
 	border-collapse: collapse;
-	padding: 0px;
-	margin: 0.75ex 0em;
-	border-width: 0px;
+	padding: 0;
+	margin: 0.75ex 0;
+	border-width: 0;
 }
 
 table.tx_bib-editor_fields th,
 table.tx_bib-editor_fields td {
-	border-width: 0px;
+	border-width: 0;
 	padding: 0.5ex 0.5em;
 	vertical-align: top;
 	text-align: left;
@@ -404,11 +404,11 @@ table.tx_bib-editor_fields th {
 .tx_bib-editor h3 {
 	font-size: large;
 	border-bottom: 1px solid black;
-	padding: 0.25em 0em;
+	padding: 0.25em 0;
 }
 
 .tx_bib-editor_button {
-	margin: 0em 0.5em;
+	margin: 0 0.5em;
 }
 
 .tx_bib-editor_button_box {
@@ -436,14 +436,14 @@ textarea.tx_bib-editor_input {
 
 table.tx_bib-editor_author {
 	border-collapse: collapse;
-	padding: 0px;
-	margin: 0px;
+	padding: 0;
+	margin: 0;
 }
 
 table.tx_bib-editor_author th,
 table.tx_bib-editor_author td {
-	border-width: 0px;
-	min-width: 0px;
+	border-width: 0;
+	min-width: 0;
 	font-size: small;
 }
 

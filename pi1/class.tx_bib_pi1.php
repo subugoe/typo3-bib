@@ -2947,8 +2947,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 				'class="' . $this->prefixShort . '-new_icon" />';
 
 		$res = $this->get_link($img, array('action' => array('new' => 1)), TRUE, array('title' => $label));
-		$res . $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['new.']);
-		return $res;
+		return $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['new.']);
 	}
 
 
