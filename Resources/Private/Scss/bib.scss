@@ -1,3 +1,6 @@
+$fa-font-path: '../Fonts';
+@import '../../../vendor/fortawesome/font-awesome/scss/font-awesome';
+
 div.tx_bib-top_navigation {
 	clear: both;
 	padding: 0;
@@ -325,8 +328,29 @@ div.tx_bib-missing_data {
 
 .tx_bib-manip {
 	border-width: 0;
-	padding: 0;
+	padding: 0 5px;
 	margin: 0;
+	.edit-record {
+		@extend .fa;
+		@extend .fa-pencil;
+	}
+	.hide-record {
+		@extend .fa;
+		@extend .fa-toggle-on;
+	}
+	.reveal-record {
+		@extend .fa;
+		@extend .fa-toggle-off;
+	}
+}
+
+.new-record {
+	@extend .fa;
+	@extend .fa-plus;
+}
+
+.tx_bib-edit_icon {
+	@extend .fa-pencil;
 }
 
 .tx_bib-edit_icon,

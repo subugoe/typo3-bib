@@ -93,12 +93,6 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . '_pi1'] = 'pi
 	'Publication list defaults'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-	$_EXTKEY,
-	'Configuration/TypoScript/default_style',
-	'Publication list CSS'
-);
-
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
 		'Ipf.' . $_EXTKEY,
 		'rest',

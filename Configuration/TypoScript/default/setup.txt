@@ -513,11 +513,6 @@ plugin.tx_bib_pi1 {
 
 	# Edit icons
 	edit_icons {
-		new_record = EXT:t3skin/icons/gfx/new_record.gif
-		edit = EXT:t3skin/icons/gfx/edit2.gif
-		hide = EXT:t3skin/icons/gfx/button_hide.gif
-		reveal = EXT:t3skin/icons/gfx/button_unhide.gif
-
 		up = EXT:t3skin/icons/gfx/button_up.gif
 		down = EXT:t3skin/icons/gfx/button_down.gif
 	}

@@ -186,6 +186,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 		$this->includeJavaScript();
 
+		$this->includeCss();
+
 		$this->initializeReferenceReader();
 
 		$this->getExtensionConfiguration();
@@ -685,6 +687,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		} else {
 			throw new \Exception('The TYPO3 extension t3jquery has to be installed and configured', 1378366263);
 		}
+	}
+
+	protected function includeCss() {
+		/** @var \TYPO3\CMS\Core\Page\PageRenderer $pageRenderer */
+		$pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
+		$pageRenderer->addCssFile('typo3conf/ext/' . $this->extKey . '/Resources/Public/Css/bib.css') ;
 	}
 
 	/**
@@ -2942,11 +2950,19 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function getNewManipulator() {
 		$label = $this->get_ll('manipulators_new', 'New', TRUE);
-		$imgSrc = 'src="' . $this->icon_src['new_record'] . '"';
-		$img = '<img ' . $imgSrc . ' alt="' . $label . '" ' .
-				'class="' . $this->prefixShort . '-new_icon" />';
-
-		$res = $this->get_link($img, array('action' => array('new' => 1)), TRUE, array('title' => $label));
+		$res = $this->get_link(
+				'',
+				array(
+						'action' => array(
+								'new' => 1
+						)
+				),
+				TRUE,
+				array(
+						'title' => $label,
+						'class' => 'new-record'
+				)
+		);
 		return $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['new.']);
 	}
 
@@ -2959,13 +2975,20 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 */
 	protected function getEditManipulator($publication) {
 		$label = $this->get_ll('manipulators_edit', 'Edit', TRUE);
-		$imgSrc = 'src="' . $this->icon_src['edit'] . '"';
-		$img = '<img ' . $imgSrc . ' alt="' . $label . '" ' .
-				'class="' . $this->prefixShort . '-edit_icon" />';
-
-		$res = $this->get_link($img,
-				array('action' => array('edit' => 1), 'uid' => $publication['uid']),
-				TRUE, array('title' => $label));
+		$res = $this->get_link(
+				'',
+				array(
+						'action' => array(
+								'edit' => 1
+						),
+						'uid' => $publication['uid']
+				),
+				TRUE,
+				array(
+						'title' => $label,
+						'class' => 'edit-record'
+				)
+		);
 
 		$res = $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['edit.']);
 
@@ -2981,19 +3004,26 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	protected function getHideManipulator($publication) {
 		if ($publication['hidden'] == 0) {
 			$label = $this->get_ll('manipulators_hide', 'Hide', TRUE);
-			$imgSrc = 'src="' . $this->icon_src['hide'] . '"';
-			$action = array('hide' => 1);
+			$class = 'hide';
 		} else {
 			$label = $this->get_ll('manipulators_reveal', 'Reveal', TRUE);
-			$imgSrc = 'src="' . $this->icon_src['reveal'] . '"';
-			$action = array('reveal' => 1);
+			$class = 'reveal';
 		}
 
-		$img = '<img ' . $imgSrc . ' alt="' . $label . '" ' .
-				'class="' . $this->prefixShort . '-hide_icon" />';
-		$res = $this->get_link($img,
-				array('action' => $action, 'uid' => $publication['uid']),
-				TRUE, array('title' => $label));
+		$action = array($class => 1);
+
+		$res = $this->get_link(
+				'',
+				array(
+						'action' => $action,
+						'uid' => $publication['uid']
+				),
+				TRUE,
+				array(
+						'title' => $label,
+						'class' => $class . '-record'
+				)
+		);
 
 		$res = $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['hide.']);
 
