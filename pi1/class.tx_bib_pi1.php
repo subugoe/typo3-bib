@@ -1541,10 +1541,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return void
 	 */
 	protected function initializeSelectionFilter() {
-		if (!$this->conf['allow_selection']) {
-			throw new \Exception('Selection not allowed in configuration' . 1379074450);
-		}
-
 		$this->extConf['filters']['selection'] = array();
 		$filter =& $this->extConf['filters']['selection'];
 
