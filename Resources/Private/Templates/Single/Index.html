@@ -64,21 +64,21 @@
 <f:if condition="{day}">
 	<tr>
 		<th class="tx_bib-single_label">{labelDay}</th>
-		<td class="tx_bib-single_value">{day}</td>
+		<td class="tx_bib-single_value">{day -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
 <f:if condition="{booktitle}">
 	<tr>
 		<th class="tx_bib-single_label">{labelBooktitle}</th>
-		<td class="tx_bib-single_value">{booktitle}</td>
+		<td class="tx_bib-single_value">{booktitle -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
 <f:if condition="{volume}">
 	<tr>
 		<th class="tx_bib-single_label">{labelVolume}</th>
-		<td class="tx_bib-single_value">{volume}</td>
+		<td class="tx_bib-single_value">{volume -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
