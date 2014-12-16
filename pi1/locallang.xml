@@ -183,6 +183,7 @@
 			<label index="import_xml">XML</label>
 			<label index="import_xml_title">Referenzen Import aus einer Bib XML Datei</label>
 			<label index="import_xmlLinkTitle">Importiere aus XML</label>
+			<label index="import_clear_all">Löschen aller Einträge vor dem Import</label>
 			<label index="label_abstract">Zusammenfassung</label>
 			<label index="label_and">und</label>
 			<label index="label_annotation">Anmerkung</label>
