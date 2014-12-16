@@ -99,14 +99,14 @@
 <f:if condition="{series}">
 	<tr>
 		<th class="tx_bib-single_label">{labelSeries}</th>
-		<td class="tx_bib-single_value">{series}</td>
+		<td class="tx_bib-single_value">{series -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
 <f:if condition="{edition}">
 	<tr>
 		<th class="tx_bib-single_label">{labelEdition}</th>
-		<td class="tx_bib-single_value">{edition}</td>
+		<td class="tx_bib-single_value">{edition -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
@@ -289,14 +289,14 @@
 <f:if condition="{web_url}">
 	<tr>
 		<th class="tx_bib-single_label">{labelWeb_url}</th>
-		<td class="tx_bib-single_value">{web_url}</td>
+		<td class="tx_bib-single_value">{web_url -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
 <f:if condition="{web_url2}">
 	<tr>
 		<th class="tx_bib-single_label">{labelWeb_url2}</th>
-		<td class="tx_bib-single_value">{web_url2}</td>
+		<td class="tx_bib-single_value">{web_url2 -> f:format.raw()}</td>
 	</tr>
 </f:if>
 
