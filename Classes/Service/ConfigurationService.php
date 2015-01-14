@@ -1,10 +1,10 @@
 <?php
-namespace Ipf\Bib\Utility;
+namespace Ipf\Bib\Service;
 
 /* * *************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *  (c) 2014 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
  *
  *  All rights reserved
@@ -26,49 +26,9 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-class PRegExpTranslator {
+/**
+ * Service for calculation of configuration
+ */
+class ConfigurationService {
 
-	/**
-	 * @var string
-	 */
-	protected $pattern;
-
-	/**
-	 * @var string
-	 */
-	protected $replacement;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->clear();
-	}
-
-	/**
-	 * @return void
-	 */
-	protected function clear() {
-		$this->pattern = array();
-		$this->replacement = array();
-	}
-
-	/**
-	 * @param string $pattern
-	 * @param string $replacement
-	 * @return $this
-	 */
-	public function push($pattern, $replacement) {
-		$this->pattern[] = $pattern;
-		$this->replacement[] = $replacement;
-		return $this;
-	}
-
-	/**
-	 * @param string $source
-	 * @return mixed
-	 */
-	public function translate($source) {
-		return preg_replace($this->pattern, $this->replacement, $source);
-	}
 }

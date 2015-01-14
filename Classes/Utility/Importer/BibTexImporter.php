@@ -465,7 +465,6 @@ class BibTexImporter extends Importer {
 					break;
 				case self::PARSER_READ_CITE_ID:
 					$matches = array();
-					$id = '';
 					if (preg_match('/^([^,\s]+)/', $this->getBuffer(), $matches) > 0) {
 						$id = $matches[1];
 						$this->raw_ref['citeid'] .= $id;
@@ -774,5 +773,3 @@ class BibTexImporter extends Importer {
 	}
 
 }
-
-?>

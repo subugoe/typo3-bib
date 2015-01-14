@@ -50,6 +50,15 @@ class ReferenceWriter {
 	protected $error = FALSE;
 
 	/**
+	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
+	 */
+	protected $db;
+
+	public function __construct() {
+		$this->db = $GLOBALS['TYPO3_DB'];
+	}
+
+	/**
 	 * Initialize ReferenceWriter
 	 *
 	 * @param \Ipf\Bib\Utility\ReferenceReader $referenceReader
@@ -143,7 +152,7 @@ class ReferenceWriter {
 		$new = FALSE;
 		$uid = -1;
 
-		$referenceTable =& $this->referenceReader->getReferenceTable();
+		$referenceTable = $this->referenceReader->getReferenceTable();
 
 		// Fetch reference from DB
 		$pub_db = NULL;
@@ -194,13 +203,12 @@ class ReferenceWriter {
 		$referenceRow['tstamp'] = time();
 		$referenceRow['hidden'] = intval($publication['hidden']);
 
-		$query = '';
 		if ($uid >= 0) {
 			if ($publication['mod_key'] == $pub_db['mod_key']) {
 
 				$whereClause = 'uid=' . intval($uid);
 
-				$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				$ret = $this->db->exec_UPDATEquery(
 					$referenceTable,
 					$whereClause,
 					$referenceRow
@@ -232,12 +240,12 @@ class ReferenceWriter {
 
 			$referenceRow['crdate'] = $referenceRow['tstamp'];
 			$referenceRow['cruser_id'] = $cruser_id;
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery(
+			$this->db->exec_INSERTquery(
 				$referenceTable,
 				$referenceRow
 			);
 
-			$uid = $GLOBALS['TYPO3_DB']->sql_insert_id();
+			$uid = $this->db->sql_insert_id();
 			if (!(intval($uid) > 0)) {
 				throw new DataException(
 					'A publication reference could not be inserted into the database',
@@ -337,7 +345,7 @@ class ReferenceWriter {
 					// There are present authorships - Update authorship
 					$as_uid = $db_aships[$ii]['uid'];
 
-					$ret = $GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					$ret = $this->db->exec_UPDATEquery(
 						$this->referenceReader->getAuthorshipTable(),
 						'uid=' . intval($as_uid),
 						$as
@@ -351,7 +359,7 @@ class ReferenceWriter {
 					}
 				} else {
 					// No more present authorships - Insert authorship
-					$as_uid = $GLOBALS['TYPO3_DB']->exec_INSERTquery(
+					$as_uid = $this->db->exec_INSERTquery(
 						$this->referenceReader->getAuthorshipTable(),
 						$as
 					);
@@ -390,12 +398,12 @@ class ReferenceWriter {
 		$author['crdate'] = time();
 		$author['cruser_id'] = $cruser_id;
 
-		$GLOBALS['TYPO3_DB']->exec_INSERTquery(
+		$this->db->exec_INSERTquery(
 			$this->referenceReader->getAuthorTable(),
 			$author
 		);
 
-		$authorUid = $GLOBALS['TYPO3_DB']->sql_insert_id();
+		$authorUid = $this->db->sql_insert_id();
 		return $authorUid;
 	}
 
@@ -409,7 +417,7 @@ class ReferenceWriter {
 	 */
 	public function delete_authorship($uid) {
 		GeneralUtility::logDeprecatedFunction();
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+		$this->db->exec_UPDATEquery(
 			$this->referenceReader->getAuthorshipTable(),
 			'uid=' . intval($uid) . ' AND deleted=0',
 			array(
@@ -435,7 +443,7 @@ class ReferenceWriter {
 			$uid_list .= intval($uids[$ii]);
 		}
 
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+		$this->db->exec_UPDATEquery(
 			$this->referenceReader->getAuthorshipTable(),
 			'uid IN (' . $uid_list . ') AND deleted=0',
 			array(
@@ -455,7 +463,7 @@ class ReferenceWriter {
 	public function hidePublication($uid, $hidden = TRUE) {
 		$uid = intval($uid);
 
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+		$this->db->exec_UPDATEquery(
 			$this->referenceReader->getReferenceTable(),
 			'uid=' . strval($uid),
 			array(
@@ -489,7 +497,7 @@ class ReferenceWriter {
 			if ($db_pub['mod_key'] == $mod_key) {
 
 				// Delete authorships
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				$this->db->exec_UPDATEquery(
 					$this->referenceReader->getAuthorshipTable(),
 					'pub_id=' . intval($uid) . ' AND deleted=0',
 					array(
@@ -498,7 +506,7 @@ class ReferenceWriter {
 				);
 
 				// Delete reference
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				$this->db->exec_UPDATEquery(
 					$this->referenceReader->getReferenceTable(),
 					'uid=' . intval($uid) . ' AND deleted=0',
 					array(
@@ -527,37 +535,6 @@ class ReferenceWriter {
 			);
 		}
 	}
-
-
-	/**
-	 * Removes the entry from the database.
-	 * The entry must have been marked deleted beforehand.
-	 * This erases the reference and the authorships but not the author
-	 *
-	 * @deprecated since 1.3.0, will be removed in 1.5.0. Use only soft deletes
-	 * @param int $uid
-	 * @return bool
-	 */
-	public function erasePublication($uid) {
-
-		GeneralUtility::logDeprecatedFunction();
-		// Delete authorships
-		$authorshipEraser = $GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			$this->referenceReader->getAuthorshipTable(),
-			'pub_id=' . intval($uid) . ' AND deleted!=0'
-		);
-
-		// Delete reference
-		$referenceEraser = $GLOBALS['TYPO3_DB']->exec_DELETEquery(
-			$this->referenceReader->getReferenceTable(),
-			'uid=' . intval($uid) . ' AND deleted!=0'
-		);
-
-		$this->referenceLog('A publication reference was erased', $uid);
-
-		return FALSE;
-	}
-
 
 	/**
 	 * Writes a log entry
@@ -589,9 +566,3 @@ class ReferenceWriter {
 	}
 
 }
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/ReferenceWriter.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/ReferenceWriter.php']);
-}
-
-?>

@@ -214,6 +214,7 @@ class Utility {
 	 * @param $value
 	 * @param array $attributes
 	 * @return string The hidden input element
+	 * @deprecated
 	 */
 	public static function html_input($type, $name, $value, $attributes = array()) {
 		$content = '<input type="' . strval($type) . '"';
@@ -241,6 +242,7 @@ class Utility {
 	 * @param $checked
 	 * @param array $attributes
 	 * @return string The checkbox input element
+	 * @deprecated
 	 */
 	public static function html_check_input($name, $value, $checked, $attributes = array()) {
 		if ($checked) {
@@ -258,6 +260,7 @@ class Utility {
 	 * @param $checked
 	 * @param array $attributes
 	 * @return string The checkbox input element
+	 * @deprecated
 	 */
 	public static function html_radio_input($name, $value, $checked, $attributes = array()) {
 		if ($checked) {
@@ -302,6 +305,7 @@ class Utility {
 	 * @param $value
 	 * @param array $attributes
 	 * @return string The hidden input element
+	 * @deprecated
 	 */
 	public static function html_hidden_input($name, $value, $attributes = array()) {
 		return self::html_input('hidden', $name, $value, $attributes);
@@ -315,6 +319,7 @@ class Utility {
 	 * @param $value
 	 * @param array $attributes
 	 * @return string The text input element
+	 * @deprecated
 	 */
 	public static function html_text_input($name, $value, $attributes = array()) {
 		return self::html_input('text', $name, $value, $attributes);
@@ -328,6 +333,7 @@ class Utility {
 	 * @param $value
 	 * @param array $attributes
 	 * @return String The select element
+	 * @deprecated
 	 */
 	static public function html_select_input($pairs, $value, $attributes = array()) {
 		$value = strval($value);
@@ -683,5 +689,3 @@ class Utility {
 		return FALSE;
 	}
 }
-
-?>
