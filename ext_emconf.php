@@ -13,7 +13,7 @@ $EM_CONF[$_EXTKEY] = array (
   'description' => 'A customizable bibliography and publication reference manager with a convenient frontend editor and import/export functionality.',
   'category' => 'plugin',
   'shy' => 0,
-  'version' => '1.0.0',
+  'version' => '1.5.0',
   'dependencies' => '',
   'conflicts' => '',
   'priority' => '',
@@ -34,7 +34,7 @@ $EM_CONF[$_EXTKEY] = array (
   array (
     'depends' => 
     array (
-      'typo3' => '6.0.0-6.1.99',
+      'typo3' => '6.2.0-6.2.99',
       't3jquery' => '',
     ),
     'conflicts' => 
