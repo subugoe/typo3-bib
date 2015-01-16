@@ -79,11 +79,6 @@ class ReferenceReader {
 	public $sortPrefix = 'sort_fields';
 
 	/**
-	 * @var string
-	 */
-	public $authorshipTableAlias = 't_aships';
-
-	/**
 	 * @var array
 	 */
 	public $t_ref_default = array();
@@ -581,11 +576,10 @@ class ReferenceReader {
 				break;
 		}
 
-		$aliases[] = $join['alias'];
-		$joinStatement .= ' LEFT JOIN ' . $join['table'] . ' AS ' . $join['alias'];
-		$joinStatement .= ' ON ' . $table['alias'] . '.' . $tableMatchField;
-		$joinStatement .= '=' . $join['alias'] . '.' . $joinMatchField;
-		$joinStatement .= "\n";
+		$aliases[] = $join['table'];
+		$joinStatement .= ' LEFT JOIN ' . $join['table'] . ' AS ' . $join['table'];
+		$joinStatement .= ' ON ' . $table['table'] . '.' . $tableMatchField;
+		$joinStatement .= '=' . $join['table'] . '.' . $joinMatchField;
 
 		return $joinStatement;
 	}
@@ -1580,11 +1574,11 @@ class ReferenceReader {
 	 * @return void
 	 */
 	public function initializeReferenceFetching() {
-		$field_csv = $this->getReferenceTableAlias() . '.' . implode(',' . $this->getReferenceTableAlias() . '.', $this->refAllFields);
-		$field_csv1 = $this->getAuthorTableAlias() . '.' . implode(',' . $this->getReferenceTableAlias() . '.', $this->sortExtraFields);
+		$field_csv = $this->getReferenceTable() . '.' . implode(',' . $this->getReferenceTable() . '.', $this->refAllFields);
+		$field_csv1 = $this->getAuthorTable() . '.' . implode(',' . $this->getReferenceTable() . '.', $this->sortExtraFields);
 		$field_csv = $field_csv . ',' . $field_csv1;
 		$query = $this->getReferenceSelectClause($field_csv);
-		$this->setDatabaseResource($GLOBALS['TYPO3_DB']->sql_query($query));
+		$this->setDatabaseResource($this->db->sql_query($query));
 	}
 
 	/**
