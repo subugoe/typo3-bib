@@ -53,13 +53,17 @@ class FlexFormUtility {
 		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		$optionList = array();
 
-		foreach ($referenceReader->getSearchFields() as $searchField) {
-			$optionList[] = array(
-					0 => LocalizationUtility::translate($referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
-					1 => $searchField
-			);
-		}
+		$searchFields = $referenceReader->getSearchFields();
 
+		if (count($searchFields) > 0) {
+
+			foreach ($referenceReader->getSearchFields() as $searchField) {
+				$optionList[] = array(
+						0 => LocalizationUtility::translate($referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
+						1 => $searchField
+				);
+			}
+		}
 		$configuration['items'] = array_merge($configuration['items'], $optionList);
 		return $configuration;
 	}

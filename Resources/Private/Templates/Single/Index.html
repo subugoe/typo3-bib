@@ -1,3 +1,5 @@
+{namespace bib=Ipf\Bib\ViewHelpers}
+
 <div class="tx_bib-single_view">
 
 <h2>{pageTitle -> f:format.raw()}</h2>
@@ -289,14 +291,14 @@
 <f:if condition="{web_url}">
 	<tr>
 		<th class="tx_bib-single_label">{labelWeb_url}</th>
-		<td class="tx_bib-single_value">{web_url}</td>
+		<td class="tx_bib-single_value">{web_url -> f:format.html()}</td>
 	</tr>
 </f:if>
 
 <f:if condition="{web_url2}">
 	<tr>
 		<th class="tx_bib-single_label">{labelWeb_url2}</th>
-		<td class="tx_bib-single_value">{web_url2}</td>
+		<td class="tx_bib-single_value">{web_url2 -> f:format.html()}</td>
 	</tr>
 </f:if>
 
@@ -354,6 +356,7 @@
 </table>
 
 {postText -> f:format.raw()}
+<bib:coins data="{publication}"></bib:coins>
 
 <p>{linkBack -> f:format.raw()}</p>
 

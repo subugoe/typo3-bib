@@ -117,7 +117,7 @@ class SingleView {
 		} else {
 			$content .= '<p>';
 			$content .= 'No publication with uid ' . $uid;
-			$content .= '</p>' . "\n";
+			$content .= '</p>';
 		}
 
 		$this->view->assign('linkBack', $this->pi1->get_link($this->pi1->get_ll('link_back_to_list')));
@@ -135,14 +135,11 @@ class SingleView {
 	 * @return string
 	 */
 	protected function typeReference($ref) {
-		$pi1 =& $this->pi1;
-		$conf =& $this->conf;
-		$cObj =& $pi1->cObj;
 
 		$warnings = array();
 
 		// Store the cObj Data for later recovery
-		$contentObjectBackup = $cObj->data;
+		$contentObjectBackup = $this->pi1->cObj->data;
 
 		// Prepare the publication data and environment
 		$this->pi1->prepareItemSetup();
@@ -153,9 +150,9 @@ class SingleView {
 
 		// The filed list
 		$fields = $this->referenceReader->pubAllFields;
-		$dont_show = GeneralUtility::trimExplode(',', $conf['dont_show'], TRUE);
+		$dont_show = GeneralUtility::trimExplode(',', $this->conf['dont_show'], TRUE);
 
-		// Remove condition fields and setup the translator
+		$publication = array();
 		foreach ($fields as $field) {
 			if ((strlen($publicationData[$field]) > 0)) {
 				if (!in_array($field, $dont_show)) {
@@ -182,8 +179,8 @@ class SingleView {
 							)
 						);
 					}
-
-					$value = $cObj->stdWrap($value, $stdWrap);
+					$publication[$field] = $value;
+					$value = $this->pi1->cObj->stdWrap($value, $stdWrap);
 
 					$this->view->assign($field, $value);
 					$this->view->assign('label' . ucfirst($field), $label);
@@ -210,6 +207,7 @@ class SingleView {
 			)
 		);
 
+		$this->view->assign('publication', $publication);
 		// Restore cObj data
 		$this->pi1->cObj->data = $contentObjectBackup;
 	}
@@ -220,11 +218,10 @@ class SingleView {
 	 * The label for a field
 	 *
 	 * @param string $field The field
-	 * @param string $bib_str The bibtype identifier string
+	 * @param string $identifier The bibtype identifier string
 	 * @return string
 	 */
-	protected function getFieldLabel($field, $bib_str) {
-		$pi1 =& $this->pi1;
+	protected function getFieldLabel($field, $identifier) {
 		$label = $this->referenceReader->getReferenceTable() . '_' . $field;
 
 		switch ($field) {
@@ -234,8 +231,8 @@ class SingleView {
 		}
 
 		$over = array(
-			$pi1->conf['editor.']['olabel.']['all.'][$field],
-			$pi1->conf['editor.']['olabel.'][$bib_str . '.'][$field]
+			$this->pi1->conf['editor.']['olabel.']['all.'][$field],
+			$this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field]
 		);
 
 		foreach ($over as $lvar) {
@@ -246,7 +243,7 @@ class SingleView {
 
 		$label = trim($label);
 		if (strlen($label) > 0) {
-			$label = $pi1->get_ll($label, $label, TRUE);
+			$label = $this->pi1->get_ll($label, $label, TRUE);
 		}
 
 		return $label;
@@ -257,5 +254,3 @@ class SingleView {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']);
 }
-
-?>
