@@ -43,6 +43,8 @@
 			<label index="img_alt_person">Person</label>
 			<label index="import_bibtex">BibTeX</label>
 			<label index="import_bibtex_title">Reference import from a BibTeX file</label>
+			<label index="import_bibtex_text.0">The BibTeX format is not strictly defined anywhere. Therefore this parser merely tries to get the best out of it. If in doubt try it on an empty storage folder first.</label>
+			<label index="import_bibtex_text.1">@String( var = "some text" ) placeholders are not supported</label>
 			<label index="import_bibtexLinkTitle">Import from BibTeX</label>
 			<label index="import_file">Import file</label>
 			<label index="import_label">Import from</label>
@@ -175,6 +177,8 @@
 			<label index="import_bibtex">BibTeX</label>
 			<label index="import_bibtex_title">Referenzen Import aus einer BibTeX Datei</label>
 			<label index="import_bibtexLinkTitle">Importiere aus BibTeX</label>
+			<label index="import_bibtex_text.0">Das BibTeX-Format ist nicht strikt definiert. der Parser versucht die Daten so gut wie möglich zu importieren. Ggf. sollte erst ein Test mit einem leeren StorageFolder durchgeführt werden.</label>
+			<label index="import_bibtex_text.1">@String( var = "some text" ) Platzhalter werden nicht unterstützt</label>
 			<label index="import_file">Importiere Datei</label>
 			<label index="import_label">Importiere aus</label>
 			<label index="import_select_file">Bitte wählen Sie die Import-Datei aus</label>

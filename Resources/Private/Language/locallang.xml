@@ -196,6 +196,9 @@
 			<label index="tx_bib_domain_model_reference_web_url2">Web URL 2</label>
 			<label index="tx_bib_domain_model_reference_web_url2_date">Web URL 2 Last Checked</label>
 			<label index="tx_bib_domain_model_reference_year">Year</label>
+
+			<label index="import_bibtex_text.0">The BibTeX format is not strictly defined anywhere. Therefore this parser merely tries to get the best out of it. If in doubt try it on an empty storage folder first.</label>
+			<label index="import_bibtex_text.1">@String( var = "some text" ) placeholders are not supported</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="editor_btn_cancel">Abbruch</label>
@@ -237,6 +240,8 @@
 			<label index="tx_bib_domain_model_reference_pid">Ablage Ordner</label>
 			<label index="tx_bib_domain_model_reference_uid">uid</label>
 			<label index="tx_bib_domain_model_reference_bibtype">Bibliographie-Typ</label>
+			<label index="import_bibtex_text.0">Das BibTeX-Format ist nicht strikt definiert. der Parser versucht die Daten so gut wie möglich zu importieren. Ggf. sollte erst ein Test mit einem leeren StorageFolder durchgeführt werden.</label>
+			<label index="import_bibtex_text.1">@String( var = "some text" ) Platzhalter werden nicht unterstützt</label>
 
 		</languageKey>
 		<languageKey index="it" type="array">
