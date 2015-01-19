@@ -30,15 +30,23 @@ use \TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class FlexFormUtility {
 
+	/**
+	 * @var \Ipf\Bib\Utility\ReferenceReader
+	 */
+	protected $referenceReader;
+
+	public function __construct() {
+		$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+	}
+
+
 	public function addFieldsToFlexForm(&$configuration) {
 
-		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		$optionList = array();
 
-		foreach ($referenceReader->getReferenceFields() as $key => $referenceField) {
+		foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
 			$optionList[] = array(
-					0 => LocalizationUtility::translate($referenceReader->getReferenceTable() . '_' . $referenceField, 'bib'),
+					0 => LocalizationUtility::translate($this->referenceReader->getReferenceTable() . '_' . $referenceField, 'bib'),
 					1 => $referenceField
 			);
 		}
@@ -49,17 +57,15 @@ class FlexFormUtility {
 
 	public function addSearchFieldsToFlexForm(&$configuration) {
 
-		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
 		$optionList = array();
 
-		$searchFields = $referenceReader->getSearchFields();
+		$searchFields = $this->referenceReader->getSearchFields();
 
 		if (count($searchFields) > 0) {
 
-			foreach ($referenceReader->getSearchFields() as $searchField) {
+			foreach ($this->referenceReader->getSearchFields() as $searchField) {
 				$optionList[] = array(
-						0 => LocalizationUtility::translate($referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
+						0 => LocalizationUtility::translate($this->referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
 						1 => $searchField
 				);
 			}

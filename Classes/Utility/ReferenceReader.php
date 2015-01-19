@@ -1789,7 +1789,7 @@ class ReferenceReader {
 	 * @param array $searchFields
 	 */
 	public function setSearchFields($searchFields) {
-		$this->searchFields = $searchFields;
+		$this->search_fields = $searchFields;
 	}
 
 	/**
