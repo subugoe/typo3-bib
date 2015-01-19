@@ -522,7 +522,6 @@ class ReferenceReader {
 			$selectClause .= ' FROM ' . $base['table'] . ' ' . $base['table'];
 			$selectClause .= $joins;
 		}
-
 		return $selectClause;
 	}
 
@@ -996,7 +995,7 @@ class ReferenceReader {
 				$sortingFilterSize = sizeof($filter['sorting']);
 				for ($i = 0; $i < $sortingFilterSize; $i++) {
 					if (isset ($filter['sorting'][$i]['field']) && isset ($filter['sorting'][$i]['dir'])) {
-						if ($filter['sorting'][$i]['field'] == 't_ref.editor ') {
+						if (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE . '.editor') {
 							if (isset($this->editor_stop_words) && !empty($this->editor_stop_words)) {
 								$editorStopWords = explode('#', $this->editor_stop_words);
 								$oc = '';
@@ -1013,7 +1012,8 @@ class ReferenceReader {
 								}
 								$orderClause[] = $oc;
 							}
-						} elseif ($filter['sorting'][$i]['field'] == 't_ref.title ') {
+						}
+						elseif (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE . '.title') {
 							if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
 								$titleStopWords = explode('#', $this->title_stop_words);
 								$oc = '';
@@ -1052,14 +1052,14 @@ class ReferenceReader {
 							}
 						}
 						else {
-							if ($sortingFilterSize == 1 && trim($filter['sorting'][$i]['field']) == 't_authors.surname') {
+							if ($sortingFilterSize == 1 && trim($filter['sorting'][$i]['field']) == self::AUTHOR_TABLE . '.surname') {
 								if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
 									$titleStopWords = explode('#', $this->title_stop_words);
 									$oc = '';
 									for ($k=0; $k<count($titleStopWords); $k++) {
 										$oc .= 'REPLACE(';
 									}
-									$oc .= 't_ref.title';
+									$oc .= self::REFERENCE_TABLE . '.title';
 									$oc .= ',';
 									foreach ($titleStopWords as $key => $titleStopWord) {
 										$oc .= "'" . $titleStopWord . "',";
