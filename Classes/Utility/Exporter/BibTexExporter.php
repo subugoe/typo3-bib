@@ -26,6 +26,13 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Utility\PRegExpTranslator;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
+ * Class BibTexExporter
+ * @package Ipf\Bib\Utility\Exporter
+ */
 class BibTexExporter extends Exporter {
 
 	/**
@@ -43,7 +50,7 @@ class BibTexExporter extends Exporter {
 		$this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.bib');
 
 		/** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
-		$bibTexTranslator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
+		$bibTexTranslator = GeneralUtility::makeInstance(PRegExpTranslator::class);
 
 		$bibTexTranslator
 				->push('/\\\\/', '\\\\textbackslash')
@@ -187,7 +194,7 @@ class BibTexExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function formatPublicationForExport($publication, $infoArr = array()) {
+	protected function formatPublicationForExport($publication, $infoArr = []) {
 
 		$bibliographyType = ucfirst($this->getReferenceReader()->allBibTypes[$publication['bibtype']]);
 
@@ -195,7 +202,7 @@ class BibTexExporter extends Exporter {
 		$content .= $bibliographyType . ' { ';
 		$content .= trim($publication['citeid']) . ",\n";
 
-		$entries = array();
+		$entries = [];
 		foreach ($this->getReferenceReader()->getPublicationFields() as $publicationField) {
 			$append = TRUE;
 			switch ($publicationField) {
@@ -343,7 +350,7 @@ class BibTexExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function fileIntro($infoArr = array()) {
+	protected function fileIntro($infoArr = []) {
 		$str = "\n" . $this->getGeneralInformationText($infoArr);
 		$str = preg_replace('/^/m', '% ', $str) . "\n";
 		return $str;
@@ -353,9 +360,7 @@ class BibTexExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function fileOutro($infoArr = array()){
+	protected function fileOutro($infoArr = []){
 		return '';
 	}
 }
-
-?>

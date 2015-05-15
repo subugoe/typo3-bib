@@ -26,17 +26,21 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class XmlExporter
+ * @package Ipf\Bib\Utility\Exporter
+ */
 class XmlExporter extends Exporter {
 
 	/**
 	 * @var array
 	 */
-	protected $pattern = array();
+	protected $pattern = [];
 
 	/**
 	 * @var array
 	 */
-	protected $replacement = array();
+	protected $replacement = [];
 
 	/**
 	 * @param \tx_bib_pi1 $pi1
@@ -61,7 +65,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function formatPublicationForExport($publication, $infoArr = array()) {
+	protected function formatPublicationForExport($publication, $infoArr = []) {
 
 		$charset = $this->pi1->extConf['charset']['lower'];
 
@@ -118,7 +122,7 @@ class XmlExporter extends Exporter {
 			case 'authors':
 				$authors = is_array($value) ? $value : explode(' and ', $value);
 				$value = '';
-				$aXML = array();
+				$aXML = [];
 				foreach ($authors as $author) {
 					$a_str = '';
 					$foreName = $this->xmlFormatString($author['forename']);
@@ -160,7 +164,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function fileIntro($infoArr = array()) {
+	protected function fileIntro($infoArr = []) {
 		$content = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 		$content .= '<bib>' . "\n";
 		$content .= '<comment>' . "\n";
@@ -173,7 +177,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function fileOutro($infoArr = array()) {
+	protected function fileOutro($infoArr = []) {
 		$content = '</bib>' . "\n";
 		return $content;
 	}

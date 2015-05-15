@@ -1,11 +1,11 @@
 <?php
-namespace Ipf\Bib\Utility;
+namespace Ipf\Bib\View;
 
 /* * *************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
- *      Göttingen State and University Library
+ *  (c) 2015 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *      Goettingen State Library
  *
  *  All rights reserved
  *
@@ -20,26 +20,21 @@ namespace Ipf\Bib\Utility;
  *
  *  This script is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
 /**
- * RealUrl Utility functions
+ * Class View
+ * @package Ipf\Bib\View
  */
-class RealUrl {
+abstract class View {
 
-	/**
-	 * Increment page browser counter to not have zero-based urls
-	 *
-	 * @param array $params
-	 * @param mixed $pObj
-	 * @return array
-	 */
-	public function pageBrowser($params, &$pObj) {
-		return ($params['decodeAlias'] ? --$params['value'] : ++$params['value']);
-	}
+	const VIEW_LIST = 0;
+	const VIEW_SINGLE = 1;
+	const VIEW_EDITOR = 2;
+	const VIEW_DIALOG = 3;
 
 }

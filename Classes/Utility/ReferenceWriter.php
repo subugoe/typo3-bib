@@ -26,6 +26,7 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 use Ipf\Bib\Exception\DataException;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -54,6 +55,9 @@ class ReferenceWriter {
 	 */
 	protected $db;
 
+	/**
+	 * constructor
+	 */
 	public function __construct() {
 		$this->db = $GLOBALS['TYPO3_DB'];
 	}
@@ -106,12 +110,12 @@ class ReferenceWriter {
 	protected function clear_page_cache() {
 		if ($this->clear_cache) {
 			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-			$dataHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
-			$clear_cache = array();
+			$dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+			$clear_cache = [];
 
 			$be_user = $GLOBALS['BE_USER'];
 			if (is_object($be_user) || is_array($be_user->user)) {
-				$dataHandler->start(array(), array(), $be_user);
+				$dataHandler->start([], [], $be_user);
 				// Find storage cache clear requests
 				foreach ($this->referenceReader->pid_list as $pid) {
 					$tsc = $dataHandler->getTCEMAIN_TSconfig($pid);
@@ -187,7 +191,7 @@ class ReferenceWriter {
 			);
 		}
 
-		$referenceRow = array();
+		$referenceRow = [];
 		// Copy reference fields
 		foreach ($this->referenceReader->getReferenceFields() as $field) {
 			switch ($field) {
@@ -312,9 +316,9 @@ class ReferenceWriter {
 			}
 		}
 
-		$db_aships = $this->referenceReader->getAuthorships(array('pub_id' => $pub_uid));
+		$db_aships = $this->referenceReader->getAuthorships(['pub_id' => $pub_uid]);
 
-		$as_delete = array();
+		$as_delete = [];
 		$as_new = sizeof($authors) - sizeof($db_aships);
 		if ($as_new < 0) {
 			// This deletes the first authorships
@@ -335,7 +339,7 @@ class ReferenceWriter {
 		for ($ii = 0; $ii < $authorsSize; $ii++) {
 			$author =& $authors[$ii];
 			if (is_numeric($author['uid'])) {
-				$as = array();
+				$as = [];
 				$as['pid'] = intval($pid);
 				$as['pub_id'] = intval($pub_uid);
 				$as['author_id'] = intval($author['uid']);
@@ -420,9 +424,7 @@ class ReferenceWriter {
 		$this->db->exec_UPDATEquery(
 			$this->referenceReader->getAuthorshipTable(),
 			'uid=' . intval($uid) . ' AND deleted=0',
-			array(
-				'deleted' => 1
-			)
+			['deleted' => 1]
 		);
 	}
 
@@ -446,9 +448,7 @@ class ReferenceWriter {
 		$this->db->exec_UPDATEquery(
 			$this->referenceReader->getAuthorshipTable(),
 			'uid IN (' . $uid_list . ') AND deleted=0',
-			array(
-				'deleted' => 1
-			)
+			['deleted' => 1]
 		);
 	}
 
@@ -466,10 +466,10 @@ class ReferenceWriter {
 		$this->db->exec_UPDATEquery(
 			$this->referenceReader->getReferenceTable(),
 			'uid=' . strval($uid),
-			array(
+			[
 				'hidden' => ($hidden ? '1' : '0'),
 				'tstamp' => time()
-			)
+			]
 		);
 
 		$this->referenceLog('A publication reference was ' . ($hidden ? 'hidden' : 'revealed'), $uid);
@@ -500,19 +500,17 @@ class ReferenceWriter {
 				$this->db->exec_UPDATEquery(
 					$this->referenceReader->getAuthorshipTable(),
 					'pub_id=' . intval($uid) . ' AND deleted=0',
-					array(
-						'deleted' => $deleted
-					)
+					['deleted' => $deleted]
 				);
 
 				// Delete reference
 				$this->db->exec_UPDATEquery(
 					$this->referenceReader->getReferenceTable(),
 					'uid=' . intval($uid) . ' AND deleted=0',
-					array(
+					[
 						'deleted' => $deleted,
 						'tstamp' => time()
-					)
+					]
 				);
 
 				$this->clear_page_cache();

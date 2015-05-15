@@ -26,6 +26,7 @@ namespace Ipf\Bib\ViewHelpers;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  ******************************************************************************/
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Renders HTML output for a bibliography entry.
@@ -61,17 +62,17 @@ namespace Ipf\Bib\ViewHelpers;
  * </bib:renderPublication>
  *
  */
-class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class RenderPublicationViewHelper extends AbstractViewHelper {
 
 	/**
 	 * @var array
 	 */
-	public static $variables = array(
-		'prefixIfFirst' => array('description' => 'default prefix for the first field that is displayed', 'default' => ''),
-		'prefix' => array('description' => 'default prefix for fields', 'default' => ''),
-		'suffix' => array('description' => 'default suffix for fields', 'default' => ','),
-		'suffixIfLast' => array('description' => 'default suffix for the last field that is displayed', 'default' => '.')
-	);
+	public static $variables = [
+		'prefixIfFirst' => ['description' => 'default prefix for the first field that is displayed', 'default' => ''],
+		'prefix' => ['description' => 'default prefix for fields', 'default' => ''],
+		'suffix' => ['description' => 'default suffix for fields', 'default' => ','],
+		'suffixIfLast' => ['description' => 'default suffix for the last field that is displayed', 'default' => '.']
+	];
 
 	/**
 	 * @var string
@@ -109,7 +110,7 @@ class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 
 		// Set up template variables for RenderPublicationField View Helper.
 		$this->templateVariableContainer->add(self::$bibliographyItemVariableName, $bibliographyItem);
-		$this->templateVariableContainer->add(self::$containerVariableName, array());
+		$this->templateVariableContainer->add(self::$containerVariableName, []);
 		foreach (array_keys(self::$variables) as $variableName) {
 			$this->templateVariableContainer->add(self::$prefixString . $variableName, $this->arguments[$variableName]);
 		}
@@ -191,5 +192,3 @@ class RenderPublicationViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 	}
 
 }
-
-?>

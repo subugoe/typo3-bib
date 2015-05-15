@@ -3,7 +3,3 @@
 /vendor/
 ext_emconf.php
 Classes/Contrib
-
-
-composer.lock
-composer.json

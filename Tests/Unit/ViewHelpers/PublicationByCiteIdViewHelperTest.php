@@ -7,7 +7,7 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
  *
  *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,7 +28,7 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
  * ************************************************************* */
 
 /**
- * Description 
+ * Description
  */
 class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase {
 
@@ -41,7 +41,7 @@ class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\View
 		parent::setUp();
 		$this->templateVariableContainer = new \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer();
 		$this->renderingContext->injectTemplateVariableContainer($this->templateVariableContainer);
-		$this->viewHelper = $this->getAccessibleMock('Ipf\\Bib\\ViewHelpers\\PublicationByCiteIdViewHelper', array('dummy'));
+		$this->viewHelper = $this->getAccessibleMock('Ipf\\Bib\\ViewHelpers\\PublicationByCiteIdViewHelper', ['dummy']);
 		$this->injectDependenciesIntoViewHelper($this->viewHelper);
 	}
 
@@ -49,7 +49,7 @@ class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\View
 	 * @test
 	 */
 	public function providingAnEmptyCiteIdThrowsAnException() {
-		$this->viewHelper->setArguments(array('citeId' => ''));
+		$this->viewHelper->setArguments(['citeId' => '']);
 		$this->setExpectedException('\Exception');
 		$this->assertEquals($this->viewHelper->_call('render'), $this->getExpectedException());
 	}
@@ -58,7 +58,7 @@ class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\View
 	 * @test
 	 */
 	public function providingANonExistentCiteIdReturnsAnArrayWithExceptionKey() {
-		$this->viewHelper->setArguments(array('citeId' => 'mueller98'));
+		$this->viewHelper->setArguments(['citeId' => 'mueller98']);
 		$this->assertArrayHasKey('exception', $this->viewHelper->_call('render'));
 	}
 

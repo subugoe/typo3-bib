@@ -26,6 +26,10 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class PRegExpTranslator
+ * @package Ipf\Bib\Utility
+ */
 class PRegExpTranslator {
 
 	/**
@@ -49,8 +53,8 @@ class PRegExpTranslator {
 	 * @return void
 	 */
 	protected function clear() {
-		$this->pattern = array();
-		$this->replacement = array();
+		$this->pattern = [];
+		$this->replacement = [];
 	}
 
 	/**

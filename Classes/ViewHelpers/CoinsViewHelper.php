@@ -39,7 +39,7 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper {
 	 *
 	 * @var array
 	 */
-	protected $fieldAssignment = array(
+	protected $fieldAssignment = [
 		'title' => 'title',
 		'isbn' => 'ISBN',
 		'date' => 'year',
@@ -47,7 +47,7 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper {
 		'pub' => 'publisher',
 		'genre' => 'bibtype',
 		'series' => 'series',
-	);
+	];
 
 
 	/**
@@ -61,7 +61,7 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper {
 	 */
 	public function render($data) {
 
-		$coinsData = array();
+		$coinsData = [];
 
 		$coinsData[] = 'ctx_ver=Z39.88-2004';
 		$coinsData[] = 'rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook';
