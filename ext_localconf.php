@@ -39,9 +39,9 @@ if (!defined ('TYPO3_MODE')) {
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
 	'Ipf.' . $_EXTKEY,
 	'rest',
-	array(
+	[
 		'Rest' => 'list'
-	)
+	]
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/Configuration/TypoScript/default/setup.txt">');

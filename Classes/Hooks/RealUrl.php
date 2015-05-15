@@ -6,7 +6,7 @@ namespace Ipf\Bib\Hooks;
  *
  *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Göttingen State and University Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -39,77 +39,77 @@ class RealUrl {
 	 * @return array
 	 */
 	public function addRealUrlConfiguration($params, &$pObj) {
-		return array_merge_recursive($params['config'], array(
-				'postVarSets' => array(
-					'_DEFAULT' => array(
-						'publication' => array(
-							array(
+		return array_merge_recursive($params['config'], [
+				'postVarSets' => [
+					'_DEFAULT' => [
+						'publication' => [
+							[
 								'GETvar' => 'tx_bib_pi1[show_uid]',
-								'lookUpTable' => array(
+								'lookUpTable' => [
 									'table' => 'tx_bib_domain_model_reference',
 									'id_field' => 'uid',
 									'alias_field' => 'citeid',
 									'addWhereClause' => ' AND NOT deleted',
 									'useUniqueCache' => 1,
-									'useUniqueCache_conf' => array(
+									'useUniqueCache_conf' => [
 										'strtolower' => 1,
 										'spaceCharacter' => '-',
-										),
-									),
-							),
-						),
-						'edit' => array(
-							array(
+									],
+								],
+							],
+						],
+						'edit' => [
+							[
 								'GETvar' => 'tx_bib_pi1[action][edit]',
-								'valueMap' => array(
+								'valueMap' => [
 									'publication' => 1
-								)
-							),
-						),
-						'hide' => array(
-							array(
+								]
+							],
+						],
+						'hide' => [
+							[
 								'GETvar' => 'tx_bib_pi1[action][hide]',
-								'valueMap' => array(
+								'valueMap' => [
 									'publication' => 1
-								)
-							),
-						),
-						'add' => array(
-							array(
+								]
+							],
+						],
+						'add' => [
+							[
 								'GETvar' => 'tx_bib_pi1[action][new]',
-								'valueMap' => array(
+								'valueMap' => [
 									'publication' => 1
-								)
-							),
-						),
-						'resultpage' => array(
-							array(
+								]
+							],
+						],
+						'resultpage' => [
+							[
 								'GETvar' => 'tx_bib_pi1[page]',
 								'userFunc' => 'EXT:bib/Classes/Utility/RealUrl.php:&Ipf\\Bib\Utility\\RealUrl->pageBrowser',
-							),
-						),
-						'publicationid' => array(
-							array(
+							],
+						],
+						'publicationid' => [
+							[
 								'GETVar' => 'tx_bib_pi1[uid]',
-							),
-						),
-						'import' => array(
-							array(
+							],
+						],
+						'import' => [
+							[
 								'GETVar' => 'tx_bib_pi1[import]',
-								'valueMap' => array(
+								'valueMap' => [
 									'bibtex' => 1,
 									'xml' => 2
-								),
-							),
-						),
-						'export' => array(
-							array(
+								],
+							],
+						],
+						'export' => [
+							[
 								'GETVar' => 'tx_bib_pi1[export]',
-							)
-						)
-					)
-				)
-			)
+							]
+						]
+					]
+				]
+			]
 		);
 	}
 

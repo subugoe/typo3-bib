@@ -6,7 +6,7 @@ namespace Ipf\Bib\ViewHelpers;
  *
  *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,6 +25,10 @@ namespace Ipf\Bib\ViewHelpers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Exception\DataException;
+use Ipf\Bib\Utility\ReferenceReader;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Retrieve an array of the publication by providing a CiteId
@@ -41,7 +45,7 @@ namespace Ipf\Bib\ViewHelpers;
  * </f:alias>
  *
  */
-class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class PublicationByCiteIdViewHelper extends AbstractViewHelper {
 
 	/**
 	 * Register arguments.
@@ -72,7 +76,7 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 			try {
 				return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
 			} catch (\Exception $e) {
-				return array('exception' => $e->getMessage());
+				return ['exception' => $e->getMessage()];
 			}
 		}
 	}
@@ -86,20 +90,20 @@ class PublicationByCiteIdViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abs
 	protected function getBibliographicDataFromCitationId($citationId, $storagePid) {
 
 		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+		$referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
 
-		$referenceReader->setPidList(array($storagePid));
+		$referenceReader->setPidList([$storagePid]);
 
 		if ($referenceReader->citeIdExists($citationId)) {
 			$referenceReader->append_filter(
-				array(
-					'citeid' => array(
+				[
+					'citeid' => [
 						'ids' => $citationId
-					)
-				)
+					]
+				]
 			);
 		} else {
-			throw new \Exception('Citation Id ' . $citationId . ' does not exist', 1378195258);
+			throw new DataException('Citation Id ' . $citationId . ' does not exist', 1378195258);
 		}
 
 		$citationUid = $referenceReader->getUidFromCitationId($citationId);

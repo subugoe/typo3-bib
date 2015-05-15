@@ -6,7 +6,7 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
  *
  *  (c) 2015 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,7 +25,10 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use \TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase;
+use Ipf\Bib\ViewHelpers\CoinsViewHelper;
+use TYPO3\CMS\Fluid\Core\ViewHelper\TagBuilder;
+use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
+use TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase;
 
 /**
  * Test for coins ViewHelper
@@ -37,10 +40,13 @@ class CoinsViewHelperTest extends ViewHelperBaseTestcase {
 	 */
 	protected $fixture;
 
+	/**
+	 * @return array
+	 */
 	public function publicationProvider() {
-		return array(
-				array(
-						'data' => array(
+		return [
+				[
+						'data' => [
 								'hidden' => '0',
 								'tstamp' => '1418897565',
 								'sorting' => '0',
@@ -57,16 +63,16 @@ class CoinsViewHelperTest extends ViewHelperBaseTestcase {
 								'series' => 'Germania Benedictina',
 								'ISBN' => '9783830675716',
 								'authors' => ' Römer, Christof',
-						)
-				),
-		);
+						]
+				],
+		];
 	}
 
 	public function setUp() {
 		parent::setUp();
-		$this->templateVariableContainer = new \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer();
+		$this->templateVariableContainer = new TemplateVariableContainer();
 		$this->renderingContext->injectTemplateVariableContainer($this->templateVariableContainer);
-		$this->fixture = $this->getAccessibleMock('Ipf\\Bib\\ViewHelpers\\CoinsViewHelper', array('dummy'));
+		$this->fixture = $this->getAccessibleMock(CoinsViewHelper::class, ['dummy']);
 		$this->injectDependenciesIntoViewHelper($this->fixture);
 	}
 
@@ -75,8 +81,8 @@ class CoinsViewHelperTest extends ViewHelperBaseTestcase {
 	 * @dataProvider publicationProvider
 	 */
 	public function tagFromTypeSpanIsGenerated($data) {
-		$this->fixture->setArguments(array('data' => $data));
-		$mockTagBuilder = $this->getMock('TYPO3\\CMS\\Fluid\\Core\\ViewHelper\\TagBuilder', array('setTagName', 'addAttribute', 'setContent'));
+		$this->fixture->setArguments(['data' => $data]);
+		$mockTagBuilder = $this->getMock(TagBuilder::class, ['setTagName', 'addAttribute', 'setContent']);
 		$mockTagBuilder->expects($this->once())->method('setTagName')->with('span');
 		$this->fixture->_set('tag', $mockTagBuilder);
 		$this->fixture->initialize();

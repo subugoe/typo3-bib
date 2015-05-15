@@ -25,7 +25,6 @@ namespace Ipf\Bib\Domain\Repository;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Reference repository
@@ -39,6 +38,10 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 */
 	protected $db;
 
+	/**
+	 * @param $storagePid
+	 * @return array
+	 */
 	public function findBibliographyByStoragePid($storagePid) {
 
 		$this->db = $GLOBALS['TYPO3_DB'];

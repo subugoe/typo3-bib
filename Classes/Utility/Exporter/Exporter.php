@@ -28,6 +28,10 @@ namespace Ipf\Bib\Utility\Exporter;
 
 use TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException;
 
+/**
+ * Class Exporter
+ * @package Ipf\Bib\Utility\Exporter
+ */
 abstract class Exporter {
 
 	/**
@@ -119,7 +123,7 @@ abstract class Exporter {
 			$this->getReferenceReader()->initializeReferenceFetching();
 
 			// Setup info array
-			$infoArr = array();
+			$infoArr = [];
 			$infoArr['pubNum'] = $this->getReferenceReader()->numberOfReferencesToBeFetched();
 			$infoArr['index'] = -1;
 
@@ -128,7 +132,7 @@ abstract class Exporter {
 			$this->writeToResource($data);
 
 			// Write publications
-			while ($pub = $this->getReferenceReader()->getReference()) {
+			while ($this->getReferenceReader()->getReference()) {
 				$infoArr['index']++;
 				$data = $this->formatPublicationForExport($pub, $infoArr);
 				$this->writeToResource($data);
@@ -219,7 +223,7 @@ abstract class Exporter {
 	 * @param array $infoArr
 	 * @return string The export string
 	 */
-	abstract protected function formatPublicationForExport($publication, $infoArr = array());
+	abstract protected function formatPublicationForExport($publication, $infoArr = []);
 
 
 	/**
@@ -228,7 +232,7 @@ abstract class Exporter {
 	 * @param $infoArr
 	 * @return string The file header string
 	 */
-	abstract protected function fileIntro($infoArr = array());
+	abstract protected function fileIntro($infoArr = []);
 
 	/**
 	 * Returns the file outtro
@@ -236,7 +240,7 @@ abstract class Exporter {
 	 * @param array $infoArr
 	 * @return string The file header string
 	 */
-	abstract protected function fileOutro($infoArr = array());
+	abstract protected function fileOutro($infoArr = []);
 
 
 	/**
@@ -245,15 +249,15 @@ abstract class Exporter {
 	 * @param array
 	 * @return string A filter information string
 	 */
-	protected function getGeneralInformationText($infoArr = array()) {
+	protected function getGeneralInformationText($infoArr = []) {
 		$num = intval($infoArr['pubNum']);
 
-		$content = 'This file was created by the TYPO3 extension' . "\n";
+		$content = 'This file was created by the TYPO3 extension' . PHP_EOL;
 		$content .= $this->pi1->extKey;
 		if (is_array($this->extensionManagerConfiguration)) {
 			$content .= ' version ' . $this->extensionManagerConfiguration['version'] . "\n";
 		}
-		$content .= "\n";
+		$content .= PHP_EOL;
 		$content .= '--- Timezone: ' . date('T') . "\n";
 		$content .= 'Creation date: ' . date('Y-m-d') . "\n";
 		$content .= 'Creation time: ' . date('H-i-s') . "\n";
@@ -267,7 +271,7 @@ abstract class Exporter {
 		return $content;
 	}
 
-	/*
+	/**
 	 * Return codes
 	 *  0 - Sink ready
 	 * -1 - Sink is up to date
@@ -423,5 +427,3 @@ abstract class Exporter {
 	}
 
 }
-
-?>

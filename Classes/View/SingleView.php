@@ -27,8 +27,13 @@ namespace Ipf\Bib\View;
  * ************************************************************* */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
-class SingleView {
+/**
+ * Class SingleView
+ * @package Ipf\Bib\View
+ */
+class SingleView extends View {
 
 	/**
 	 * @var \tx_bib_pi1
@@ -85,7 +90,7 @@ class SingleView {
 	public function initialize($pi1) {
 
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
-		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view = GeneralUtility::makeInstance(StandaloneView::class);
 		$view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
 		$this->view = $view;
 
@@ -136,7 +141,7 @@ class SingleView {
 	 */
 	protected function typeReference($ref) {
 
-		$warnings = array();
+		$warnings = [];
 
 		// Store the cObj Data for later recovery
 		$contentObjectBackup = $this->pi1->cObj->data;
@@ -152,7 +157,7 @@ class SingleView {
 		$fields = $this->referenceReader->pubAllFields;
 		$dont_show = GeneralUtility::trimExplode(',', $this->conf['dont_show'], TRUE);
 
-		$publication = array();
+		$publication = [];
 		foreach ($fields as $field) {
 			if ((strlen($publicationData[$field]) > 0)) {
 				if (!in_array($field, $dont_show)) {
@@ -173,10 +178,7 @@ class SingleView {
 					if (isset ($stdWrap['single_view_link'])) {
 						$value = $this->pi1->get_link(
 							$value,
-							array(
-								'show_uid' => strval($publicationData['uid']
-								)
-							)
+							['show_uid' => strval($publicationData['uid'])]
 						);
 					}
 					$publication[$field] = $value;
@@ -200,11 +202,11 @@ class SingleView {
 		$postText = $this->pi1->cObj->stdWrap($postText, $this->conf['post_text.']);
 
 		$this->view->assignMultiple(
-			array(
+			[
 				'pageTitle' => $title,
 				'preText' => $preText,
 				'postText' => $postText
-			)
+			]
 		);
 
 		$this->view->assign('publication', $publication);
@@ -230,10 +232,10 @@ class SingleView {
 				break;
 		}
 
-		$over = array(
+		$over = [
 			$this->pi1->conf['editor.']['olabel.']['all.'][$field],
 			$this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field]
-		);
+		];
 
 		foreach ($over as $lvar) {
 			if (is_string($lvar)) {

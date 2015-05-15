@@ -25,9 +25,13 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
+/**
+ * Class FlexFormUtility
+ * @package Ipf\Bib\Utility
+ */
 class FlexFormUtility {
 
 	/**
@@ -35,56 +39,70 @@ class FlexFormUtility {
 	 */
 	protected $referenceReader;
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
-		$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+		$this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
 	}
 
-
+	/**
+	 * @param array $configuration
+	 * @return mixed
+	 */
 	public function addFieldsToFlexForm(&$configuration) {
 
-		$optionList = array();
+		$optionList = [];
 
 		foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
-			$optionList[] = array(
+			$optionList[] = [
 					0 => LocalizationUtility::translate($this->referenceReader->getReferenceTable() . '_' . $referenceField, 'bib'),
 					1 => $referenceField
-			);
+			];
 		}
 
 		$configuration['items'] = array_merge($configuration['items'], $optionList);
 		return $configuration;
 	}
 
+	/**
+	 * @param array $configuration
+	 * @return mixed
+	 */
 	public function addSearchFieldsToFlexForm(&$configuration) {
 
-		$optionList = array();
+		$optionList = [];
 
 		$searchFields = $this->referenceReader->getSearchFields();
 
 		if (count($searchFields) > 0) {
 
 			foreach ($this->referenceReader->getSearchFields() as $searchField) {
-				$optionList[] = array(
+				$optionList[] = [
 						0 => LocalizationUtility::translate($this->referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
 						1 => $searchField
-				);
+				];
 			}
 		}
 		$configuration['items'] = array_merge($configuration['items'], $optionList);
 		return $configuration;
 	}
 
+	/**
+	 * @param array $configuration
+	 * @return mixed
+	 */
 	public function addSortFieldsToFlexForm(&$configuration) {
 
 		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
-		$optionList = array();
+		$referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+		$optionList = [];
 
 		foreach ($referenceReader->getSortFields() as $sortField) {
-			$optionList[] = array(
+			$optionList[] = [
 					0 => LocalizationUtility::translate($referenceReader->getSortPrefix() . '_' . $sortField, 'bib'),
 					1 => $sortField
-			);
+			];
 		}
 
 		usort($optionList, $this->sorter(0));
@@ -94,6 +112,10 @@ class FlexFormUtility {
 		return $configuration;
 	}
 
+	/**
+	 * @param $key
+	 * @return \Closure
+	 */
 	protected function sorter($key) {
 		return function ($a, $b) use ($key) {
 			return strnatcmp($a[$key], $b[$key]);
