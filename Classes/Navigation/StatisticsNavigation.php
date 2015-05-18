@@ -26,9 +26,13 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class StatisticsNavigation
+ * @package Ipf\Bib\Navigation
+ */
 class StatisticsNavigation extends Navigation {
 
-	/*
+	/**
 	 * Initialize
 	 *
 	 * @param \tx_bib_pi1 $pi1
@@ -58,7 +62,7 @@ class StatisticsNavigation extends Navigation {
 	protected function sel_get_link($text, $index) {}
 
 
-	/*
+	/**
 	 * Returns content
 	 *
 	 * @return string
@@ -117,5 +121,3 @@ class StatisticsNavigation extends Navigation {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']);
 }
-
-?>

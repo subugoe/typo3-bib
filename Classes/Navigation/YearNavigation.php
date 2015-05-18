@@ -26,12 +26,17 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use \Ipf\Bib\Utility\Utility;
+use Ipf\Bib\Utility\Utility;
 
+/**
+ * Class YearNavigation
+ * @package Ipf\Bib\Navigation
+ */
 class YearNavigation extends Navigation {
 
-	/*
+	/**
 	 * Intialize
+	 * @param \tx_bib_pi1 $pi1
 	 */
 	public function initialize($pi1) {
 		parent::initialize($pi1);
@@ -44,35 +49,41 @@ class YearNavigation extends Navigation {
 	}
 
 
-	/*
+	/**
 	 * Creates a text for a given index
+	 * @param int $index
+	 * @return string
 	 */
 	protected function sel_get_text($index) {
 		return strval($this->pi1->stat['years'][$index]);
 	}
 
-	/*
+	/**
 	 * Creates a link for the selection
+	 * @param string $text
+	 * @param int $ii
+	 * @return string
 	 */
 	protected function sel_get_link($text, $ii) {
 		$title = str_replace('%y', $text, $this->sel_link_title);
 		$lnk = $this->pi1->get_link(
 			$text,
-			array(
+			[
 				'year' => $text,
 				'page' => ''
-			),
+			],
 			TRUE,
-			array(
+			[
 				'title' => $title
-			)
+			]
 		);
 		return $lnk;
 	}
 
 
-	/*
+	/**
 	 * Returns content
+	 * @return string
 	 */
 	protected function get() {
 
@@ -93,7 +104,7 @@ class YearNavigation extends Navigation {
 	 */
 	protected function getYearSelection() {
 
-		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
+		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
 
 		if (sizeof($this->pi1->stat['years']) > 0) {
 
@@ -106,7 +117,7 @@ class YearNavigation extends Navigation {
 
 			$txt = $this->pi1->get_ll('yearNav_all_years', 'All', TRUE);
 			if (is_numeric($this->pi1->extConf['year'])) {
-				$txt = $this->pi1->get_link($txt, array('year' => 'all'));
+				$txt = $this->pi1->get_link($txt, ['year' => 'all']);
 			} else {
 				$txt = $this->pi1->cObj->stdWrap($txt, $selectionConfiguration['current.']);
 			}
@@ -115,7 +126,7 @@ class YearNavigation extends Navigation {
 			if ($cur === FALSE) {
 				$cur = -1;
 			}
-			$indices = array(0, $cur, sizeof($this->pi1->stat['years']) - 1);
+			$indices = [0, $cur, sizeof($this->pi1->stat['years']) - 1];
 
 			$numSel = 3;
 			if (array_key_exists('years', $selectionConfiguration)) {
@@ -134,41 +145,42 @@ class YearNavigation extends Navigation {
 		$selectForm = '';
 		if (sizeof($this->pi1->stat['years']) > 0) {
 			$name = $this->pi1->prefix_pi1 . '-year_select_form';
-			$action = $this->pi1->get_link_url(array('year' => ''), FALSE);
+			$action = $this->pi1->get_link_url(['year' => ''], FALSE);
 			$selectForm .= '<form name="' . $name . '" ';
 			$selectForm .= 'action="' . $action . '"';
 			$selectForm .= ' method="post"';
 			$selectForm .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
-			$selectForm .= '>' . "\n";
+			$selectForm .= '>';
 
-			$pairs = array('all' => $this->pi1->get_ll('yearNav_all_years', 'All', TRUE));
+			$pairs = ['all' => $this->pi1->get_ll('yearNav_all_years', 'All', TRUE)];
 			if (sizeof($this->pi1->stat['years']) > 0) {
-				foreach (array_reverse($this->pi1->stat['years']) as $y)
+				foreach (array_reverse($this->pi1->stat['years']) as $y) {
 					$pairs[$y] = $y;
+				}
 			} else {
 				$year = strval(intval(date('Y')));
-				$pairs = array($year => $year);
+				$pairs = [$year => $year];
 			}
 
-			$attributes = array(
+			$attributes = [
 				'name' => $this->pi1->prefix_pi1 . '[year]',
 				'onchange' => 'this.form.submit()'
-			);
+			];
 			if (strlen($this->conf['select_class']) > 0) {
 				$attributes['class'] = $this->conf['select_class'];
 			}
-			$button = Utility::html_select_input(
-				$pairs, $year, $attributes);
+			$button = Utility::html_select_input($pairs, $year, $attributes);
 			$button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
 			$selectForm .= $button;
 
-			$attributes = array();
+			$attributes = [];
 			if (strlen($this->conf['go_btn_class']) > 0) {
 				$attributes['class'] = $this->conf['go_btn_class'];
 			}
 			$button = Utility::html_submit_input(
 				$this->pi1->prefix_pi1 . '[action][select_year]',
-				$this->pi1->get_ll('button_go'), $attributes);
+				$this->pi1->get_ll('button_go'), $attributes
+			);
 			$button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
 			$selectForm .= $button;
 
@@ -184,5 +196,3 @@ class YearNavigation extends Navigation {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']);
 }
-
-?>

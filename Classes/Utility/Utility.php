@@ -63,7 +63,7 @@ class Utility {
 	 * @return string|bool The title string or FALSE
 	 */
 	public static function get_page_titles($uids) {
-		$titles = array();
+		$titles = [];
 		foreach ($uids as $uid) {
 			$uid = intval($uid);
 			$title = self::get_page_title($uid);
@@ -105,13 +105,13 @@ class Utility {
 	 */
 	public static function filter_pub_html_display($content, $htmlSpecialChars = FALSE, $charset = 'UTF-8') {
 		$rand = strval(rand()) . strval(rand());
-		$content = str_replace(array('<prt>', '</prt>'), '', $content);
+		$content = str_replace(['<prt>', '</prt>'], '', $content);
 
 		$LE = '#LE' . $rand . 'LE#';
 		$GE = '#GE' . $rand . 'GE#';
 
 		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+		$referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
 
 		foreach ($referenceReader->getAllowedTags() as $tag) {
 			$content = str_replace('<' . $tag . '>', $LE . $tag . $GE, $content);
@@ -124,7 +124,7 @@ class Utility {
 		$content = str_replace($LE, '<', $content);
 		$content = str_replace($GE, '>', $content);
 
-		$content = str_replace(array('<prt>', '</prt>'), '', $content);
+		$content = str_replace(['<prt>', '</prt>'], '', $content);
 
 		// End of remove not allowed tags
 
@@ -216,7 +216,7 @@ class Utility {
 	 * @return string The hidden input element
 	 * @deprecated
 	 */
-	public static function html_input($type, $name, $value, $attributes = array()) {
+	public static function html_input($type, $name, $value, $attributes = []) {
 		$content = '<input type="' . strval($type) . '"';
 		if (strlen($name) > 0) {
 			$content .= ' name="' . strval($name) . '"';
@@ -244,7 +244,7 @@ class Utility {
 	 * @return string The checkbox input element
 	 * @deprecated
 	 */
-	public static function html_check_input($name, $value, $checked, $attributes = array()) {
+	public static function html_check_input($name, $value, $checked, $attributes = []) {
 		if ($checked) {
 			$attributes['checked'] = 'checked';
 		}
@@ -262,7 +262,7 @@ class Utility {
 	 * @return string The checkbox input element
 	 * @deprecated
 	 */
-	public static function html_radio_input($name, $value, $checked, $attributes = array()) {
+	public static function html_radio_input($name, $value, $checked, $attributes = []) {
 		if ($checked) {
 			$attributes['checked'] = 'checked';
 		}
@@ -278,7 +278,7 @@ class Utility {
 	 * @return string The submit input element
 	 * @deprecated Use FLUIDTEMPLATE when possible
 	 */
-	public static function html_submit_input($name, $value, $attributes = array()) {
+	public static function html_submit_input($name, $value, $attributes = []) {
 		return self::html_input('submit', $name, $value, $attributes);
 	}
 
@@ -292,8 +292,8 @@ class Utility {
 	 * @param array $attributes
 	 * @return string The image input element
 	 */
-	public static function html_image_input($name, $value, $src, $attributes = array()) {
-		$attributes = array_merge($attributes, array('src' => $src));
+	public static function html_image_input($name, $value, $src, $attributes = []) {
+		$attributes = array_merge($attributes, ['src' => $src]);
 		return self::html_input('image', $name, $value, $attributes);
 	}
 
@@ -307,7 +307,7 @@ class Utility {
 	 * @return string The hidden input element
 	 * @deprecated
 	 */
-	public static function html_hidden_input($name, $value, $attributes = array()) {
+	public static function html_hidden_input($name, $value, $attributes = []) {
 		return self::html_input('hidden', $name, $value, $attributes);
 	}
 
@@ -321,7 +321,7 @@ class Utility {
 	 * @return string The text input element
 	 * @deprecated
 	 */
-	public static function html_text_input($name, $value, $attributes = array()) {
+	public static function html_text_input($name, $value, $attributes = []) {
 		return self::html_input('text', $name, $value, $attributes);
 	}
 
@@ -335,7 +335,7 @@ class Utility {
 	 * @return String The select element
 	 * @deprecated
 	 */
-	static public function html_select_input($pairs, $value, $attributes = array()) {
+	static public function html_select_input($pairs, $value, $attributes = []) {
 		$value = strval($value);
 		$content = '<select';
 		foreach ($attributes as $a_key => $a_value) {
@@ -343,7 +343,7 @@ class Utility {
 				$content .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
 			}
 		}
-		$content .= '>' . "\n";
+		$content .= '>';
 		foreach ($pairs as $p_value => $p_name) {
 			$p_value = strval($p_value);
 			$content .= '<option value="' . $p_value . '"';
@@ -352,9 +352,9 @@ class Utility {
 			}
 			$content .= '>';
 			$content .= strval($p_name);
-			$content .= '</option>' . "\n";
+			$content .= '</option>';
 		}
-		$content .= '</select>' . "\n";
+		$content .= '</select>';
 		return $content;
 	}
 
@@ -390,7 +390,7 @@ class Utility {
 	 * @return array An associative array contatining the input strings and their counts
 	 */
 	public static function string_counter($messages) {
-		$res = array();
+		$res = [];
 		foreach ($messages as $msg) {
 			$msg = strval($msg);
 			if (array_key_exists($msg, $res)) {
@@ -483,7 +483,7 @@ class Utility {
 	 * @return array The intvaled array
 	 */
 	public static function intval_array($arr) {
-		$res = array();
+		$res = [];
 		foreach ($arr as $val) {
 			$res[] = intval($val);
 		}
@@ -501,7 +501,7 @@ class Utility {
 	 * @return string The imploded array
 	 */
 	public static function implode_intval($sep, $list, $noEmpty = TRUE) {
-		$res = array();
+		$res = [];
 		if ($noEmpty) {
 			foreach ($list as $val) {
 				$val = trim($val);
@@ -559,7 +559,7 @@ class Utility {
 	 * @return array The exploded string
 	 */
 	public static function explode_trim_lower($sep, $str, $noEmpty = FALSE) {
-		$res = array();
+		$res = [];
 		$tmp = explode($sep, $str);
 		foreach ($tmp as $val) {
 			$val = trim($val);
@@ -626,10 +626,10 @@ class Utility {
 	 * @return bool|array FALSE or the error message array
 	 */
 	public static function explodeAuthorString($authorString) {
-		$res = array();
+		$res = [];
 		$lst = explode(' and ', $authorString);
 		foreach ($lst as $a_str) {
-			$name = array();
+			$name = [];
 			$parts = GeneralUtility::trimExplode(',', $a_str, TRUE);
 			if (sizeof($parts) > 1) {
 				$name['forename'] = $parts[1];
@@ -654,7 +654,7 @@ class Utility {
 	 * @return string The imploded array as a string
 	 */
 	public static function implode_and_last($arr, $sep, $and) {
-		$res = array();
+		$res = [];
 		$size = sizeof($arr);
 		$c_idx = $size - 2;
 		$a_idx = $size - 1;
@@ -688,4 +688,17 @@ class Utility {
 		}
 		return FALSE;
 	}
+
+	/**
+	 * Returns an instance of a navigation bar class
+	 *
+	 * @param string $type
+	 * @return \Ipf\Bib\Navigation\Navigation Instance of the navigation object
+	 */
+	public static function getAndInitializeNavigationInstance($type, $object) {
+		$navigationInstance = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\' . $type);
+		$navigationInstance->initialize($object);
+		return $navigationInstance;
+	}
+
 }

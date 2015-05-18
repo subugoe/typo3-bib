@@ -27,10 +27,19 @@ namespace Ipf\Bib\Utility\Importer;
  * ************************************************************* */
 
 use Ipf\Bib\Exception\DataException;
+use Ipf\Bib\Utility\DbUtility;
+use Ipf\Bib\Utility\Generator\AuthorsCiteIdGenerator;
+use Ipf\Bib\Utility\Generator\CiteIdGenerator;
+use Ipf\Bib\Utility\ReferenceWriter;
+use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
+/**
+ * Class Importer
+ * @package Ipf\Bib\Utility\Importer
+ */
 abstract class Importer {
 
 	/**
@@ -71,7 +80,7 @@ abstract class Importer {
 	/**
 	 * @var array
 	 */
-	public $statistics = array();
+	public $statistics = [];
 
 	// Utility
 	public $code_trans_tbl;
@@ -91,6 +100,10 @@ abstract class Importer {
 	 */
 	protected $db;
 
+	// Import modes
+	const IMP_BIBTEX = 1;
+	const IMP_XML = 2;
+
 	/**
 	 * Initializes the import. The argument must be the plugin class
 	 *
@@ -103,17 +116,17 @@ abstract class Importer {
 
 		$this->db = $GLOBALS['TYPO3_DB'];
 
-		$this->view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$this->view = GeneralUtility::makeInstance(StandaloneView::class);
 
-		$this->referenceWriter = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceWriter');
+		$this->referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class);
 		$this->referenceWriter->initialize($this->referenceReader);
 
-		$this->statistics['warnings'] = array();
-		$this->statistics['errors'] = array();
+		$this->statistics['warnings'] = [];
+		$this->statistics['errors'] = [];
 
 		// setup database utility
 		/** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
-		$databaseUtility = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\DbUtility');
+		$databaseUtility = GeneralUtility::makeInstance(DbUtility::class);
 		$databaseUtility->initialize($this->referenceReader);
 		$databaseUtility->charset = $pi1->extConf['charset']['upper'];
 		$databaseUtility->readFullTextGenerationConfiguration($pi1->conf['editor.']['full_text.']);
@@ -125,10 +138,10 @@ abstract class Importer {
 			$ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->pi1->conf['citeid_generator_file']);
 			if (file_exists($ext_file)) {
 				require_once($ext_file);
-				$this->idGenerator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\AuthorsCiteIdGenerator');
+				$this->idGenerator = GeneralUtility::makeInstance(AuthorsCiteIdGenerator::class);
 			}
 		} else {
-			$this->idGenerator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\Generator\\CiteIdGenerator');
+			$this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class);
 		}
 		$this->idGenerator->initialize($pi1);
 	}
@@ -196,7 +209,7 @@ abstract class Importer {
 			$val = Utility::html_select_input(
 				$pages,
 				$default_pid,
-				array('name' => $this->pi1->prefixId . '[import_pid]')
+				['name' => $this->pi1->prefixId . '[import_pid]']
 			);
 			$content .= '<p>' . $val . '</p>';
 		}
@@ -311,7 +324,7 @@ abstract class Importer {
 
 		// Pre import information
 		$this->view->assign('content', $this->displayInformationBeforeImport());
-		$formAction = $this->pi1->get_link_url(array('import' => $this->import_type));
+		$formAction = $this->pi1->get_link_url(['import' => $this->import_type]);
 		$this->view->assign('formAction', $formAction);
 		$this->view->assign('storageSelector', $this->getStorageSelector());
 
@@ -352,7 +365,7 @@ abstract class Importer {
 	 */
 	protected function getImportStatistics() {
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
-		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view = GeneralUtility::makeInstance(StandaloneView::class);
 		$view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/Statistics.html');
 
 		$view->assign('fileName', $this->statistics['file_name']);

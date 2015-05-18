@@ -26,17 +26,21 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \Ipf\Bib\Utility\Utility;
+use Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Class PreferenceNavigation
+ * @package Ipf\Bib\Navigation
+ */
 class PreferenceNavigation extends Navigation {
 
 	/**
 	 * @var array
 	 */
-	public $extConf = array();
+	public $extConf = [];
 
-	/*
+	/**
 	 * Intialize
 	 *
 	 * @param \tx_bib_pi1 $pi1
@@ -64,7 +68,7 @@ class PreferenceNavigation extends Navigation {
 		$this->getKeywordConfiguration();
 	}
 
-		/*
+	/**
 	 * Returns the preference navigation bar
 	 *
 	 * @return string
@@ -143,14 +147,14 @@ class PreferenceNavigation extends Navigation {
 	protected function getItemsPerPageSelection() {
 		$label = $this->pi1->get_ll('prefNav_ipp_sel');
 		$label = $this->pi1->cObj->stdWrap($label, $this->conf['ipp.']['label.']);
-		$pairs = array();
+		$pairs = [];
 		foreach ($this->extConf['pref_ipps'] as $ii) {
 			$pairs[$ii] = '&nbsp;' . strval($ii) . '&nbsp;';
 		}
-		$attributes = array(
+		$attributes = [
 			'name' => $this->pi1->prefix_pi1 . '[items_per_page]',
 			'onchange' => 'this.form.submit()'
-		);
+		];
 		if (strlen($this->conf['ipp.']['select_class']) > 0) {
 			$attributes['class'] = $this->conf['ipp.']['select_class'];
 		}
@@ -165,7 +169,7 @@ class PreferenceNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function getAbstractSelection() {
-		$attributes = array('onchange' => 'this.form.submit()');
+		$attributes = ['onchange' => 'this.form.submit()'];
 		if (strlen($this->conf['abstract.']['btn_class']) > 0) {
 			$attributes['class'] = $this->conf['abstract.']['btn_class'];
 		}
@@ -189,7 +193,7 @@ class PreferenceNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function getKeywordSelection() {
-		$attributes = array('onchange' => 'this.form.submit()');
+		$attributes = ['onchange' => 'this.form.submit()'];
 		if (strlen($this->conf['keywords.']['btn_class']) > 0) {
 			$attributes['class'] = $this->conf['keywords.']['btn_class'];
 		}
@@ -213,7 +217,7 @@ class PreferenceNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function getGoButton() {
-		$attributes = array();
+		$attributes = [];
 		if (strlen($this->conf['go_btn_class']) > 0) {
 			$attributes['class'] = $this->conf['go_btn_class'];
 		}
@@ -241,21 +245,25 @@ class PreferenceNavigation extends Navigation {
 	 * @return string
 	 */
 	protected function getFormTagStart() {
-		$emptySelection = array(
+		$emptySelection = [
 			'items_per_page' => '',
 			'show_abstracts' => '',
 			'show_keywords' => ''
-		);
+		];
 		$formStart = '';
 		$formStart .= '<form name="' . $this->pi1->prefix_pi1 . '-preferences_form" ';
 		$formStart .= 'action="' . $this->pi1->get_link_url($emptySelection, FALSE) . '"';
 		$formStart .= ' method="post"';
 		$formStart .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
-		$formStart .= '>' . "\n";
+		$formStart .= '>';
 
 		return $formStart;
 	}
 
+	/**
+	 * @param int $index
+	 * @return string
+	 */
 	protected function sel_get_text($index){}
 
 	/**

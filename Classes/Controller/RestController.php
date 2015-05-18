@@ -53,7 +53,7 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController 
 		}
 		$references = $this->referenceRepository->findBibliographyByStoragePid($pageUid);
 		if (version_compare(TYPO3_version, '6.2.0', '>=')) {
-			$this->view->setVariablesToRender(array('references'));
+			$this->view->setVariablesToRender(['references']);
 		}
 		$this->view->assign('references', $references);
 	}

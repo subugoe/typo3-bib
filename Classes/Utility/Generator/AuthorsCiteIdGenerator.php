@@ -26,13 +26,19 @@ namespace Ipf\Bib\Utility\Generator;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class AuthorsCiteIdGenerator
+ * @package Ipf\Bib\Utility\Generator
+ */
 class AuthorsCiteIdGenerator extends CiteIdGenerator {
 
+	/**
+	 * @param array $row
+	 * @return string
+	 */
 	protected function generateBasicId($row) {
 		$authors = $row['authors'];
 		return $this->simplifiedString($authors[0]['sn']);
 	}
 
 }
-
-?>

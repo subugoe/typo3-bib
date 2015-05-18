@@ -26,8 +26,12 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use \TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 
+/**
+ * Class LabelUtility
+ * @package Ipf\Bib\Utility
+ */
 class LabelUtility {
 
 	/**

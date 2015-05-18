@@ -26,6 +26,7 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -54,7 +55,7 @@ class ReferenceReader {
 	/**
 	 * @var array
 	 */
-	public $pid_list = array();
+	public $pid_list = [];
 
 	/**
 	 * Show hidden references
@@ -81,17 +82,17 @@ class ReferenceReader {
 	/**
 	 * @var array
 	 */
-	public $t_ref_default = array();
+	public $t_ref_default = [];
 
 	/**
 	 * @var array
 	 */
-	public $t_as_default = array();
+	public $t_as_default = [];
 
 	/**
 	 * @var array
 	 */
-	public $t_au_default = array();
+	public $t_au_default = [];
 
 	/**
 	 * @var array
@@ -102,7 +103,7 @@ class ReferenceReader {
 	 * The following tags are allowed in a reference string
 	 * @var array
 	 */
-	protected $allowedTags = array('em', 'strong', 'sup', 'sub');
+	protected $allowedTags = ['em', 'strong', 'sup', 'sub'];
 
 	/**
 	 * These are the author relevant fields
@@ -110,9 +111,7 @@ class ReferenceReader {
 	 * TYPO3 special fields like pid or uid are not listed here
 	 * @var array
 	 */
-	protected $authorFields = array(
-			'surname', 'forename', 'url', 'fe_user_id'
-	);
+	protected $authorFields = ['surname', 'forename', 'url', 'fe_user_id'];
 
 	/**
 	 * @var array
@@ -122,7 +121,7 @@ class ReferenceReader {
 	/**
 	 * @var array
 	 */
-	protected $filters = array();
+	protected $filters = [];
 
 	/**
 	 * These are the publication relevant fields
@@ -130,7 +129,7 @@ class ReferenceReader {
 	 * TYPO3 special fields like pid or uid are not listed here
 	 * @var array
 	 */
-	protected $referenceFields = array(
+	protected $referenceFields = [
 			'bibtype',
 			'citeid',
 			'title',
@@ -180,7 +179,7 @@ class ReferenceReader {
 			'reviewed',
 			'in_library',
 			'borrowed_by'
-	);
+	];
 
 	/**
 	 * These are the publication relevant fields
@@ -208,7 +207,7 @@ class ReferenceReader {
 	/**
 	 * @var array
 	 */
-	public $allBibTypes = array(
+	public $allBibTypes = [
 			0 => 'unknown',
 			1 => 'article',
 			2 => 'book',
@@ -231,18 +230,18 @@ class ReferenceReader {
 			19 => 'report',
 			20 => 'misc',
 			21 => 'url'
-	);
+	];
 
 	/**
 	 * @var array
 	 */
-	public $allStates = array(
+	public $allStates = [
 			0 => 'published',
 			1 => 'accepted',
 			2 => 'submitted',
 			3 => 'unpublished',
 			4 => 'in_preparation'
-	);
+	];
 
 	/**
 	 * @var \TYPO3\CMS\Core\Database\DatabaseConnection
@@ -264,18 +263,16 @@ class ReferenceReader {
 
 		// setup authorAllFields
 		$this->setAuthorAllFields(
-				array(
-						'uid', 'pid', 'tstamp', 'crdate', 'cruser_id'
-				)
+				['uid', 'pid', 'tstamp', 'crdate', 'cruser_id']
 		);
 		$this->setAuthorAllFields(
 				array_merge($this->getAuthorAllFields(), $this->getAuthorFields())
 		);
 
 		// setup refAllFields
-		$typo3_fields = array(
+		$typo3_fields = [
 				'uid', 'pid', 'hidden', 'tstamp', 'sorting', 'crdate', 'cruser_id'
-		);
+		];
 		$this->refAllFields = array_merge($typo3_fields, $this->getReferenceFields());
 
 		// setup pubFields
@@ -285,7 +282,7 @@ class ReferenceReader {
 		// setup pubAllFields
 		$this->pubAllFields = array_merge($typo3_fields, $this->getPublicationFields());
 
-		$this->sortExtraFields = array('surname');
+		$this->sortExtraFields = ['surname'];
 
 		$searchFields = $this->getReferenceFields();
 		array_push($searchFields, 'authors');
@@ -315,11 +312,11 @@ class ReferenceReader {
 	protected function clearPageCache() {
 		if ($this->getClearCache()) {
 			/** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-			$dataHandler = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\DataHandling\\DataHandler');
-			$clear_cache = array();
+			$dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+			$clear_cache = [];
 
 			if (is_object($GLOBALS['BE_USER']) || is_array($GLOBALS['BE_USER']->user)) {
-				$dataHandler->start(array(), array(), $GLOBALS['BE_USER']);
+				$dataHandler->start([], [], $GLOBALS['BE_USER']);
 				// Find storage cache clear requests
 				foreach ($this->pid_list as $pid) {
 					$tSConfig = $dataHandler->getTCEMAIN_TSconfig($pid);
@@ -411,7 +408,7 @@ class ReferenceReader {
 	 * @return void
 	 */
 	public function set_filter($filter) {
-		$this->filters = array();
+		$this->filters = [];
 		$this->append_filter($filter);
 	}
 
@@ -423,7 +420,7 @@ class ReferenceReader {
 	 * @return void
 	 */
 	public function set_filters($filters) {
-		$this->filters = array();
+		$this->filters = [];
 		foreach ($filters as $filter) {
 			$this->append_filter($filter);
 		}
@@ -502,7 +499,7 @@ class ReferenceReader {
 		if (is_array($fields) && is_array($tables)) {
 			$base =& $tables[0];
 			$joins = '';
-			$aliases = array($base['table']);
+			$aliases = [$base['table']];
 			$tableSize = sizeof($tables);
 			for ($i = 1; $i < $tableSize; $i++) {
 				$previous = $tables[$i - 1];
@@ -592,12 +589,12 @@ class ReferenceReader {
 	 */
 	protected function getReferenceWhereClause(&$columns) {
 
-		$WCA = array();
-		$columns = array();
-		$runvar = array(
-				'columns' => array(),
+		$WCA = [];
+		$columns = [];
+		$runvar = [
+				'columns' => [],
 				'aShip_count' => 0,
-		);
+		];
 
 		// Get where parts for each filter
 		foreach ($this->filters as $filter) {
@@ -608,7 +605,7 @@ class ReferenceReader {
 		$whereClause = implode(' AND ', $WCA);
 
 		if (strlen($whereClause) > 0) {
-			$columns = array_merge(array($this->getReferenceTable()), $runvar['columns']);
+			$columns = array_merge([$this->getReferenceTable()], $runvar['columns']);
 			$columns = array_unique($columns);
 
 			foreach ($columns as &$column) {
@@ -634,7 +631,7 @@ class ReferenceReader {
 	 */
 	protected function getFilterWhereClauseParts($filter, &$runvar) {
 
-		$whereClause = array();
+		$whereClause = [];
 
 		// Filter by UID
 		if (isset ($filter['FALSE'])) {
@@ -698,11 +695,11 @@ class ReferenceReader {
 			if ($f['rule'] == 1) {
 				// AND
 				if (is_array($f['sets']) && (sizeof($f['sets']) > 0)) {
-					$wc_set = array();
+					$wc_set = [];
 					$authorFilterSize = sizeof($f['sets']);
 					for ($i = 0; $authorFilterSize; $i++) {
 						$set = $f['sets'][$i];
-						$uid_lst = array();
+						$uid_lst = [];
 						foreach ($set as $au) {
 							if (is_numeric($au['uid']))
 								$uid_lst[] = intval($au['uid']);
@@ -732,7 +729,7 @@ class ReferenceReader {
 				// OR
 				if (sizeof($f['authors']) > 0) {
 					$authors =& $f['authors'];
-					$uid_lst = array();
+					$uid_lst = [];
 					foreach ($authors as $au) {
 						if (is_numeric($au['uid']))
 							$uid_lst[] = intval($au['uid']);
@@ -830,13 +827,13 @@ class ReferenceReader {
 		// Filter by tags
 		if (is_array($filter['tags']) && (sizeof($filter['tags']) > 0)) {
 			if (is_array($filter['tags']['words']) && (sizeof($filter['tags']['words']) > 0)) {
-				$wca = array();
+				$wca = [];
 
 				if ($filter['tags']['rule'] == 0) { // OR
-					$wca[] = $this->getFilterSearchFieldsClause($filter['tags']['words'], array('tags'));
+					$wca[] = $this->getFilterSearchFieldsClause($filter['tags']['words'], ['tags']);
 				} else { // AND
 					foreach ($filter['tags']['words'] as $word) {
-						$wca[] = $this->getFilterSearchFieldsClause(array($word), array('tags'));
+						$wca[] = $this->getFilterSearchFieldsClause([$word], ['tags']);
 					}
 				}
 
@@ -849,13 +846,13 @@ class ReferenceReader {
 		// Filter by keywords
 		if (is_array($filter['keywords']) && (sizeof($filter['keywords']) > 0)) {
 			if (is_array($filter['keywords']['words']) && (sizeof($filter['keywords']['words']) > 0)) {
-				$wca = array();
+				$wca = [];
 
 				if ($filter['keywords']['rule'] == 0) { // OR
-					$wca[] = $this->getFilterSearchFieldsClause($filter['keywords']['words'], array('keywords'));
+					$wca[] = $this->getFilterSearchFieldsClause($filter['keywords']['words'], ['keywords']);
 				} else { // AND
 					foreach ($filter['keywords']['words'] as $word) {
-						$wca[] = $this->getFilterSearchFieldsClause(array($word), array('keywords'));
+						$wca[] = $this->getFilterSearchFieldsClause([$word], ['keywords']);
 					}
 				}
 
@@ -869,7 +866,7 @@ class ReferenceReader {
 		if (is_array($filter['all']) && (sizeof($filter['all']) > 0)) {
 
 			if (is_array($filter['all']['words']) && (sizeof($filter['all']['words']) > 0)) {
-				$wca = array();
+				$wca = [];
 				$fields = explode(',', $this->search_fields);
 				$fields[] = 'full_text';
 
@@ -881,7 +878,7 @@ class ReferenceReader {
 					$wca[] = $this->getFilterSearchFieldsClause($filter['all']['words'], $fields);
 				} else { // AND
 					foreach ($filter['all']['words'] as $word) {
-						$wca[] = $this->getFilterSearchFieldsClause(array($word), $fields);
+						$wca[] = $this->getFilterSearchFieldsClause([$word], $fields);
 					}
 				}
 
@@ -905,10 +902,10 @@ class ReferenceReader {
 	 */
 	protected function getFilterSearchFieldsClause($words, $fields) {
 		$res = '';
-		$wca = array();
+		$wca = [];
 
 		// Wildcard words
-		$proc_words = array();
+		$proc_words = [];
 		foreach ($words as $word) {
 			if (is_array($word)) {
 				foreach ($word as $oword) {
@@ -940,7 +937,7 @@ class ReferenceReader {
 		if (in_array('authors', $fields)) {
 			$a_ships = $this->searchAuthorAuthorships($proc_words, $this->pid_list);
 			if (sizeof($a_ships) > 0) {
-				$uids = array();
+				$uids = [];
 				foreach ($a_ships as $as) {
 					$uids[] = intval($as['pub_id']);
 				}
@@ -964,9 +961,9 @@ class ReferenceReader {
 	 * @param array $wrap
 	 * @return string|array The search object (string or array)
 	 */
-	public function getSearchTerm($word, $charset, $wrap = array('%', '%')) {
+	public function getSearchTerm($word, $charset, $wrap = ['%', '%']) {
 		$spec = htmlentities($word, ENT_QUOTES, $charset);
-		$words = array($word);
+		$words = [$word];
 		if ($spec != $word) {
 			$words[] = $spec;
 		}
@@ -991,7 +988,7 @@ class ReferenceReader {
 		$orderClause = '';
 		foreach ($this->filters as $filter) {
 			if (is_array($filter['sorting'])) {
-				$orderClause = array();
+				$orderClause = [];
 				$sortingFilterSize = sizeof($filter['sorting']);
 				for ($i = 0; $i < $sortingFilterSize; $i++) {
 					if (isset ($filter['sorting'][$i]['field']) && isset ($filter['sorting'][$i]['dir'])) {
@@ -1132,10 +1129,10 @@ class ReferenceReader {
 	 */
 	protected function getReferenceSelectClause($fields, $order = '', $group = '') {
 		if (!is_array($fields)) {
-			$fields = array($fields);
+			$fields = [$fields];
 		}
 
-		$columns = array();
+		$columns = [];
 		$whereClause = $this->getReferenceWhereClause($columns);
 
 		$groupClause = '';
@@ -1149,12 +1146,14 @@ class ReferenceReader {
 		$limitClause = $this->getLimitClause();
 
 		// Find the tables that should be included
-		$tables = array($this->t_ref_default);
+		$tables = [$this->t_ref_default];
 		foreach ($fields as $field) {
-			if (!(strpos($field, $this->getAuthorshipTable()) === FALSE))
+			if (!(strpos($field, $this->getAuthorshipTable()) === FALSE)) {
 				$tables[] = $this->t_as_default;
-			if (!(strpos($field, $this->getAuthorTable()) === FALSE))
+			}
+			if (!(strpos($field, $this->getAuthorTable()) === FALSE)) {
 				$tables[] = $this->t_au_default;
+			}
 		}
 
 		foreach ($columns as $column) {
@@ -1197,7 +1196,7 @@ class ReferenceReader {
 		}
 
 		$num = 0;
-		$whereClause = array();
+		$whereClause = [];
 		$whereClause[] = 'citeid=' . $this->db->fullQuoteStr($citeId, $this->getReferenceTable());
 
 		if (is_numeric($uid) && ($uid >= 0)) {
@@ -1275,7 +1274,7 @@ class ReferenceReader {
 	 * @return array A histogram
 	 */
 	public function getHistogram($field = 'year') {
-		$histogram = array();
+		$histogram = [];
 
 		$query = $this->getReferenceSelectClause($this->getReferenceTable() . '.' . $field, $this->getReferenceTable() . '.' . $field . ' ASC');
 		$res = $this->db->sql_query($query);
@@ -1303,7 +1302,7 @@ class ReferenceReader {
 	 * @return array An array containing the authors
 	 */
 	public function getSurnamesOfAllAuthors() {
-		$names = array();
+		$names = [];
 
 		$query = $this->getReferenceSelectClause(
 				'distinct(' . $this->getAuthorTable() . '.surname)',
@@ -1328,11 +1327,11 @@ class ReferenceReader {
 	 * @param array $fields
 	 * @return array An array containing the authors
 	 */
-	protected function searchByAuthor($words, $pids, $fields = array('forename', 'surname')) {
-		$all_fields = array('forename', 'surname', 'url');
-		$authors = array();
-		$whereClause = array();
-		$wca = array();
+	protected function searchByAuthor($words, $pids, $fields = ['forename', 'surname']) {
+		$all_fields = ['forename', 'surname', 'url'];
+		$authors = [];
+		$whereClause = [];
+		$wca = [];
 		foreach ($words as $word) {
 			$word = trim(strval($word));
 			if (strlen($word) > 0) {
@@ -1384,11 +1383,11 @@ class ReferenceReader {
 	 * @param array $fields
 	 * @return array An array containing the authors
 	 */
-	protected function searchAuthorAuthorships($words, $pids, $fields = array('forename', 'surname')) {
-		$authorships = array();
+	protected function searchAuthorAuthorships($words, $pids, $fields = ['forename', 'surname']) {
+		$authorships = [];
 		$authors = $this->searchByAuthor($words, $pids, $fields);
 		if (sizeof($authors) > 0) {
-			$uids = array();
+			$uids = [];
 			foreach ($authors as $author) {
 				$uids[] = intval($author['uid']);
 			}
@@ -1418,10 +1417,10 @@ class ReferenceReader {
 	 * @return array Not defined
 	 */
 	public function fetch_author_uids($author, $pids) {
-		$uids = array();
-		$all_fields = array('forename', 'surname', 'url');
+		$uids = [];
+		$all_fields = ['forename', 'surname', 'url'];
 
-		$whereClause = array();
+		$whereClause = [];
 
 		foreach ($all_fields as $field) {
 			if (array_key_exists($field, $author)) {
@@ -1450,7 +1449,7 @@ class ReferenceReader {
 			);
 
 			while ($row = $this->db->sql_fetch_assoc($res)) {
-				$uids[] = array('uid' => $row['uid'], 'pid' => $row['pid']);
+				$uids[] = ['uid' => $row['uid'], 'pid' => $row['pid']];
 			}
 		}
 
@@ -1465,7 +1464,7 @@ class ReferenceReader {
 	 */
 	protected function getFilteredAuthorsUids(&$filter) {
 		if (is_array($filter['author']['authors'])) {
-			$filter['author']['sets'] = array();
+			$filter['author']['sets'] = [];
 			foreach ($filter['author']['authors'] as &$a) {
 				if (!is_numeric($a['uid'])) {
 					$pid = $this->pid_list;
@@ -1502,7 +1501,7 @@ class ReferenceReader {
 	 * @return array An array containing author array
 	 */
 	protected function getAuthorByPublication($pub_id) {
-		$authors = array();
+		$authors = [];
 
 		$whereClause = '';
 
@@ -1515,8 +1514,8 @@ class ReferenceReader {
 
 		$field_csv = $this->getAuthorTable() . '.' . implode(',' . $this->getAuthorTable() . '.', $this->getAuthorAllFields());
 		$query = $this->select_clause_start(
-				array($field_csv, $this->getAuthorshipTable() . '.sorting'),
-				array($this->t_au_default, $this->t_as_default)
+				[$field_csv, $this->getAuthorshipTable() . '.sorting'],
+				[$this->t_au_default, $this->t_as_default]
 		);
 		$query .= ' WHERE ' . $whereClause;
 		$query .= ' ORDER BY ' . $orderClause;
@@ -1537,7 +1536,7 @@ class ReferenceReader {
 	 */
 	public function getPublicationDetails($uid) {
 
-		$whereClause = array();
+		$whereClause = [];
 
 		$whereClause[] = 'uid = ' . intval($uid);
 
@@ -1640,11 +1639,11 @@ class ReferenceReader {
 	 * @return null|array The matching authorship row or NULL
 	 */
 	public function getAuthorships($authorship) {
-		$ret = array();
+		$ret = [];
 		if (is_array($authorship)) {
 
 			if (isset ($authorship['pub_id']) || isset ($authorship['author_id']) || isset ($authorship['pid'])) {
-				$whereClause = array();
+				$whereClause = [];
 				if (isset ($authorship['pub_id'])) {
 					$whereClause[] = 'pub_id=' . intval($authorship['pub_id']);
 				}
@@ -1679,7 +1678,7 @@ class ReferenceReader {
 
 		$citationId = filter_var($citationId, FILTER_SANITIZE_STRING);
 
-		$whereClause = array();
+		$whereClause = [];
 
 		if (sizeof($this->pid_list) > 0) {
 			$csv = Utility::implode_intval(',', $this->pid_list);

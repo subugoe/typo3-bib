@@ -26,17 +26,21 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class XmlExporter
+ * @package Ipf\Bib\Utility\Exporter
+ */
 class XmlExporter extends Exporter {
 
 	/**
 	 * @var array
 	 */
-	protected $pattern = array();
+	protected $pattern = [];
 
 	/**
 	 * @var array
 	 */
-	protected $replacement = array();
+	protected $replacement = [];
 
 	/**
 	 * @param \tx_bib_pi1 $pi1
@@ -61,7 +65,7 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function formatPublicationForExport($publication, $infoArr = array()) {
+	protected function formatPublicationForExport($publication, $infoArr = []) {
 
 		$charset = $this->pi1->extConf['charset']['lower'];
 
@@ -69,7 +73,7 @@ class XmlExporter extends Exporter {
 			$publication = $this->getReferenceReader()->change_pub_charset($publication, $charset, 'utf-8');
 		}
 
-		$content = '<reference>' . "\n";
+		$content = '<reference>' . PHP_EOL;
 
 		foreach ($this->getReferenceReader()->getPublicationFields() as $key) {
 			$append = TRUE;
@@ -93,7 +97,7 @@ class XmlExporter extends Exporter {
 			}
 		}
 
-		$content .= '</reference>' . "\n";
+		$content .= '</reference>' . PHP_EOL;
 
 		return $content;
 	}
@@ -118,7 +122,7 @@ class XmlExporter extends Exporter {
 			case 'authors':
 				$authors = is_array($value) ? $value : explode(' and ', $value);
 				$value = '';
-				$aXML = array();
+				$aXML = [];
 				foreach ($authors as $author) {
 					$a_str = '';
 					$foreName = $this->xmlFormatString($author['forename']);
@@ -136,7 +140,7 @@ class XmlExporter extends Exporter {
 				if (sizeof($aXML)) {
 					$value .= "\n";
 					foreach ($aXML as $author) {
-						$value .= '<person>' . $author . '</person>' . "\n";
+						$value .= '<person>' . $author . '</person>' . PHP_EOL;
 					}
 				}
 				break;
@@ -151,7 +155,7 @@ class XmlExporter extends Exporter {
 			default:
 				$value = $this->xmlFormatString($value);
 		}
-		$content .= '<' . $key . '>' . $value . '</' . $key . '>' . "\n";
+		$content .= '<' . $key . '>' . $value . '</' . $key . '>' . PHP_EOL;
 
 		return $content;
 	}
@@ -160,12 +164,12 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function fileIntro($infoArr = array()) {
-		$content = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
-		$content .= '<bib>' . "\n";
-		$content .= '<comment>' . "\n";
+	protected function fileIntro($infoArr = []) {
+		$content = '<?xml version="1.0" encoding="utf-8"?>' . PHP_EOL;
+		$content .= '<bib>' . PHP_EOL;
+		$content .= '<comment>' . PHP_EOL;
 		$content .= $this->xmlFormatString($this->getGeneralInformationText($infoArr));
-		$content .= '</comment>' . "\n";
+		$content .= '</comment>' . PHP_EOL;
 		return $content;
 	}
 
@@ -173,11 +177,9 @@ class XmlExporter extends Exporter {
 	 * @param array $infoArr
 	 * @return string
 	 */
-	protected function fileOutro($infoArr = array()) {
-		$content = '</bib>' . "\n";
+	protected function fileOutro($infoArr = []) {
+		$content = '</bib>' . PHP_EOL;
 		return $content;
 	}
 
 }
-
-?>

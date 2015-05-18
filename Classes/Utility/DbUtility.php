@@ -68,6 +68,9 @@ class DbUtility {
 	 */
 	protected $db;
 
+	/**
+	 * constructor
+	 */
 	public function __construct() {
 		$this->db = $GLOBALS['TYPO3_DB'];
 	}
@@ -82,7 +85,7 @@ class DbUtility {
 		if (is_object($referenceReader)) {
 			$this->referenceReader =& $referenceReader;
 		} else {
-			$this->referenceReader = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\ReferenceReader');
+			$this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class);
 		}
 	}
 
@@ -93,18 +96,18 @@ class DbUtility {
 	 * @return int The number of deleted authors
 	 */
 	public function deleteAuthorsWithoutPublications() {
-		$count = 0;
 
-		$selectQuery = 'SELECT t_au.uid' . "\n";
+		$selectQuery = 'SELECT t_au.uid';
 		$selectQuery .= ' FROM ' . $this->referenceReader->getAuthorTable() . ' AS t_au';
-		$selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->getAuthorshipTable() . ' AS t_as ' . "\n";
-		$selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ' . "\n";
-		$selectQuery .= ' WHERE t_au.deleted = 0 ' . "\n";
-		$selectQuery .= ' GROUP BY t_au.uid ' . "\n";
-		$selectQuery .= ' HAVING count(t_as.uid) = 0;' . "\n";
+		$selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->getAuthorshipTable() . ' AS t_as ';
+		$selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ';
+		$selectQuery .= ' WHERE t_au.deleted = 0 ';
+		$selectQuery .= ' GROUP BY t_au.uid ';
+		$selectQuery .= ' HAVING count(t_as.uid) = 0;';
 
-		$uids = array();
+		$uids = [];
 		$res = $this->db->sql_query($selectQuery);
+
 		while ($row = $this->db->sql_fetch_assoc($res)) {
 			$uids[] = $row['uid'];
 		}
@@ -116,9 +119,9 @@ class DbUtility {
 			$this->db->exec_UPDATEquery(
 				$this->referenceReader->getAuthorTable(),
 				'uid IN ( ' . $csv . ')',
-				array(
+				[
 					'deleted' => '1'
-				)
+				]
 			);
 		}
 		return $count;
@@ -157,14 +160,14 @@ class DbUtility {
 	 * @return array An array with some statistical data
 	 */
 	public function update_full_text_all($force = FALSE) {
-		$stat = array();
-		$stat['updated'] = array();
-		$stat['errors'] = array();
+		$stat = [];
+		$stat['updated'] = [];
+		$stat['errors'] = [];
 		$stat['limit_num'] = 0;
 		$stat['limit_time'] = 0;
-		$uids = array();
+		$uids = [];
 
-		$whereClause = array();
+		$whereClause = [];
 
 		if (sizeof($this->referenceReader->pid_list) > 0) {
 			$csv = Utility::implode_intval(',', $this->referenceReader->pid_list);
@@ -188,7 +191,7 @@ class DbUtility {
 		foreach ($uids as $uid) {
 			$err = $this->update_full_text($uid, $force);
 			if (is_array($err)) {
-				$stat['errors'][] = array($uid, $err);
+				$stat['errors'][] = [$uid, $err];
 			} else {
 				if ($err) {
 					$stat['updated'][] = $uid;
@@ -283,7 +286,7 @@ class DbUtility {
 		) {
 			// Check if pdftotext is executable
 			if (!is_executable($this->pdftotext_bin)) {
-				$err = array();
+				$err = [];
 				$err['msg'] = 'The pdftotext binary \'' . strval($this->pdftotext_bin) .
 						'\' is no executable';
 				return $err;
@@ -292,7 +295,7 @@ class DbUtility {
 			// Determine temporary text file
 			$target = tempnam($this->tmp_dir, 'bib_pdftotext');
 			if ($target === FALSE) {
-				$err = array();
+				$err = [];
 				$err['msg'] = 'Could not create temporary file in ' . strval($this->tmp_dir);
 				return $err;
 			}
@@ -309,11 +312,11 @@ class DbUtility {
 			$cmd .= ' ' . $file_shell;
 			$cmd .= ' ' . $target_shell;
 
-			$cmd_txt = array();
+			$cmd_txt = [];
 			$retval = FALSE;
 			exec($cmd, $cmd_txt, $retval);
 			if ($retval != 0) {
-				$err = array();
+				$err = [];
 				$err['msg'] = 'pdftotext failed on ' . strval($pub['file_url']) . ': ' . implode('', $cmd_txt);
 				return $err;
 			}
@@ -339,7 +342,7 @@ class DbUtility {
 				$db_data
 			);
 			if ($ret == FALSE) {
-				$err = array();
+				$err = [];
 				$err['msg'] = 'Full text update failed: ' . $this->db->sql_error();
 				return $err;
 			}

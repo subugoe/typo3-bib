@@ -26,6 +26,13 @@ namespace Ipf\Bib\Utility\Generator;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
+ * Class CiteIdGenerator
+ * @package Ipf\Bib\Utility\Generator
+ */
 class CiteIdGenerator {
 
 	/**
@@ -83,9 +90,9 @@ class CiteIdGenerator {
 	 */
 	protected function generateBasicId($row) {
 		$authors = $row['authors'];
-		$editors = \Ipf\Bib\Utility\Utility::explodeAuthorString($row['editor']);
+		$editors = Utility::explodeAuthorString($row['editor']);
 
-		$persons = array($authors, $editors);
+		$persons = [$authors, $editors];
 
 		$id = '';
 		foreach ($persons as $list) {
@@ -119,7 +126,7 @@ class CiteIdGenerator {
 		}
 
 		if (strlen($id) == 0) {
-			$id = \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(serialize($row));
+			$id = GeneralUtility::shortMD5(serialize($row));
 		}
 		if ($row['year'] > 0) {
 			$id .= $row['year'];
@@ -155,5 +162,3 @@ class CiteIdGenerator {
 	}
 
 }
-
-?>

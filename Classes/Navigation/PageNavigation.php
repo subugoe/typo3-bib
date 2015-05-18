@@ -26,6 +26,10 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class PageNavigation
+ * @package Ipf\Bib\Navigation
+ */
 class PageNavigation extends Navigation {
 
 	/**
@@ -44,7 +48,7 @@ class PageNavigation extends Navigation {
 		$this->sel_link_title = $pi1->get_ll('pageNav_pageLinkTitle', '%p', TRUE);
 	}
 
-	/*
+	/**
 	 * Creates a text for a given index
 	 *
 	 * @param int $index
@@ -54,7 +58,7 @@ class PageNavigation extends Navigation {
 		return strval($index + 1);
 	}
 
-	/*
+	/**
 	 * Creates a link for the selection
 	 *
 	 * @param string $text
@@ -65,27 +69,27 @@ class PageNavigation extends Navigation {
 		$title = str_replace('%p', $text, $this->sel_link_title);
 		$lnk = $this->pi1->get_link(
 			$text,
-			array(
+			[
 				'page' => strval($index)
-			),
+			],
 			TRUE,
-			array(
+			[
 				'title' => $title
-			)
+			]
 		);
 		return $lnk;
 	}
 
 
-	/*
+	/**
 	 * Returns content
 	 *
 	 * @return string
 	 */
 	protected function get() {
 
-		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : array();
-		$navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : array();
+		$selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
+		$navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : [];
 
 		// The data
 		$subPage =& $this->pi1->extConf['sub_page'];
@@ -103,13 +107,13 @@ class PageNavigation extends Navigation {
 			$title = $this->pi1->get_ll('pageNav_previousLinkTitle', 'previous', TRUE);
 			$nav_prev = $this->pi1->get_link(
 				$nav_prev,
-				array(
+				[
 					'page' => $page
-				),
+				],
 				TRUE,
-				array(
+				[
 					'title' => $title
-				)
+				]
 			);
 		}
 
@@ -119,13 +123,13 @@ class PageNavigation extends Navigation {
 			$title = $this->pi1->get_ll('pageNav_nextLinkTitle', 'next', TRUE);
 			$nav_next = $this->pi1->get_link(
 				$nav_next,
-				array(
+				[
 					'page' => $page
-				),
+				],
 				TRUE,
-				array(
+				[
 					'title' => $title
-				)
+				]
 			);
 		}
 
@@ -146,7 +150,7 @@ class PageNavigation extends Navigation {
 		$nav_next = str_replace('###SEPARATOR###', $navigationSeparator, $nav_next);
 
 		// Create selection
-		$indices = array(0, $subPage['current'], $subPage['max']);
+		$indices = [0, $subPage['current'], $subPage['max']];
 
 		// Number of pages to display in the selection
 		$numSel = 5;
@@ -164,9 +168,3 @@ class PageNavigation extends Navigation {
 	}
 
 }
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']);
-}
-
-?>

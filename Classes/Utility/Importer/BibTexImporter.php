@@ -26,10 +26,12 @@ namespace Ipf\Bib\Utility\Importer;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use \Ipf\Bib\Exception\ParserException;
-use \Ipf\Bib\Exception\TranslatorException;
+use Ipf\Bib\Exception\ParserException;
+use Ipf\Bib\Exception\TranslatorException;
+use Ipf\Bib\Utility\PRegExpTranslator;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * This parser follows the bibtex format described here
@@ -108,7 +110,7 @@ class BibTexImporter extends Importer {
 	/**
 	 * @var array
 	 */
-	protected $pubKeys =  array();
+	protected $pubKeys =  [];
 	protected $pubKeyMap;
 
 	/**
@@ -118,19 +120,19 @@ class BibTexImporter extends Importer {
 
 		parent::initialize($pi1);
 
-		$this->import_type = $pi1::IMP_BIBTEX;
+		$this->import_type = Importer::IMP_BIBTEX;
 
 		/** @var \Ipf\Bib\Utility\PRegExpTranslator $pRegExpTranslator */
-		$pRegExpTranslator = GeneralUtility::makeInstance('Ipf\\Bib\\Utility\\PRegExpTranslator');
+		$pRegExpTranslator = GeneralUtility::makeInstance(PRegExpTranslator::class);
 
 		// Local characters
-		$replace = array(
+		$replace = [
 			'`' => '&\\1grave;',
 			'~' => '&\\1tilde;',
 			'\\^' => '&\\1circ;',
 			'\\\'' => '&\\1acute;',
 			'"' => '&\\1uml;',
-		);
+		];
 
 		foreach ($replace as $key => $val) {
 			$pRegExpTranslator
@@ -155,7 +157,7 @@ class BibTexImporter extends Importer {
 				->push('/\\\\pounds([^\w]|$)/', '&pound;\\1');
 
 		// Greek characters
-		$replace = array(
+		$replace = [
 			'alpha' => '&alpha;',
 			'beta' => '&beta;',
 			'gamma' => '&gamma;',
@@ -190,7 +192,7 @@ class BibTexImporter extends Importer {
 			'Phi' => '&Phi;',
 			'Psi' => '&Psi;',
 			'Omega' => '&Omega;',
-		);
+		];
 
 		foreach ($replace as $key => $val) {
 			$pRegExpTranslator->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
@@ -212,7 +214,7 @@ class BibTexImporter extends Importer {
 				->push('/([^\\\\])\\^\{([^\{]+)\}/', '\\1<sup>\\2</sup>')
 				->push('/([^\\\\])\\_\{([^\{]+)\}/', '\\1<sub>\\2</sub>');
 
-		$replace = array(
+		$replace = [
 			// Relational symbols
 			'approx' => '&approx;',
 			'equiv' => '&equiv;',
@@ -245,7 +247,7 @@ class BibTexImporter extends Importer {
 			'rfloor' => '&rfloor;',
 			'prime' => '&prime;',
 			'times' => '&times;',
-		);
+		];
 
 		foreach ($replace as $key => $val) {
 			$pRegExpTranslator->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
@@ -302,7 +304,8 @@ class BibTexImporter extends Importer {
 	 * @return string $content
 	 */
 	protected function displayInformationBeforeImport() {
-		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		/** @var StandaloneView $view */
+		$view = GeneralUtility::makeInstance(StandaloneView::class);
 		$view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/BibTexInformation.html');
 		return $view->render();
 	}
@@ -311,21 +314,21 @@ class BibTexImporter extends Importer {
 	 * @return string
 	 */
 	protected function importStateTwo() {
-		$action = $this->pi1->get_link_url(array('import_state' => 2));
+		$action = $this->pi1->get_link_url(['import_state' => 2]);
 		$buff_size = 1024;
 
 		$this->statistics['file_name'] = $_FILES['ImportFile']['name'];
 		$this->statistics['file_size'] = $_FILES['ImportFile']['size'];
 		$this->statistics['succeeded'] = 0;
 		$this->statistics['failed'] = 0;
-		$this->statistics['errors'] = array();
+		$this->statistics['errors'] = [];
 		$this->statistics['storage'] = $this->storage_pid;
-		$this->statistics['warnings'] = array();
+		$this->statistics['warnings'] = [];
 
 		$this->pline = 1;
 		$this->parserState = self::PARSER_SEARCH_REFERENCE;
 		$this->clearCurrentRawReference();
-		$this->raw_refs = array();
+		$this->raw_refs = [];
 
 		$handle = fopen($_FILES['ImportFile']['tmp_name'], 'r');
 		try {
@@ -375,11 +378,11 @@ class BibTexImporter extends Importer {
 	 * @return void
 	 */
 	protected function clearCurrentRawReference() {
-		$this->raw_ref = array(
+		$this->raw_ref = [
 			'type' => '',
 			'citeid' => '',
-			'values' => array()
-		);
+			'values' => []
+		];
 	}
 
 
@@ -428,7 +431,7 @@ class BibTexImporter extends Importer {
 					}
 					break;
 				case self::PARSER_READ_REFERENCE_TYPE:
-					$matches = array();
+					$matches = [];
 					$type = '';
 					if (preg_match('/^([^,\s{]+)/', $this->getBuffer(), $matches) > 0) {
 						$type = $matches[1];
@@ -464,7 +467,7 @@ class BibTexImporter extends Importer {
 					}
 					break;
 				case self::PARSER_READ_CITE_ID:
-					$matches = array();
+					$matches = [];
 					if (preg_match('/^([^,\s]+)/', $this->getBuffer(), $matches) > 0) {
 						$id = $matches[1];
 						$this->raw_ref['citeid'] .= $id;
@@ -510,7 +513,7 @@ class BibTexImporter extends Importer {
 					}
 					break;
 				case self::PARSER_READ_PAIR_NAME:
-					$matches = array();
+					$matches = [];
 					if (preg_match('/^([a-zA-Z_0-9]+)/', $this->getBuffer(), $matches) > 0) {
 						$str = $matches[1];
 						$this->pair_name .= $str;
@@ -647,7 +650,7 @@ class BibTexImporter extends Importer {
 	 * @return array
 	 */
 	protected function convertRawReferenceToReference($raw) {
-		$publication = array();
+		$publication = [];
 
 		// Bibtype
 		$raw_val = strtolower($raw['type']);
@@ -728,10 +731,10 @@ class BibTexImporter extends Importer {
 	 * @return array
 	 */
 	protected function convertRawAuthorToAuthor($authors) {
-		$res = array();
+		$res = [];
 		$arr = preg_split('/[\s]and[\s]/i', $authors);
 		foreach ($arr as $a_str) {
-			$author = array();
+			$author = [];
 			$a_str = trim($a_str);
 			if (strpos($a_str, ',') === FALSE) {
 				// No comma in author string

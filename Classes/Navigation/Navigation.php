@@ -26,9 +26,14 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
+/**
+ * Class Navigation
+ * @package Ipf\Bib\Navigation
+ */
 abstract class Navigation {
 
 	/**
@@ -51,7 +56,7 @@ abstract class Navigation {
 	/**
 	 * @var array
 	 */
-	protected $conf = array();
+	protected $conf = [];
 
 	/**
 	 * @var string
@@ -70,7 +75,7 @@ abstract class Navigation {
 		$this->pi1 =& $pi1;
 
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
-		$view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+		$view = GeneralUtility::makeInstance(StandaloneView::class);
 		$view->setTemplatePathAndFilename($this->getTemplateFileFromCallingClass());
 		$this->view = $view;
 	}
@@ -85,7 +90,7 @@ abstract class Navigation {
 		return $templateFile;
 	}
 
-	/*
+	/**
 	 * Returns the translator for the main template
 	 *
 	 * @return array
@@ -95,17 +100,19 @@ abstract class Navigation {
 		$pref = '###' . $this->prefix;
 		$content = $this->get();
 
-		$res = array();
+		$res = [];
 		$res[$pref . '###'] = $content;
 
 		$val = '';
-		if ($this->conf['top_disable'] == 0)
+		if ($this->conf['top_disable'] == 0) {
 			$val = $this->pi1->cObj->stdWrap($content, $this->conf['top.']);
+		}
 		$res[$pref . '_TOP###'] = $val;
 
 		$val = '';
-		if ($this->conf['bottom_disable'] == 0)
+		if ($this->conf['bottom_disable'] == 0) {
 			$val = $this->pi1->cObj->stdWrap($content, $this->conf['bottom.']);
+		}
 		$res[$pref . '_BOTTOM###'] = $val;
 
 		return $res;
@@ -128,7 +135,8 @@ abstract class Navigation {
 	 * @return mixed
 	 */
 	abstract protected function sel_get_link($text, $index);
-	/*
+
+	/**
 	 * Returns a selection translator
 	 *
 	 * @param array $cfgSel
@@ -137,13 +145,12 @@ abstract class Navigation {
 	 * @return string
 	 */
 	protected function selection($cfgSel, $indices, $numSel) {
-		$cObj =& $this->pi1->cObj;
 
-		$sel = array(
-			'prev' => array(),
-			'cur' => array(),
-			'next' => array()
-		);
+		$sel = [
+			'prev' => [],
+			'cur' => [],
+			'next' => []
+		];
 
 		// Determine ranges of year navigation bar
 		$idxMin = $indices[0];
@@ -224,7 +231,7 @@ abstract class Navigation {
 				$text = $this->sel_get_link($text, $ii);
 			}
 			if (is_array($wrap)) {
-				$text = $cObj->stdWrap($text, $wrap);
+				$text = $this->pi1->cObj->stdWrap($text, $wrap);
 			}
 
 			$sel[$key][] = $text;
@@ -236,7 +243,7 @@ abstract class Navigation {
 		if (array_key_exists('separator', $cfgSel))
 			$sep = strval($cfgSel['separator']);
 		if (is_array($cfgSel['separator.']))
-			$sep = $cObj->stdWrap($sep, $cfgSel['separator.']);
+			$sep = $this->pi1->cObj->stdWrap($sep, $cfgSel['separator.']);
 
 		// Setup the translator
 		$res = implode($sep, $sel['prev']);
@@ -254,5 +261,3 @@ abstract class Navigation {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']);
 }
-
-?>

@@ -1,10 +1,10 @@
 <?php
-namespace Ipf\Bib\Exception;
+namespace Ipf\Bib\View;
 
 /* * *************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *  (c) 2015 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
  *
  *  All rights reserved
@@ -27,8 +27,14 @@ namespace Ipf\Bib\Exception;
  * ************************************************************* */
 
 /**
- * Exception for translator
+ * Class View
+ * @package Ipf\Bib\View
  */
-class TranslatorException extends \Exception {
+abstract class View {
+
+	const VIEW_LIST = 0;
+	const VIEW_SINGLE = 1;
+	const VIEW_EDITOR = 2;
+	const VIEW_DIALOG = 3;
 
 }

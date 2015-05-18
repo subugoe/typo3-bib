@@ -8,7 +8,7 @@
 * https://github.com/t3elmar/Ext
 *********************************************************************/
 
-$EM_CONF[$_EXTKEY] = array (
+$EM_CONF[$_EXTKEY] = [
   'title' => 'Bib - bibliography manager',
   'description' => 'A customizable bibliography and publication reference manager with a convenient frontend editor and import/export functionality.',
   'category' => 'plugin',
@@ -31,20 +31,19 @@ $EM_CONF[$_EXTKEY] = array (
   'CGLcompliance' => '',
   'CGLcompliance_note' => '',
   'constraints' =>
-  array (
+  [
     'depends' =>
-    array (
+    [
       'typo3' => '6.2.0-7.99.99',
-    ),
+      'php' => '5.5.0-5.6.99'
+    ],
     'conflicts' =>
-    array (
-    ),
+    [
+    ],
     'suggests' =>
-    array (
-    ),
-  ),
+    [
+    ],
+  ],
   'comment' => 'Initial TER release of the forked sevenpack extension',
   'user' => 'ingop',
-);
-
-?>
+];
