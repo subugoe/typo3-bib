@@ -233,14 +233,13 @@ class AuthorNavigation extends Navigation {
 	 * @return void
 	 */
 	protected function initializeLetters($names) {
-		$extConf =& $this->extConf;
 		$charset = $this->pi1->extConf['charset']['upper'];
 
 		// Acquire letter
 		$letters = $this->first_letters($names, $charset);
 
 		// Acquire selected letter
-		$selectedLetter = strval($extConf['sel_letter']);
+		$selectedLetter = strval($this->extConf['sel_letter']);
 		$idx = $this->string_index($selectedLetter, $letters, '', $charset);
 		if ($idx < 0) {
 			$selectedLetter = '';
@@ -248,8 +247,8 @@ class AuthorNavigation extends Navigation {
 			$selectedLetter = $letters[$idx];
 		}
 
-		$extConf['letters'] = $letters;
-		$extConf['sel_letter'] = $selectedLetter;
+		$this->extConf['letters'] = $letters;
+		$this->extConf['sel_letter'] = $selectedLetter;
 	}
 
 

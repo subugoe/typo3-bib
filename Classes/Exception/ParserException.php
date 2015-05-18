@@ -6,7 +6,7 @@ namespace Ipf\Bib\Exception;
  *
  *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,8 +27,8 @@ namespace Ipf\Bib\Exception;
  * ************************************************************* */
 
 /**
- * Description 
+ * Parser Exception
  */
-class ParserException extends \Exception{
+class ParserException extends \Exception {
 
-} 
+}

@@ -104,13 +104,15 @@ abstract class Navigation {
 		$res[$pref . '###'] = $content;
 
 		$val = '';
-		if ($this->conf['top_disable'] == 0)
+		if ($this->conf['top_disable'] == 0) {
 			$val = $this->pi1->cObj->stdWrap($content, $this->conf['top.']);
+		}
 		$res[$pref . '_TOP###'] = $val;
 
 		$val = '';
-		if ($this->conf['bottom_disable'] == 0)
+		if ($this->conf['bottom_disable'] == 0) {
 			$val = $this->pi1->cObj->stdWrap($content, $this->conf['bottom.']);
+		}
 		$res[$pref . '_BOTTOM###'] = $val;
 
 		return $res;
@@ -143,7 +145,6 @@ abstract class Navigation {
 	 * @return string
 	 */
 	protected function selection($cfgSel, $indices, $numSel) {
-		$cObj =& $this->pi1->cObj;
 
 		$sel = [
 			'prev' => [],
@@ -230,7 +231,7 @@ abstract class Navigation {
 				$text = $this->sel_get_link($text, $ii);
 			}
 			if (is_array($wrap)) {
-				$text = $cObj->stdWrap($text, $wrap);
+				$text = $this->pi1->cObj->stdWrap($text, $wrap);
 			}
 
 			$sel[$key][] = $text;
@@ -242,7 +243,7 @@ abstract class Navigation {
 		if (array_key_exists('separator', $cfgSel))
 			$sep = strval($cfgSel['separator']);
 		if (is_array($cfgSel['separator.']))
-			$sep = $cObj->stdWrap($sep, $cfgSel['separator.']);
+			$sep = $this->pi1->cObj->stdWrap($sep, $cfgSel['separator.']);
 
 		// Setup the translator
 		$res = implode($sep, $sel['prev']);

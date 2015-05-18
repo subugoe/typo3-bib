@@ -33,7 +33,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  * Class SingleView
  * @package Ipf\Bib\View
  */
-class SingleView extends View {
+class SingleView extends View implements ViewInterface {
 
 	/**
 	 * @var \tx_bib_pi1
@@ -107,7 +107,7 @@ class SingleView extends View {
 	 *
 	 * @return string
 	 */
-	public function singleView() {
+	public function render() {
 		$content = '';
 
 		$uid = intval($this->pi1->extConf['single_view']['uid']);

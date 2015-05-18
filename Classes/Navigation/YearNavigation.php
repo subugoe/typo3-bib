@@ -154,8 +154,9 @@ class YearNavigation extends Navigation {
 
 			$pairs = ['all' => $this->pi1->get_ll('yearNav_all_years', 'All', TRUE)];
 			if (sizeof($this->pi1->stat['years']) > 0) {
-				foreach (array_reverse($this->pi1->stat['years']) as $y)
+				foreach (array_reverse($this->pi1->stat['years']) as $y) {
 					$pairs[$y] = $y;
+				}
 			} else {
 				$year = strval(intval(date('Y')));
 				$pairs = [$year => $year];
@@ -168,8 +169,7 @@ class YearNavigation extends Navigation {
 			if (strlen($this->conf['select_class']) > 0) {
 				$attributes['class'] = $this->conf['select_class'];
 			}
-			$button = Utility::html_select_input(
-				$pairs, $year, $attributes);
+			$button = Utility::html_select_input($pairs, $year, $attributes);
 			$button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
 			$selectForm .= $button;
 
@@ -179,7 +179,8 @@ class YearNavigation extends Navigation {
 			}
 			$button = Utility::html_submit_input(
 				$this->pi1->prefix_pi1 . '[action][select_year]',
-				$this->pi1->get_ll('button_go'), $attributes);
+				$this->pi1->get_ll('button_go'), $attributes
+			);
 			$button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
 			$selectForm .= $button;
 

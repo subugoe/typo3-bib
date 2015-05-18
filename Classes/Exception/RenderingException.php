@@ -4,7 +4,7 @@ namespace Ipf\Bib\Exception;
 /* * *************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
+ *  (c) 2015 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
  *
  *  All rights reserved
@@ -27,8 +27,8 @@ namespace Ipf\Bib\Exception;
  * ************************************************************* */
 
 /**
- * Exception for translator
+ * Exception for render errors
  */
-class TranslatorException extends \Exception {
+class RenderingException extends \Exception {
 
 }

@@ -40,7 +40,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Class EditorView
  * @package Ipf\Bib\View
  */
-class EditorView extends View {
+class EditorView extends View implements ViewInterface {
 
 	/**
 	 * @var \tx_bib_pi1
@@ -200,7 +200,7 @@ class EditorView extends View {
 	 * @throws \Exception
 	 * @return string A publication editor
 	 */
-	public function editor_view() {
+	public function render() {
 		$content = '';
 
 		// check whether the BE user is authorized

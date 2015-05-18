@@ -101,7 +101,7 @@ abstract class Exporter {
 	 * @return void
 	 */
 	public function initialize($pi1) {
-		$this->pi1 =& $pi1;
+		$this->pi1 = $pi1;
 		$this->setReferenceReader($pi1->referenceReader);
 		$this->setupFilters();
 		$this->setupExportFile();
@@ -255,17 +255,17 @@ abstract class Exporter {
 		$content = 'This file was created by the TYPO3 extension' . PHP_EOL;
 		$content .= $this->pi1->extKey;
 		if (is_array($this->extensionManagerConfiguration)) {
-			$content .= ' version ' . $this->extensionManagerConfiguration['version'] . "\n";
+			$content .= ' version ' . $this->extensionManagerConfiguration['version'] . PHP_EOL;
 		}
 		$content .= PHP_EOL;
-		$content .= '--- Timezone: ' . date('T') . "\n";
-		$content .= 'Creation date: ' . date('Y-m-d') . "\n";
-		$content .= 'Creation time: ' . date('H-i-s') . "\n";
+		$content .= '--- Timezone: ' . date('T') . PHP_EOL;
+		$content .= 'Creation date: ' . date('Y-m-d') . PHP_EOL;
+		$content .= 'Creation time: ' . date('H-i-s') . PHP_EOL;
 
 		if ($num >= 0) {
-			$content .= '--- Number of references' . "\n";
-			$content .= '' . $num . "\n";
-			$content .= '' . "\n";
+			$content .= '--- Number of references' . PHP_EOL;
+			$content .= '' . $num . PHP_EOL;
+			$content .= '' . PHP_EOL;
 		}
 
 		return $content;

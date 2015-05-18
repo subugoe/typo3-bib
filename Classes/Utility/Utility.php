@@ -688,4 +688,17 @@ class Utility {
 		}
 		return FALSE;
 	}
+
+	/**
+	 * Returns an instance of a navigation bar class
+	 *
+	 * @param string $type
+	 * @return \Ipf\Bib\Navigation\Navigation Instance of the navigation object
+	 */
+	public static function getAndInitializeNavigationInstance($type, $object) {
+		$navigationInstance = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\' . $type);
+		$navigationInstance->initialize($object);
+		return $navigationInstance;
+	}
+
 }

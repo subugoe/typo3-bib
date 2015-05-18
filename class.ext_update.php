@@ -25,8 +25,14 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+/**
+ * Class ext_update
+ */
 class ext_update {
 
+	/**
+	 * @return string
+	 */
 	public function main() {
 		$num = $this->num_wrong_aship_pid();
 		$res = '';
@@ -48,7 +54,9 @@ class ext_update {
 		return $res;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	function access() {
 		$update = FALSE;
 		if ($this->num_wrong_aship_pid() != 0) {
@@ -59,7 +67,7 @@ class ext_update {
 	}
 
 
-	/*
+	/**
 	 * Fix missing authorship pids
 	 *
 	 */
@@ -83,7 +91,9 @@ class ext_update {
 		return $num;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	function fix_wrong_aship_pid() {
 		$error = FALSE;
 		$query = '
@@ -98,7 +108,7 @@ class ext_update {
 		';
 		$res = $GLOBALS['TYPO3_DB']->sql_query($query);
 		$sql_error = $GLOBALS['TYPO3_DB']->sql_error();
-		if (strlen($error) == 0) {
+		if (strlen($sql_error) == 0) {
 
 		} else {
 			$error = TRUE;
