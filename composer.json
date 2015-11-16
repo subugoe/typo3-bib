@@ -7,7 +7,7 @@
     "phpunit/phpunit": "~4.8",
     "fortawesome/font-awesome": "~4.4"
   },
-  "license": "GPL",
+  "license": "GPL-2.0",
   "authors": [
     {
       "name": "Ingo Pfennigstorf",

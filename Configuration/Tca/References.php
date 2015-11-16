@@ -24,6 +24,7 @@ $TCA['tx_bib_domain_model_reference'] = [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype',
             'config' => [
                 'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_0',
@@ -153,13 +154,7 @@ $TCA['tx_bib_domain_model_reference'] = [
             'config' => [
                 'type' => 'input',
                 'size' => '4',
-                'max' => '4',
                 'eval' => 'int',
-                'range' => [
-                    'upper' => '10000',
-                    'lower' => '0'
-                ],
-                'default' => 0
             ]
         ],
         'volume' => [
@@ -207,6 +202,7 @@ $TCA['tx_bib_domain_model_reference'] = [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_day',
             'config' => [
                 'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
                     ['-', '0'],
                     ['1', '1'],
@@ -250,6 +246,7 @@ $TCA['tx_bib_domain_model_reference'] = [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_month',
             'config' => [
                 'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
                     ['-', '0'],
                     ['1', '1'],
@@ -339,7 +336,12 @@ $TCA['tx_bib_domain_model_reference'] = [
                         'type' => 'popup',
                         'title' => 'Link',
                         'icon' => 'link_popup.gif',
-                        'script' => 'browse_links.php?mode=wizard',
+                        'module' => [
+                            'name' => 'wizard_element_browser',
+                            'urlParameters' => [
+                                'mode' => 'wizard',
+                            ]
+                        ],
                         'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
                     ],
                 ],
@@ -359,7 +361,12 @@ $TCA['tx_bib_domain_model_reference'] = [
                         'type' => 'popup',
                         'title' => 'Link',
                         'icon' => 'link_popup.gif',
-                        'script' => 'browse_links.php?mode=wizard',
+                        'module' => [
+                            'name' => 'wizard_element_browser',
+                            'urlParameters' => [
+                                'mode' => 'wizard',
+                            ]
+                        ],
                         'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
                     ],
                 ],
@@ -388,7 +395,12 @@ $TCA['tx_bib_domain_model_reference'] = [
                         'type' => 'popup',
                         'title' => 'Link',
                         'icon' => 'link_popup.gif',
-                        'script' => 'browse_links.php?mode=wizard',
+                        'module' => [
+                            'name' => 'wizard_element_browser',
+                            'urlParameters' => [
+                                'mode' => 'wizard',
+                            ]
+                        ],
                         'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
                     ],
                 ],
@@ -578,6 +590,7 @@ $TCA['tx_bib_domain_model_reference'] = [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state',
             'config' => [
                 'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state_I_0',
