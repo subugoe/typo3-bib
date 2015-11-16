@@ -40,7 +40,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     const D_SIMPLE = 0;
     const D_Y_SPLIT = 1;
-        const D_Y_NAV = 2; // The extension key.
+    const D_Y_NAV = 2; // The extension key.
 
     // http://forum.typo3.org/index.php/t/152665/
     const DIALOG_SAVE_CONFIRMED = 1;
@@ -73,7 +73,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     // citeid generation modes
     public $scriptRelPath = 'pi1/class.tx_bib_pi1.php';
-public $extKey = 'bib';
+    public $extKey = 'bib';
     public $pi_checkCHash = false;
 
     // Sorting modes
@@ -442,12 +442,11 @@ public $extKey = 'bib';
      */
     protected function getFrontendEditorConfiguration()
     {
-        $ecEditor =& $this->extConf['editor'];
         $flexFormSheet = 's_fe_editor';
-        $ecEditor['enabled'] = $this->pi_getFFvalue($this->flexFormData, 'enable_editor', $flexFormSheet);
-        $ecEditor['citeid_gen_new'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_new', $flexFormSheet);
-        $ecEditor['citeid_gen_old'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_old', $flexFormSheet);
-        $ecEditor['clear_page_cache'] = $this->pi_getFFvalue($this->flexFormData, 'clear_cache', $flexFormSheet);
+        $this->extConf['editor']['enabled'] = $this->pi_getFFvalue($this->flexFormData, 'enable_editor', $flexFormSheet);
+        $this->extConf['editor']['citeid_gen_new'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_new', $flexFormSheet);
+        $this->extConf['editor']['citeid_gen_old'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_old', $flexFormSheet);
+        $this->extConf['editor']['clear_page_cache'] = $this->pi_getFFvalue($this->flexFormData, 'clear_cache', $flexFormSheet);
 
         // Overwrite editor configuration from TSsetup
         if (is_array($this->conf['editor.'])) {
@@ -598,7 +597,7 @@ public $extKey = 'bib';
 
         // Statistic Navigation
         if (intval($this->extConf['stat_mode']) != self::STAT_NONE) {
-            $this->enableStatisticsNavigation(true);
+            $this->enableStatisticsNavigation();
         }
 
         // Export navigation
@@ -713,6 +712,22 @@ public $extKey = 'bib';
     }
 
     /**
+     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     */
+    protected function getBackendUser()
+    {
+        return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
+     */
+    protected function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
      * Determine whether a valid backend user with write access to the reference table is logged in
      *
      * @return bool
@@ -722,11 +737,11 @@ public $extKey = 'bib';
 
         $validBackendUser = false;
 
-        if (is_object($GLOBALS['BE_USER'])) {
-            if ($GLOBALS['BE_USER']->isAdmin()) {
+        if (is_object($this->getBackendUser())) {
+            if ($this->getBackendUser()->isAdmin()) {
                 $validBackendUser = true;
             } else {
-                $validBackendUser = $GLOBALS['BE_USER']->check('tables_modify',
+                $validBackendUser = $this->getBackendUser()->check('tables_modify',
                     $this->referenceReader->getReferenceTable());
             }
         }
@@ -881,12 +896,15 @@ public $extKey = 'bib';
         try {
             $this->initializeSelectionFilter();
         } catch (\Exception $e) {
+            $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class);
+            /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
             $message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Messaging\FlashMessage::class,
                 $e->getMessage(),
                 '',
                 FlashMessage::ERROR
             );
-            FlashMessageQueue::addMessage($message);
+            $flashMessageQueue->addMessage($message);
+
         }
     }
 
@@ -3144,19 +3162,19 @@ public $extKey = 'bib';
         if (isset ($this->conf['FE_edit_own_records']) && $this->conf['FE_edit_own_records'] != 0) {
 
             // query all authors of this publication
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+            $res = $this->getDatabaseConnection()->exec_SELECTquery(
                 'fe_user_id',
                 'tx_bib_domain_model_author as a, tx_bib_domain_model_authorships as m',
                 'a.uid = m.author_id AND m.pub_id = ' . $publicationId
             );
 
-            while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
+            while ($row = $this->getDatabaseConnection()->sql_fetch_row($res)) {
                 // check if author == FE user and allow editing
                 if ($row[0] == $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->userid_column]) {
                     return true;
                 }
             }
-            $GLOBALS['TYPO3_DB']->sql_free_result($res);
+            $this->getDatabaseConnection()->sql_free_result($res);
 
             return false;
         }
@@ -3400,6 +3418,7 @@ public $extKey = 'bib';
                 $label = 'export_xml';
                 break;
             default:
+                /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
                 $message = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Messaging\FlashMessage::class,
                     'Unknown export mode',
                     '',
@@ -3522,6 +3541,7 @@ public $extKey = 'bib';
             try {
                 $content .= $importer->import();
             } catch (\Exception $e) {
+                /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
                 $message = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Messaging\FlashMessage::class,
                     $e->getMessage(),
                     '',
@@ -3530,6 +3550,7 @@ public $extKey = 'bib';
                 $flashMessageQueue->addMessage($message);
             }
         } else {
+            /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
             $message = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Messaging\FlashMessage::class,
                 'Unknown import mode',
                 '',
