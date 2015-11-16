@@ -33,226 +33,231 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  * Class SingleView
  * @package Ipf\Bib\View
  */
-class SingleView extends View {
+class SingleView extends View
+{
 
-	/**
-	 * @var \tx_bib_pi1
-	 */
-	public $pi1;
+    /**
+     * @var \tx_bib_pi1
+     */
+    public $pi1;
 
-	/**
-	 * @var array
-	 */
-	public $conf;
+    /**
+     * @var array
+     */
+    public $conf;
 
-	/**
-	 * @var \Ipf\Bib\Utility\ReferenceReader
-	 */
-	public $referenceReader;
+    /**
+     * @var \Ipf\Bib\Utility\ReferenceReader
+     */
+    public $referenceReader;
 
-	/**
-	 * @var \Ipf\Bib\Utility\DbUtility
-	 */
-	public $databaseUtility;
+    /**
+     * @var \Ipf\Bib\Utility\DbUtility
+     */
+    public $databaseUtility;
 
-	/**
-	 * @var string
-	 */
-	public $LLPrefix = 'editor_';
+    /**
+     * @var string
+     */
+    public $LLPrefix = 'editor_';
 
-	/**
-	 * @var bool
-	 */
-	public $idGenerator = FALSE;
+    /**
+     * @var bool
+     */
+    public $idGenerator = false;
 
-	/**
-	 * @var bool
-	 */
-	public $isNew = FALSE;
+    /**
+     * @var bool
+     */
+    public $isNew = false;
 
-	/**
-	 * @var bool
-	 */
-	public $isNewFirst = FALSE;
+    /**
+     * @var bool
+     */
+    public $isNewFirst = false;
 
-	/**
-	 * @var \TYPO3\CMS\Fluid\View\StandaloneView
-	 */
-	protected $view;
-
-
-	/**
-	 * Initializes this class
-	 *
-	 * @param tx_bib_pi1
-	 * @return void
-	 */
-	public function initialize($pi1) {
-
-		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
-		$view = GeneralUtility::makeInstance(StandaloneView::class);
-		$view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
-		$this->view = $view;
-
-		$this->pi1 =& $pi1;
-		$this->conf =& $pi1->conf['single_view.'];
-		$this->referenceReader =& $pi1->referenceReader;
-		// Load editor language data
-		$this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
-	}
+    /**
+     * @var \TYPO3\CMS\Fluid\View\StandaloneView
+     */
+    protected $view;
 
 
-	/**
-	 * Returns the single view
-	 *
-	 * @return string
-	 */
-	public function singleView() {
-		$content = '';
+    /**
+     * Initializes this class
+     *
+     * @param tx_bib_pi1
+     * @return void
+     */
+    public function initialize($pi1)
+    {
 
-		$uid = intval($this->pi1->extConf['single_view']['uid']);
-		$ref = $this->referenceReader->getPublicationDetails($uid);
+        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
+        $this->view = $view;
 
-		if (is_array($ref)) {
-			try {
-				$this->typeReference($ref);
-			} catch (\Exception $e) {
-				$content .= $e->getMessage();
-			}
-		} else {
-			$content .= '<p>';
-			$content .= 'No publication with uid ' . $uid;
-			$content .= '</p>';
-		}
-
-		$this->view->assign('linkBack', $this->pi1->get_link($this->pi1->get_ll('link_back_to_list')));
-
-		// remove multiple line breaks
-		$content = preg_replace("/\n+/", "\n", $content);
-
-		return $this->view->render();
-	}
-
-	/**
-	 *
-	 * @throws \Exception
-	 * @param $ref
-	 * @return string
-	 */
-	protected function typeReference($ref) {
-
-		$warnings = [];
-
-		// Store the cObj Data for later recovery
-		$contentObjectBackup = $this->pi1->cObj->data;
-
-		// Prepare the publication data and environment
-		$this->pi1->prepareItemSetup();
-		$publicationData = $this->pi1->preparePublicationData($ref, $warnings, TRUE);
-		$this->pi1->prepare_pub_cObj_data($publicationData);
-
-		$bib_str = $publicationData['bibtype_short'];
-
-		// The filed list
-		$fields = $this->referenceReader->pubAllFields;
-		$dont_show = GeneralUtility::trimExplode(',', $this->conf['dont_show'], TRUE);
-
-		$publication = [];
-		foreach ($fields as $field) {
-			if ((strlen($publicationData[$field]) > 0)) {
-				if (!in_array($field, $dont_show)) {
-					$label = $this->getFieldLabel($field, $bib_str);
-					$label = $this->pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
-
-					$value = strval($publicationData[$field]);
-					$stdWrap = $this->pi1->conf['field.'][$field . '.'];
-
-					if (isset ($this->pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
-						$stdWrap = $this->pi1->conf['field.'][$bib_str . '.'][$field . '.'];
-					}
-
-					if (isset ($this->conf['field_wrap.'][$field . '.'])) {
-						$stdWrap = $this->conf['field_wrap.'][$field . '.'];
-					}
-
-					if (isset ($stdWrap['single_view_link'])) {
-						$value = $this->pi1->get_link(
-							$value,
-							['show_uid' => strval($publicationData['uid'])]
-						);
-					}
-					$publication[$field] = $value;
-					$value = $this->pi1->cObj->stdWrap($value, $stdWrap);
-
-					$this->view->assign($field, $value);
-					$this->view->assign('label' . ucfirst($field), $label);
-				}
-			}
-		}
-
-		// Single view title
-		$title = $this->pi1->get_ll('single_view_title');
-		$title = $this->pi1->cObj->stdWrap($title, $this->conf['title.']);
-
-		// Pre and post text
-		$preText = strval($this->conf['pre_text']);
-		$preText = $this->pi1->cObj->stdWrap($preText, $this->conf['pre_text.']);
-
-		$postText = strval($this->conf['post_text']);
-		$postText = $this->pi1->cObj->stdWrap($postText, $this->conf['post_text.']);
-
-		$this->view->assignMultiple(
-			[
-				'pageTitle' => $title,
-				'preText' => $preText,
-				'postText' => $postText
-			]
-		);
-
-		$this->view->assign('publication', $publication);
-		// Restore cObj data
-		$this->pi1->cObj->data = $contentObjectBackup;
-	}
+        $this->pi1 =& $pi1;
+        $this->conf =& $pi1->conf['single_view.'];
+        $this->referenceReader =& $pi1->referenceReader;
+        // Load editor language data
+        $this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
+    }
 
 
-	/**
-	 * Depending on the bibliography type this function returns
-	 * The label for a field
-	 *
-	 * @param string $field The field
-	 * @param string $identifier The bibtype identifier string
-	 * @return string
-	 */
-	protected function getFieldLabel($field, $identifier) {
-		$label = $this->referenceReader->getReferenceTable() . '_' . $field;
+    /**
+     * Returns the single view
+     *
+     * @return string
+     */
+    public function singleView()
+    {
+        $content = '';
 
-		switch ($field) {
-			case 'authors':
-				$label = $this->referenceReader->getAuthorTable() . '_' . $field;
-				break;
-		}
+        $uid = intval($this->pi1->extConf['single_view']['uid']);
+        $ref = $this->referenceReader->getPublicationDetails($uid);
 
-		$over = [
-			$this->pi1->conf['editor.']['olabel.']['all.'][$field],
-			$this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field]
-		];
+        if (is_array($ref)) {
+            try {
+                $this->typeReference($ref);
+            } catch (\Exception $e) {
+                $content .= $e->getMessage();
+            }
+        } else {
+            $content .= '<p>';
+            $content .= 'No publication with uid ' . $uid;
+            $content .= '</p>';
+        }
 
-		foreach ($over as $lvar) {
-			if (is_string($lvar)) {
-				$label = $lvar;
-			}
-		}
+        $this->view->assign('linkBack', $this->pi1->get_link($this->pi1->get_ll('link_back_to_list')));
 
-		$label = trim($label);
-		if (strlen($label) > 0) {
-			$label = $this->pi1->get_ll($label, $label, TRUE);
-		}
+        // remove multiple line breaks
+        $content = preg_replace("/\n+/", "\n", $content);
 
-		return $label;
-	}
+        return $this->view->render();
+    }
+
+    /**
+     *
+     * @throws \Exception
+     * @param $ref
+     * @return string
+     */
+    protected function typeReference($ref)
+    {
+
+        $warnings = [];
+
+        // Store the cObj Data for later recovery
+        $contentObjectBackup = $this->pi1->cObj->data;
+
+        // Prepare the publication data and environment
+        $this->pi1->prepareItemSetup();
+        $publicationData = $this->pi1->preparePublicationData($ref, $warnings, true);
+        $this->pi1->prepare_pub_cObj_data($publicationData);
+
+        $bib_str = $publicationData['bibtype_short'];
+
+        // The filed list
+        $fields = $this->referenceReader->pubAllFields;
+        $dont_show = GeneralUtility::trimExplode(',', $this->conf['dont_show'], true);
+
+        $publication = [];
+        foreach ($fields as $field) {
+            if ((strlen($publicationData[$field]) > 0)) {
+                if (!in_array($field, $dont_show)) {
+                    $label = $this->getFieldLabel($field, $bib_str);
+                    $label = $this->pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
+
+                    $value = strval($publicationData[$field]);
+                    $stdWrap = $this->pi1->conf['field.'][$field . '.'];
+
+                    if (isset ($this->pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
+                        $stdWrap = $this->pi1->conf['field.'][$bib_str . '.'][$field . '.'];
+                    }
+
+                    if (isset ($this->conf['field_wrap.'][$field . '.'])) {
+                        $stdWrap = $this->conf['field_wrap.'][$field . '.'];
+                    }
+
+                    if (isset ($stdWrap['single_view_link'])) {
+                        $value = $this->pi1->get_link(
+                            $value,
+                            ['show_uid' => strval($publicationData['uid'])]
+                        );
+                    }
+                    $publication[$field] = $value;
+                    $value = $this->pi1->cObj->stdWrap($value, $stdWrap);
+
+                    $this->view->assign($field, $value);
+                    $this->view->assign('label' . ucfirst($field), $label);
+                }
+            }
+        }
+
+        // Single view title
+        $title = $this->pi1->get_ll('single_view_title');
+        $title = $this->pi1->cObj->stdWrap($title, $this->conf['title.']);
+
+        // Pre and post text
+        $preText = strval($this->conf['pre_text']);
+        $preText = $this->pi1->cObj->stdWrap($preText, $this->conf['pre_text.']);
+
+        $postText = strval($this->conf['post_text']);
+        $postText = $this->pi1->cObj->stdWrap($postText, $this->conf['post_text.']);
+
+        $this->view->assignMultiple(
+            [
+                'pageTitle' => $title,
+                'preText' => $preText,
+                'postText' => $postText
+            ]
+        );
+
+        $this->view->assign('publication', $publication);
+        // Restore cObj data
+        $this->pi1->cObj->data = $contentObjectBackup;
+    }
+
+
+    /**
+     * Depending on the bibliography type this function returns
+     * The label for a field
+     *
+     * @param string $field The field
+     * @param string $identifier The bibtype identifier string
+     * @return string
+     */
+    protected function getFieldLabel($field, $identifier)
+    {
+        $label = $this->referenceReader->getReferenceTable() . '_' . $field;
+
+        switch ($field) {
+            case 'authors':
+                $label = $this->referenceReader->getAuthorTable() . '_' . $field;
+                break;
+        }
+
+        $over = [
+            $this->pi1->conf['editor.']['olabel.']['all.'][$field],
+            $this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field]
+        ];
+
+        foreach ($over as $lvar) {
+            if (is_string($lvar)) {
+                $label = $lvar;
+            }
+        }
+
+        $label = trim($label);
+        if (strlen($label) > 0) {
+            $label = $this->pi1->get_ll($label, $label, true);
+        }
+
+        return $label;
+    }
 
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']);
+    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']);
 }

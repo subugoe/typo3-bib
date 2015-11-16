@@ -44,151 +44,152 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  *
  * {namespace bib=Ipf\Bib\ViewHelpers}
  * <bib:renderPublication bibliographyItem="{bibitem}">
- * 	<f:if condition="{f:count(subject:bibitem.authors)} > 0">
- * 		<bib:renderPublicationField field="authors" xml="1" suffix=":">
- * 			<f:render partial="Bib/Authors" arguments="{_all}"/>
- * 		</bib:renderPublicationField>
- * 	</f:if>
+ *    <f:if condition="{f:count(subject:bibitem.authors)} > 0">
+ *        <bib:renderPublicationField field="authors" xml="1" suffix=":">
+ *            <f:render partial="Bib/Authors" arguments="{_all}"/>
+ *        </bib:renderPublicationField>
+ *    </f:if>
  *
- * 	<bib:renderPublicationField field="title" suffix="."/>
- * 	<bib:renderPublicationField field="year"/>
- * 	<bib:renderPublicationField field="pages" prefix="p. "/>
+ *    <bib:renderPublicationField field="title" suffix="."/>
+ *    <bib:renderPublicationField field="year"/>
+ *    <bib:renderPublicationField field="pages" prefix="p. "/>
  *
- * 	<f:if condition="{bibitem.DOI}">
- * 		<bib:renderPublicationField field="doi" xml="1" prefix="DOI: " prefixIfFirst="DOI: ">
- * 			<f:link.external uri="http://dx.doi.org/{bibitem.DOI}">{bibitem.DOI}</f:link.external>
- * 		</bib:renderPublicationField>
- * 	</f:if>
+ *    <f:if condition="{bibitem.DOI}">
+ *        <bib:renderPublicationField field="doi" xml="1" prefix="DOI: " prefixIfFirst="DOI: ">
+ *            <f:link.external uri="http://dx.doi.org/{bibitem.DOI}">{bibitem.DOI}</f:link.external>
+ *        </bib:renderPublicationField>
+ *    </f:if>
  * </bib:renderPublication>
  *
  */
-class RenderPublicationViewHelper extends AbstractViewHelper {
+class RenderPublicationViewHelper extends AbstractViewHelper
+{
 
-	/**
-	 * @var array
-	 */
-	public static $variables = [
-		'prefixIfFirst' => ['description' => 'default prefix for the first field that is displayed', 'default' => ''],
-		'prefix' => ['description' => 'default prefix for fields', 'default' => ''],
-		'suffix' => ['description' => 'default suffix for fields', 'default' => ','],
-		'suffixIfLast' => ['description' => 'default suffix for the last field that is displayed', 'default' => '.']
-	];
+    /**
+     * @var array
+     */
+    public static $variables = [
+        'prefixIfFirst' => ['description' => 'default prefix for the first field that is displayed', 'default' => ''],
+        'prefix' => ['description' => 'default prefix for fields', 'default' => ''],
+        'suffix' => ['description' => 'default suffix for fields', 'default' => ','],
+        'suffixIfLast' => ['description' => 'default suffix for the last field that is displayed', 'default' => '.']
+    ];
+    /**
+     * @var string
+     */
+    public static $containerVariableName = 'tx_bib_containerVariable';
+    /**
+     * @var string
+     */
+    public static $bibliographyItemVariableName = 'tx_bib_bibliographyItemVariable';
+    /**
+     * @var string
+     */
+    protected static $prefixString = 'tx_bib_';
 
-	/**
-	 * @var string
-	 */
-	protected static $prefixString = 'tx_bib_';
+    /**
+     * Register arguments.
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('bibliographyItem', 'array', 'the bibliography item to create output for', true);
 
-	/**
-	 * @var string
-	 */
-	public static $containerVariableName = 'tx_bib_containerVariable';
+        foreach (self::$variables as $variableName => $variableConfig) {
+            $this->registerArgument($variableName, 'string', $variableConfig['description'], false,
+                $variableConfig['default']);
+        }
+    }
 
-	/**
-	 * @var string
-	 */
-	public static $bibliographyItemVariableName = 'tx_bib_bibliographyItemVariable';
+    /**
+     * @return array
+     */
+    public function render()
+    {
+        $bibliographyItem = $this->arguments['bibliographyItem'];
 
-	/**
-	 * Register arguments.
-	 * @return void
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('bibliographyItem', 'array', 'the bibliography item to create output for', TRUE);
+        // Set up template variables for RenderPublicationField View Helper.
+        $this->templateVariableContainer->add(self::$bibliographyItemVariableName, $bibliographyItem);
+        $this->templateVariableContainer->add(self::$containerVariableName, []);
+        foreach (array_keys(self::$variables) as $variableName) {
+            $this->templateVariableContainer->add(self::$prefixString . $variableName, $this->arguments[$variableName]);
+        }
 
-		foreach (self::$variables as $variableName => $variableConfig) {
-			$this->registerArgument($variableName, 'string', $variableConfig['description'], FALSE, $variableConfig['default']);
-		}
-	}
+        // Render contained RenderPublicationField View Helpers and retrieve the data.
+        $this->renderChildren();
+        $fieldArray = $this->templateVariableContainer->get(self::$containerVariableName);
 
-	/**
-	 * @return array
-	 */
-	public function render() {
-		$bibliographyItem = $this->arguments['bibliographyItem'];
+        // Unset template variables.
+        $this->templateVariableContainer->remove(self::$containerVariableName);
+        $this->templateVariableContainer->remove(self::$bibliographyItemVariableName);
+        foreach (array_keys(self::$variables) as $variableName) {
+            $this->templateVariableContainer->remove(self::$prefixString . $variableName);
+        }
 
-		// Set up template variables for RenderPublicationField View Helper.
-		$this->templateVariableContainer->add(self::$bibliographyItemVariableName, $bibliographyItem);
-		$this->templateVariableContainer->add(self::$containerVariableName, []);
-		foreach (array_keys(self::$variables) as $variableName) {
-			$this->templateVariableContainer->add(self::$prefixString . $variableName, $this->arguments[$variableName]);
-		}
-
-		// Render contained RenderPublicationField View Helpers and retrieve the data.
-		$this->renderChildren();
-		$fieldArray = $this->templateVariableContainer->get(self::$containerVariableName);
-
-		// Unset template variables.
-		$this->templateVariableContainer->remove(self::$containerVariableName);
-		$this->templateVariableContainer->remove(self::$bibliographyItemVariableName);
-		foreach (array_keys(self::$variables) as $variableName) {
-			$this->templateVariableContainer->remove(self::$prefixString . $variableName);
-		}
-
-		return $this->createMarkup($bibliographyItem, $fieldArray);
-	}
+        return $this->createMarkup($bibliographyItem, $fieldArray);
+    }
 
 
-	/**
-	 * Returns a string with HTML markup for the passed $bibliographyItem with
-	 * the fields configured in $fieldArray.
-	 *
-	 * @param array $bibliographyItem the bibliography item to display
-	 * @param array $fieldArray field configuration to use for the display
-	 * @return string
-	 */
-	private function createMarkup ($bibliographyItem, $fieldArray) {
-		$document = new \DomDocument();
-		$recordSpan = $document->createElement('span');
-		$recordSpan->setAttribute('class', self::$prefixString . 'record recordType-' . $bibliographyItem['bibtype']);
-		$recordSpan->setAttribute('id', 'citekey-' . $this->arguments['citeId']);
-		$document->appendChild($recordSpan);
+    /**
+     * Returns a string with HTML markup for the passed $bibliographyItem with
+     * the fields configured in $fieldArray.
+     *
+     * @param array $bibliographyItem the bibliography item to display
+     * @param array $fieldArray field configuration to use for the display
+     * @return string
+     */
+    private function createMarkup($bibliographyItem, $fieldArray)
+    {
+        $document = new \DomDocument();
+        $recordSpan = $document->createElement('span');
+        $recordSpan->setAttribute('class', self::$prefixString . 'record recordType-' . $bibliographyItem['bibtype']);
+        $recordSpan->setAttribute('id', 'citekey-' . $this->arguments['citeId']);
+        $document->appendChild($recordSpan);
 
-		foreach ($fieldArray as $fieldIndex => $fieldInfo) {
-			$content = $fieldInfo['children'];
-			if ($content !== NULL) {
-				if ($fieldInfo['xml']) {
-					$childXML = new \DOMDocument();
-					$childXML->loadXML($content);
-					if ($childXML && $childXML->firstChild) {
-						$contentXML = $document->importNode($childXML->firstChild, TRUE);
-					}
-				}
-				if (!$contentXML) {
-					$contentXML = $document->createTextNode($content);
-				}
-			}
-			else {
-				$fieldContent = $bibliographyItem[$fieldInfo['field']];
-				if ($fieldContent) {
-					$contentXML = $document->createTextNode($fieldContent);
-				}
-			}
+        foreach ($fieldArray as $fieldIndex => $fieldInfo) {
+            $content = $fieldInfo['children'];
+            if ($content !== null) {
+                if ($fieldInfo['xml']) {
+                    $childXML = new \DOMDocument();
+                    $childXML->loadXML($content);
+                    if ($childXML && $childXML->firstChild) {
+                        $contentXML = $document->importNode($childXML->firstChild, true);
+                    }
+                }
+                if (!$contentXML) {
+                    $contentXML = $document->createTextNode($content);
+                }
+            } else {
+                $fieldContent = $bibliographyItem[$fieldInfo['field']];
+                if ($fieldContent) {
+                    $contentXML = $document->createTextNode($fieldContent);
+                }
+            }
 
-			if ($contentXML) {
-				$fieldSpan = $document->createElement('span');
-				$fieldClass = self::$prefixString . 'field';
-				if ($fieldInfo['field']) {
-					$fieldClass .= ' ' . self::$prefixString . 'field-' . $fieldInfo['field'];
-				}
-				$fieldSpan->setAttribute('class', $fieldClass);
+            if ($contentXML) {
+                $fieldSpan = $document->createElement('span');
+                $fieldClass = self::$prefixString . 'field';
+                if ($fieldInfo['field']) {
+                    $fieldClass .= ' ' . self::$prefixString . 'field-' . $fieldInfo['field'];
+                }
+                $fieldSpan->setAttribute('class', $fieldClass);
 
-				$prefixKey = 'prefix' . (($fieldIndex === 0) ? 'IfFirst' : '');
-				$fieldSpan->appendChild($document->createTextNode($fieldInfo[$prefixKey]));
+                $prefixKey = 'prefix' . (($fieldIndex === 0) ? 'IfFirst' : '');
+                $fieldSpan->appendChild($document->createTextNode($fieldInfo[$prefixKey]));
 
-				$fieldSpan->appendChild($contentXML);
+                $fieldSpan->appendChild($contentXML);
 
-				$suffixKey = 'suffix' . ($fieldIndex < count($fieldArray) - 1 ? '' : 'IfLast');
-				$fieldSpan->appendChild($document->createTextNode($fieldInfo[$suffixKey]));
+                $suffixKey = 'suffix' . ($fieldIndex < count($fieldArray) - 1 ? '' : 'IfLast');
+                $fieldSpan->appendChild($document->createTextNode($fieldInfo[$suffixKey]));
 
-				$recordSpan->appendChild($fieldSpan);
-				$recordSpan->appendChild($document->createTextNode(' '));
-			}
-			unset($contentXML);
-		}
+                $recordSpan->appendChild($fieldSpan);
+                $recordSpan->appendChild($document->createTextNode(' '));
+            }
+            unset($contentXML);
+        }
 
-		return $document->saveHTML();
-	}
+        return $document->saveHTML();
+    }
 
 }

@@ -32,398 +32,421 @@ use TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException;
  * Class Exporter
  * @package Ipf\Bib\Utility\Exporter
  */
-abstract class Exporter {
+abstract class Exporter
+{
 
-	/**
-	 * @var \tx_bib_pi1
-	 */
-	protected $pi1;
+    /**
+     * @var \tx_bib_pi1
+     */
+    protected $pi1;
 
-	/**
-	 * @var \Ipf\Bib\Utility\ReferenceReader
-	 */
-	protected $referenceReader;
+    /**
+     * @var \Ipf\Bib\Utility\ReferenceReader
+     */
+    protected $referenceReader;
 
-	/**
-	 * @var array
-	 */
-	protected $filters;
+    /**
+     * @var array
+     */
+    protected $filters;
 
-	/**
-	 * @var string
-	 */
-	protected $filterKey;
+    /**
+     * @var string
+     */
+    protected $filterKey;
 
-	/**
-	 * @var string
-	 */
-	protected $filePath;
+    /**
+     * @var string
+     */
+    protected $filePath;
 
-	/**
-	 * @var string
-	 */
-	protected $fileName;
+    /**
+     * @var string
+     */
+    protected $fileName;
 
-	/**
-	 * @var bool
-	 */
-	protected $isNewFile;
+    /**
+     * @var bool
+     */
+    protected $isNewFile;
 
-	/**
-	 * @var resource|bool
-	 */
-	protected $fileResource;
+    /**
+     * @var resource|bool
+     */
+    protected $fileResource;
 
-	/**
-	 * @var bool
-	 */
-	protected $dynamic = FALSE;
+    /**
+     * @var bool
+     */
+    protected $dynamic = false;
 
-	/**
-	 * @var string
-	 */
-	protected $data = '';
+    /**
+     * @var string
+     */
+    protected $data = '';
 
-	/**
-	 * @var array
-	 */
-	protected $info;
+    /**
+     * @var array
+     */
+    protected $info;
 
-	/**
-	 * @var array
-	 */
-	protected $extensionManagerConfiguration;
+    /**
+     * @var array
+     */
+    protected $extensionManagerConfiguration;
 
-	/**
-	 * Initializes the export. The argument must be the plugin class
-	 *
-	 * @param \tx_bib_pi1 $pi1
-	 * @return void
-	 */
-	public function initialize($pi1) {
-		$this->pi1 =& $pi1;
-		$this->setReferenceReader($pi1->referenceReader);
-		$this->setupFilters();
-		$this->setupExportFile();
-	}
+    /**
+     * Initializes the export. The argument must be the plugin class
+     *
+     * @param \tx_bib_pi1 $pi1
+     * @return void
+     */
+    public function initialize($pi1)
+    {
+        $this->pi1 =& $pi1;
+        $this->setReferenceReader($pi1->referenceReader);
+        $this->setupFilters();
+        $this->setupExportFile();
+    }
 
-	/**
-	 * This writes the filtered database content
-	 * to the export file
-	 *
-	 * @return void
-	 */
-	public function export() {
-		$this->setIsNewFile(FALSE);
+    /**
+     * @return void
+     */
+    protected function setupFilters()
+    {
+        $this->setFilters($this->pi1->extConf['filters']);
+        unset($this->filters['br_page']);
 
-		// Initialize sink
-		if ($this->isResourceReady()) {
-			// Initialize db access
-			$this->getReferenceReader()->set_filters($this->getFilters());
-			$this->getReferenceReader()->initializeReferenceFetching();
+        // The filter key is used for the filename
+        $this->filterKey = 'export' . strval($GLOBALS['TSFE']->id);
+    }
 
-			// Setup info array
-			$infoArr = [];
-			$infoArr['pubNum'] = $this->getReferenceReader()->numberOfReferencesToBeFetched();
-			$infoArr['index'] = -1;
+    /**
+     * @return void
+     */
+    protected function setupExportFile()
+    {
+        // Setup export file path and name
+        $this->filePath = $this->pi1->conf['export.']['path'];
+        if (!strlen($this->filePath)) {
+            $this->filePath = 'uploads/tx_bib';
+        }
 
-			// Write pre data
-			$data = $this->fileIntro($infoArr);
-			$this->writeToResource($data);
+        $this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.dat');
+        $this->setIsNewFile(false);
+    }
 
-			// Write publications
-			while ($this->getReferenceReader()->getReference()) {
-				$infoArr['index']++;
-				$data = $this->formatPublicationForExport($pub, $infoArr);
-				$this->writeToResource($data);
-			}
+    /**
+     * This writes the filtered database content
+     * to the export file
+     *
+     * @return void
+     */
+    public function export()
+    {
+        $this->setIsNewFile(false);
 
-			// Write post data
-			$data = $this->fileOutro($infoArr);
-			$this->writeToResource($data);
+        // Initialize sink
+        if ($this->isResourceReady()) {
+            // Initialize db access
+            $this->getReferenceReader()->set_filters($this->getFilters());
+            $this->getReferenceReader()->initializeReferenceFetching();
 
-			// Clean up db access
-			$this->getReferenceReader()->finalizeReferenceFetching();
+            // Setup info array
+            $infoArr = [];
+            $infoArr['pubNum'] = $this->getReferenceReader()->numberOfReferencesToBeFetched();
+            $infoArr['index'] = -1;
 
-			$this->info = $infoArr;
-		}
+            // Write pre data
+            $data = $this->fileIntro($infoArr);
+            $this->writeToResource($data);
 
-		$this->cleanUpResource();
-	}
+            // Write publications
+            while ($this->getReferenceReader()->getReference()) {
+                $infoArr['index']++;
+                $data = $this->formatPublicationForExport($pub, $infoArr);
+                $this->writeToResource($data);
+            }
 
-	/**
-	 * @return void
-	 */
-	protected function setupExportFile() {
-		// Setup export file path and name
-		$this->filePath = $this->pi1->conf['export.']['path'];
-		if (!strlen($this->filePath)) {
-			$this->filePath = 'uploads/tx_bib';
-		}
+            // Write post data
+            $data = $this->fileOutro($infoArr);
+            $this->writeToResource($data);
 
-		$this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.dat');
-		$this->setIsNewFile(FALSE);
-	}
+            // Clean up db access
+            $this->getReferenceReader()->finalizeReferenceFetching();
 
-	/**
-	 * @return void
-	 */
-	protected function setupFilters() {
-		$this->setFilters($this->pi1->extConf['filters']);
-		unset($this->filters['br_page']);
+            $this->info = $infoArr;
+        }
 
-		// The filter key is used for the filename
-		$this->filterKey = 'export' . strval($GLOBALS['TSFE']->id);
-	}
+        $this->cleanUpResource();
+    }
 
-	/**
-	 * Returns the composed path/file name
-	 *
-	 * @return String The file address
-	 */
-	public function getRelativeFilePath() {
-		return $this->filePath . '/' . $this->fileName;
-	}
+    /**
+     * Return codes
+     *  0 - Sink ready
+     * -1 - Sink is up to date
+     *
+     * @throws FileOperationErrorException
+     * @return int
+     */
+    protected function isResourceReady()
+    {
+        if ($this->dynamic) {
+            $this->setData('');
+        } else {
+            // Open file
+            $file_abs = $this->getAbsoluteFilePath();
 
-	/**
-	 * Returns absolute system file path
-	 *
-	 * @return String The absolute file path
-	 */
-	protected function getAbsoluteFilePath() {
-		return PATH_site . $this->getRelativeFilePath();
-	}
+            if ($this->isFileMoreUpToDate($file_abs) && !$this->pi1->extConf['debug']) {
+                return false;
+            }
 
+            $this->fileResource = fopen($file_abs, 'w');
 
-	/**
-	 * Checks if the file exists and is newer than
-	 * the latest change (tstamp) in the publication database
-	 *
-	 * @param String $file
-	 * @return bool TRUE if file exists and is newer than the
-	 *         database content, FALSE otherwise.
-	 */
-	protected function isFileMoreUpToDate($file) {
-		$databaseTimestamp = $this->getReferenceReader()->getLatestTimestamp();
+            if ($this->fileResource) {
+                $this->setIsNewFile(true);
+            } else {
+                throw new FileOperationErrorException(
+                    $this->pi1->extKey . ' error: Could not open file ' . $file_abs . ' for writing.',
+                    1379067524
+                );
+            }
+        }
 
-		if (file_exists($file)) {
-			$fileModificationTIme = filemtime($file);
-			if (!($fileModificationTIme === FALSE) && ($databaseTimestamp < $fileModificationTIme)) {
-				return TRUE;
-			}
-		}
-		return FALSE;
-	}
+        return true;
+    }
 
+    /**
+     * Returns absolute system file path
+     *
+     * @return String The absolute file path
+     */
+    protected function getAbsoluteFilePath()
+    {
+        return PATH_site . $this->getRelativeFilePath();
+    }
 
-	/**
-	 * Formats one publication for the export
-	 *
-	 * @param array $publication
-	 * @param array $infoArr
-	 * @return string The export string
-	 */
-	abstract protected function formatPublicationForExport($publication, $infoArr = []);
+    /**
+     * Returns the composed path/file name
+     *
+     * @return String The file address
+     */
+    public function getRelativeFilePath()
+    {
+        return $this->filePath . '/' . $this->fileName;
+    }
 
+    /**
+     * Checks if the file exists and is newer than
+     * the latest change (tstamp) in the publication database
+     *
+     * @param String $file
+     * @return bool TRUE if file exists and is newer than the
+     *         database content, FALSE otherwise.
+     */
+    protected function isFileMoreUpToDate($file)
+    {
+        $databaseTimestamp = $this->getReferenceReader()->getLatestTimestamp();
 
-	/**
-	 * Returns the file intro
-	 *
-	 * @param $infoArr
-	 * @return string The file header string
-	 */
-	abstract protected function fileIntro($infoArr = []);
+        if (file_exists($file)) {
+            $fileModificationTIme = filemtime($file);
+            if (!($fileModificationTIme === false) && ($databaseTimestamp < $fileModificationTIme)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Returns the file outtro
-	 *
-	 * @param array $infoArr
-	 * @return string The file header string
-	 */
-	abstract protected function fileOutro($infoArr = []);
+    /**
+     * @return \Ipf\Bib\Utility\ReferenceReader
+     */
+    public function getReferenceReader()
+    {
+        return $this->referenceReader;
+    }
 
+    /**
+     * @param \Ipf\Bib\Utility\ReferenceReader $referenceReader
+     */
+    public function setReferenceReader($referenceReader)
+    {
+        $this->referenceReader = $referenceReader;
+    }
 
-	/**
-	 * Returns a general information text for the exported dataset
-	 *
-	 * @param array
-	 * @return string A filter information string
-	 */
-	protected function getGeneralInformationText($infoArr = []) {
-		$num = intval($infoArr['pubNum']);
+    /**
+     * @return array
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
 
-		$content = 'This file was created by the TYPO3 extension' . PHP_EOL;
-		$content .= $this->pi1->extKey;
-		if (is_array($this->extensionManagerConfiguration)) {
-			$content .= ' version ' . $this->extensionManagerConfiguration['version'] . "\n";
-		}
-		$content .= PHP_EOL;
-		$content .= '--- Timezone: ' . date('T') . "\n";
-		$content .= 'Creation date: ' . date('Y-m-d') . "\n";
-		$content .= 'Creation time: ' . date('H-i-s') . "\n";
+    /**
+     * @param array $filters
+     */
+    public function setFilters($filters)
+    {
+        $this->filters = $filters;
+    }
 
-		if ($num >= 0) {
-			$content .= '--- Number of references' . "\n";
-			$content .= '' . $num . "\n";
-			$content .= '' . "\n";
-		}
+    /**
+     * Returns the file intro
+     *
+     * @param $infoArr
+     * @return string The file header string
+     */
+    abstract protected function fileIntro($infoArr = []);
 
-		return $content;
-	}
+    /**
+     * @param $data
+     * @return void
+     */
+    protected function writeToResource($data)
+    {
+        if ($this->dynamic) {
+            $this->data .= $data;
+        } else {
+            fwrite($this->fileResource, $data);
+        }
+    }
 
-	/**
-	 * Return codes
-	 *  0 - Sink ready
-	 * -1 - Sink is up to date
-	 *
-	 * @throws FileOperationErrorException
-	 * @return int
-	 */
-	protected function isResourceReady() {
-		if ($this->dynamic) {
-			$this->setData('');
-		} else {
-			// Open file
-			$file_abs = $this->getAbsoluteFilePath();
+    /**
+     * Formats one publication for the export
+     *
+     * @param array $publication
+     * @param array $infoArr
+     * @return string The export string
+     */
+    abstract protected function formatPublicationForExport($publication, $infoArr = []);
 
-			if ($this->isFileMoreUpToDate($file_abs) && !$this->pi1->extConf['debug']) {
-				return FALSE;
-			}
+    /**
+     * Returns the file outtro
+     *
+     * @param array $infoArr
+     * @return string The file header string
+     */
+    abstract protected function fileOutro($infoArr = []);
 
-			$this->fileResource = fopen($file_abs, 'w');
+    /**
+     * @return void
+     */
+    protected function cleanUpResource()
+    {
+        if (!$this->dynamic) {
+            if ($this->fileResource) {
+                fclose($this->fileResource);
+                $this->fileResource = false;
+            }
+        }
+    }
 
-			if ($this->fileResource) {
-				$this->setIsNewFile(TRUE);
-			} else {
-				throw new FileOperationErrorException(
-					$this->pi1->extKey . ' error: Could not open file ' . $file_abs . ' for writing.',
-					1379067524
-				);
-			}
-		}
+    /**
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
 
-		return TRUE;
-	}
+    /**
+     * @param string $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
 
-	/**
-	 * @param $data
-	 * @return void
-	 */
-	protected function writeToResource($data) {
-		if ($this->dynamic) {
-			$this->data .= $data;
-		} else {
-			fwrite($this->fileResource, $data);
-		}
-	}
+    /**
+     * @return string
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
+    }
 
-	/**
-	 * @return void
-	 */
-	protected function cleanUpResource() {
-		if (!$this->dynamic) {
-			if ($this->fileResource) {
-				fclose($this->fileResource);
-				$this->fileResource = FALSE;
-			}
-		}
-	}
-	/**
-	 * @param string $fileName
-	 */
-	public function setFileName($fileName) {
-		$this->fileName = $fileName;
-	}
+    /**
+     * @param string $filePath
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getFileName() {
-		return $this->fileName;
-	}
+    /**
+     * @return boolean
+     */
+    public function getIsNewFile()
+    {
+        return $this->isNewFile;
+    }
 
-	/**
-	 * @param string $filePath
-	 */
-	public function setFilePath($filePath) {
-		$this->filePath = $filePath;
-	}
+    /**
+     * @param boolean $isNewFile
+     */
+    public function setIsNewFile($isNewFile)
+    {
+        $this->isNewFile = $isNewFile;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getFilePath() {
-		return $this->filePath;
-	}
+    /**
+     * @return boolean
+     */
+    public function getDynamic()
+    {
+        return $this->dynamic;
+    }
 
-	/**
-	 * @param \Ipf\Bib\Utility\ReferenceReader $referenceReader
-	 */
-	public function setReferenceReader($referenceReader) {
-		$this->referenceReader = $referenceReader;
-	}
+    /**
+     * @param boolean $dynamic
+     */
+    public function setDynamic($dynamic)
+    {
+        $this->dynamic = $dynamic;
+    }
 
-	/**
-	 * @return \Ipf\Bib\Utility\ReferenceReader
-	 */
-	public function getReferenceReader() {
-		return $this->referenceReader;
-	}
+    /**
+     * @return string
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
 
-	/**
-	 * @param array $filters
-	 */
-	public function setFilters($filters) {
-		$this->filters = $filters;
-	}
+    /**
+     * @param string $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getFilters() {
-		return $this->filters;
-	}
+    /**
+     * Returns a general information text for the exported dataset
+     *
+     * @param array
+     * @return string A filter information string
+     */
+    protected function getGeneralInformationText($infoArr = [])
+    {
+        $num = intval($infoArr['pubNum']);
 
-	/**
-	 * @param boolean $isNewFile
-	 */
-	public function setIsNewFile($isNewFile) {
-		$this->isNewFile = $isNewFile;
-	}
+        $content = 'This file was created by the TYPO3 extension' . PHP_EOL;
+        $content .= $this->pi1->extKey;
+        if (is_array($this->extensionManagerConfiguration)) {
+            $content .= ' version ' . $this->extensionManagerConfiguration['version'] . "\n";
+        }
+        $content .= PHP_EOL;
+        $content .= '--- Timezone: ' . date('T') . "\n";
+        $content .= 'Creation date: ' . date('Y-m-d') . "\n";
+        $content .= 'Creation time: ' . date('H-i-s') . "\n";
 
-	/**
-	 * @return boolean
-	 */
-	public function getIsNewFile() {
-		return $this->isNewFile;
-	}
+        if ($num >= 0) {
+            $content .= '--- Number of references' . "\n";
+            $content .= '' . $num . "\n";
+            $content .= '' . "\n";
+        }
 
-	/**
-	 * @param boolean $dynamic
-	 */
-	public function setDynamic($dynamic) {
-		$this->dynamic = $dynamic;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getDynamic() {
-		return $this->dynamic;
-	}
-
-	/**
-	 * @param string $data
-	 */
-	public function setData($data) {
-		$this->data = $data;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getData() {
-		return $this->data;
-	}
+        return $content;
+    }
 
 }

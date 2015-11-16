@@ -1,17 +1,17 @@
 {
-    "name": "ipf/bib",
-    "type": "typo3-cms-extension",
-    "require-dev": {
-        "typo3-ci/typo3cms": "~6.2",
-        "phpmd/phpmd": "~2.1",
-        "phpunit/phpunit": "~4.4",
-        "fortawesome/font-awesome": "~4.2"
-    },
-    "license": "GPL",
-    "authors": [
-        {
-            "name": "Ingo Pfennigstorf",
-            "email": "i.pfennigstorf@gmail.com"
-        }
-    ]
+  "name": "ipf/bib",
+  "type": "typo3-cms-extension",
+  "require-dev": {
+    "typo3-ci/typo3cms": "~6.2",
+    "phpmd/phpmd": "~2.1",
+    "phpunit/phpunit": "~4.4",
+    "fortawesome/font-awesome": "~4.2"
+  },
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Ingo Pfennigstorf",
+      "email": "i.pfennigstorf@gmail.com"
+    }
+  ]
 }

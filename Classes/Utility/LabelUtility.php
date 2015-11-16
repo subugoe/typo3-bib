@@ -32,39 +32,41 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
  * Class LabelUtility
  * @package Ipf\Bib\Utility
  */
-class LabelUtility {
+class LabelUtility
+{
 
-	/**
-	 * Returns label of an authorship
-	 * @param array $params
-	 * @param mixed $pObj
-	 * @return void Name of author and title of reference
-	 */
-	public function getAuthorshipLabel(&$params, &$pObj) {
-		$item_id = $params['row']['uid'];
-		$title = '';
+    /**
+     * Returns label of an authorship
+     * @param array $params
+     * @param mixed $pObj
+     * @return void Name of author and title of reference
+     */
+    public function getAuthorshipLabel(&$params, &$pObj)
+    {
+        $item_id = $params['row']['uid'];
+        $title = '';
 
-		if ($item_id) {
-			$item = BackendUtility::getRecord('tx_bib_domain_model_authorships', $item_id);
+        if ($item_id) {
+            $item = BackendUtility::getRecord('tx_bib_domain_model_authorships', $item_id);
 
-			$author_id = $item['author_id'];
-			if ($author_id) {
-				$author = BackendUtility::getRecord('tx_bib_domain_model_author', $author_id);
-				$title .= $author['surname'] . ', ' . $author['forename'];
-			}
+            $author_id = $item['author_id'];
+            if ($author_id) {
+                $author = BackendUtility::getRecord('tx_bib_domain_model_author', $author_id);
+                $title .= $author['surname'] . ', ' . $author['forename'];
+            }
 
-			$pub_id = $item['pub_id'];
-			if ($pub_id) {
-				$pub = BackendUtility::getRecord('tx_bib_domain_model_reference', $pub_id);
-				$title .= ' [' . $pub['title'] . ']';
-			}
-		}
+            $pub_id = $item['pub_id'];
+            if ($pub_id) {
+                $pub = BackendUtility::getRecord('tx_bib_domain_model_reference', $pub_id);
+                $title .= ' [' . $pub['title'] . ']';
+            }
+        }
 
-		if (strlen($title) == 0) {
-			$title = '[Error!]';
-		}
+        if (strlen($title) == 0) {
+            $title = '[Error!]';
+        }
 
-		$params['title'] = $title;
-	}
+        $params['title'] = $title;
+    }
 
 }

@@ -32,94 +32,102 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * Class FlexFormUtility
  * @package Ipf\Bib\Utility
  */
-class FlexFormUtility {
+class FlexFormUtility
+{
 
-	/**
-	 * @var \Ipf\Bib\Utility\ReferenceReader
-	 */
-	protected $referenceReader;
+    /**
+     * @var \Ipf\Bib\Utility\ReferenceReader
+     */
+    protected $referenceReader;
 
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
-	}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+    }
 
-	/**
-	 * @param array $configuration
-	 * @return mixed
-	 */
-	public function addFieldsToFlexForm(&$configuration) {
+    /**
+     * @param array $configuration
+     * @return mixed
+     */
+    public function addFieldsToFlexForm(&$configuration)
+    {
 
-		$optionList = [];
+        $optionList = [];
 
-		foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
-			$optionList[] = [
-					0 => LocalizationUtility::translate($this->referenceReader->getReferenceTable() . '_' . $referenceField, 'bib'),
-					1 => $referenceField
-			];
-		}
+        foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
+            $optionList[] = [
+                0 => LocalizationUtility::translate($this->referenceReader->getReferenceTable() . '_' . $referenceField,
+                    'bib'),
+                1 => $referenceField
+            ];
+        }
 
-		$configuration['items'] = array_merge($configuration['items'], $optionList);
-		return $configuration;
-	}
+        $configuration['items'] = array_merge($configuration['items'], $optionList);
+        return $configuration;
+    }
 
-	/**
-	 * @param array $configuration
-	 * @return mixed
-	 */
-	public function addSearchFieldsToFlexForm(&$configuration) {
+    /**
+     * @param array $configuration
+     * @return mixed
+     */
+    public function addSearchFieldsToFlexForm(&$configuration)
+    {
 
-		$optionList = [];
+        $optionList = [];
 
-		$searchFields = $this->referenceReader->getSearchFields();
+        $searchFields = $this->referenceReader->getSearchFields();
 
-		if (count($searchFields) > 0) {
+        if (count($searchFields) > 0) {
 
-			foreach ($this->referenceReader->getSearchFields() as $searchField) {
-				$optionList[] = [
-						0 => LocalizationUtility::translate($this->referenceReader->getSearchPrefix() . '_' . $searchField, 'bib'),
-						1 => $searchField
-				];
-			}
-		}
-		$configuration['items'] = array_merge($configuration['items'], $optionList);
-		return $configuration;
-	}
+            foreach ($this->referenceReader->getSearchFields() as $searchField) {
+                $optionList[] = [
+                    0 => LocalizationUtility::translate($this->referenceReader->getSearchPrefix() . '_' . $searchField,
+                        'bib'),
+                    1 => $searchField
+                ];
+            }
+        }
+        $configuration['items'] = array_merge($configuration['items'], $optionList);
+        return $configuration;
+    }
 
-	/**
-	 * @param array $configuration
-	 * @return mixed
-	 */
-	public function addSortFieldsToFlexForm(&$configuration) {
+    /**
+     * @param array $configuration
+     * @return mixed
+     */
+    public function addSortFieldsToFlexForm(&$configuration)
+    {
 
-		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
-		$optionList = [];
+        /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $optionList = [];
 
-		foreach ($referenceReader->getSortFields() as $sortField) {
-			$optionList[] = [
-					0 => LocalizationUtility::translate($referenceReader->getSortPrefix() . '_' . $sortField, 'bib'),
-					1 => $sortField
-			];
-		}
+        foreach ($referenceReader->getSortFields() as $sortField) {
+            $optionList[] = [
+                0 => LocalizationUtility::translate($referenceReader->getSortPrefix() . '_' . $sortField, 'bib'),
+                1 => $sortField
+            ];
+        }
 
-		usort($optionList, $this->sorter(0));
+        usort($optionList, $this->sorter(0));
 
-		$configuration['items'] = array_merge($configuration['items'], $optionList);
+        $configuration['items'] = array_merge($configuration['items'], $optionList);
 
-		return $configuration;
-	}
+        return $configuration;
+    }
 
-	/**
-	 * @param $key
-	 * @return \Closure
-	 */
-	protected function sorter($key) {
-		return function ($a, $b) use ($key) {
-			return strnatcmp($a[$key], $b[$key]);
-		};
-	}
+    /**
+     * @param $key
+     * @return \Closure
+     */
+    protected function sorter($key)
+    {
+        return function ($a, $b) use ($key) {
+            return strnatcmp($a[$key], $b[$key]);
+        };
+    }
 
 }

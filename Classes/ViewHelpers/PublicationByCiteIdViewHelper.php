@@ -45,69 +45,73 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * </f:alias>
  *
  */
-class PublicationByCiteIdViewHelper extends AbstractViewHelper {
+class PublicationByCiteIdViewHelper extends AbstractViewHelper
+{
 
-	/**
-	 * Register arguments.
-	 */
-	public function initializeArguments() {
-		parent::initializeArguments();
-		$this->registerArgument('citeId', 'string', 'Citation id');
-		$this->registerArgument('storagePid', 'int', 'Storage PID where the bibliography records are stored');
-	}
+    /**
+     * Register arguments.
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('citeId', 'string', 'Citation id');
+        $this->registerArgument('storagePid', 'int', 'Storage PID where the bibliography records are stored');
+    }
 
-	/**
-	 * @throws \Exception
-	 * @return array
-	 */
-	public function render() {
+    /**
+     * @throws \Exception
+     * @return array
+     */
+    public function render()
+    {
 
-		if ($this->hasArgument('citeId')) {
-			$citationId = $this->arguments['citeId'];
-		} else {
-			$citationId = $this->renderChildren();
-		}
+        if ($this->hasArgument('citeId')) {
+            $citationId = $this->arguments['citeId'];
+        } else {
+            $citationId = $this->renderChildren();
+        }
 
-		$this->hasArgument('storagePid') ? $storagePid = intval($this->arguments['storagePid']) : $storagePid = NULL;
+        $this->hasArgument('storagePid') ? $storagePid = intval($this->arguments['storagePid']) : $storagePid = null;
 
-		if (empty($citationId)) {
-			throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
-		} else {
-			try {
-				return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
-			} catch (\Exception $e) {
-				return ['exception' => $e->getMessage()];
-			}
-		}
-	}
+        if (empty($citationId)) {
+            throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
+        } else {
+            try {
+                return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
+            } catch (\Exception $e) {
+                return ['exception' => $e->getMessage()];
+            }
+        }
+    }
 
-	/**
-	 * @throws \Exception
-	 * @param string $citationId
-	 * @param int $storagePid
-	 * @return array
-	 */
-	protected function getBibliographicDataFromCitationId($citationId, $storagePid) {
+    /**
+     * @throws \Exception
+     * @param string $citationId
+     * @param int $storagePid
+     * @return array
+     */
+    protected function getBibliographicDataFromCitationId($citationId, $storagePid)
+    {
 
-		/** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-		$referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
 
-		$referenceReader->setPidList([$storagePid]);
+        $referenceReader->setPidList([$storagePid]);
 
-		if ($referenceReader->citeIdExists($citationId)) {
-			$referenceReader->append_filter(
-				[
-					'citeid' => [
-						'ids' => $citationId
-					]
-				]
-			);
-		} else {
-			throw new DataException('Citation Id ' . $citationId . ' does not exist', 1378195258);
-		}
+        if ($referenceReader->citeIdExists($citationId)) {
+            $referenceReader->append_filter(
+                [
+                    'citeid' => [
+                        'ids' => $citationId
+                    ]
+                ]
+            );
+        } else {
+            throw new DataException('Citation Id ' . $citationId . ' does not exist', 1378195258);
+        }
 
-		$citationUid = $referenceReader->getUidFromCitationId($citationId);
-		return $referenceReader->getPublicationDetails($citationUid);
-	}
+        $citationUid = $referenceReader->getUidFromCitationId($citationId);
+        return $referenceReader->getPublicationDetails($citationUid);
+    }
 
 }
