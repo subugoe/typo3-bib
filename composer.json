@@ -4,8 +4,8 @@
   "require-dev": {
     "typo3-ci/typo3cms": "~6.2",
     "phpmd/phpmd": "~2.1",
-    "phpunit/phpunit": "~4.4",
-    "fortawesome/font-awesome": "~4.2"
+    "phpunit/phpunit": "~4.8",
+    "fortawesome/font-awesome": "~4.4"
   },
   "license": "GPL",
   "authors": [

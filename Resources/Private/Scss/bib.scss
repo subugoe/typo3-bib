@@ -185,7 +185,7 @@ table.tx_bib-list td {
 }
 
 .tx_bib-bibtype_row {
-	padding: 0.25em 0.5em;
+	padding: .25em .5em;
 	text-align: left;
 }
 
@@ -196,7 +196,7 @@ table.tx_bib-list td {
 
 td.tx_bib-item_even,
 td.tx_bib-item_odd {
-	padding: 0ex 0.3em;
+	padding: 0 0.3em;
 	padding-bottom: 1.5ex;
 	vertical-align: top;
 }
@@ -226,12 +226,6 @@ div.tx_bib-file_url_icon {
 .tx_bib-button {
 	margin-left: 0.5em;
 	margin-right: 0.5em;
-}
-
-.tx_bib-check {
-}
-
-.tx_bib-select {
 }
 
 .tx_bib-italic {

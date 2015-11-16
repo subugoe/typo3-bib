@@ -936,7 +936,7 @@ class EditorView extends View
                 $content .= $Iclass . '>';
                 $content .= $htmlValue;
                 $content .= '</textarea>';
-                $content .= "\n";
+                $content .= PHP_EOL;
 
                 break;
 
@@ -988,13 +988,13 @@ class EditorView extends View
     protected function getDefaultStaticWidget($field, $value, $mode)
     {
         $configuration =& $GLOBALS['TCA'][$this->referenceReader->getReferenceTable()]['columns'][$field]['config'];
-        $pi1 =& $this->pi1;
-        $Iclass = ' class="' . $pi1->prefixShort . '-editor_input' . '"';
+
+        $Iclass = ' class="' . $this->pi1->prefixShort . '-editor_input' . '"';
 
         // Default widget
         $widgetType = $configuration['type'];
-        $fieldAttributes = $pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
-        $htmlValue = Utility::filter_pub_html($value, true, $pi1->extConf['charset']['upper']);
+        $fieldAttributes = $this->pi1->prefix_pi1 . '[DATA][pub][' . $field . ']';
+        $htmlValue = Utility::filter_pub_html($value, true, $this->pi1->extConf['charset']['upper']);
 
         $content = '';
         if ($mode == self::WIDGET_SHOW) {
