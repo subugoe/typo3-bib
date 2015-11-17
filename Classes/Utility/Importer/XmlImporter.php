@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Importer;
 
 /* * *************************************************************
@@ -27,15 +28,12 @@ namespace Ipf\Bib\Utility\Importer;
  * ************************************************************* */
 
 /**
- * Class XmlImporter
- * @package Ipf\Bib\Utility\Importer
+ * Class XmlImporter.
  */
 class XmlImporter extends Importer
 {
-
     /**
      * @param \tx_bib_pi1 $pi1
-     * @return void
      */
     public function initialize($pi1)
     {
@@ -61,7 +59,7 @@ class XmlImporter extends Importer
     {
         $content = '';
 
-        $stat =& $this->statistics;
+        $stat = &$this->statistics;
         $stat['file_name'] = $_FILES['ImportFile']['name'];
         $stat['file_size'] = $_FILES['ImportFile']['size'];
 
@@ -80,11 +78,13 @@ class XmlImporter extends Importer
                 $this->savePublication($pub);
             }
         }
+
         return $content;
     }
 
     /**
      * @param string $xmlPublications
+     *
      * @return array|string
      */
     protected function parseXmlPublications($xmlPublications)
@@ -219,11 +219,9 @@ class XmlImporter extends Importer
                         }
                     }
                 }
-
             }
         }
 
         return $publications;
     }
-
 }

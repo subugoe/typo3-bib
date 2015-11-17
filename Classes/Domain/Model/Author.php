@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Domain\Model;
 
 /* * *************************************************************
@@ -27,11 +28,10 @@ namespace Ipf\Bib\Domain\Model;
  * ************************************************************* */
 
 /**
- * Model for Author
+ * Model for Author.
  */
 class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-
     /**
      * @var String
      */
@@ -115,5 +115,4 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->url = $url;
     }
-
 }

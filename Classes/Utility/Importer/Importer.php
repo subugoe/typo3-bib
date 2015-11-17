@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Importer;
 
 /* * *************************************************************
@@ -37,12 +38,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
- * Class Importer
- * @package Ipf\Bib\Utility\Importer
+ * Class Importer.
  */
 abstract class Importer
 {
-
     /**
      * @var \tx_bib_pi1
      */
@@ -106,10 +105,9 @@ abstract class Importer
     const IMP_XML = 2;
 
     /**
-     * Initializes the import. The argument must be the plugin class
+     * Initializes the import. The argument must be the plugin class.
      *
      * @param \tx_bib_pi1
-     * @return void
      */
     public function initialize($pi1)
     {
@@ -136,10 +134,10 @@ abstract class Importer
         $this->databaseUtility = $databaseUtility;
 
         // Create an instance of the citeid generator
-        if (isset ($this->pi1->conf['citeid_generator_file'])) {
+        if (isset($this->pi1->conf['citeid_generator_file'])) {
             $ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->pi1->conf['citeid_generator_file']);
             if (file_exists($ext_file)) {
-                require_once($ext_file);
+                require_once $ext_file;
                 $this->idGenerator = GeneralUtility::makeInstance(AuthorsCiteIdGenerator::class);
             }
         } else {
@@ -148,11 +146,11 @@ abstract class Importer
         $this->idGenerator->initialize($pi1);
     }
 
-
     /**
-     * Returns a page title
+     * Returns a page title.
      *
      * @param int $uid
+     *
      * @return string
      */
     protected function getPageTitle($uid)
@@ -169,12 +167,12 @@ abstract class Importer
             $title = htmlspecialchars($page['title'], ENT_NOQUOTES, $charset);
             $title .= ' (' . strval($uid) . ')';
         }
+
         return $title;
     }
 
-
     /**
-     * Returns the default storage uid
+     * Returns the default storage uid.
      *
      * @return int The parent id pid
      */
@@ -187,13 +185,13 @@ abstract class Importer
         if (!in_array($pid, $this->referenceReader->pid_list)) {
             $pid = intval($this->referenceReader->pid_list[0]);
         }
+
         return $pid;
     }
 
-
     /**
      * Returns the storage selector if there is more
-     * than one storage folder selected
+     * than one storage folder selected.
      *
      * @return string the storage selector string
      */
@@ -222,11 +220,8 @@ abstract class Importer
         return $content;
     }
 
-
     /**
-     * Acquires $this->storage_pid
-     *
-     * @return void
+     * Acquires $this->storage_pid.
      */
     protected function acquireStoragePid()
     {
@@ -236,11 +231,11 @@ abstract class Importer
         }
     }
 
-
     /**
-     * Saves a publication
+     * Saves a publication.
      *
      * @param array $publication
+     *
      * @return bool
      */
     protected function savePublication($publication)
@@ -250,7 +245,7 @@ abstract class Importer
         // Data checks
         $s_ok = true;
         if (!array_key_exists('bibtype', $publication)) {
-            $this->statistics['failed']++;
+            ++$this->statistics['failed'];
             $this->statistics['errors'][] = 'Missing bibtype';
             $s_ok = false;
         }
@@ -261,7 +256,7 @@ abstract class Importer
         // Don't accept publication uids since that
         // could override existing publications
         if (array_key_exists('uid', $publication)) {
-            unset ($publication['uid']);
+            unset($publication['uid']);
         }
 
         if (strlen($publication['citeid']) == 0) {
@@ -270,12 +265,11 @@ abstract class Importer
 
         // Save publications
         if ($s_ok) {
-
             try {
                 $this->referenceWriter->savePublication($publication);
-                $this->statistics['succeeded']++;
+                ++$this->statistics['succeeded'];
             } catch (DataException $e) {
-                $this->statistics['failed']++;
+                ++$this->statistics['failed'];
                 $this->statistics['errors'][] = $e->getMessage();
             }
         }
@@ -283,10 +277,11 @@ abstract class Importer
         return $res;
     }
 
-
     /**
-     * The main importer function
+     * The main importer function.
+     *
      * @throws \Exception
+     *
      * @return string
      */
     public function import()
@@ -323,7 +318,7 @@ abstract class Importer
     abstract protected function displayInformationBeforeImport();
 
     /**
-     * file selection state
+     * file selection state.
      *
      * @return string
      */
@@ -346,9 +341,7 @@ abstract class Importer
     abstract protected function importStateTwo();
 
     /**
-     * Adds an import statistics string to the statistics array
-     *
-     * @return void
+     * Adds an import statistics string to the statistics array.
      */
     protected function postImport()
     {
@@ -364,12 +357,11 @@ abstract class Importer
                 }
                 $this->statistics['full_text'] = $arr;
             }
-
         }
     }
 
     /**
-     * Returns an import statistics string
+     * Returns an import statistics string.
      *
      * @return string
      */
@@ -426,7 +418,8 @@ abstract class Importer
 
     /**
      * @param string $message
-     * @param int $count
+     * @param int    $count
+     *
      * @return string
      */
     protected function getMessageOccurrenceCounter($message, $count)
@@ -437,20 +430,21 @@ abstract class Importer
             $content .= ' (' . strval($count);
             $content .= ' times)';
         }
+
         return $content;
     }
 
-
     /**
      * Replaces character code description like &aauml; with
-     * the equivalent
+     * the equivalent.
      *
      * @param string $code
+     *
      * @return string
      */
     protected function codeToUnicode($code)
     {
-        $translationTable =& $this->code_trans_tbl;
+        $translationTable = &$this->code_trans_tbl;
         if (!is_array($translationTable)) {
             $translationTable = get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES);
             $translationTable = array_flip($translationTable);
@@ -467,12 +461,12 @@ abstract class Importer
         return strtr($code, $translationTable);
     }
 
-
     /**
-     * Takes an utf-8 string and changes the character set on demand
+     * Takes an utf-8 string and changes the character set on demand.
      *
      * @param string $content
      * @param string $charset
+     *
      * @return string
      */
     protected function importUnicodeString($content, $charset = null)
@@ -484,15 +478,15 @@ abstract class Importer
         if ($charset != 'utf-8') {
             $content = $GLOBALS['TSFE']->csConvObj->utf8_decode($content, $charset, true);
         }
+
         return $content;
     }
 
     /**
-     * Removes all datasets from the storage on importing data
+     * Removes all datasets from the storage on importing data.
      */
     protected function clearAllDatasetsBeforeImport()
     {
         $this->databaseUtility->deleteAllFromPid($this->storage_pid);
     }
-
 }

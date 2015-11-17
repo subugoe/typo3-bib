@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Navigation;
 
 /* * *************************************************************
@@ -31,25 +32,25 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
- * Class Navigation
- * @package Ipf\Bib\Navigation
+ * Class Navigation.
  */
 abstract class Navigation
 {
-
     /**
      * @var \tx_bib_pi1
      */
     public $pi1;
 
     /**
-     * The template string
+     * The template string.
+     *
      * @var string
      */
     public $template;
 
     /**
-     * A prefix string
+     * A prefix string.
+     *
      * @var string
      */
     public $prefix;
@@ -74,9 +75,9 @@ abstract class Navigation
      */
     public function initialize($pi1)
     {
-        $this->pi1 =& $pi1;
+        $this->pi1 = &$pi1;
 
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
+        /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename($this->getTemplateFileFromCallingClass());
         $this->view = $view;
@@ -90,17 +91,17 @@ abstract class Navigation
         $classParts = explode('\\', get_called_class());
         $templateName = str_replace('Navigation', '', $classParts[3]);
         $templateFile = ExtensionManagementUtility::extPath($this->pi1->extKey) . '/Resources/Private/Templates/Navigation/' . $templateName . '.html';
+
         return $templateFile;
     }
 
     /**
-     * Returns the translator for the main template
+     * Returns the translator for the main template.
      *
      * @return array
      */
     public function translator()
     {
-
         $pref = '###' . $this->prefix;
         $content = $this->get();
 
@@ -129,6 +130,7 @@ abstract class Navigation
 
     /**
      * @param $index
+     *
      * @return mixed
      */
     abstract protected function sel_get_text($index);
@@ -136,26 +138,28 @@ abstract class Navigation
     /**
      * @param $text
      * @param $index
+     *
      * @return mixed
      */
     abstract protected function sel_get_link($text, $index);
 
     /**
-     * Returns a selection translator
+     * Returns a selection translator.
      *
      * @param array $cfgSel
      * @param array $indices
-     * @param int $numSel
+     * @param int   $numSel
+     *
      * @return string
      */
     protected function selection($cfgSel, $indices, $numSel)
     {
-        $cObj =& $this->pi1->cObj;
+        $cObj = &$this->pi1->cObj;
 
         $sel = [
             'prev' => [],
             'cur' => [],
-            'next' => []
+            'next' => [],
         ];
 
         // Determine ranges of year navigation bar
@@ -274,10 +278,8 @@ abstract class Navigation
 
         return $res;
     }
-
 }
 
-
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php'];
 }

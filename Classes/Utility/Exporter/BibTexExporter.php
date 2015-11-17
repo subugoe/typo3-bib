@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Exporter;
 
 /* * *************************************************************
@@ -30,12 +31,10 @@ use Ipf\Bib\Utility\PRegExpTranslator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class BibTexExporter
- * @package Ipf\Bib\Utility\Exporter
+ * Class BibTexExporter.
  */
 class BibTexExporter extends Exporter
 {
-
     /**
      * @var \Ipf\Bib\Utility\PRegExpTranslator
      */
@@ -43,7 +42,6 @@ class BibTexExporter extends Exporter
 
     /**
      * @param \tx_bib_pi1 $pi1
-     * @return void
      */
     public function initialize($pi1)
     {
@@ -194,11 +192,11 @@ class BibTexExporter extends Exporter
     /**
      * @param array $publication
      * @param array $infoArr
+     *
      * @return string
      */
     protected function formatPublicationForExport($publication, $infoArr = [])
     {
-
         $bibliographyType = ucfirst($this->getReferenceReader()->allBibTypes[$publication['bibtype']]);
 
         $content = '@';
@@ -246,22 +244,22 @@ class BibTexExporter extends Exporter
         }
 
         $content .= implode(",\n", $entries);
-        $content .= "\n";
+        $content .= PHP_EOL;
         $content .= '}';
-        $content .= "\n\n";
+        $content .= PHP_EOL . PHP_EOL;
 
         return $content;
     }
 
     /**
-     * Replaces characters not matching [A-Za-z0-9_-] from cite keys
+     * Replaces characters not matching [A-Za-z0-9_-] from cite keys.
      *
      * @param string $publicationCiteId
+     *
      * @return string
      */
     protected function formatCiteKey($publicationCiteId)
     {
-
         $matchPattern = '/^[A-Za-z0-9_-]+$/';
         $matcher = preg_match($matchPattern, $publicationCiteId);
 
@@ -276,6 +274,7 @@ class BibTexExporter extends Exporter
     /**
      * @param string $key
      * @param $value
+     *
      * @return mixed|string
      */
     protected function bibTexFormatField($key, $value)
@@ -313,6 +312,7 @@ class BibTexExporter extends Exporter
 
     /**
      * @param string $content
+     *
      * @return mixed|string
      */
     protected function bibTexFormatString($content)
@@ -331,7 +331,6 @@ class BibTexExporter extends Exporter
         // Recognize protected tag
         $tmp = explode('<prt>', $content);
         if (sizeof($tmp) > 1) {
-
             $content = '';
             $first = true;
             foreach ($tmp as $v) {
@@ -343,7 +342,7 @@ class BibTexExporter extends Exporter
 
                     $content .= '{' . $tmp2[0] . '}';
                     $partSize = sizeof($tmp2);
-                    for ($i = 1; $i < $partSize; $i++) {
+                    for ($i = 1; $i < $partSize; ++$i) {
                         $content .= $tmp2[$i];
                     }
                 }
@@ -355,17 +354,20 @@ class BibTexExporter extends Exporter
 
     /**
      * @param array $infoArr
+     *
      * @return string
      */
     protected function fileIntro($infoArr = [])
     {
-        $str = "\n" . $this->getGeneralInformationText($infoArr);
-        $str = preg_replace('/^/m', '% ', $str) . "\n";
+        $str = PHP_EOL . $this->getGeneralInformationText($infoArr);
+        $str = preg_replace('/^/m', '% ', $str) . PHP_EOL;
+
         return $str;
     }
 
     /**
      * @param array $infoArr
+     *
      * @return string
      */
     protected function fileOutro($infoArr = [])

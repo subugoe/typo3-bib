@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Hooks;
 
 /* * *************************************************************
@@ -27,16 +28,16 @@ namespace Ipf\Bib\Hooks;
  * ************************************************************* */
 
 /**
- * RealUrl Hook for automatic URL generation
+ * RealUrl Hook for automatic URL generation.
  */
 class RealUrl
 {
-
     /**
-     * Create automatic RealUrl Configuration
+     * Create automatic RealUrl Configuration.
      *
-     * @param array $params
+     * @param array       $params
      * @param \tx_realurl $pObj
+     *
      * @return array
      */
     public function addRealUrlConfiguration($params, &$pObj)
@@ -64,24 +65,24 @@ class RealUrl
                             [
                                 'GETvar' => 'tx_bib_pi1[action][edit]',
                                 'valueMap' => [
-                                    'publication' => 1
-                                ]
+                                    'publication' => 1,
+                                ],
                             ],
                         ],
                         'hide' => [
                             [
                                 'GETvar' => 'tx_bib_pi1[action][hide]',
                                 'valueMap' => [
-                                    'publication' => 1
-                                ]
+                                    'publication' => 1,
+                                ],
                             ],
                         ],
                         'add' => [
                             [
                                 'GETvar' => 'tx_bib_pi1[action][new]',
                                 'valueMap' => [
-                                    'publication' => 1
-                                ]
+                                    'publication' => 1,
+                                ],
                             ],
                         ],
                         'resultpage' => [
@@ -100,19 +101,18 @@ class RealUrl
                                 'GETVar' => 'tx_bib_pi1[import]',
                                 'valueMap' => [
                                     'bibtex' => 1,
-                                    'xml' => 2
+                                    'xml' => 2,
                                 ],
                             ],
                         ],
                         'export' => [
                             [
                                 'GETVar' => 'tx_bib_pi1[export]',
-                            ]
-                        ]
-                    ]
-                ]
+                            ],
+                        ],
+                    ],
+                ],
             ]
         );
     }
-
 }

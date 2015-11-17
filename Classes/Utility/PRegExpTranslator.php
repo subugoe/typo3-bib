@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -27,12 +28,10 @@ namespace Ipf\Bib\Utility;
  * ************************************************************* */
 
 /**
- * Class PRegExpTranslator
- * @package Ipf\Bib\Utility
+ * Class PRegExpTranslator.
  */
 class PRegExpTranslator
 {
-
     /**
      * @var string
      */
@@ -44,7 +43,7 @@ class PRegExpTranslator
     protected $replacement;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -52,7 +51,6 @@ class PRegExpTranslator
     }
 
     /**
-     * @return void
      */
     protected function clear()
     {
@@ -63,17 +61,20 @@ class PRegExpTranslator
     /**
      * @param string $pattern
      * @param string $replacement
+     *
      * @return $this
      */
     public function push($pattern, $replacement)
     {
         $this->pattern[] = $pattern;
         $this->replacement[] = $replacement;
+
         return $this;
     }
 
     /**
      * @param string $source
+     *
      * @return mixed
      */
     public function translate($source)

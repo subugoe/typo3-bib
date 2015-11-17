@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -31,11 +32,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class provides functions to write or manipulate
- * publication reference entries
+ * publication reference entries.
  */
 class ReferenceWriter
 {
-
     /**
      * @var \Ipf\Bib\Utility\ReferenceReader
      */
@@ -57,7 +57,7 @@ class ReferenceWriter
     protected $db;
 
     /**
-     * constructor
+     * constructor.
      */
     public function __construct()
     {
@@ -65,22 +65,21 @@ class ReferenceWriter
     }
 
     /**
-     * Initialize ReferenceWriter
+     * Initialize ReferenceWriter.
      *
      * @param \Ipf\Bib\Utility\ReferenceReader $referenceReader
-     * @return void
      */
     public function initialize($referenceReader)
     {
-        $this->referenceReader =& $referenceReader;
+        $this->referenceReader = &$referenceReader;
     }
-
 
     /**
      * Returns the error message and resets it.
-     * The returned message is either a string or FALSE
+     * The returned message is either a string or FALSE.
      *
      * @deprecated Use TYPO3 FlashMessage service
+     *
      * @return string The last error message
      */
     public function error_message()
@@ -88,29 +87,28 @@ class ReferenceWriter
         GeneralUtility::logDeprecatedFunction();
         $err = $this->error;
         $this->error = false;
+
         return $err;
     }
 
-
     /**
-     * Same as error_message() but returns a html version
+     * Same as error_message() but returns a html version.
      *
      * @deprecated use TYPO3 FlashMessage service
+     *
      * @return string The last error message
      */
     public function html_error_message()
     {
         GeneralUtility::logDeprecatedFunction();
         $err = $this->error_message();
-        $err = str_replace("\n", "<br/>\n", $err);
+        $err = nl2br($err);
+
         return $err;
     }
 
-
     /**
-     * Clears the page cache of all selected pages
-     *
-     * @return void
+     * Clears the page cache of all selected pages.
      */
     protected function clear_page_cache()
     {
@@ -125,7 +123,7 @@ class ReferenceWriter
                 // Find storage cache clear requests
                 foreach ($this->referenceReader->pid_list as $pid) {
                     $tsc = $dataHandler->getTCEMAIN_TSconfig($pid);
-                    if (is_array($tsc) && isset ($tsc['clearCacheCmd'])) {
+                    if (is_array($tsc) && isset($tsc['clearCacheCmd'])) {
                         $clear_cache[] = $tsc['clearCacheCmd'];
                     }
                 }
@@ -142,13 +140,14 @@ class ReferenceWriter
         }
     }
 
-
     /**
      * This function updates a publication with all data
-     * found in the HTTP request
+     * found in the HTTP request.
      *
      * @throws DataException
+     *
      * @param array $publication
+     *
      * @return bool TRUE on error FALSE otherwise
      */
     public function savePublication($publication)
@@ -216,7 +215,6 @@ class ReferenceWriter
 
         if ($uid >= 0) {
             if ($publication['mod_key'] == $pub_db['mod_key']) {
-
                 $whereClause = 'uid=' . intval($uid);
 
                 $ret = $this->db->exec_UPDATEquery(
@@ -280,18 +278,18 @@ class ReferenceWriter
         }
 
         $this->clear_page_cache();
+
         return false;
     }
 
-
     /**
-     * Saves the authors of a publication
+     * Saves the authors of a publication.
      *
      * @throws DataException
-     * @param int $pub_uid
-     * @param int $pid
+     *
+     * @param int   $pub_uid
+     * @param int   $pid
      * @param array $authors
-     * @return void
      */
     protected function savePublicationAuthors($pub_uid, $pid, $authors)
     {
@@ -331,7 +329,7 @@ class ReferenceWriter
         if ($as_new < 0) {
             // This deletes the first authorships
             $as_new = abs($as_new);
-            for ($ii = 0; $ii < $as_new; $ii++) {
+            for ($ii = 0; $ii < $as_new; ++$ii) {
                 $as_delete[] = $db_aships[$ii]['uid'];
             }
 
@@ -344,8 +342,8 @@ class ReferenceWriter
 
         // Inserts new and updates old authorships
         $authorsSize = sizeof($authors);
-        for ($ii = 0; $ii < $authorsSize; $ii++) {
-            $author =& $authors[$ii];
+        for ($ii = 0; $ii < $authorsSize; ++$ii) {
+            $author = &$authors[$ii];
             if (is_numeric($author['uid'])) {
                 $as = [];
                 $as['pid'] = intval($pid);
@@ -386,11 +384,11 @@ class ReferenceWriter
         }
     }
 
-
     /**
-     * Inserts an author
+     * Inserts an author.
      *
      * @param array $author
+     *
      * @return int The uid of the inserted author
      */
     protected function insertAuthor($author)
@@ -417,16 +415,16 @@ class ReferenceWriter
         );
 
         $authorUid = $this->db->sql_insert_id();
+
         return $authorUid;
     }
 
-
     /**
-     * Deletes an authorship
+     * Deletes an authorship.
      *
      * @deprecated since 1.2.0 will be removed in 1.5.0
+     *
      * @param int $uid ;
-     * @return void
      */
     public function delete_authorship($uid)
     {
@@ -438,18 +436,16 @@ class ReferenceWriter
         );
     }
 
-
     /**
-     * Deletes some authorships
+     * Deletes some authorships.
      *
      * @param array $uids
-     * @return void
      */
     protected function deleteAuthorships($uids)
     {
         $uid_list = '';
         $uidSize = sizeof($uids);
-        for ($ii = 0; $ii < $uidSize; $ii++) {
+        for ($ii = 0; $ii < $uidSize; ++$ii) {
             if ($ii > 0) {
                 $uid_list .= ',';
             }
@@ -463,13 +459,11 @@ class ReferenceWriter
         );
     }
 
-
     /**
-     * Sets or unsets the hidden flag in the database entry
+     * Sets or unsets the hidden flag in the database entry.
      *
-     * @param int $uid
+     * @param int  $uid
      * @param bool $hidden
-     * @return void
      */
     public function hidePublication($uid, $hidden = true)
     {
@@ -480,14 +474,13 @@ class ReferenceWriter
             'uid=' . strval($uid),
             [
                 'hidden' => ($hidden ? '1' : '0'),
-                'tstamp' => time()
+                'tstamp' => time(),
             ]
         );
 
         $this->referenceLog('A publication reference was ' . ($hidden ? 'hidden' : 'revealed'), $uid);
         $this->clear_page_cache();
     }
-
 
     /**
      * Sets the deleted flag in the database entry.
@@ -496,9 +489,9 @@ class ReferenceWriter
      * after this anymore.
      *
      * @throws DataException
-     * @param int $uid
+     *
+     * @param int    $uid
      * @param string $mod_key
-     * @return void
      */
     public function deletePublication($uid, $mod_key)
     {
@@ -522,14 +515,13 @@ class ReferenceWriter
                     'uid=' . intval($uid) . ' AND deleted=0',
                     [
                         'deleted' => $deleted,
-                        'tstamp' => time()
+                        'tstamp' => time(),
                     ]
                 );
 
                 $this->clear_page_cache();
 
                 $this->referenceLog('A publication reference was deleted', $uid);
-
             } else {
                 throw new DataException(
                     'The publication reference could not be deleted' .
@@ -548,11 +540,10 @@ class ReferenceWriter
     }
 
     /**
-     * Writes a log entry
+     * Writes a log entry.
      *
      * @param string $message
-     * @param int $error
-     * @return void
+     * @param int    $error
      */
     protected function log($message, $error = 0)
     {
@@ -563,19 +554,16 @@ class ReferenceWriter
         }
     }
 
-
     /**
-     * Writes a log entry for the reference log
+     * Writes a log entry for the reference log.
      *
      * @param string $message
-     * @param int $uid
-     * @param mixed $error
-     * @return void
+     * @param int    $uid
+     * @param mixed  $error
      */
     protected function referenceLog($message, $uid, $error = 0)
     {
         $message = $message . ' (' . $this->referenceReader->getReferenceTable() . ':' . intval($uid) . ')';
         $this->log($message, $error);
     }
-
 }

@@ -1,13 +1,13 @@
 <?php
 
 if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
+    die('Access denied.');
 }
 
 $TCA['tx_bib_domain_model_author'] = [
     'ctrl' => $TCA['tx_bib_domain_model_author']['ctrl'],
     'interface' => [
-        'showRecordFieldList' => $TCA['tx_bib_domain_model_author']['feInterface']['fe_admin_fieldList']
+        'showRecordFieldList' => $TCA['tx_bib_domain_model_author']['feInterface']['fe_admin_fieldList'],
     ],
     'feInterface' => $TCA['tx_bib_domain_model_author']['feInterface'],
     'columns' => [
@@ -19,7 +19,7 @@ $TCA['tx_bib_domain_model_author'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim,required',
-            ]
+            ],
         ],
         'forename' => [
             'exclude' => 1,
@@ -29,7 +29,7 @@ $TCA['tx_bib_domain_model_author'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'url' => [
             'exclude' => 1,
@@ -48,13 +48,13 @@ $TCA['tx_bib_domain_model_author'] = [
                         'module' => [
                             'name' => 'wizard_element_browser',
                             'urlParameters' => [
-                                'mode' => 'wizard'
-                            ]
+                                'mode' => 'wizard',
+                            ],
                         ],
-                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
-                    ]
-                ]
-            ]
+                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1',
+                    ],
+                ],
+            ],
         ],
         'fe_user_id' => [
             'exclude' => 1,
@@ -66,10 +66,10 @@ $TCA['tx_bib_domain_model_author'] = [
                 'allowed' => 'fe_users',
                 'minitems' => 0,
                 'maxitems' => 1,
-            ]
+            ],
         ],
     ],
     'types' => [
-        '0' => ['showitem' => 'surname,forename,url,fe_user_id']
+        '0' => ['showitem' => 'surname,forename,url,fe_user_id'],
     ],
 ];

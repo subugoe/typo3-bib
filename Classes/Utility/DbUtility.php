@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -29,11 +30,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class provides the reference database interface
- * and some utility methods
+ * and some utility methods.
  */
 class DbUtility
 {
-
     /**
      * @var \Ipf\Bib\Utility\ReferenceReader
      */
@@ -70,7 +70,7 @@ class DbUtility
     protected $db;
 
     /**
-     * constructor
+     * constructor.
      */
     public function __construct()
     {
@@ -78,29 +78,26 @@ class DbUtility
     }
 
     /**
-     * Initializes the import. The argument must be the plugin class
+     * Initializes the import. The argument must be the plugin class.
      *
      * @param bool|\Ipf\Bib\Utility\ReferenceReader $referenceReader
-     * @return void
      */
     public function initialize($referenceReader = false)
     {
         if (is_object($referenceReader)) {
-            $this->referenceReader =& $referenceReader;
+            $this->referenceReader = &$referenceReader;
         } else {
             $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class);
         }
     }
 
-
     /**
-     * Deletes authors that have no publications
+     * Deletes authors that have no publications.
      *
      * @return int The number of deleted authors
      */
     public function deleteAuthorsWithoutPublications()
     {
-
         $selectQuery = 'SELECT t_au.uid';
         $selectQuery .= ' FROM ' . $this->referenceReader->getAuthorTable() . ' AS t_au';
         $selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->getAuthorshipTable() . ' AS t_as ';
@@ -124,44 +121,42 @@ class DbUtility
                 $this->referenceReader->getAuthorTable(),
                 'uid IN ( ' . $csv . ')',
                 [
-                    'deleted' => '1'
+                    'deleted' => '1',
                 ]
             );
         }
+
         return $count;
     }
 
-
     /**
-     * Reads the full text generation configuration
+     * Reads the full text generation configuration.
      *
      * @param array $configuration
-     * @return void
      */
     public function readFullTextGenerationConfiguration($configuration)
     {
-
         if (is_array($configuration)) {
-            if (isset ($configuration['max_num'])) {
+            if (isset($configuration['max_num'])) {
                 $this->ft_max_num = intval($configuration['max_num']);
             }
-            if (isset ($configuration['max_sec'])) {
+            if (isset($configuration['max_sec'])) {
                 $this->ft_max_sec = intval($configuration['max_sec']);
             }
-            if (isset ($configuration['pdftotext_bin'])) {
+            if (isset($configuration['pdftotext_bin'])) {
                 $this->pdftotext_bin = trim($configuration['pdftotext_bin']);
             }
-            if (isset ($configuration['tmp_dir'])) {
+            if (isset($configuration['tmp_dir'])) {
                 $this->tmp_dir = trim($configuration['tmp_dir']);
             }
         }
     }
 
-
     /**
-     * Updates the full_text field for all references if neccessary
+     * Updates the full_text field for all references if neccessary.
      *
      * @param bool $force
+     *
      * @return array An array with some statistical data
      */
     public function update_full_text_all($force = false)
@@ -215,20 +210,20 @@ class DbUtility
                 break;
             }
         }
+
         return $stat;
     }
 
-
     /**
-     * Updates the full_text for the reference with the given uid
+     * Updates the full_text for the reference with the given uid.
      *
-     * @param int $uid
+     * @param int  $uid
      * @param bool $force
+     *
      * @return string|bool
      */
     protected function update_full_text($uid, $force = false)
     {
-
         $whereClause = 'uid=' . intval($uid);
         $rows = $this->db->exec_SELECTgetRows(
             'file_url,full_text_tstamp,full_text_file_url',
@@ -296,6 +291,7 @@ class DbUtility
                 $err = [];
                 $err['msg'] = 'The pdftotext binary \'' . strval($this->pdftotext_bin) .
                     '\' is no executable';
+
                 return $err;
             }
 
@@ -304,6 +300,7 @@ class DbUtility
             if ($target === false) {
                 $err = [];
                 $err['msg'] = 'Could not create temporary file in ' . strval($this->tmp_dir);
+
                 return $err;
             }
 
@@ -325,6 +322,7 @@ class DbUtility
             if ($retval != 0) {
                 $err = [];
                 $err['msg'] = 'pdftotext failed on ' . strval($pub['file_url']) . ': ' . implode('', $cmd_txt);
+
                 return $err;
             }
 
@@ -342,7 +340,6 @@ class DbUtility
         }
 
         if ($db_update) {
-
             $ret = $this->db->exec_UPDATEquery(
                 $this->referenceReader->getReferenceTable(),
                 $whereClause,
@@ -351,8 +348,10 @@ class DbUtility
             if ($ret == false) {
                 $err = [];
                 $err['msg'] = 'Full text update failed: ' . $this->db->sql_error();
+
                 return $err;
             }
+
             return true;
         }
 
@@ -377,9 +376,8 @@ class DbUtility
             'pid = ' . $pid
         );
     }
-
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php'];
 }

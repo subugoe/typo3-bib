@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Generator;
 
 /* * *************************************************************
@@ -30,12 +31,10 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class CiteIdGenerator
- * @package Ipf\Bib\Utility\Generator
+ * Class CiteIdGenerator.
  */
 class CiteIdGenerator
 {
-
     /**
      * @var \tx_bib_pi1
      */
@@ -51,20 +50,20 @@ class CiteIdGenerator
      */
     public $charset;
 
-
     /**
      * @param \tx_bib_pi1 $pi1
      */
     public function initialize($pi1)
     {
-        $this->referenceReader =& $pi1->referenceReader;
+        $this->referenceReader = &$pi1->referenceReader;
         $this->charset = $pi1->extConf['charset']['upper'];
     }
 
     /**
-     * Generates a cite id for the publication in piVars['DATA']
+     * Generates a cite id for the publication in piVars['DATA'].
      *
      * @param array $row
+     *
      * @return string The generated id
      */
     public function generateId($row)
@@ -79,16 +78,16 @@ class CiteIdGenerator
 
         $num = 1;
         while ($this->referenceReader->citeIdExists($tmpId, $uid)) {
-            $num++;
+            ++$num;
             $tmpId = $id . '_' . $num;
         }
 
         return $tmpId;
     }
 
-
     /**
      * @param array $row
+     *
      * @return string
      */
     protected function generateBasicId($row)
@@ -102,7 +101,7 @@ class CiteIdGenerator
         foreach ($persons as $list) {
             if (strlen($id) == 0) {
                 if (sizeof($list) > 0) {
-                    $pp =& $list[0];
+                    $pp = &$list[0];
                     $a_str = '';
                     if (strlen($pp['surname']) > 0) {
                         $a_str = $pp['surname'];
@@ -117,8 +116,8 @@ class CiteIdGenerator
                 }
             }
             $listSize = sizeof($list);
-            for ($i = 1; $i < $listSize; $i++) {
-                $pp =& $list[$i];
+            for ($i = 1; $i < $listSize; ++$i) {
+                $pp = &$list[$i];
                 $a_str = '';
                 if (strlen($pp['surname']) > 0) {
                     $a_str = $pp['surname'];
@@ -143,12 +142,12 @@ class CiteIdGenerator
         return $this->simplifiedString($id);
     }
 
-
     /**
      * Replaces all special characters and HTML sequences in a string to
-     * characters that are allowed in a citation id
+     * characters that are allowed in a citation id.
      *
      * @param string $id
+     *
      * @return string The simplified string
      */
     protected function simplifiedString($id)
@@ -161,13 +160,13 @@ class CiteIdGenerator
         // Replace remaining special characters with ASCII characters
         $tmpId = '';
         $idLength = mb_strlen($id, $this->charset);
-        for ($i = 0; $i < $idLength; $i++) {
+        for ($i = 0; $i < $idLength; ++$i) {
             $c = mb_substr($id, $i, 1, $this->charset);
             if (ctype_alnum($c) || ($c == '_')) {
                 $tmpId .= $c;
             }
         }
+
         return $tmpId;
     }
-
 }

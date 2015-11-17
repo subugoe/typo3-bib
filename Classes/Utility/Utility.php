@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -28,15 +29,15 @@ namespace Ipf\Bib\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * This class provides some utility methods and acts mainly a a namespace
+ * This class provides some utility methods and acts mainly a a namespace.
  */
 class Utility
 {
-
     /**
-     * Returns the titles of multiple pages
+     * Returns the titles of multiple pages.
      *
      * @param array $uids
+     *
      * @return string|bool The title string or FALSE
      */
     public static function get_page_titles($uids)
@@ -49,13 +50,15 @@ class Utility
                 $titles[$uid] = $title;
             }
         }
+
         return $titles;
     }
 
     /**
-     * Returns the processed title of a page
+     * Returns the processed title of a page.
      *
      * @param int $uid
+     *
      * @return string|bool The title string or FALSE
      */
     public static function get_page_title($uid)
@@ -73,15 +76,17 @@ class Utility
             $title = htmlspecialchars($p_row['title'], true);
             $title .= ' (' . strval($uid) . ')';
         }
+
         return $title;
     }
 
     /**
-     * Crops a string to a maximal length by cutting in the middle
+     * Crops a string to a maximal length by cutting in the middle.
      *
      * @param string $str
-     * @param int $len
+     * @param int    $len
      * @param string $charset
+     *
      * @return string The string filtered for html output
      */
     public static function crop_middle($str, $len, $charset = 'UTF-8')
@@ -93,16 +98,18 @@ class Utility
             $res = mb_substr($str, 0, $ls, $charset) . '...';
             $res .= mb_substr($str, strlen($str) - $le, $le, $charset);
         }
+
         return $res;
     }
 
     /**
      * This replaces unnecessary tags and prepares the argument string
-     * for html output
+     * for html output.
      *
      * @param string $content
-     * @param bool $htmlSpecialChars
+     * @param bool   $htmlSpecialChars
      * @param string $charset
+     *
      * @return string The string filtered for html output
      */
     public static function filter_pub_html_display($content, $htmlSpecialChars = false, $charset = 'UTF-8')
@@ -137,19 +144,20 @@ class Utility
         }
 
         $content = self::filter_pub_html($content, $htmlSpecialChars, $charset);
+
         return $content;
     }
 
     /**
      * Fixes illegal occurrences of ampersands (&) in html strings
-     * Well TYPO3 seems to handle this as well
+     * Well TYPO3 seems to handle this as well.
      *
      * @param string $str
+     *
      * @return string The string filtered for html output
      */
     public static function fix_html_ampersand($str)
     {
-
         $pattern = '/&(([^;]|$){8})/';
         while (preg_match($pattern, $str)) {
             $str = preg_replace($pattern, '&amp;\1', $str);
@@ -164,11 +172,12 @@ class Utility
     }
 
     /**
-     * This function prepares database content fot HTML output
+     * This function prepares database content fot HTML output.
      *
      * @param string $content
-     * @param boolean $htmlSpecialChars
+     * @param bool   $htmlSpecialChars
      * @param string $charset
+     *
      * @return string The string filtered for html output
      */
     public static function filter_pub_html($content, $htmlSpecialChars = false, $charset)
@@ -176,14 +185,16 @@ class Utility
         if ($htmlSpecialChars) {
             $content = htmlspecialchars($content, ENT_QUOTES, $charset);
         }
+
         return $content;
     }
 
     /**
-     * Check if the frontend user is in a usergroup
+     * Check if the frontend user is in a usergroup.
      *
      * @param string $groups
-     * @param bool $admin_ok
+     * @param bool   $admin_ok
+     *
      * @return bool TRUE if the user is in a given group FALSE otherwise
      */
     public static function check_fe_user_groups($groups, $admin_ok = false)
@@ -206,15 +217,18 @@ class Utility
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * Returns true if an integer in $allowed is in $current
+     * Returns true if an integer in $allowed is in $current.
      *
      * @static
+     *
      * @param array|string $allowed
      * @param array|string $current
+     *
      * @return bool TRUE if there is an overlap FALSE otherwise
      */
     public static function intval_list_check($allowed, $current)
@@ -231,17 +245,20 @@ class Utility
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * Returns a checkbox input
+     * Returns a checkbox input.
      *
      * @param $name
      * @param $value
      * @param $checked
      * @param array $attributes
+     *
      * @return string The checkbox input element
+     *
      * @deprecated
      */
     public static function html_check_input($name, $value, $checked, $attributes = [])
@@ -249,17 +266,20 @@ class Utility
         if ($checked) {
             $attributes['checked'] = 'checked';
         }
+
         return self::html_input('checkbox', $name, $value, $attributes);
     }
 
     /**
-     * Returns a html input element
+     * Returns a html input element.
      *
      * @param $type
      * @param $name
      * @param $value
      * @param array $attributes
+     *
      * @return string The hidden input element
+     *
      * @deprecated
      */
     public static function html_input($type, $name, $value, $attributes = [])
@@ -277,17 +297,20 @@ class Utility
             }
         }
         $content .= '>';
+
         return $content;
     }
 
     /**
-     * Returns a checkbox input
+     * Returns a checkbox input.
      *
      * @param $name
      * @param $value
      * @param $checked
      * @param array $attributes
+     *
      * @return string The checkbox input element
+     *
      * @deprecated
      */
     public static function html_radio_input($name, $value, $checked, $attributes = [])
@@ -295,16 +318,19 @@ class Utility
         if ($checked) {
             $attributes['checked'] = 'checked';
         }
+
         return self::html_input('radio', $name, $value, $attributes);
     }
 
     /**
-     * Returns a submit input
+     * Returns a submit input.
      *
      * @param $name
      * @param $value
      * @param array $attributes
+     *
      * @return string The submit input element
+     *
      * @deprecated Use FLUIDTEMPLATE when possible
      */
     public static function html_submit_input($name, $value, $attributes = [])
@@ -313,27 +339,31 @@ class Utility
     }
 
     /**
-     * Returns a image input
+     * Returns a image input.
      *
      * @param $name
      * @param $value
      * @param $src
      * @param array $attributes
+     *
      * @return string The image input element
      */
     public static function html_image_input($name, $value, $src, $attributes = [])
     {
         $attributes = array_merge($attributes, ['src' => $src]);
+
         return self::html_input('image', $name, $value, $attributes);
     }
 
     /**
-     * Returns a hidden input
+     * Returns a hidden input.
      *
      * @param $name
      * @param $value
      * @param array $attributes
+     *
      * @return string The hidden input element
+     *
      * @deprecated
      */
     public static function html_hidden_input($name, $value, $attributes = [])
@@ -342,12 +372,14 @@ class Utility
     }
 
     /**
-     * Returns a text input
+     * Returns a text input.
      *
      * @param $name
      * @param $value
      * @param array $attributes
+     *
      * @return string The text input element
+     *
      * @deprecated
      */
     public static function html_text_input($name, $value, $attributes = [])
@@ -356,15 +388,17 @@ class Utility
     }
 
     /**
-     * Returns a select input
+     * Returns a select input.
      *
      * @param $pairs
      * @param $value
      * @param array $attributes
+     *
      * @return String The select element
+     *
      * @deprecated
      */
-    static public function html_select_input($pairs, $value, $attributes = [])
+    public static function html_select_input($pairs, $value, $attributes = [])
     {
         $value = strval($value);
         $content = '<select';
@@ -385,13 +419,15 @@ class Utility
             $content .= '</option>';
         }
         $content .= '</select>';
+
         return $content;
     }
 
     /**
-     * A layout table the contains all the strings in $rows
+     * A layout table the contains all the strings in $rows.
      *
      * @param $rows
+     *
      * @return string The html table code
      */
     public static function html_layout_table($rows)
@@ -409,13 +445,15 @@ class Utility
             $res .= '</tr>';
         }
         $res .= '</tbody></table>';
+
         return $res;
     }
 
     /**
-     * Counts strings in an array of strings
+     * Counts strings in an array of strings.
      *
      * @param $messages
+     *
      * @return array An associative array contatining the input strings and their counts
      */
     public static function string_counter($messages)
@@ -429,30 +467,34 @@ class Utility
                 $res[$msg] = 1;
             }
         }
+
         return $res;
     }
 
     /**
-     * Crops the first argument to a given range
+     * Crops the first argument to a given range.
      *
      * @param $value
      * @param $min
      * @param $max
+     *
      * @return mixed The value fitted into the given range
      */
     public static function crop_to_range($value, $min, $max)
     {
         $value = min(intval($value), intval($max));
         $value = max($value, intval($min));
+
         return $value;
     }
 
     /**
      * Finds the nearest integer in a stack.
-     * The stack must be sorted
+     * The stack must be sorted.
      *
      * @param $value
      * @param $stack
+     *
      * @return mixed The value fitted into the given range
      */
     public static function find_nearest_int($value, $stack)
@@ -468,7 +510,7 @@ class Utility
                     // Find nearest
                     $res = end($stack);
                     $stackSize = sizeof($stack);
-                    for ($ii = 1; $ii < $stackSize; $ii++) {
+                    for ($ii = 1; $ii < $stackSize; ++$ii) {
                         $d0 = abs($value - $stack[$ii - 1]);
                         $d1 = abs($value - $stack[$ii]);
                         if ($d0 <= $d1) {
@@ -479,16 +521,19 @@ class Utility
                 }
             }
         }
+
         return $res;
     }
 
     /**
-     * Implodes an array and applies intval to each element
+     * Implodes an array and applies intval to each element.
      *
      * @static
+     *
      * @param string $sep
-     * @param array $list
-     * @param bool $noEmpty
+     * @param array  $list
+     * @param bool   $noEmpty
+     *
      * @return string The imploded array
      */
     public static function implode_intval($sep, $list, $noEmpty = true)
@@ -509,10 +554,12 @@ class Utility
     }
 
     /**
-     * Applies intval() to each element of an array
+     * Applies intval() to each element of an array.
      *
      * @static
+     *
      * @param array $arr
+     *
      * @return array The intvaled array
      */
     public static function intval_array($arr)
@@ -521,50 +568,56 @@ class Utility
         foreach ($arr as $val) {
             $res[] = intval($val);
         }
+
         return $res;
     }
 
     /**
-     * Explodes a string and applies intval to each element
+     * Explodes a string and applies intval to each element.
      *
      * @deprecated since 1.2.0, will be removed in 1.5.0. Use GeneralUtility::intExplode()
      * @static
+     *
      * @param string $sep
      * @param string $str
-     * @param bool $noEmpty
+     * @param bool   $noEmpty
+     *
      * @return array The exploded string
      */
     public static function explode_intval($sep, $str, $noEmpty = true)
     {
         GeneralUtility::logDeprecatedFunction();
+
         return GeneralUtility::intExplode($sep, $str, $noEmpty);
     }
 
-
     /**
      * Returns and array with the exploded string and
-     * the values trimmed
+     * the values trimmed.
+     *
      * @deprecated since 1.2.0 will be removed in 1.5.0. Use GeneralUtility::trimExplode()
      *
      * @param string $sep
      * @param string $str
-     * @param bool $noEmpty
+     * @param bool   $noEmpty
+     *
      * @return array The exploded string
      */
     public static function explode_trim($sep, $str, $noEmpty = false)
     {
         GeneralUtility::logDeprecatedFunction();
+
         return GeneralUtility::trimExplode($sep, $str, $noEmpty);
     }
 
-
     /**
      * Returns and array with the exploded string and
-     * the values trimmed and converted to lowercase
+     * the values trimmed and converted to lowercase.
      *
      * @param $sep
      * @param $str
      * @param bool $noEmpty
+     *
      * @return array The exploded string
      */
     public static function explode_trim_lower($sep, $str, $noEmpty = false)
@@ -577,17 +630,19 @@ class Utility
                 $res[] = strtolower($val);
             }
         }
+
         return $res;
     }
 
-
     /**
-     * Explodes a string by multiple separators
+     * Explodes a string by multiple separators.
      *
      * @deprecated Since 1.2.0, will be removed in 1.5.0. Does not seem to be used
      * @static
-     * @param array $delimiters
+     *
+     * @param array  $delimiters
      * @param string $str
+     *
      * @return array The exploded string
      */
     public static function multi_explode($delimiters, $str)
@@ -596,24 +651,26 @@ class Utility
         if (is_array($delimiters)) {
             $sep = strval($delimiters[0]);
             $delimiterSize = sizeof($delimiters);
-            for ($ii = 1; $ii < $delimiterSize; $ii++) {
+            for ($ii = 1; $ii < $delimiterSize; ++$ii) {
                 $nsep = strval($sep[$ii]);
                 $str = str_replace($nsep, $sep, $str);
             }
         } else {
             $sep = strval($delimiters);
         }
+
         return explode($sep, $str);
     }
 
-
     /**
-     * Explodes a string by multiple separators and trims the results
+     * Explodes a string by multiple separators and trims the results.
      *
      * @static
-     * @param array $delimiters
+     *
+     * @param array  $delimiters
      * @param string $str
-     * @param bool $noEmpty
+     * @param bool   $noEmpty
+     *
      * @return array The exploded string
      */
     public static function multi_explode_trim($delimiters, $str, $noEmpty = false)
@@ -621,21 +678,22 @@ class Utility
         if (is_array($delimiters)) {
             $sep = strval($delimiters[0]);
             $delimiterSize = sizeof($delimiters);
-            for ($ii = 1; $ii < $delimiterSize; $ii++) {
+            for ($ii = 1; $ii < $delimiterSize; ++$ii) {
                 $nsep = strval($delimiters[$ii]);
                 $str = str_replace($nsep, $sep, $str);
             }
         } else {
             $sep = strval($delimiters);
         }
+
         return GeneralUtility::trimExplode($sep, $str, $noEmpty);
     }
 
-
     /**
-     * Explodes an ' and ' separated author string
+     * Explodes an ' and ' separated author string.
      *
      * @param string $authorString
+     *
      * @return bool|array FALSE or the error message array
      */
     public static function explodeAuthorString($authorString)
@@ -653,18 +711,20 @@ class Utility
                 $res[] = $name;
             }
         }
+
         return $res;
     }
 
-
     /**
      * Implodes an array with $sep as separator
-     * and $and as the last separator element
+     * and $and as the last separator element.
      *
      * @static
-     * @param array $arr
+     *
+     * @param array  $arr
      * @param string $sep
      * @param string $and
+     *
      * @return string The imploded array as a string
      */
     public static function implode_and_last($arr, $sep, $and)
@@ -673,7 +733,7 @@ class Utility
         $size = sizeof($arr);
         $c_idx = $size - 2;
         $a_idx = $size - 1;
-        for ($ii = 0; $ii < $size; $ii++) {
+        for ($ii = 0; $ii < $size; ++$ii) {
             $res[] = strval($arr[$ii]);
             if ($ii < $c_idx) {
                 $res[] = strval($sep);
@@ -683,15 +743,17 @@ class Utility
                 }
             }
         }
+
         return implode('', $res);
     }
 
-
     /**
-     * Checks if a local file exists
+     * Checks if a local file exists.
      *
      * @static
+     *
      * @param string $file
+     *
      * @return bool FALSE if the file exists TRUE if it does not exist
      */
     public static function check_file_nexist($file)
@@ -702,8 +764,10 @@ class Utility
                 $root .= '/';
             }
             $file = $root . $file;
+
             return !file_exists($file);
         }
+
         return false;
     }
 }

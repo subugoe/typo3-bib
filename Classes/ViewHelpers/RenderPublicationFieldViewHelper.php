@@ -50,11 +50,9 @@ namespace Ipf\Bib\ViewHelpers;
  * <bib:renderPublicationField field="doi" xml="1" prefix="DOI: " prefixIfFirst="DOI: ">
  *    <f:link.external uri="http://dx.doi.org/{bibitem.DOI}">{bibitem.DOI}</f:link.external>
  * </bib:renderPublicationField>
- *
  */
 class RenderPublicationFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 {
-
     /**
      * Register arguments.
      */
@@ -70,7 +68,6 @@ class RenderPublicationFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\
     }
 
     /**
-     * @return void
      */
     public function render()
     {
@@ -94,5 +91,4 @@ class RenderPublicationFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\
             $this->templateVariableContainer->add(RenderPublicationViewHelper::$containerVariableName, $container);
         }
     }
-
 }

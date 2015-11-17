@@ -60,11 +60,9 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  *        </bib:renderPublicationField>
  *    </f:if>
  * </bib:renderPublication>
- *
  */
 class RenderPublicationViewHelper extends AbstractViewHelper
 {
-
     /**
      * @var array
      */
@@ -72,7 +70,7 @@ class RenderPublicationViewHelper extends AbstractViewHelper
         'prefixIfFirst' => ['description' => 'default prefix for the first field that is displayed', 'default' => ''],
         'prefix' => ['description' => 'default prefix for fields', 'default' => ''],
         'suffix' => ['description' => 'default suffix for fields', 'default' => ','],
-        'suffixIfLast' => ['description' => 'default suffix for the last field that is displayed', 'default' => '.']
+        'suffixIfLast' => ['description' => 'default suffix for the last field that is displayed', 'default' => '.'],
     ];
     /**
      * @var string
@@ -89,7 +87,6 @@ class RenderPublicationViewHelper extends AbstractViewHelper
 
     /**
      * Register arguments.
-     * @return void
      */
     public function initializeArguments()
     {
@@ -130,13 +127,13 @@ class RenderPublicationViewHelper extends AbstractViewHelper
         return $this->createMarkup($bibliographyItem, $fieldArray);
     }
 
-
     /**
      * Returns a string with HTML markup for the passed $bibliographyItem with
      * the fields configured in $fieldArray.
      *
      * @param array $bibliographyItem the bibliography item to display
-     * @param array $fieldArray field configuration to use for the display
+     * @param array $fieldArray       field configuration to use for the display
+     *
      * @return string
      */
     private function createMarkup($bibliographyItem, $fieldArray)
@@ -191,5 +188,4 @@ class RenderPublicationViewHelper extends AbstractViewHelper
 
         return $document->saveHTML();
     }
-
 }

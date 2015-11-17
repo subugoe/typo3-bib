@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\View;
 
 /* * *************************************************************
@@ -30,12 +31,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
- * Class SingleView
- * @package Ipf\Bib\View
+ * Class SingleView.
  */
 class SingleView extends View
 {
-
     /**
      * @var \tx_bib_pi1
      */
@@ -81,31 +80,28 @@ class SingleView extends View
      */
     protected $view;
 
-
     /**
-     * Initializes this class
+     * Initializes this class.
      *
      * @param tx_bib_pi1
-     * @return void
      */
     public function initialize($pi1)
     {
 
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
+        /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
         $this->view = $view;
 
-        $this->pi1 =& $pi1;
-        $this->conf =& $pi1->conf['single_view.'];
-        $this->referenceReader =& $pi1->referenceReader;
+        $this->pi1 = &$pi1;
+        $this->conf = &$pi1->conf['single_view.'];
+        $this->referenceReader = &$pi1->referenceReader;
         // Load editor language data
         $this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
     }
 
-
     /**
-     * Returns the single view
+     * Returns the single view.
      *
      * @return string
      */
@@ -131,20 +127,20 @@ class SingleView extends View
         $this->view->assign('linkBack', $this->pi1->get_link($this->pi1->get_ll('link_back_to_list')));
 
         // remove multiple line breaks
-        $content = preg_replace("/\n+/", "\n", $content);
+        $content = preg_replace("/\n+/", PHP_EOL, $content);
 
         return $this->view->render();
     }
 
     /**
-     *
      * @throws \Exception
+     *
      * @param $ref
+     *
      * @return string
      */
     protected function typeReference($ref)
     {
-
         $warnings = [];
 
         // Store the cObj Data for later recovery
@@ -171,15 +167,15 @@ class SingleView extends View
                     $value = strval($publicationData[$field]);
                     $stdWrap = $this->pi1->conf['field.'][$field . '.'];
 
-                    if (isset ($this->pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
+                    if (isset($this->pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
                         $stdWrap = $this->pi1->conf['field.'][$bib_str . '.'][$field . '.'];
                     }
 
-                    if (isset ($this->conf['field_wrap.'][$field . '.'])) {
+                    if (isset($this->conf['field_wrap.'][$field . '.'])) {
                         $stdWrap = $this->conf['field_wrap.'][$field . '.'];
                     }
 
-                    if (isset ($stdWrap['single_view_link'])) {
+                    if (isset($stdWrap['single_view_link'])) {
                         $value = $this->pi1->get_link(
                             $value,
                             ['show_uid' => strval($publicationData['uid'])]
@@ -209,7 +205,7 @@ class SingleView extends View
             [
                 'pageTitle' => $title,
                 'preText' => $preText,
-                'postText' => $postText
+                'postText' => $postText,
             ]
         );
 
@@ -218,13 +214,13 @@ class SingleView extends View
         $this->pi1->cObj->data = $contentObjectBackup;
     }
 
-
     /**
      * Depending on the bibliography type this function returns
-     * The label for a field
+     * The label for a field.
      *
-     * @param string $field The field
+     * @param string $field      The field
      * @param string $identifier The bibtype identifier string
+     *
      * @return string
      */
     protected function getFieldLabel($field, $identifier)
@@ -239,7 +235,7 @@ class SingleView extends View
 
         $over = [
             $this->pi1->conf['editor.']['olabel.']['all.'][$field],
-            $this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field]
+            $this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field],
         ];
 
         foreach ($over as $lvar) {
@@ -255,9 +251,8 @@ class SingleView extends View
 
         return $label;
     }
-
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/SingleView.php'];
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Navigation;
 
 /* * *************************************************************
@@ -27,24 +28,21 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 /**
- * Class StatisticsNavigation
- * @package Ipf\Bib\Navigation
+ * Class StatisticsNavigation.
  */
 class StatisticsNavigation extends Navigation
 {
-
     /**
-     * Initialize
+     * Initialize.
      *
      * @param \tx_bib_pi1 $pi1
-     * @return void
      */
     public function initialize($pi1)
     {
         parent::initialize($pi1);
 
         if (is_array($pi1->conf['statNav.'])) {
-            $this->conf =& $pi1->conf['statNav.'];
+            $this->conf = &$pi1->conf['statNav.'];
         }
 
         $this->prefix = 'STAT_NAVI';
@@ -52,6 +50,7 @@ class StatisticsNavigation extends Navigation
 
     /**
      * @param int $index
+     *
      * @return mixed|void
      */
     protected function sel_get_text($index)
@@ -61,24 +60,23 @@ class StatisticsNavigation extends Navigation
     /**
      * @param $text
      * @param $index
+     *
      * @return mixed
      */
     protected function sel_get_link($text, $index)
     {
     }
 
-
     /**
-     * Returns content
+     * Returns content.
      *
      * @return string
      */
     protected function get()
     {
-
         $label = '';
         $stat_str = '';
-        $pi1 =& $this->pi1;
+        $pi1 = &$this->pi1;
 
         // Setup mode
         $d_mode = $this->pi1->extConf['d_mode'];
@@ -122,9 +120,8 @@ class StatisticsNavigation extends Navigation
 
         return $this->view->render();
     }
-
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php'];
 }

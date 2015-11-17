@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Tests\Unit\ViewHelpers;
 
 /* * *************************************************************
@@ -31,11 +32,10 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
 use TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase;
 
 /**
- * Test for coins ViewHelper
+ * Test for coins ViewHelper.
  */
 class CoinsViewHelperTest extends ViewHelperBaseTestcase
 {
-
     /**
      * @var \Ipf\Bib\ViewHelpers\CoinsViewHelper
      */
@@ -65,7 +65,7 @@ class CoinsViewHelperTest extends ViewHelperBaseTestcase
                     'series' => 'Germania Benedictina',
                     'ISBN' => '9783830675716',
                     'authors' => ' Römer, Christof',
-                ]
+                ],
             ],
         ];
     }
@@ -94,5 +94,4 @@ class CoinsViewHelperTest extends ViewHelperBaseTestcase
 
         $this->fixture->render($data);
     }
-
 }

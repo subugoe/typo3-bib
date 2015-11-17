@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Exception;
 
 /* * *************************************************************
@@ -27,9 +28,8 @@ namespace Ipf\Bib\Exception;
  * ************************************************************* */
 
 /**
- * Description
+ * Translator Exception.
  */
 class TranslatorException extends \Exception
 {
-
 }

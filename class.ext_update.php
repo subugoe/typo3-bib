@@ -26,11 +26,10 @@
  * ************************************************************* */
 
 /**
- * Class ext_update
+ * Class ext_update.
  */
 class ext_update
 {
-
     /**
      * @return string
      */
@@ -74,9 +73,9 @@ class ext_update
             $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
             $num = intval($row['count(*)']);
         }
+
         return $num;
     }
-
 
     /*
      * Fix missing authorship pids
@@ -87,7 +86,7 @@ class ext_update
     /**
      * @return bool
      */
-    function fix_wrong_aship_pid()
+    public function fix_wrong_aship_pid()
     {
         $error = false;
         $query = '
@@ -103,17 +102,17 @@ class ext_update
         $res = $GLOBALS['TYPO3_DB']->sql_query($query);
         $sql_error = $GLOBALS['TYPO3_DB']->sql_error();
         if (strlen($error) == 0) {
-
         } else {
             $error = true;
         }
+
         return $error;
     }
 
     /**
      * @return bool
      */
-    function access()
+    public function access()
     {
         $update = false;
         if ($this->num_wrong_aship_pid() != 0) {
@@ -122,11 +121,8 @@ class ext_update
 
         return $update;
     }
-
-
 }
 
-
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/class.ext_update.php"]) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/bib/class.ext_update.php"]);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/class.ext_update.php']) {
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/class.ext_update.php'];
 }

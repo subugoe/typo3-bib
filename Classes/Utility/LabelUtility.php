@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -29,17 +30,15 @@ namespace Ipf\Bib\Utility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 
 /**
- * Class LabelUtility
- * @package Ipf\Bib\Utility
+ * Class LabelUtility.
  */
 class LabelUtility
 {
-
     /**
-     * Returns label of an authorship
+     * Returns label of an authorship.
+     *
      * @param array $params
      * @param mixed $pObj
-     * @return void Name of author and title of reference
      */
     public function getAuthorshipLabel(&$params, &$pObj)
     {
@@ -68,5 +67,4 @@ class LabelUtility
 
         $params['title'] = $title;
     }
-
 }

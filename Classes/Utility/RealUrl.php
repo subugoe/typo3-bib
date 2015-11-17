@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -27,21 +28,20 @@ namespace Ipf\Bib\Utility;
  * ************************************************************* */
 
 /**
- * RealUrl Utility functions
+ * RealUrl Utility functions.
  */
 class RealUrl
 {
-
     /**
-     * Increment page browser counter to not have zero-based urls
+     * Increment page browser counter to not have zero-based urls.
      *
      * @param array $params
      * @param mixed $pObj
+     *
      * @return array
      */
     public function pageBrowser($params, &$pObj)
     {
         return ($params['decodeAlias'] ? --$params['value'] : ++$params['value']);
     }
-
 }

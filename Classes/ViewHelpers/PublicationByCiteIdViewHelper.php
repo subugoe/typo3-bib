@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\ViewHelpers;
 
 /* * *************************************************************
@@ -31,7 +32,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
- * Retrieve an array of the publication by providing a CiteId
+ * Retrieve an array of the publication by providing a CiteId.
  *
  * Usage:
  * First: Declare the namespace for this extension:
@@ -43,11 +44,9 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
  * <f:alias map="{bib:\"{bib:publicationByCiteId(citeId:'2r')}\"}" >
  *     {bib.publisher}
  * </f:alias>
- *
  */
 class PublicationByCiteIdViewHelper extends AbstractViewHelper
 {
-
     /**
      * Register arguments.
      */
@@ -60,11 +59,11 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
 
     /**
      * @throws \Exception
+     *
      * @return array
      */
     public function render()
     {
-
         if ($this->hasArgument('citeId')) {
             $citationId = $this->arguments['citeId'];
         } else {
@@ -86,8 +85,10 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
 
     /**
      * @throws \Exception
+     *
      * @param string $citationId
-     * @param int $storagePid
+     * @param int    $storagePid
+     *
      * @return array
      */
     protected function getBibliographicDataFromCitationId($citationId, $storagePid)
@@ -102,8 +103,8 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
             $referenceReader->append_filter(
                 [
                     'citeid' => [
-                        'ids' => $citationId
-                    ]
+                        'ids' => $citationId,
+                    ],
                 ]
             );
         } else {
@@ -111,7 +112,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
         }
 
         $citationUid = $referenceReader->getUidFromCitationId($citationId);
+
         return $referenceReader->getPublicationDetails($citationUid);
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace Ipf\Bib\Tests\Unit\ViewHelpers;
 
-    /* * *************************************************************
+/* * *************************************************************
      *  Copyright notice
      *
      *  (c) 2013 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
@@ -28,11 +28,10 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
      * ************************************************************* */
 
 /**
- * Description
+ * Description.
  */
 class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase
 {
-
     /**
      * @var \Ipf\Bib\ViewHelpers\PublicationByCiteIdViewHelper
      */
@@ -65,5 +64,4 @@ class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\View
         $this->viewHelper->setArguments(['citeId' => 'mueller98']);
         $this->assertArrayHasKey('exception', $this->viewHelper->_call('render'));
     }
-
 }

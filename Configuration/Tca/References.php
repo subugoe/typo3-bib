@@ -1,13 +1,13 @@
 <?php
 
 if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
+    die('Access denied.');
 }
 
 $TCA['tx_bib_domain_model_reference'] = [
     'ctrl' => $TCA['tx_bib_domain_model_reference']['ctrl'],
     'interface' => [
-        'showRecordFieldList' => $TCA['tx_bib_domain_model_reference']['feInterface']['fe_admin_fieldList']
+        'showRecordFieldList' => $TCA['tx_bib_domain_model_reference']['feInterface']['fe_admin_fieldList'],
     ],
     'feInterface' => $TCA['tx_bib_domain_model_reference']['feInterface'],
     'columns' => [
@@ -16,8 +16,8 @@ $TCA['tx_bib_domain_model_reference'] = [
             'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
             'config' => [
                 'type' => 'check',
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'bibtype' => [
             'exclude' => 1,
@@ -28,96 +28,96 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'items' => [
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_0',
-                        '0'
+                        '0',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_1',
-                        '1'
+                        '1',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_2',
-                        '2'
+                        '2',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_3',
-                        '3'
+                        '3',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_4',
-                        '4'
+                        '4',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_5',
-                        '5'
+                        '5',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_6',
-                        '6'
+                        '6',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_7',
-                        '7'
+                        '7',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_8',
-                        '8'
+                        '8',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_9',
-                        '9'
+                        '9',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_10',
-                        '10'
+                        '10',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_11',
-                        '11'
+                        '11',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_12',
-                        '12'
+                        '12',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_13',
-                        '13'
+                        '13',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_14',
-                        '14'
+                        '14',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_15',
-                        '15'
+                        '15',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_16',
-                        '16'
+                        '16',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_17',
-                        '17'
+                        '17',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_18',
-                        '18'
+                        '18',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_19',
-                        '19'
+                        '19',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_20',
-                        '20'
+                        '20',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_21',
-                        '21'
+                        '21',
                     ],
                 ],
                 'size' => 1,
                 'maxitems' => 1,
-            ]
+            ],
         ],
         'citeid' => [
             'exclude' => 1,
@@ -127,7 +127,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'nospace,uniqueInPid',
-            ]
+            ],
         ],
         'title' => [
             'exclude' => 1,
@@ -136,7 +136,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'text',
                 'cols' => '48',
                 'rows' => '3',
-            ]
+            ],
         ],
         'journal' => [
             'exclude' => 1,
@@ -146,7 +146,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'year' => [
             'exclude' => 1,
@@ -155,7 +155,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'input',
                 'size' => '4',
                 'eval' => 'int',
-            ]
+            ],
         ],
         'volume' => [
             'exclude' => 1,
@@ -165,7 +165,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'number' => [
             'exclude' => 1,
@@ -175,7 +175,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'number2' => [
             'exclude' => 1,
@@ -185,7 +185,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'pages' => [
             'exclude' => 1,
@@ -195,7 +195,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'day' => [
             'exclude' => 1,
@@ -235,11 +235,11 @@ $TCA['tx_bib_domain_model_reference'] = [
                     ['28', '28'],
                     ['29', '29'],
                     ['30', '30'],
-                    ['31', '31']
+                    ['31', '31'],
                 ],
                 'size' => 1,
                 'maxitems' => 1,
-            ]
+            ],
         ],
         'month' => [
             'exclude' => 1,
@@ -264,7 +264,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 ],
                 'size' => 1,
                 'maxitems' => 1,
-            ]
+            ],
         ],
         'abstract' => [
             'exclude' => 1,
@@ -273,7 +273,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'text',
                 'cols' => '48',
                 'rows' => '10',
-            ]
+            ],
         ],
         'affiliation' => [
             'exclude' => 1,
@@ -283,7 +283,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'cols' => '48',
                 'rows' => '2',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'note' => [
             'exclude' => 1,
@@ -292,7 +292,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'text',
                 'cols' => '48',
                 'rows' => '5',
-            ]
+            ],
         ],
         'annotation' => [
             'exclude' => 1,
@@ -301,7 +301,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'text',
                 'cols' => '48',
                 'rows' => '5',
-            ]
+            ],
         ],
         'keywords' => [
             'exclude' => 1,
@@ -310,7 +310,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'text',
                 'cols' => '48',
                 'rows' => '2',
-            ]
+            ],
         ],
         'tags' => [
             'exclude' => 1,
@@ -319,7 +319,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'text',
                 'cols' => '48',
                 'rows' => '2',
-            ]
+            ],
         ],
         'file_url' => [
             'exclude' => 1,
@@ -340,12 +340,12 @@ $TCA['tx_bib_domain_model_reference'] = [
                             'name' => 'wizard_element_browser',
                             'urlParameters' => [
                                 'mode' => 'wizard',
-                            ]
+                            ],
                         ],
-                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1',
                     ],
                 ],
-            ]
+            ],
         ],
         'web_url' => [
             'exclude' => 1,
@@ -365,12 +365,12 @@ $TCA['tx_bib_domain_model_reference'] = [
                             'name' => 'wizard_element_browser',
                             'urlParameters' => [
                                 'mode' => 'wizard',
-                            ]
+                            ],
                         ],
-                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1',
                     ],
                 ],
-            ]
+            ],
         ],
         'web_url_date' => [
             'exclude' => 1,
@@ -379,7 +379,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'input',
                 'size' => '10',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'web_url2' => [
             'exclude' => 1,
@@ -399,12 +399,12 @@ $TCA['tx_bib_domain_model_reference'] = [
                             'name' => 'wizard_element_browser',
                             'urlParameters' => [
                                 'mode' => 'wizard',
-                            ]
+                            ],
                         ],
-                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+                        'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1',
                     ],
                 ],
-            ]
+            ],
         ],
         'web_url2_date' => [
             'exclude' => 1,
@@ -413,7 +413,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'type' => 'input',
                 'size' => '10',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'misc' => [
             'exclude' => 1,
@@ -423,7 +423,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'misc2' => [
             'exclude' => 1,
@@ -433,7 +433,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'editor' => [
             'exclude' => 1,
@@ -443,7 +443,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'publisher' => [
             'exclude' => 1,
@@ -453,7 +453,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'address' => [
             'exclude' => 1,
@@ -463,7 +463,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'howpublished' => [
             'exclude' => 1,
@@ -473,7 +473,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'series' => [
             'exclude' => 1,
@@ -483,7 +483,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'edition' => [
             'exclude' => 1,
@@ -493,7 +493,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'chapter' => [
             'exclude' => 1,
@@ -503,7 +503,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'booktitle' => [
             'exclude' => 1,
@@ -513,7 +513,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'cols' => '48',
                 'rows' => '2',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'school' => [
             'exclude' => 1,
@@ -523,7 +523,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'institute' => [
             'exclude' => 1,
@@ -533,7 +533,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'organization' => [
             'exclude' => 1,
@@ -543,7 +543,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'institution' => [
             'exclude' => 1,
@@ -553,7 +553,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'event_name' => [
             'exclude' => 1,
@@ -563,7 +563,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'event_place' => [
             'exclude' => 1,
@@ -573,7 +573,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'event_date' => [
             'exclude' => 1,
@@ -583,7 +583,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'state' => [
             'exclude' => 1,
@@ -594,28 +594,28 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'items' => [
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state_I_0',
-                        '0'
+                        '0',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state_I_1',
-                        '1'
+                        '1',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state_I_2',
-                        '2'
+                        '2',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state_I_3',
-                        '3'
+                        '3',
                     ],
                     [
                         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_state_I_4',
-                        '4'
+                        '4',
                     ],
                 ],
                 'size' => 1,
                 'maxitems' => 1,
-            ]
+            ],
         ],
         'type' => [
             'exclude' => 1,
@@ -625,7 +625,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'language' => [
             'exclude' => 1,
@@ -635,7 +635,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'ISBN' => [
             'exclude' => 1,
@@ -645,7 +645,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'ISSN' => [
             'exclude' => 1,
@@ -655,7 +655,7 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'DOI' => [
             'exclude' => 1,
@@ -665,31 +665,31 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
         'extern' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_extern',
             'config' => [
                 'type' => 'check',
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'reviewed' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_reviewed',
             'config' => [
                 'type' => 'check',
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'in_library' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_in_library',
             'config' => [
                 'type' => 'check',
-                'default' => '0'
-            ]
+                'default' => '0',
+            ],
         ],
         'borrowed_by' => [
             'exclude' => 1,
@@ -699,10 +699,10 @@ $TCA['tx_bib_domain_model_reference'] = [
                 'size' => '48',
                 'max' => '255',
                 'eval' => 'trim',
-            ]
+            ],
         ],
     ],
     'types' => [
-        '0' => ['showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, number2, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url_date, web_url2, web_url2_date, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, DOI, ISSN, extern, reviewed, in_library, borrowed_by']
+        '0' => ['showitem' => 'hidden;;1, bibtype, citeid, title;;;;2-2-2, journal;;;;3-3-3, year, month, day, volume, number, number2, pages, abstract, affiliation, note, annotation, keywords, tags, file_url, web_url, web_url_date, web_url2, web_url2_date, misc, misc2, editor, publisher, address, howpublished, series,  edition, chapter, booktitle, school, institute, organization, institution, event_name, event_place, event_date, state, type, language, ISBN, DOI, ISSN, extern, reviewed, in_library, borrowed_by'],
     ],
 ];

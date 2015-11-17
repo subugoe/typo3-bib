@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\View;
 
 /* * *************************************************************
@@ -27,15 +28,12 @@ namespace Ipf\Bib\View;
  * ************************************************************* */
 
 /**
- * Class View
- * @package Ipf\Bib\View
+ * Class View.
  */
 abstract class View
 {
-
     const VIEW_LIST = 0;
     const VIEW_SINGLE = 1;
     const VIEW_EDITOR = 2;
     const VIEW_DIALOG = 3;
-
 }

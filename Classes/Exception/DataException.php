@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Exception;
 
 /* * *************************************************************
@@ -27,9 +28,8 @@ namespace Ipf\Bib\Exception;
  * ************************************************************* */
 
 /**
- * Exception when reading or writing data fails
+ * Exception when reading or writing data fails.
  */
 class DataException extends \Exception
 {
-
 }

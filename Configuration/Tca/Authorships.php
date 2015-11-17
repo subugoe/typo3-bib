@@ -1,13 +1,13 @@
 <?php
 
 if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
+    die('Access denied.');
 }
 
 $TCA['tx_bib_domain_model_authorships'] = [
     'ctrl' => $TCA['tx_bib_domain_model_authorships']['ctrl'],
     'interface' => [
-        'showRecordFieldList' => $TCA['tx_bib_domain_model_authorships']['feInterface']['fe_admin_fieldList']
+        'showRecordFieldList' => $TCA['tx_bib_domain_model_authorships']['feInterface']['fe_admin_fieldList'],
     ],
     'feInterface' => $TCA['tx_bib_domain_model_authorships']['feInterface'],
     'columns' => [
@@ -40,14 +40,14 @@ $TCA['tx_bib_domain_model_authorships'] = [
                                         'where' => 'r.title LIKE "%###SEARCHWORD###%" AND r.deleted=0 AND r.hidden=0',
                                         'group_by' => '',
                                         'order_by' => 'r.title DESC',
-                                        'limit' => '10'
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                        'limit' => '10',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
         'author_id' => [
             'exclude' => 1,
@@ -78,14 +78,14 @@ $TCA['tx_bib_domain_model_authorships'] = [
                                         'where' => 'a.surname LIKE "%###SEARCHWORD###%" AND a.deleted=0 AND a.hidden=0',
                                         'group_by' => '',
                                         'order_by' => 'a.surname DESC, a.forename DESC',
-                                        'limit' => '10'
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                        'limit' => '10',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
         'sorting' => [
             'exclude' => 1,
@@ -95,10 +95,10 @@ $TCA['tx_bib_domain_model_authorships'] = [
                 'size' => '10',
                 'max' => '255',
                 'eval' => 'int',
-            ]
+            ],
         ],
     ],
     'types' => [
-        '0' => ['showitem' => 'pub_id,author_id,sorting']
+        '0' => ['showitem' => 'pub_id,author_id,sorting'],
     ],
 ];

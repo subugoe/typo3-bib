@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Navigation;
 
 /* * *************************************************************
@@ -30,32 +31,29 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class PreferenceNavigation
- * @package Ipf\Bib\Navigation
+ * Class PreferenceNavigation.
  */
 class PreferenceNavigation extends Navigation
 {
-
     /**
      * @var array
      */
     public $extConf = [];
 
     /**
-     * Intialize
+     * Intialize.
      *
      * @param \tx_bib_pi1 $pi1
-     * @return void
      */
     public function initialize($pi1)
     {
         parent::initialize($pi1);
         if (is_array($pi1->conf['prefNav.'])) {
-            $this->conf =& $pi1->conf['prefNav.'];
+            $this->conf = &$pi1->conf['prefNav.'];
         }
 
         if (is_array($pi1->extConf['pref_navi'])) {
-            $this->extConf =& $pi1->extConf['pref_navi'];
+            $this->extConf = &$pi1->extConf['pref_navi'];
         }
 
         $this->prefix = 'PREF_NAVI';
@@ -72,13 +70,12 @@ class PreferenceNavigation extends Navigation
     }
 
     /**
-     * Returns the preference navigation bar
+     * Returns the preference navigation bar.
      *
      * @return string
      */
     protected function get()
     {
-
         $this->view
             ->assign('label', $this->getPreferenceNavigationLabel())
             ->assign('formStart', $this->getFormTagStart())
@@ -91,7 +88,6 @@ class PreferenceNavigation extends Navigation
     }
 
     /**
-     * @return void
      */
     protected function getKeywordConfiguration()
     {
@@ -106,7 +102,6 @@ class PreferenceNavigation extends Navigation
     }
 
     /**
-     * @return void
      */
     protected function getAbstractConfiguration()
     {
@@ -120,7 +115,6 @@ class PreferenceNavigation extends Navigation
     }
 
     /**
-     * @return void
      */
     protected function getItemsPerPageConfiguration()
     {
@@ -147,7 +141,7 @@ class PreferenceNavigation extends Navigation
     }
 
     /**
-     * Field for determining the shown number of items per page
+     * Field for determining the shown number of items per page.
      *
      * @return string
      */
@@ -161,18 +155,19 @@ class PreferenceNavigation extends Navigation
         }
         $attributes = [
             'name' => $this->pi1->prefix_pi1 . '[items_per_page]',
-            'onchange' => 'this.form.submit()'
+            'onchange' => 'this.form.submit()',
         ];
         if (strlen($this->conf['ipp.']['select_class']) > 0) {
             $attributes['class'] = $this->conf['ipp.']['select_class'];
         }
         $button = Utility::html_select_input($pairs, $this->pi1->extConf['sub_page']['ipp'], $attributes);
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['ipp.']['select.']);
+
         return $this->pi1->cObj->stdWrap($label . $button, $this->conf['ipp.']['widget.']);
     }
 
     /**
-     * Checkbox for showing or hiding abstracts
+     * Checkbox for showing or hiding abstracts.
      *
      * @return string
      */
@@ -193,11 +188,12 @@ class PreferenceNavigation extends Navigation
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['abstract.']['btn.']);
+
         return $this->pi1->cObj->stdWrap($label . $button, $this->conf['abstract.']['widget.']);
     }
 
     /**
-     * Checkbox for showing or hiding keywords
+     * Checkbox for showing or hiding keywords.
      *
      * @return string
      */
@@ -218,11 +214,12 @@ class PreferenceNavigation extends Navigation
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['keywords.']['btn.']);
+
         return $this->pi1->cObj->stdWrap($label . $button, $this->conf['keywords.']['widget.']);
     }
 
     /**
-     * Generates the go button to apply the preference navigation
+     * Generates the go button to apply the preference navigation.
      *
      * @return string
      */
@@ -237,22 +234,24 @@ class PreferenceNavigation extends Navigation
             $this->pi1->get_ll('button_go'),
             $attributes
         );
+
         return $this->pi1->cObj->stdWrap($widget, $this->conf['go_btn.']);
     }
 
     /**
-     * Get the label or header for the preference navigation
+     * Get the label or header for the preference navigation.
      *
      * @return string
      */
     protected function getPreferenceNavigationLabel()
     {
         $label = $this->pi1->get_ll('prefNav_label');
+
         return $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
     }
 
     /**
-     * Starting tag of the form element
+     * Starting tag of the form element.
      *
      * @return string
      */
@@ -261,7 +260,7 @@ class PreferenceNavigation extends Navigation
         $emptySelection = [
             'items_per_page' => '',
             'show_abstracts' => '',
-            'show_keywords' => ''
+            'show_keywords' => '',
         ];
         $formStart = '';
         $formStart .= '<form name="' . $this->pi1->prefix_pi1 . '-preferences_form" ';
@@ -275,6 +274,7 @@ class PreferenceNavigation extends Navigation
 
     /**
      * @param int $index
+     *
      * @return string
      */
     protected function sel_get_text($index)
@@ -284,6 +284,7 @@ class PreferenceNavigation extends Navigation
     /**
      * @param $text
      * @param $index
+     *
      * @return mixed
      */
     protected function sel_get_link($text, $index)
@@ -292,7 +293,5 @@ class PreferenceNavigation extends Navigation
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PreferenceNavigation.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PreferenceNavigation.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PreferenceNavigation.php'];
 }
-
-?>

@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Controller;
 
 /* * *************************************************************
@@ -27,15 +28,14 @@ namespace Ipf\Bib\Controller;
  * ************************************************************* */
 
 /**
- * REST controller for the extension 'bib'
+ * REST controller for the extension 'bib'.
  */
 class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-
     /**
      * @var string
      */
-    protected $defaultViewObjectName = 'TYPO3\CMS\Extbase\Mvc\View\JsonView';
+    protected $defaultViewObjectName = \TYPO3\CMS\Extbase\Mvc\View\JsonView::class;
 
     /**
      * @var \Ipf\Bib\Domain\Repository\ReferenceRepository
@@ -44,7 +44,6 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     protected $referenceRepository;
 
     /**
-     * @return void
      */
     public function listAction()
     {

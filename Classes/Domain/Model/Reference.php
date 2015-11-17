@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Domain\Model;
 
 /* * *************************************************************
@@ -27,11 +28,10 @@ namespace Ipf\Bib\Domain\Model;
  * ************************************************************* */
 
 /**
- * Reference Model
+ * Reference Model.
  */
 class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
-
     /**
      * @var int
      */
@@ -613,7 +613,7 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getExtern()
     {
@@ -621,7 +621,7 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param boolean $extern
+     * @param bool $extern
      */
     public function setExtern($extern)
     {
@@ -709,7 +709,7 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getInLibrary()
     {
@@ -717,7 +717,7 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param boolean $inLibrary
+     * @param bool $inLibrary
      */
     public function setInLibrary($inLibrary)
     {
@@ -949,7 +949,7 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getReviewed()
     {
@@ -957,7 +957,7 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param boolean $reviewed
+     * @param bool $reviewed
      */
     public function setReviewed($reviewed)
     {
@@ -1155,6 +1155,4 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->webUrlDate = $webUrlDate;
     }
-
-
 }

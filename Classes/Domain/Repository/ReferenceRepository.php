@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Domain\Repository;
 
 /* * *************************************************************
@@ -27,25 +28,22 @@ namespace Ipf\Bib\Domain\Repository;
  * ************************************************************* */
 
 /**
- * Reference repository
+ * Reference repository.
  */
 class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
-
-
     /**
      * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-     * @inject
      */
     protected $db;
 
     /**
      * @param $storagePid
+     *
      * @return array
      */
     public function findBibliographyByStoragePid($storagePid)
     {
-
         $this->db = $GLOBALS['TYPO3_DB'];
         $queryString = '
 						SELECT
@@ -63,7 +61,7 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         while ($row = $this->db->sql_fetch_assoc($query)) {
             array_push($references, $row);
         }
+
         return $references;
     }
-
 }

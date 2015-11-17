@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Navigation;
 
 /* * *************************************************************
@@ -27,23 +28,20 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 /**
- * Class PageNavigation
- * @package Ipf\Bib\Navigation
+ * Class PageNavigation.
  */
 class PageNavigation extends Navigation
 {
-
     /**
-     * Initialize
+     * Initialize.
      *
      * @param \tx_bib_pi1 $pi1
-     * @return void
      */
     public function initialize($pi1)
     {
         parent::initialize($pi1);
         if (is_array($pi1->conf['pageNav.'])) {
-            $this->conf =& $pi1->conf['pageNav.'];
+            $this->conf = &$pi1->conf['pageNav.'];
         }
 
         $this->prefix = 'PAGE_NAVI';
@@ -51,9 +49,10 @@ class PageNavigation extends Navigation
     }
 
     /**
-     * Creates a text for a given index
+     * Creates a text for a given index.
      *
      * @param int $index
+     *
      * @return string
      */
     protected function sel_get_text($index)
@@ -62,10 +61,11 @@ class PageNavigation extends Navigation
     }
 
     /**
-     * Creates a link for the selection
+     * Creates a link for the selection.
      *
      * @param string $text
-     * @param int $index
+     * @param int    $index
+     *
      * @return string
      */
     protected function sel_get_link($text, $index)
@@ -74,30 +74,29 @@ class PageNavigation extends Navigation
         $lnk = $this->pi1->get_link(
             $text,
             [
-                'page' => strval($index)
+                'page' => strval($index),
             ],
             true,
             [
-                'title' => $title
+                'title' => $title,
             ]
         );
+
         return $lnk;
     }
 
-
     /**
-     * Returns content
+     * Returns content.
      *
      * @return string
      */
     protected function get()
     {
-
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
         $navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : [];
 
         // The data
-        $subPage =& $this->pi1->extConf['sub_page'];
+        $subPage = &$this->pi1->extConf['sub_page'];
 
         // The label
         $label = $this->pi1->cObj->stdWrap(
@@ -113,11 +112,11 @@ class PageNavigation extends Navigation
             $nav_prev = $this->pi1->get_link(
                 $nav_prev,
                 [
-                    'page' => $page
+                    'page' => $page,
                 ],
                 true,
                 [
-                    'title' => $title
+                    'title' => $title,
                 ]
             );
         }
@@ -129,11 +128,11 @@ class PageNavigation extends Navigation
             $nav_next = $this->pi1->get_link(
                 $nav_next,
                 [
-                    'page' => $page
+                    'page' => $page,
                 ],
                 true,
                 [
-                    'title' => $title
+                    'title' => $title,
                 ]
             );
         }
@@ -172,9 +171,8 @@ class PageNavigation extends Navigation
 
         return $this->view->render();
     }
-
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php'];
 }

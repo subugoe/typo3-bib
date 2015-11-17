@@ -1,6 +1,7 @@
 <?php
+
 if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
+    die('Access denied.');
 }
 
 $TCA['tx_bib_domain_model_reference'] = [
@@ -23,9 +24,8 @@ $TCA['tx_bib_domain_model_reference'] = [
     ],
     'feInterface' => [
         'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,web_url_date,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',
-    ]
+    ],
 ];
-
 
 $TCA['tx_bib_domain_model_author'] = [
     'ctrl' => [
@@ -43,15 +43,14 @@ $TCA['tx_bib_domain_model_author'] = [
     ],
     'feInterface' => [
         'fe_admin_fieldList' => 'surname,forename,url',
-    ]
+    ],
 ];
-
 
 $TCA['tx_bib_domain_model_authorships'] = [
     'ctrl' => [
         'title' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships',
         'label' => 'pub_id',
-        'label_userFunc' => "Ipf\\Bib\\Utility\\LabelUtility->getAuthorshipLabel",
+        'label_userFunc' => 'Ipf\\Bib\\Utility\\LabelUtility->getAuthorshipLabel',
         'label_alt_force' => 1,
         'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',
         'delete' => 'deleted',
@@ -60,9 +59,8 @@ $TCA['tx_bib_domain_model_authorships'] = [
     ],
     'feInterface' => [
         'fe_admin_fieldList' => 'pub_id,author_id,sorting',
-    ]
+    ],
 ];
-
 
 // Allow items on standard pages
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_bib_domain_model_reference');
@@ -76,7 +74,7 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . '_pi1'] = 'pi
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     [
         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tt_content.list_type_pi1',
-        $_EXTKEY . '_pi1'
+        $_EXTKEY . '_pi1',
     ],
     'list_type'
 );
@@ -85,7 +83,6 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . '_pi1'] = 'pi
     $_EXTKEY . '_pi1',
     'FILE:EXT:bib/Configuration/FlexForms/flexform_ds.xml'
 );
-
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
     $_EXTKEY,

@@ -34,9 +34,8 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
  */
 class CoinsViewHelper extends AbstractTagBasedViewHelper
 {
-
     /**
-     * assignment from delivered values to the coins identifier
+     * assignment from delivered values to the coins identifier.
      *
      * @var array
      */
@@ -50,7 +49,6 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
         'series' => 'series',
     ];
 
-
     /**
      * @var string
      */
@@ -58,11 +56,11 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
 
     /**
      * @param array $data
+     *
      * @return string
      */
     public function render($data)
     {
-
         $coinsData = [];
 
         $coinsData[] = 'ctx_ver=Z39.88-2004';
@@ -81,21 +79,25 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
 
         $this->tag->addAttribute('class', 'Z3988');
         $this->tag->addAttribute('title', implode('&', $coinsData));
+
         return $this->tag->render();
     }
 
     /**
      * @param string $string
+     *
      * @return string
      */
     protected function formatEntity($string)
     {
         $string = strip_tags($string);
+
         return urlencode($string);
     }
 
     /**
      * @param string $authors
+     *
      * @return array
      */
     protected function formatAuthor($authors)
@@ -104,7 +106,7 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
             $authors = GeneralUtility::trimExplode(';', $authors);
         }
         $author = GeneralUtility::trimExplode(',', $authors);
+
         return $author;
     }
-
 }

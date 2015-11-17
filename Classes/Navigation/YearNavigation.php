@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Navigation;
 
 /* * *************************************************************
@@ -29,31 +30,31 @@ namespace Ipf\Bib\Navigation;
 use Ipf\Bib\Utility\Utility;
 
 /**
- * Class YearNavigation
- * @package Ipf\Bib\Navigation
+ * Class YearNavigation.
  */
 class YearNavigation extends Navigation
 {
-
     /**
-     * Intialize
+     * Intialize.
+     *
      * @param \tx_bib_pi1 $pi1
      */
     public function initialize($pi1)
     {
         parent::initialize($pi1);
         if (is_array($pi1->conf['yearNav.'])) {
-            $this->conf =& $pi1->conf['yearNav.'];
+            $this->conf = &$pi1->conf['yearNav.'];
         }
 
         $this->prefix = 'YEAR_NAVI';
         $this->sel_link_title = $pi1->get_ll('yearNav_yearLinkTitle', '%y', true);
     }
 
-
     /**
-     * Creates a text for a given index
+     * Creates a text for a given index.
+     *
      * @param int $index
+     *
      * @return string
      */
     protected function sel_get_text($index)
@@ -62,9 +63,11 @@ class YearNavigation extends Navigation
     }
 
     /**
-     * Creates a link for the selection
+     * Creates a link for the selection.
+     *
      * @param string $text
-     * @param int $ii
+     * @param int    $ii
+     *
      * @return string
      */
     protected function sel_get_link($text, $ii)
@@ -74,19 +77,20 @@ class YearNavigation extends Navigation
             $text,
             [
                 'year' => $text,
-                'page' => ''
+                'page' => '',
             ],
             true,
             [
-                'title' => $title
+                'title' => $title,
             ]
         );
+
         return $lnk;
     }
 
-
     /**
-     * Returns content
+     * Returns content.
+     *
      * @return string
      */
     protected function get()
@@ -109,14 +113,13 @@ class YearNavigation extends Navigation
      */
     protected function getYearSelection()
     {
-
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
 
         if (sizeof($this->pi1->stat['years']) > 0) {
 
             // The all link
             $delimiter = ' - ';
-            if (isset ($selectionConfiguration['all_sep'])) {
+            if (isset($selectionConfiguration['all_sep'])) {
                 $delimiter = $selectionConfiguration['all_sep'];
             }
             $delimiter = $this->pi1->cObj->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
@@ -140,6 +143,7 @@ class YearNavigation extends Navigation
             }
 
             $selection = $this->selection($selectionConfiguration, $indices, $numSel);
+
             return $this->pi1->cObj->stdWrap($txt . $delimiter . $selection, $selectionConfiguration['all_wrap.']);
         }
     }
@@ -171,7 +175,7 @@ class YearNavigation extends Navigation
 
             $attributes = [
                 'name' => $this->pi1->prefix_pi1 . '[year]',
-                'onchange' => 'this.form.submit()'
+                'onchange' => 'this.form.submit()',
             ];
             if (strlen($this->conf['select_class']) > 0) {
                 $attributes['class'] = $this->conf['select_class'];
@@ -194,12 +198,11 @@ class YearNavigation extends Navigation
             // End of form
             $selectForm .= '</form>';
         }
+
         return $this->pi1->cObj->stdWrap($selectForm, $this->conf['form.']);
-
     }
-
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']) {
-    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']);
+    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php'];
 }

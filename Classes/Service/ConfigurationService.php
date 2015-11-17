@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Service;
 
 /* * *************************************************************
@@ -27,9 +28,8 @@ namespace Ipf\Bib\Service;
  * ************************************************************* */
 
 /**
- * Service for calculation of configuration
+ * Service for calculation of configuration.
  */
 class ConfigurationService
 {
-
 }

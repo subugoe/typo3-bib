@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Importer;
 
 /* * *************************************************************
@@ -35,13 +36,12 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * This parser follows the bibtex format described here
- * http://artis.imag.fr/~Xavier.Decoret/resources/xdkbibtex/bibtex_summary.html
+ * http://artis.imag.fr/~Xavier.Decoret/resources/xdkbibtex/bibtex_summary.html.
  */
 class BibTexImporter extends Importer
 {
-
     /**
-     * Bibtex translator
+     * Bibtex translator.
      *
      * @var \Ipf\Bib\Utility\PRegExpTranslator
      */
@@ -71,7 +71,8 @@ class BibTexImporter extends Importer
     const PARSER_READ_PAIR_VALUE = 11;
 
     /**
-     * A value buffer
+     * A value buffer.
+     *
      * @var string
      */
     protected $pair_name;
@@ -92,7 +93,7 @@ class BibTexImporter extends Importer
     protected $pair_brace;
 
     /**
-     * A raw reference
+     * A raw reference.
      *
      * @var array
      */
@@ -119,7 +120,6 @@ class BibTexImporter extends Importer
      */
     public function initialize($pi1)
     {
-
         parent::initialize($pi1);
 
         $this->import_type = Importer::IMP_BIBTEX;
@@ -310,6 +310,7 @@ class BibTexImporter extends Importer
         /** @var StandaloneView $view */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/BibTexInformation.html');
+
         return $view->render();
     }
 
@@ -347,7 +348,7 @@ class BibTexImporter extends Importer
                 $ii = 0;
                 $count = count($buff_arr);
                 foreach ($buff_arr as $this->buffer) {
-                    $ii++;
+                    ++$ii;
                     $this->switchParserState();
                     if (($count > 1) && ($ii < $count)) {
                         $this->pline += 1;
@@ -362,12 +363,11 @@ class BibTexImporter extends Importer
 
         // Translate and save the raw references
         foreach ($this->raw_refs as $raw) {
-
             try {
                 $publication = $this->convertRawReferenceToReference($raw);
                 $this->savePublication($publication);
             } catch (TranslatorException $translatorException) {
-                $this->statistics['failed']++;
+                ++$this->statistics['failed'];
                 $this->statistics['errors'][] = $translatorException->getMessage();
             }
         }
@@ -375,37 +375,28 @@ class BibTexImporter extends Importer
         return '';
     }
 
-
     /**
-     * Clears the current raw reference
-     *
-     * @return void
+     * Clears the current raw reference.
      */
     protected function clearCurrentRawReference()
     {
         $this->raw_ref = [
             'type' => '',
             'citeid' => '',
-            'values' => []
+            'values' => [],
         ];
     }
 
-
     /**
-     * Pushes the internal name/value pair to the current raw reference
-     *
-     * @return void
+     * Pushes the internal name/value pair to the current raw reference.
      */
     protected function pushInternalNameValuePairToCurrentRawReference()
     {
         $this->raw_ref['values'][$this->pair_name] = $this->pair_value;
     }
 
-
     /**
-     * Pushes the current raw reference to the raw reference list
-     *
-     * @return void
+     * Pushes the current raw reference to the raw reference list.
      */
     protected function pushCurrentRawReferenceToList()
     {
@@ -413,19 +404,16 @@ class BibTexImporter extends Importer
         $this->clearCurrentRawReference();
     }
 
-
     /**
-     * Switches the parser state
+     * Switches the parser state.
      *
      * @throws ParserException
      * @throws TranslatorException
-     * @return void
      */
     protected function switchParserState()
     {
         // Parse buffer chunk
         while (strlen($this->getBuffer()) > 0) {
-
             switch ($this->parserState) {
 
                 case self::PARSER_SEARCH_REFERENCE:
@@ -456,7 +444,6 @@ class BibTexImporter extends Importer
                     $this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
                     if (strlen($this->getBuffer()) > 0) {
                         if (substr($this->getBuffer(), 0, 1) == '{') {
-
                             $this->setBuffer(substr($this->getBuffer(), 1));
                             $this->parserState = self::PARSER_SEARCH_CITE_ID;
                         } else {
@@ -554,8 +541,7 @@ class BibTexImporter extends Importer
                     if (strlen($this->getBuffer()) > 0) {
                         $char = substr($this->getBuffer(), 0, 1);
                         if (preg_match('/^[^}=]/', $char) > 0) {
-
-                            if (($char == '{') || ($char == "'") || ($char == "\"")) {
+                            if (($char == '{') || ($char == "'") || ($char == '"')) {
                                 $this->pair_start = $char;
                                 $this->pair_value = '';
                             } else {
@@ -598,14 +584,14 @@ class BibTexImporter extends Importer
                             case '{':
                                 $this->pair_value .= $char;
                                 if ($prev_char != '\\') {
-                                    $this->pair_brace++;
+                                    ++$this->pair_brace;
                                 }
                                 break;
-                            case "}":
+                            case '}':
                                 if ($prev_char == '\\') {
                                     $this->pair_value .= $char;
                                 } else {
-                                    $this->pair_brace--;
+                                    --$this->pair_brace;
                                     if ($this->pair_brace >= 0) {
                                         $this->pair_value .= $char;
                                     } else {
@@ -621,7 +607,7 @@ class BibTexImporter extends Importer
                             case "\t":
                             case ',':
                                 if ($this->pair_start == '') {
-                                    $last--;
+                                    --$last;
                                     $go_on = false;
                                 } else {
                                     $this->pair_value .= $char;
@@ -633,12 +619,11 @@ class BibTexImporter extends Importer
 
                         // Increment character position counter
                         if (!$go_on) {
-
                             $this->pushInternalNameValuePairToCurrentRawReference();
                             $this->parserState = self::PARSER_SEARCH_COMMA;
                         } else {
                             if ($ii < strlen($this->buffer)) {
-                                $ii++;
+                                ++$ii;
                             } else {
                                 $go_on = false;
                             }
@@ -656,10 +641,12 @@ class BibTexImporter extends Importer
     }
 
     /**
-     * Translates a raw reference to a usable reference structure
+     * Translates a raw reference to a usable reference structure.
      *
      * @throws TranslatorException
+     *
      * @param array $raw
+     *
      * @return array
      */
     protected function convertRawReferenceToReference($raw)
@@ -671,7 +658,7 @@ class BibTexImporter extends Importer
         if (in_array($raw_val, $this->referenceReader->allBibTypes)) {
             $publication['bibtype'] = array_search($raw_val, $this->referenceReader->allBibTypes);
         } else {
-            throw new TranslatorException ('Unknown bibtype: "' . strval($raw_val) . '"', 1378736700);
+            throw new TranslatorException('Unknown bibtype: "' . strval($raw_val) . '"', 1378736700);
         }
 
         // Citeid
@@ -679,7 +666,6 @@ class BibTexImporter extends Importer
 
         // Iterate through all raw values
         foreach ($raw['values'] as $r_key => $r_val) {
-
             $r_val = $this->convertLatexCommandsToBibStyle($r_val);
 
             $r_key = strtolower($r_key);
@@ -719,15 +705,16 @@ class BibTexImporter extends Importer
                     }
             }
         }
+
         return $publication;
     }
 
-
     /**
      * Translates some latex commands to bib style
-     * The input string should be ASCII
+     * The input string should be ASCII.
      *
      * @param string $raw
+     *
      * @return string
      */
     protected function convertLatexCommandsToBibStyle($raw)
@@ -735,14 +722,15 @@ class BibTexImporter extends Importer
         $res = $this->pRegExpTranslator->translate($raw);
         $res = $this->codeToUnicode($res);
         $res = $this->importUnicodeString($res);
+
         return $res;
     }
 
-
     /**
-     * Translates a raw author string to an author array
+     * Translates a raw author string to an author array.
      *
      * @param $authors
+     *
      * @return array
      */
     protected function convertRawAuthorToAuthor($authors)
@@ -759,7 +747,7 @@ class BibTexImporter extends Importer
                     $a_part = trim($a_part);
                 }
                 $author['forename'] = trim($a_split[0]);
-                unset ($a_split[0]);
+                unset($a_split[0]);
                 $author['surname'] = trim(implode(' ', $a_split));
             } else {
                 // Comma in author string
@@ -768,14 +756,14 @@ class BibTexImporter extends Importer
                     $a_part = trim($a_part);
                 }
                 $author['surname'] = trim($a_split[0]);
-                unset ($a_split[0]);
+                unset($a_split[0]);
                 $author['forename'] = trim(implode(', ', $a_split));
             }
             $res[] = $author;
         }
+
         return $res;
     }
-
 
     /**
      * @param string $buffer
@@ -792,5 +780,4 @@ class BibTexImporter extends Importer
     {
         return $this->buffer;
     }
-
 }

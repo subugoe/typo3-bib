@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Generator;
 
 /* * *************************************************************
@@ -27,20 +28,19 @@ namespace Ipf\Bib\Utility\Generator;
  * ************************************************************* */
 
 /**
- * Class AuthorsCiteIdGenerator
- * @package Ipf\Bib\Utility\Generator
+ * Class AuthorsCiteIdGenerator.
  */
 class AuthorsCiteIdGenerator extends CiteIdGenerator
 {
-
     /**
      * @param array $row
+     *
      * @return string
      */
     protected function generateBasicId($row)
     {
         $authors = $row['authors'];
+
         return $this->simplifiedString($authors[0]['sn']);
     }
-
 }

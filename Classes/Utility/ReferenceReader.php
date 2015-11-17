@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -31,11 +32,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class provides the reference database interface
- * and some utility methods
+ * and some utility methods.
  */
 class ReferenceReader
 {
-
     const REFERENCE_TABLE = 'tx_bib_domain_model_reference';
     const AUTHOR_TABLE = 'tx_bib_domain_model_author';
     const AUTHORSHIP_TABLE = 'tx_bib_domain_model_authorships';
@@ -44,7 +44,8 @@ class ReferenceReader
      */
     public $pid_list = [];
     /**
-     * Show hidden references
+     * Show hidden references.
+     *
      * @var bool
      */
     public $show_hidden;
@@ -71,13 +72,13 @@ class ReferenceReader
     /**
      * These are the publication relevant fields
      * that can be found in the reference table $this->referenceTable.
-     * including the important TYPO3 specific fields
+     * including the important TYPO3 specific fields.
      */
     public $refAllFields;
     /**
      * These are the publication relevant fields
      * that can be found in a php publication array.
-     * This includes TYPO3 variables (pid,uid, etc.)
+     * This includes TYPO3 variables (pid,uid, etc.).
      */
     public $pubAllFields;
     /**
@@ -105,7 +106,7 @@ class ReferenceReader
         18 => 'manuscript',
         19 => 'report',
         20 => 'misc',
-        21 => 'url'
+        21 => 'url',
     ];
     /**
      * @var array
@@ -115,7 +116,7 @@ class ReferenceReader
         1 => 'accepted',
         2 => 'submitted',
         3 => 'unpublished',
-        4 => 'in_preparation'
+        4 => 'in_preparation',
     ];
     protected $filter;
     /**
@@ -123,7 +124,7 @@ class ReferenceReader
      */
     protected $cObj;
     /**
-     * @var boolean|\mysqli_result|object
+     * @var bool|\mysqli_result|object
      */
     protected $databaseResource = null;
     /**
@@ -135,14 +136,16 @@ class ReferenceReader
      */
     protected $search_fields;
     /**
-     * The following tags are allowed in a reference string
+     * The following tags are allowed in a reference string.
+     *
      * @var array
      */
     protected $allowedTags = ['em', 'strong', 'sup', 'sub'];
     /**
      * These are the author relevant fields
      * that can be found in the reference table $this->getAuthorTable().
-     * TYPO3 special fields like pid or uid are not listed here
+     * TYPO3 special fields like pid or uid are not listed here.
+     *
      * @var array
      */
     protected $authorFields = ['surname', 'forename', 'url', 'fe_user_id'];
@@ -157,7 +160,8 @@ class ReferenceReader
     /**
      * These are the publication relevant fields
      * that can be found in the reference table $this->referenceTable.
-     * TYPO3 special fields like pid or uid are not listed here
+     * TYPO3 special fields like pid or uid are not listed here.
+     *
      * @var array
      */
     protected $referenceFields = [
@@ -209,12 +213,12 @@ class ReferenceReader
         'extern',
         'reviewed',
         'in_library',
-        'borrowed_by'
+        'borrowed_by',
     ];
     /**
      * These are the publication relevant fields
      * that can be found in a php publication array.
-     * TYPO3 special fields like pid or uid are not listed here
+     * TYPO3 special fields like pid or uid are not listed here.
      *
      * @var array
      */
@@ -225,13 +229,12 @@ class ReferenceReader
     protected $db;
 
     /**
-     * The constructor
+     * The constructor.
      *
      * @return \Ipf\Bib\Utility\ReferenceReader
      */
     public function __construct()
     {
-
         $this->t_ref_default['table'] = $this->getReferenceTable();
         $this->t_as_default['table'] = $this->getAuthorshipTable();
         $this->t_au_default['table'] = $this->getAuthorTable();
@@ -254,7 +257,7 @@ class ReferenceReader
             'tstamp',
             'sorting',
             'crdate',
-            'cruser_id'
+            'cruser_id',
         ];
         $this->refAllFields = array_merge($typo3_fields, $this->getReferenceFields());
 
@@ -374,22 +377,22 @@ class ReferenceReader
     }
 
     /**
-     * set the cObject
+     * set the cObject.
      *
      * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
-     * @return void
      */
     public function set_cObj(&$cObj)
     {
-        $this->cObj =& $cObj;
+        $this->cObj = &$cObj;
     }
 
     /**
-     * This changes the character set of a publication (array)
+     * This changes the character set of a publication (array).
      *
-     * @param array $publication
+     * @param array  $publication
      * @param string $originalCharset
      * @param string $targetCharset
+     *
      * @return array The character set adjusted publication
      */
     public function change_pub_charset($publication, $originalCharset, $targetCharset)
@@ -428,15 +431,15 @@ class ReferenceReader
                 }
             }
         }
+
         return $publication;
     }
 
     /**
      * This sets the filter which will be asked for most
-     * query compositions
+     * query compositions.
      *
      * @param array $filter
-     * @return void
      */
     public function set_filter($filter)
     {
@@ -445,10 +448,9 @@ class ReferenceReader
     }
 
     /**
-     * This appends a filter to the filter list
+     * This appends a filter to the filter list.
      *
      * @param array $filter
-     * @return void
      */
     public function append_filter($filter)
     {
@@ -464,10 +466,9 @@ class ReferenceReader
     }
 
     /**
-     * Fetches the uids of the auhors in the author filter
+     * Fetches the uids of the auhors in the author filter.
      *
      * @param array $filter
-     * @return void
      */
     protected function getFilteredAuthorsUids(&$filter)
     {
@@ -476,12 +477,12 @@ class ReferenceReader
             foreach ($filter['author']['authors'] as &$a) {
                 if (!is_numeric($a['uid'])) {
                     $pid = $this->pid_list;
-                    if (isset ($filter['pid'])) {
+                    if (isset($filter['pid'])) {
                         $pid = $filter['pid'];
                     }
                     $uids = $this->fetch_author_uids($a, $pid);
                     $uidSize = sizeof($uids);
-                    for ($i = 0; $i < $uidSize; $i++) {
+                    for ($i = 0; $i < $uidSize; ++$i) {
                         $uid = $uids[$i];
                         if ($i == 0) {
                             $a['uid'] = $uid['uid'];
@@ -506,8 +507,9 @@ class ReferenceReader
      * Fetches the uid(s) of the given auhor.
      * Checked is against the forename and the surname.
      *
-     * @param array $author
+     * @param array     $author
      * @param array|int $pids
+     *
      * @return array Not defined
      */
     public function fetch_author_uids($author, $pids)
@@ -552,11 +554,12 @@ class ReferenceReader
     }
 
     /**
-     * Returns the where clause part for a table
+     * Returns the where clause part for a table.
      *
      * @param string $table
      * @param string $alias
-     * @param bool $show_hidden
+     * @param bool   $show_hidden
+     *
      * @return string The where clause part
      */
     public function enable_fields($table, $alias = '', $show_hidden = false)
@@ -564,7 +567,7 @@ class ReferenceReader
         if (strlen($alias) == 0) {
             $alias = $table;
         }
-        if (isset ($this->cObj)) {
+        if (isset($this->cObj)) {
             $whereClause = $this->cObj->enableFields($table, $show_hidden ? 1 : 0);
         } else {
             $whereClause = ' AND ' . $table . '.deleted=0';
@@ -578,10 +581,9 @@ class ReferenceReader
 
     /**
      * This sets the filters which will be asked for most
-     * query compositions
+     * query compositions.
      *
      * @param array $filters
-     * @return void
      */
     public function set_filters($filters)
     {
@@ -593,10 +595,9 @@ class ReferenceReader
 
     /**
      * This sets the editor stop words to be used in order clause
-     * query compositions
+     * query compositions.
      *
      * @param array $editor_stop_words
-     * @return void
      */
     public function set_editorStopWords($editor_stop_words)
     {
@@ -605,10 +606,9 @@ class ReferenceReader
 
     /**
      * This sets the title stop words to be used in order clause
-     * query compositions
+     * query compositions.
      *
      * @param array $title_stop_words
-     * @return void
      */
     public function set_titleStopWords($title_stop_words)
     {
@@ -617,11 +617,12 @@ class ReferenceReader
 
     /**
      * Returns a search word object as it is required by the 'all' search
-     * filter argument
+     * filter argument.
      *
      * @param string $word
      * @param string $charset
-     * @param array $wrap
+     * @param array  $wrap
+     *
      * @return string|array The search object (string or array)
      */
     public function getSearchTerm($word, $charset, $wrap = ['%', '%'])
@@ -639,21 +640,22 @@ class ReferenceReader
         if (sizeof($words) == 1) {
             return $words[0];
         }
+
         return $words;
     }
 
     /**
      * Checks if a publication that has not the given uid
      * but the citeId exists in the database. The lookup is restricted
-     * to the current storage folders ($filter['pid'])
+     * to the current storage folders ($filter['pid']).
      *
      * @param string $citeId
-     * @param int $uid ;
+     * @param int    $uid    ;
+     *
      * @return bool TRUE on existence FALSE otherwise
      */
     public function citeIdExists($citeId, $uid = -1)
     {
-
         if (strlen($citeId) == 0) {
             return false;
         }
@@ -686,13 +688,12 @@ class ReferenceReader
 
     /**
      * Returns the number of publications  which match
-     * the filtering criteria
+     * the filtering criteria.
      *
      * @return int The number of publications
      */
     public function getNumberOfPublications()
     {
-
         $select = $this->getReferenceSelectClause($this->getReferenceTable() . '.uid', null);
         $select = preg_replace('/;\s*$/', '', $select);
         $query = 'SELECT count(pubs.uid) FROM (' . $select . ') pubs;';
@@ -708,11 +709,12 @@ class ReferenceReader
 
     /**
      * This function returns the SQL LIMIT clause configured
-     * by the filter
+     * by the filter.
      *
-     * @param array $fields
+     * @param array  $fields
      * @param string $order
      * @param string $group
+     *
      * @return string The LIMIT clause string
      */
     protected function getReferenceSelectClause($fields, $order = '', $group = '')
@@ -777,14 +779,14 @@ class ReferenceReader
 
     /**
      * This function returns the SQL WHERE clause configured
-     * by the filters
+     * by the filters.
      *
      * @param array $columns
+     *
      * @return string The WHERE clause string
      */
     protected function getReferenceWhereClause(&$columns)
     {
-
         $WCA = [];
         $columns = [];
         $runvar = [
@@ -819,20 +821,21 @@ class ReferenceReader
     }
 
     /**
-     * This function returns the SQL WHERE clause parts for one filter
+     * This function returns the SQL WHERE clause parts for one filter.
      *
      * @param array $filter
      * @param array $runvar
+     *
      * @return array The WHERE clause parts in an array
      */
     protected function getFilterWhereClauseParts($filter, &$runvar)
     {
-
         $whereClause = [];
 
         // Filter by UID
-        if (isset ($filter['FALSE'])) {
+        if (isset($filter['FALSE'])) {
             $whereClause[] = 'FALSE';
+
             return $whereClause;
         }
 
@@ -860,21 +863,21 @@ class ReferenceReader
             if (is_array($filter['year']['ranges']) && sizeof($filter['year']['ranges'])) {
                 if (sizeof($filter['year']['ranges'])) {
                     $yearRangeFilterSize = sizeof($filter['year']['ranges']);
-                    for ($i = 0; $i < $yearRangeFilterSize; $i++) {
-                        $both = (isset ($filter['year']['ranges'][$i]['from']) && isset ($filter['year']['ranges'][$i]['to'])) ? true : false;
+                    for ($i = 0; $i < $yearRangeFilterSize; ++$i) {
+                        $both = (isset($filter['year']['ranges'][$i]['from']) && isset($filter['year']['ranges'][$i]['to'])) ? true : false;
                         if (strlen($wca)) {
                             $wca .= ' OR ';
                         }
                         if ($both) {
                             $wca .= '(';
                         }
-                        if (isset ($filter['year']['ranges'][$i]['from'])) {
+                        if (isset($filter['year']['ranges'][$i]['from'])) {
                             $wca .= $this->getReferenceTable() . '.year >= ' . intval($filter['year']['ranges'][$i]['from']);
                         }
                         if ($both) {
                             $wca .= ' AND ';
                         }
-                        if (isset ($filter['year']['ranges'][$i]['to'])) {
+                        if (isset($filter['year']['ranges'][$i]['to'])) {
                             $wca .= $this->getReferenceTable() . '.year <= ' . intval($filter['year']['ranges'][$i]['to']);
                         }
                         if ($both) {
@@ -888,13 +891,13 @@ class ReferenceReader
 
         // Filter by authors
         if (is_array($filter['author']) && (sizeof($filter['author']) > 0)) {
-            $f =& $filter['author'];
+            $f = &$filter['author'];
             if ($f['rule'] == 1) {
                 // AND
                 if (is_array($f['sets']) && (sizeof($f['sets']) > 0)) {
                     $wc_set = [];
                     $authorFilterSize = sizeof($f['sets']);
-                    for ($i = 0; $authorFilterSize; $i++) {
+                    for ($i = 0; $authorFilterSize; ++$i) {
                         $set = $f['sets'][$i];
                         $uid_lst = [];
                         foreach ($set as $au) {
@@ -918,15 +921,13 @@ class ReferenceReader
                     } else {
                         $whereClause[] = 'FALSE';
                     }
-
                 } else {
                     $whereClause[] = 'FALSE';
                 }
-
             } else {
                 // OR
                 if (sizeof($f['authors']) > 0) {
-                    $authors =& $f['authors'];
+                    $authors = &$f['authors'];
                     $uid_lst = [];
                     foreach ($authors as $au) {
                         if (is_numeric($au['uid'])) {
@@ -1012,7 +1013,7 @@ class ReferenceReader
             if (is_array($filter['citeid']['ids']) && (sizeof($filter['citeid']['ids']) > 0)) {
                 $wca = $this->getReferenceTable() . '.citeid IN (';
                 $citeIdSize = sizeof($filter['citeid']['ids']);
-                for ($i = 0; $i < $citeIdSize; $i++) {
+                for ($i = 0; $i < $citeIdSize; ++$i) {
                     if ($i > 0) {
                         $wca .= ',';
                     }
@@ -1069,7 +1070,6 @@ class ReferenceReader
 
         // General keyword search
         if (is_array($filter['all']) && (sizeof($filter['all']) > 0)) {
-
             if (is_array($filter['all']['words']) && (sizeof($filter['all']['words']) > 0)) {
                 $wca = [];
                 $fields = explode(',', $this->search_fields);
@@ -1092,7 +1092,6 @@ class ReferenceReader
                         $whereClause[] = $app;
                     }
                 }
-
             }
         }
 
@@ -1101,10 +1100,11 @@ class ReferenceReader
 
     /**
      * This function returns the SQL WHERE clause part
-     * for the search for keywords (OR)
+     * for the search for keywords (OR).
      *
-     * @param array $words An array or words
+     * @param array $words  An array or words
      * @param array $fields An array of fields to search in
+     *
      * @return string The WHERE clause string
      */
     protected function getFilterSearchFieldsClause($words, $fields)
@@ -1156,7 +1156,7 @@ class ReferenceReader
         }
 
         if (sizeof($wca) > 0) {
-            $res = ' ( ' . implode("\n" . ' OR ', $wca) . ' )';
+            $res = ' ( ' . implode(PHP_EOL . ' OR ', $wca) . ' )';
         }
 
         return $res;
@@ -1164,11 +1164,12 @@ class ReferenceReader
 
     /**
      * Searches and returns the authorships of authors whose name
-     * looks like any of the words (array)
+     * looks like any of the words (array).
      *
      * @param array $words
      * @param array $pids
      * @param array $fields
+     *
      * @return array An array containing the authors
      */
     protected function searchAuthorAuthorships($words, $pids, $fields = ['forename', 'surname'])
@@ -1199,11 +1200,12 @@ class ReferenceReader
 
     /**
      * Searches and returns authors whose name looks like any of the
-     * words (array)
+     * words (array).
      *
      * @param array $words
      * @param array $pids
      * @param array $fields
+     *
      * @return array An array containing the authors
      */
     protected function searchByAuthor($words, $pids, $fields = ['forename', 'surname'])
@@ -1218,7 +1220,6 @@ class ReferenceReader
                 $word = $this->db->fullQuoteStr($word, $this->getAuthorTable());
                 foreach ($all_fields as $field) {
                     if (in_array($field, $fields)) {
-
                         if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
                             $wca[] = $field . ' LIKE ' . $word;
                         } else {
@@ -1256,7 +1257,7 @@ class ReferenceReader
 
     /**
      * This function returns the SQL ORDER clause configured
-     * by the filter
+     * by the filter.
      *
      * @return string The ORDER clause string
      */
@@ -1267,13 +1268,13 @@ class ReferenceReader
             if (is_array($filter['sorting'])) {
                 $orderClause = [];
                 $sortingFilterSize = sizeof($filter['sorting']);
-                for ($i = 0; $i < $sortingFilterSize; $i++) {
-                    if (isset ($filter['sorting'][$i]['field']) && isset ($filter['sorting'][$i]['dir'])) {
+                for ($i = 0; $i < $sortingFilterSize; ++$i) {
+                    if (isset($filter['sorting'][$i]['field']) && isset($filter['sorting'][$i]['dir'])) {
                         if (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE . '.editor') {
                             if (isset($this->editor_stop_words) && !empty($this->editor_stop_words)) {
                                 $editorStopWords = explode('#', $this->editor_stop_words);
                                 $oc = '';
-                                for ($k = 0; $k < count($editorStopWords); $k++) {
+                                for ($k = 0; $k < count($editorStopWords); ++$k) {
                                     $oc .= 'REPLACE(';
                                 }
                                 $oc .= trim($filter['sorting'][$i]['field']);
@@ -1290,7 +1291,7 @@ class ReferenceReader
                             if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
                                 $titleStopWords = explode('#', $this->title_stop_words);
                                 $oc = '';
-                                for ($k = 0; $k < count($titleStopWords); $k++) {
+                                for ($k = 0; $k < count($titleStopWords); ++$k) {
                                     $oc .= 'REPLACE(';
                                 }
                                 $oc .= trim($filter['sorting'][$i]['field']);
@@ -1330,7 +1331,7 @@ class ReferenceReader
                                 if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
                                     $titleStopWords = explode('#', $this->title_stop_words);
                                     $oc = '';
-                                    for ($k = 0; $k < count($titleStopWords); $k++) {
+                                    for ($k = 0; $k < count($titleStopWords); ++$k) {
                                         $oc .= 'REPLACE(';
                                     }
                                     $oc .= self::REFERENCE_TABLE . '.title';
@@ -1374,12 +1375,13 @@ class ReferenceReader
                 $orderClause = implode(',', $orderClause);
             }
         }
+
         return $orderClause;
     }
 
     /**
      * This function returns the SQL LIMIT clause configured
-     * by the filter
+     * by the filter.
      *
      * @return string The LIMIT clause string
      */
@@ -1388,32 +1390,34 @@ class ReferenceReader
         $limitClause = '';
         foreach ($this->filters as $filter) {
             if (is_array($filter['limit'])) {
-                if (isset ($filter['limit']['start']) && isset ($filter['limit']['num'])) {
+                if (isset($filter['limit']['start']) && isset($filter['limit']['num'])) {
                     $limitClause = intval($filter['limit']['start']) . ',' . intval($filter['limit']['num']);
                 }
             }
         }
+
         return $limitClause;
     }
 
     /**
      * This function returns the SQL SELECT clause
      * beginning with all the joins configured in $tables
-     * included
+     * included.
      *
      * @param array $fields
      * @param array $tables
+     *
      * @return string The SELECT clause beginning
      */
     protected function select_clause_start($fields, $tables)
     {
         $selectClause = '';
         if (is_array($fields) && is_array($tables)) {
-            $base =& $tables[0];
+            $base = &$tables[0];
             $joins = '';
             $aliases = [$base['table']];
             $tableSize = sizeof($tables);
-            for ($i = 1; $i < $tableSize; $i++) {
+            for ($i = 1; $i < $tableSize; ++$i) {
                 $previous = $tables[$i - 1];
                 $current = $tables[$i];
 
@@ -1431,16 +1435,18 @@ class ReferenceReader
             $selectClause .= ' FROM ' . $base['table'] . ' ' . $base['table'];
             $selectClause .= $joins;
         }
+
         return $selectClause;
     }
 
     /**
      * This function returns a SQL JOIN string for the requested
-     * table if it has not yet been joined with the requested alias
+     * table if it has not yet been joined with the requested alias.
      *
      * @param string $table
-     * @param array $join
-     * @param array $aliases
+     * @param array  $join
+     * @param array  $aliases
+     *
      * @return string The WHERE clause string
      */
     protected function getSqlJoinPart($table, $join, &$aliases)
@@ -1495,7 +1501,7 @@ class ReferenceReader
     }
 
     /**
-     * Returns the latest timestamp found in the database
+     * Returns the latest timestamp found in the database.
      *
      * @return int The publication data from the database
      */
@@ -1515,6 +1521,7 @@ class ReferenceReader
         if (is_array($row)) {
             return max($row);
         }
+
         return 0;
     }
 
@@ -1524,6 +1531,7 @@ class ReferenceReader
      * is the requested key.
      *
      * @param string $field
+     *
      * @return array A histogram
      */
     public function getHistogram($field = 'year')
@@ -1539,11 +1547,11 @@ class ReferenceReader
         while ($row = $this->db->sql_fetch_assoc($res)) {
             $val = $row[$field];
             if ($cVal == $val) {
-                $cNum++;
+                ++$cNum;
             } else {
                 $cVal = $val;
                 $histogram[$val] = 1;
-                $cNum =& $histogram[$val];
+                $cNum = &$histogram[$val];
             }
         }
         $this->db->sql_free_result($res);
@@ -1552,7 +1560,7 @@ class ReferenceReader
     }
 
     /**
-     * Fetches all author surnames
+     * Fetches all author surnames.
      *
      * @return array An array containing the authors
      */
@@ -1571,18 +1579,19 @@ class ReferenceReader
         while ($row = $this->db->sql_fetch_assoc($res)) {
             $names[] = $row['surname'];
         }
+
         return $names;
     }
 
     /**
-     * This retrieves the publication data from the database
+     * This retrieves the publication data from the database.
      *
      * @param int $uid
+     *
      * @return array The publication data from the database
      */
     public function getPublicationDetails($uid)
     {
-
         $whereClause = [];
 
         $whereClause[] = 'uid = ' . intval($uid);
@@ -1614,9 +1623,10 @@ class ReferenceReader
     }
 
     /**
-     * Fetches the authors of a publication
+     * Fetches the authors of a publication.
      *
      * @param int $pub_id
+     *
      * @return array An array containing author array
      */
     protected function getAuthorByPublication($pub_id)
@@ -1646,13 +1656,15 @@ class ReferenceReader
         while ($row = $this->db->sql_fetch_assoc($res)) {
             $authors[] = $row;
         }
+
         return $authors;
     }
 
     /**
-     * This returns the modification key for a publication
+     * This returns the modification key for a publication.
      *
      * @param array $publication
+     *
      * @return string The mod_key string
      */
     protected function getModificationKey($publication)
@@ -1673,8 +1685,6 @@ class ReferenceReader
     /**
      * This initializes the reference fetching.
      * Executes a select query.
-     *
-     * @return void
      */
     public function initializeReferenceFetching()
     {
@@ -1688,7 +1698,7 @@ class ReferenceReader
     }
 
     /**
-     * Returns the number of references that will be fetched
+     * Returns the number of references that will be fetched.
      *
      * @return int The number of references
      */
@@ -1698,7 +1708,7 @@ class ReferenceReader
     }
 
     /**
-     * @return boolean|\mysqli_result|object
+     * @return bool|\mysqli_result|object
      */
     public function getDatabaseResource()
     {
@@ -1706,7 +1716,7 @@ class ReferenceReader
     }
 
     /**
-     * @param boolean|\mysqli_result|object $databaseResource
+     * @param bool|\mysqli_result|object $databaseResource
      */
     public function setDatabaseResource($databaseResource)
     {
@@ -1714,7 +1724,7 @@ class ReferenceReader
     }
 
     /**
-     * Fetches a reference
+     * Fetches a reference.
      *
      * @return array A database row
      */
@@ -1725,13 +1735,12 @@ class ReferenceReader
             $row['authors'] = $this->getAuthorByPublication($row['uid']);
             $row['mod_key'] = $this->getModificationKey($row);
         }
+
         return $row;
     }
 
     /**
-     * Finish reference fetching (clean up)
-     *
-     * @return void
+     * Finish reference fetching (clean up).
      */
     public function finalizeReferenceFetching()
     {
@@ -1739,25 +1748,25 @@ class ReferenceReader
     }
 
     /**
-     * Fetches an authorship
+     * Fetches an authorship.
      *
      * @param array $authorship
+     *
      * @return null|array The matching authorship row or NULL
      */
     public function getAuthorships($authorship)
     {
         $ret = [];
         if (is_array($authorship)) {
-
-            if (isset ($authorship['pub_id']) || isset ($authorship['author_id']) || isset ($authorship['pid'])) {
+            if (isset($authorship['pub_id']) || isset($authorship['author_id']) || isset($authorship['pid'])) {
                 $whereClause = [];
-                if (isset ($authorship['pub_id'])) {
+                if (isset($authorship['pub_id'])) {
                     $whereClause[] = 'pub_id=' . intval($authorship['pub_id']);
                 }
-                if (isset ($authorship['author_id'])) {
+                if (isset($authorship['author_id'])) {
                     $whereClause[] = 'author_id=' . intval($authorship['author_id']);
                 }
-                if (isset ($authorship['pid'])) {
+                if (isset($authorship['pid'])) {
                     $whereClause[] = 'pid=' . intval($authorship['pid']);
                 }
                 $whereClause = implode(' AND ', $whereClause);
@@ -1774,16 +1783,17 @@ class ReferenceReader
                 }
             }
         }
+
         return $ret;
     }
 
     /**
      * @param string $citationId
+     *
      * @return int
      */
     public function getUidFromCitationId($citationId)
     {
-
         $citationId = filter_var($citationId, FILTER_SANITIZE_STRING);
 
         $whereClause = [];
@@ -1810,12 +1820,12 @@ class ReferenceReader
         while ($row = $this->db->sql_fetch_assoc($query)) {
             $result = $row['uid'];
         }
+
         return $result;
     }
 
     /**
      * @param array $pidList
-     * @return void
      */
     public function setPidList($pidList)
     {
@@ -1824,7 +1834,6 @@ class ReferenceReader
 
     /**
      * @param $showHidden
-     * @return void
      */
     public function setShowHidden($showHidden)
     {
@@ -1857,10 +1866,9 @@ class ReferenceReader
 
     /**
      * This sets the selected search fields to be used in search query
-     * query compositions
+     * query compositions.
      *
      * @param array $search_fields
-     * @return void
      */
     public function set_searchFields($search_fields)
     {
@@ -1916,9 +1924,7 @@ class ReferenceReader
     }
 
     /**
-     * Clears the page cache of all selected pages
-     *
-     * @return void
+     * Clears the page cache of all selected pages.
      */
     protected function clearPageCache()
     {
@@ -1932,7 +1938,7 @@ class ReferenceReader
                 // Find storage cache clear requests
                 foreach ($this->pid_list as $pid) {
                     $tSConfig = $dataHandler->getTCEMAIN_TSconfig($pid);
-                    if (is_array($tSConfig) && isset ($tSConfig['clearCacheCmd'])) {
+                    if (is_array($tSConfig) && isset($tSConfig['clearCacheCmd'])) {
                         $clear_cache[] = $tSConfig['clearCacheCmd'];
                     }
                 }
@@ -1950,7 +1956,7 @@ class ReferenceReader
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getClearCache()
     {
@@ -1958,11 +1964,10 @@ class ReferenceReader
     }
 
     /**
-     * @param boolean $clearCache
+     * @param bool $clearCache
      */
     public function setClearCache($clearCache)
     {
         $this->clearCache = $clearCache;
     }
-
 }

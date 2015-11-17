@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Navigation;
 
 /* * *************************************************************
@@ -29,44 +30,38 @@ namespace Ipf\Bib\Navigation;
 use Ipf\Bib\Utility\Utility;
 
 /**
- * Class AuthorNavigation
- * @package Ipf\Bib\Navigation
+ * Class AuthorNavigation.
  */
 class AuthorNavigation extends Navigation
 {
-
     /**
      * @var array
      */
     public $extConf;
 
     /**
-     * Initialize
+     * Initialize.
      *
      * @param \tx_bib_pi1
-     * @return void
      */
     public function initialize($pi1)
     {
         parent::initialize($pi1);
         if (is_array($pi1->conf['authorNav.'])) {
-            $this->conf =& $pi1->conf['authorNav.'];
+            $this->conf = &$pi1->conf['authorNav.'];
         }
 
         $this->extConf = [];
         if (is_array($pi1->extConf['author_navi'])) {
-            $this->extConf =& $pi1->extConf['author_navi'];
+            $this->extConf = &$pi1->extConf['author_navi'];
         }
 
         $this->prefix = 'AUTHOR_NAVI';
         $this->sel_link_title = $pi1->get_ll('authorNav_authorLinkTitle', '%a', true);
     }
 
-
     /**
-     * Hook in to pi1 at init stage
-     *
-     * @return void
+     * Hook in to pi1 at init stage.
      */
     public function hook_init()
     {
@@ -84,14 +79,10 @@ class AuthorNavigation extends Navigation
             $this->pi1->extConf['author_navi']['sel_author'] = $pvar;
             $this->pi1->extConf['link_vars']['author'] = $pvar;
         }
-
     }
 
-
     /**
-     * Hook in to pi1 at filter stage
-     *
-     * @return void
+     * Hook in to pi1 at filter stage.
      */
     public function hook_filter()
     {
@@ -194,14 +185,13 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * Initialize letters
+     * Initialize letters.
      *
      * @param array $names
-     * @return void
      */
     protected function initializeLetters($names)
     {
-        $extConf =& $this->extConf;
+        $extConf = &$this->extConf;
         $charset = $this->pi1->extConf['charset']['upper'];
 
         // Acquire letter
@@ -221,10 +211,11 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * Returns the first letters of all strings in a list
+     * Returns the first letters of all strings in a list.
      *
-     * @param array $names
+     * @param array  $names
      * @param string $charset
+     *
      * @return array
      */
     protected function first_letters($names, $charset)
@@ -256,12 +247,13 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * Returns the position of a string in a list
+     * Returns the position of a string in a list.
      *
      * @param string $string
-     * @param array $list
-     * @param mixed $null
+     * @param array  $list
+     * @param mixed  $null
      * @param string $charset
+     *
      * @return int|mixed
      */
     protected function string_index($string, $list, $null, $charset)
@@ -283,26 +275,31 @@ class AuthorNavigation extends Navigation
                 $index = -1;
             }
         }
+
         return $index;
     }
 
     /**
-     * Creates a text for a given index
+     * Creates a text for a given index.
      *
      * @param int $index
+     *
      * @return string
      */
     protected function sel_get_text($index)
     {
         $txt = strval($this->pi1->stat['authors']['sel_surnames'][$index]);
         $txt = htmlspecialchars($txt, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
+
         return $txt;
     }
 
     /**
-     * Creates a link for the selection
+     * Creates a link for the selection.
+     *
      * @param string $text
-     * @param int $ii
+     * @param int    $ii
+     *
      * @return string
      */
     protected function sel_get_link($text, $ii)
@@ -312,18 +309,19 @@ class AuthorNavigation extends Navigation
         $lnk = $this->pi1->get_link(
             $text,
             [
-                'author' => $arg
+                'author' => $arg,
             ],
             true,
             [
-                'title' => $title
+                'title' => $title,
             ]
         );
+
         return $lnk;
     }
 
     /**
-     * Returns content
+     * Returns content.
      *
      * @return string
      */
@@ -355,15 +353,15 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * Returns the author surname letter selection
+     * Returns the author surname letter selection.
      *
      * @return string
      */
     protected function getLetterSelection()
     {
-        $cObj =& $this->pi1->cObj;
-        $cfg =& $this->conf;
-        $extConf =& $this->extConf;
+        $cObj = &$this->pi1->cObj;
+        $cfg = &$this->conf;
+        $extConf = &$this->extConf;
         $charset = $this->pi1->extConf['charset']['upper'];
         $letterConfiguration = is_array($cfg['letters.']) ? $cfg['letters.'] : [];
 
@@ -374,7 +372,7 @@ class AuthorNavigation extends Navigation
         // Create list
         // The letter separator
         $letterSeparator = ', ';
-        if (isset ($letterConfiguration['separator'])) {
+        if (isset($letterConfiguration['separator'])) {
             $letterSeparator = $letterConfiguration['separator'];
         }
         $letterSeparator = $cObj->stdWrap($letterSeparator, $letterConfiguration['separator.']);
@@ -393,11 +391,11 @@ class AuthorNavigation extends Navigation
                     $txt,
                     [
                         'author_letter' => $letter,
-                        'author' => ''
+                        'author' => '',
                     ],
                     true,
                     [
-                        'title' => $title
+                        'title' => $title,
                     ]
                 );
             }
@@ -407,7 +405,7 @@ class AuthorNavigation extends Navigation
 
         // All link
         $sep = '-';
-        if (isset ($letterConfiguration['all_sep'])) {
+        if (isset($letterConfiguration['all_sep'])) {
             $sep = $letterConfiguration['all_sep'];
         }
         $sep = $cObj->stdWrap($sep, $letterConfiguration['all_sep.']);
@@ -427,7 +425,7 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * The author surname select
+     * The author surname select.
      *
      * @return string
      */
@@ -450,7 +448,7 @@ class AuthorNavigation extends Navigation
 
         // All and Separator
         $sep = ' - ';
-        if (isset ($configurationSelection['all_sep'])) {
+        if (isset($configurationSelection['all_sep'])) {
             $sep = $configurationSelection['all_sep'];
         }
         $sep = $this->pi1->cObj->stdWrap($sep, $configurationSelection['all_sep.']);
@@ -475,13 +473,12 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * The author surname select form field
+     * The author surname select form field.
      *
      * @return string
      */
     protected function getHtmlSelectFormField()
     {
-
         $content = '<form name="' . $this->pi1->prefix_pi1 . '-author_select_form" ';
         $content .= 'action="' . $this->pi1->get_link_url(['author' => ''], false) . '"';
         $content .= ' method="post"';
@@ -513,7 +510,7 @@ class AuthorNavigation extends Navigation
         }
         $attributes = [
             'name' => $this->pi1->prefix_pi1 . '[author]',
-            'onchange' => 'this.form.submit()'
+            'onchange' => 'this.form.submit()',
         ];
         if (strlen($this->conf['select_class']) > 0) {
             $attributes['class'] = $this->conf['select_class'];
@@ -547,5 +544,4 @@ class AuthorNavigation extends Navigation
 
         return $content;
     }
-
 }

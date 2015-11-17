@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipf\Bib\Utility\Exporter;
 
 /* * *************************************************************
@@ -29,12 +30,10 @@ namespace Ipf\Bib\Utility\Exporter;
 use TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException;
 
 /**
- * Class Exporter
- * @package Ipf\Bib\Utility\Exporter
+ * Class Exporter.
  */
 abstract class Exporter
 {
-
     /**
      * @var \tx_bib_pi1
      */
@@ -96,21 +95,19 @@ abstract class Exporter
     protected $extensionManagerConfiguration;
 
     /**
-     * Initializes the export. The argument must be the plugin class
+     * Initializes the export. The argument must be the plugin class.
      *
      * @param \tx_bib_pi1 $pi1
-     * @return void
      */
     public function initialize($pi1)
     {
-        $this->pi1 =& $pi1;
+        $this->pi1 = &$pi1;
         $this->setReferenceReader($pi1->referenceReader);
         $this->setupFilters();
         $this->setupExportFile();
     }
 
     /**
-     * @return void
      */
     protected function setupFilters()
     {
@@ -122,7 +119,6 @@ abstract class Exporter
     }
 
     /**
-     * @return void
      */
     protected function setupExportFile()
     {
@@ -138,9 +134,7 @@ abstract class Exporter
 
     /**
      * This writes the filtered database content
-     * to the export file
-     *
-     * @return void
+     * to the export file.
      */
     public function export()
     {
@@ -162,8 +156,8 @@ abstract class Exporter
             $this->writeToResource($data);
 
             // Write publications
-            while ($this->getReferenceReader()->getReference()) {
-                $infoArr['index']++;
+            while ($pub = $this->getReferenceReader()->getReference()) {
+                ++$infoArr['index'];
                 $data = $this->formatPublicationForExport($pub, $infoArr);
                 $this->writeToResource($data);
             }
@@ -184,9 +178,10 @@ abstract class Exporter
     /**
      * Return codes
      *  0 - Sink ready
-     * -1 - Sink is up to date
+     * -1 - Sink is up to date.
      *
      * @throws FileOperationErrorException
+     *
      * @return int
      */
     protected function isResourceReady()
@@ -217,7 +212,7 @@ abstract class Exporter
     }
 
     /**
-     * Returns absolute system file path
+     * Returns absolute system file path.
      *
      * @return String The absolute file path
      */
@@ -227,7 +222,7 @@ abstract class Exporter
     }
 
     /**
-     * Returns the composed path/file name
+     * Returns the composed path/file name.
      *
      * @return String The file address
      */
@@ -238,11 +233,12 @@ abstract class Exporter
 
     /**
      * Checks if the file exists and is newer than
-     * the latest change (tstamp) in the publication database
+     * the latest change (tstamp) in the publication database.
      *
      * @param String $file
+     *
      * @return bool TRUE if file exists and is newer than the
-     *         database content, FALSE otherwise.
+     *              database content, FALSE otherwise.
      */
     protected function isFileMoreUpToDate($file)
     {
@@ -254,6 +250,7 @@ abstract class Exporter
                 return true;
             }
         }
+
         return false;
     }
 
@@ -290,16 +287,16 @@ abstract class Exporter
     }
 
     /**
-     * Returns the file intro
+     * Returns the file intro.
      *
      * @param $infoArr
+     *
      * @return string The file header string
      */
     abstract protected function fileIntro($infoArr = []);
 
     /**
      * @param $data
-     * @return void
      */
     protected function writeToResource($data)
     {
@@ -311,24 +308,25 @@ abstract class Exporter
     }
 
     /**
-     * Formats one publication for the export
+     * Formats one publication for the export.
      *
      * @param array $publication
      * @param array $infoArr
+     *
      * @return string The export string
      */
     abstract protected function formatPublicationForExport($publication, $infoArr = []);
 
     /**
-     * Returns the file outtro
+     * Returns the file outtro.
      *
      * @param array $infoArr
+     *
      * @return string The file header string
      */
     abstract protected function fileOutro($infoArr = []);
 
     /**
-     * @return void
      */
     protected function cleanUpResource()
     {
@@ -373,7 +371,7 @@ abstract class Exporter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getIsNewFile()
     {
@@ -381,7 +379,7 @@ abstract class Exporter
     }
 
     /**
-     * @param boolean $isNewFile
+     * @param bool $isNewFile
      */
     public function setIsNewFile($isNewFile)
     {
@@ -389,7 +387,7 @@ abstract class Exporter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getDynamic()
     {
@@ -397,7 +395,7 @@ abstract class Exporter
     }
 
     /**
-     * @param boolean $dynamic
+     * @param bool $dynamic
      */
     public function setDynamic($dynamic)
     {
@@ -421,9 +419,10 @@ abstract class Exporter
     }
 
     /**
-     * Returns a general information text for the exported dataset
+     * Returns a general information text for the exported dataset.
      *
      * @param array
+     *
      * @return string A filter information string
      */
     protected function getGeneralInformationText($infoArr = [])
@@ -433,20 +432,19 @@ abstract class Exporter
         $content = 'This file was created by the TYPO3 extension' . PHP_EOL;
         $content .= $this->pi1->extKey;
         if (is_array($this->extensionManagerConfiguration)) {
-            $content .= ' version ' . $this->extensionManagerConfiguration['version'] . "\n";
+            $content .= ' version ' . $this->extensionManagerConfiguration['version'] . PHP_EOL;
         }
         $content .= PHP_EOL;
-        $content .= '--- Timezone: ' . date('T') . "\n";
-        $content .= 'Creation date: ' . date('Y-m-d') . "\n";
-        $content .= 'Creation time: ' . date('H-i-s') . "\n";
+        $content .= '--- Timezone: ' . date('T') . PHP_EOL;
+        $content .= 'Creation date: ' . date('Y-m-d') . PHP_EOL;
+        $content .= 'Creation time: ' . date('H-i-s') . PHP_EOL;
 
         if ($num >= 0) {
-            $content .= '--- Number of references' . "\n";
-            $content .= '' . $num . "\n";
-            $content .= '' . "\n";
+            $content .= '--- Number of references' . PHP_EOL;
+            $content .= '' . $num . PHP_EOL;
+            $content .= '' . PHP_EOL;
         }
 
         return $content;
     }
-
 }
