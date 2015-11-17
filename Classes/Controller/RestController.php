@@ -26,6 +26,7 @@ namespace Ipf\Bib\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Exception\DataException;
 
 /**
  * REST controller for the extension 'bib'.
@@ -50,12 +51,12 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         if ($this->request->hasArgument('pageUid')) {
             $pageUid = intval($this->request->getArgument('pageUid'));
         } else {
-            throw new \Ipf\Bib\Exception\DataException('No parameter pageUid provided in request', 1405590895);
+            throw new DataException('No parameter pageUid provided in request', 1405590895);
         }
         $references = $this->referenceRepository->findBibliographyByStoragePid($pageUid);
-        if (version_compare(TYPO3_version, '6.2.0', '>=')) {
-            $this->view->setVariablesToRender(['references']);
-        }
+
+        $this->view->setVariablesToRender(['references']);
+
         $this->view->assign('references', $references);
     }
 }

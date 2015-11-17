@@ -594,7 +594,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $this->extConf['dynamic'] = true;
         $this->extConf['search_navi'] = [];
-        $this->extConf['search_navi']['obj'] = &$this->getAndInitializeNavigationInstance('SearchNavigation');
+        $this->extConf['search_navi']['obj'] = $this->getAndInitializeNavigationInstance('SearchNavigation');
         $this->extConf['search_navi']['obj']->hook_init();
     }
 
@@ -626,7 +626,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $this->extConf['dynamic'] = true;
         $this->extConf['author_navi'] = [];
-        $this->extConf['author_navi']['obj'] = &$this->getAndInitializeNavigationInstance('AuthorNavigation');
+        $this->extConf['author_navi']['obj'] = $this->getAndInitializeNavigationInstance('AuthorNavigation');
         $this->extConf['author_navi']['obj']->hook_init();
     }
 
@@ -635,7 +635,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function initializePreferenceNavigation()
     {
         $this->extConf['pref_navi'] = [];
-        $this->extConf['pref_navi']['obj'] = &$this->getAndInitializeNavigationInstance('PreferenceNavigation');
+        $this->extConf['pref_navi']['obj'] = $this->getAndInitializeNavigationInstance('PreferenceNavigation');
         $this->extConf['pref_navi']['obj']->hook_init();
     }
 
@@ -842,7 +842,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function initializeListViewIcons()
     {
         $list = [
-            'default' => 'typo3/gfx/fileicons/default.gif',
+            'default' => '/typo3/sysext/frontend/Resources/Public/Icons/FileIcons/default.gif',
         ];
         $more = $this->conf['file_icons.'];
         if (is_array($more)) {
