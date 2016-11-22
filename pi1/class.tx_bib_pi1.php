@@ -2578,6 +2578,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 continue;
             }
 
+            // Check restrictions
+            if ($this->checkFieldRestriction('ref', $referenceField, $val)) {
+                $publicationData[$referenceField] = '';
+                continue;
+            }
+
             // Treat some fields
             switch ($referenceField) {
                 case 'file_url':
