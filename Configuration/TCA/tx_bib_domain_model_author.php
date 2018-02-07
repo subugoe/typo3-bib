@@ -1,15 +1,23 @@
+
 <?php
-
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
-
-$TCA['tx_bib_domain_model_author'] = [
-    'ctrl' => $TCA['tx_bib_domain_model_author']['ctrl'],
+defined('TYPO3_MODE') or die();
+return [
+    'ctrl' => [
+            'title' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author',
+            'label' => 'surname',
+            'label_alt' => 'forename',
+            'label_alt_force' => 1,
+            'tstamp' => 'tstamp',
+            'crdate' => 'crdate',
+            'cruser_id' => 'cruser_id',
+            'default_sortby' => 'ORDER BY surname',
+            'delete' => 'deleted',
+            'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib').'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
+        ],
     'interface' => [
-        'showRecordFieldList' => $TCA['tx_bib_domain_model_author']['feInterface']['fe_admin_fieldList'],
+        'showRecordFieldList' => 'surname,forename,url',
     ],
-    'feInterface' => $TCA['tx_bib_domain_model_author']['feInterface'],
+    'fe_admin_fieldList' => 'surname,forename,url',
     'columns' => [
         'surname' => [
             'exclude' => 1,

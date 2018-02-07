@@ -1,16 +1,29 @@
+
 <?php
-
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
-
-$TCA['tx_bib_domain_model_reference'] = [
-    'ctrl' => $TCA['tx_bib_domain_model_reference']['ctrl'],
+defined('TYPO3_MODE') or die();
+return [
+    'ctrl' => [
+            'title' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference',
+            'label' => 'citeid',
+            'label_alt' => 'title,bibtype',
+            'label_alt_force' => 1,
+            'tstamp' => 'tstamp',
+            'crdate' => 'crdate',
+            'cruser_id' => 'cruser_id',
+            'sortby' => 'sorting',
+            'default_sortby' => 'ORDER BY year DESC',
+            'delete' => 'deleted',
+            'enablecolumns' => [
+                'disabled' => 'hidden',
+            ],
+            'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib').'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
+        ],
     'interface' => [
-        'showRecordFieldList' => $TCA['tx_bib_domain_model_reference']['feInterface']['fe_admin_fieldList'],
+        'showRecordFieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,web_url_date,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',
     ],
-    'feInterface' => $TCA['tx_bib_domain_model_reference']['feInterface'],
-    'columns' => [
+    'feInterface' => [
+        'fe_admin_fieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,web_url_date,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',
+    ],    'columns' => [
         'hidden' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',

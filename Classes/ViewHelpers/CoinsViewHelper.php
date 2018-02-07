@@ -27,7 +27,8 @@
 namespace Ipf\Bib\ViewHelpers;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * @see http://ocoins.info/cobgbook.html
@@ -54,12 +55,14 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
      */
     protected $tagName = 'span';
 
+    public function initializeArguments() {
+        $this->registerArgument('data', 'array', 'The email address to resolve the gravatar for', TRUE);
+    }
+
     /**
-     * @param array $data
-     *
      * @return string
      */
-    public function render($data)
+    public function render()
     {
         $coinsData = [];
 
@@ -67,12 +70,12 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
         $coinsData[] = 'rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook';
 
         foreach ($this->fieldAssignment as $coinsTitle => $bibTitle) {
-            if ($data[$bibTitle]) {
-                $coinsData[] = 'rft.' . $coinsTitle . '=' . $this->formatEntity($data[$bibTitle]);
+            if ($this->arguments['data'][$bibTitle]) {
+                $coinsData[] = 'rft.' . $coinsTitle . '=' . $this->formatEntity($this->arguments['data'][$bibTitle]);
             }
         }
-        if ($data['authors']) {
-            $author = $this->formatAuthor($data['authors']);
+        if ($this->arguments['data']['authors']) {
+            $author = $this->formatAuthor($this->arguments['data']['authors']);
             $coinsData[] = 'rft.aulast=' . $this->formatEntity($author[0]);
             $coinsData[] = 'rft.aufirst=' . $this->formatEntity($author[1]);
         }

@@ -2,3 +2,4 @@
 .sass-cache
 /vendor/
 Classes/Contrib
+.php_cs.cache

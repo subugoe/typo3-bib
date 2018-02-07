@@ -236,14 +236,14 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         try {
             $this->initializeHtmlTemplate();
         } catch (\Exception $e) {
-            return $this->finalize($e->getMessage());
+            return $this->finalize($e->getTraceAsString());
         }
 
         // Switch to requested view mode
         try {
             return $this->finalize($this->switchToRequestedViewMode());
         } catch (\Exception $e) {
-            return $this->finalize($e->getMessage());
+            return $this->finalize($e->getMessage() . '<br>'.$e->getTraceAsString());
         }
     }
 
@@ -258,7 +258,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $this->extConf['LL_ext'] = [];
         }
         if (!in_array($file, $this->extConf['LL_ext'])) {
-            $tmpLang = GeneralUtility::readLLfile($file, $this->LLkey);
+            $languageFactory = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Localization\LocalizationFactory::class);
+            $tmpLang = $languageFactory->getParsedData($file, $this->LLkey);
+
             foreach ($this->LOCAL_LANG as $lang => $list) {
                 foreach ($list as $key => $word) {
                     $tmpLang[$lang][$key] = $word;
@@ -267,7 +269,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $this->LOCAL_LANG = $tmpLang;
 
             if ($this->altLLkey) {
-                $tmpLang = GeneralUtility::readLLfile($file, $this->altLLkey);
+                $tmpLang = $languageFactory->getParsedData($file, $this->LLkey);
                 foreach ($this->LOCAL_LANG as $lang => $list) {
                     foreach ($list as $key => $word) {
                         $tmpLang[$lang][$key] = $word;
@@ -286,7 +288,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function includeCss()
     {
         /** @var \TYPO3\CMS\Core\Page\PageRenderer $pageRenderer */
-        $pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
+        $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
         $pageRenderer->addCssFile(ExtensionManagementUtility::siteRelPath('bib') . '/Resources/Public/Css/bib.css');
 
         return $this;
@@ -1378,7 +1380,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         if (is_numeric($this->piVars['show_uid'])) {
             $this->extConf['view_mode'] = View::VIEW_SINGLE;
-            $this->extConf['single_view']['uid'] = intval($this->piVars['show_uid']);
+            $this->extConf['single_view']['uid'] = (int) $this->piVars['show_uid'];
             unset($this->piVars['editor_mode']);
             unset($this->piVars['dialog_mode']);
         }
@@ -1918,7 +1920,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function getNewManipulator()
     {
-        $label = $this->get_ll('manipulators_new', 'New', true);
+        $label = $this->pi_getLL('manipulators_new', 'New');
         $res = $this->get_link(
             '',
             [
@@ -1934,20 +1936,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         );
 
         return $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['new.']);
-    }
-
-    /**
-     * Get the string in the local language to a given key .
-     *
-     * @param string $key
-     * @param string $alt
-     * @param bool   $hsc
-     *
-     * @return string The string in the local language
-     */
-    public function get_ll($key, $alt = '', $hsc = false)
-    {
-        return $this->pi_getLL($key, $alt, $hsc);
     }
 
     /**
@@ -2038,15 +2026,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $exports = [];
 
             // Export label
-            $label = $this->get_ll($cfg['label']);
+            $label = $this->pi_getLL($cfg['label']);
             $label = $this->cObj->stdWrap($label, $cfg['label.']);
 
             $exportModes = ['bibtex', 'xml'];
 
             foreach ($exportModes as $mode) {
                 if (in_array($mode, $extConf['modes'])) {
-                    $title = $this->get_ll('export_' . $mode . 'LinkTitle', $mode, true);
-                    $txt = $this->get_ll('export_' . $mode);
+                    $title = $this->pi_getLL('export_' . $mode . 'LinkTitle', $mode, true);
+                    $txt = $this->pi_getLL('export_' . $mode);
                     $link = $this->get_link(
                         $txt,
                         ['export' => $mode],
@@ -2102,15 +2090,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $imports = [];
 
             // Import bibtex
-            $title = $this->get_ll('import_bibtexLinkTitle', 'bibtex', true);
-            $link = $this->get_link($this->get_ll('import_bibtex'),
+            $title = $this->pi_getLL('import_bibtexLinkTitle', 'bibtex', true);
+            $link = $this->get_link($this->pi_getLL('import_bibtex'),
                 ['import' => \Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX],
                 false, ['title' => $title]);
             $imports[] = $this->cObj->stdWrap($link, $cfg['bibtex.']);
 
             // Import xml
-            $title = $this->get_ll('import_xmlLinkTitle', 'xml', true);
-            $link = $this->get_link($this->get_ll('import_xml'),
+            $title = $this->pi_getLL('import_xmlLinkTitle', 'xml', true);
+            $link = $this->get_link($this->pi_getLL('import_xml'),
                 ['import' => \Ipf\Bib\Utility\Importer\Importer::IMP_XML],
                 false, ['title' => $title]);
             $imports[] = $this->cObj->stdWrap($link, $cfg['xml.']);
@@ -2122,7 +2110,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
             // Import label
             $translator['###LABEL###'] = $this->cObj->stdWrap(
-                $this->get_ll($cfg['label']), $cfg['label.']);
+                $this->pi_getLL($cfg['label']), $cfg['label.']);
             $translator['###IMPORTS###'] = implode($sep, $imports);
 
             $str = $this->cObj->substituteMarkerArrayCached($str, $translator, []);
@@ -2219,7 +2207,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         foreach ($labels as $label) {
             $upperCaseLabel = strtoupper($label);
-            $labelValue = $this->get_ll('label_' . $label);
+            $labelValue = $this->pi_getLL('label_' . $label);
             $labelValue = $this->cObj->stdWrap($labelValue, $this->conf['label.'][$label . '.']);
             $this->labelTranslator['###LABEL_' . $upperCaseLabel . '###'] = $labelValue;
         }
@@ -2374,7 +2362,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             // Bibtype separator label
             if ($this->extConf['split_bibtypes'] && ($pub['bibtype'] != $prevBibType)) {
                 $bibStr = $this->cObj->stdWrap(
-                    $this->get_ll('bibtype_plural_' . $pub['bibtype'], $pub['bibtype'], true),
+                    $this->pi_getLL('bibtype_plural_' . $pub['bibtype'], $pub['bibtype'], true),
                     $this->conf['label.']['bibtype.']
                 );
                 $items[] = $this->cObj->substituteMarker($bibliographyTypeBlockTemplate, '###BIBTYPE###', $bibStr);
@@ -2469,7 +2457,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         if (strlen($authorsUrlIconFile) > 0) {
             $authorsUrlIconFile = $GLOBALS['TSFE']->tmpl->getFileName($authorsUrlIconFile);
             $authorsUrlIconFile = htmlspecialchars($authorsUrlIconFile, ENT_QUOTES, $charset);
-            $alt = $this->get_ll('img_alt_person', 'Author image', true);
+            $alt = $this->pi_getLL('img_alt_person', 'Author image', true);
             $imageTag = '<img';
             $imageTag .= ' src="' . $authorsUrlIconFile . '"';
             $imageTag .= ' alt="' . $alt . '"';
@@ -2516,7 +2504,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         // Bibtype
         $publicationData['bibtype_short'] = $this->referenceReader->allBibTypes[$publicationData['bibtype']];
-        $publicationData['bibtype'] = $this->get_ll(
+        $publicationData['bibtype'] = $this->pi_getLL(
             $this->referenceReader->getReferenceTable() . '_bibtype_I_' . $publicationData['bibtype'],
             'Unknown bibtype: ' . $publicationData['bibtype'],
             true
@@ -2546,7 +2534,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 $publicationData['state'] = '';
                 break;
             default :
-                $publicationData['state'] = $this->get_ll(
+                $publicationData['state'] = $this->pi_getLL(
                     $this->referenceReader->getReferenceTable() . '_state_I_' . $publicationData['state'],
                     'Unknown state: ' . $publicationData['state'],
                     true
@@ -2554,8 +2542,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
 
         // Bool strings
-        $b_yes = $this->get_ll('label_yes', 'Yes', true);
-        $b_no = $this->get_ll('label_no', 'No', true);
+        $b_yes = $this->pi_getLL('label_yes', 'Yes', true);
+        $b_no = $this->pi_getLL('label_no', 'No', true);
 
         // Bool fields
         $publicationData['reviewed'] = ($publication['reviewed'] > 0) ? $b_yes : $b_no;
@@ -2647,7 +2635,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 $lst[] = $app;
             }
 
-            $and = ' ' . $this->get_ll('label_and', 'and', true) . ' ';
+            $and = ' ' . $this->pi_getLL('label_and', 'and', true) . ' ';
             $publicationData['editor'] = Utility::implode_and_last(
                 $lst,
                 ', ',
@@ -2675,7 +2663,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $type = 'file_nexist';
             if ($w_cfg[$type]) {
                 if ($publicationData['_file_nexist']) {
-                    $msg = $this->get_ll('editor_error_file_nexist');
+                    $msg = $this->pi_getLL('editor_error_file_nexist');
                     $msg = str_replace('%f', $fileUrl, $msg);
                     $d_err[] = ['type' => $type, 'msg' => $msg];
                 }
@@ -2779,7 +2767,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         if (isset($separator) && !empty($separator)) {
             $name_separator = $separator;
         } else {
-            $name_separator = ' ' . $this->get_ll('label_and', 'and', true) . ' ';
+            $name_separator = ' ' . $this->pi_getLL('label_and', 'and', true) . ' ';
         }
         $max_authors = abs(intval($this->extConf['max_authors']));
         $lastAuthor = sizeof($authors) - 1;
@@ -2853,7 +2841,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 $wrap = $this->conf['authors.']['url_icon.'];
                 if (is_array($wrap)) {
                     if (is_array($wrap['typolink.'])) {
-                        $title = $this->get_ll('link_author_info', 'Author info', true);
+                        $title = $this->pi_getLL('link_author_info', 'Author info', true);
                         $wrap['typolink.']['title'] = $title;
                     }
                     $authorIcon = $this->cObj->stdWrap($icon_img, $wrap);
@@ -2892,7 +2880,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             // Append 'et al.'
             if ($cutAuthors && ($i_a == $lastAuthor)) {
                 // Append et al.
-                $etAl = $this->get_ll('label_et_al', 'et al.', true);
+                $etAl = $this->pi_getLL('label_et_al', 'et al.', true);
                 $etAl = (strlen($etAl) > 0) ? ' ' . $etAl : '';
 
                 if (strlen($etAl) > 0) {
@@ -3114,7 +3102,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function getEditManipulator($publication)
     {
-        $label = $this->get_ll('manipulators_edit', 'Edit', true);
+        $label = $this->pi_getLL('manipulators_edit', 'Edit', true);
         $res = $this->get_link(
             '',
             [
@@ -3145,10 +3133,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function getHideManipulator($publication)
     {
         if ($publication['hidden'] == 0) {
-            $label = $this->get_ll('manipulators_hide', 'Hide', true);
+            $label = $this->pi_getLL('manipulators_hide', 'Hide', true);
             $class = 'hide';
         } else {
-            $label = $this->get_ll('manipulators_reveal', 'Reveal', true);
+            $label = $this->pi_getLL('manipulators_reveal', 'Reveal', true);
             $class = 'reveal';
         }
 
@@ -3310,7 +3298,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
         $content .= $flashMessageQueue->renderFlashMessages();
         $content .= '<p>';
-        $content .= $this->get_link($this->get_ll('link_back_to_list'));
+        $content .= $this->get_link($this->pi_getLL('link_back_to_list'));
         $content .= '</p>';
 
         return $content;
@@ -3328,7 +3316,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
 
         $mode = $this->extConf['export_navi']['do'];
-        $content = '<h2>' . $this->get_ll('export_title') . '</h2>';
+        $content = '<h2>' . $this->pi_getLL('export_title') . '</h2>';
 
         $label = '';
         switch ($mode) {
@@ -3352,7 +3340,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         /** @var \Ipf\Bib\Utility\Exporter\Exporter $exporter */
         $exporter = GeneralUtility::makeInstance($exporterClass);
-        $label = $this->get_ll($label, $label, true);
+        $label = $this->pi_getLL($label, $label, true);
 
         if ($exporter instanceof \Ipf\Bib\Utility\Exporter\Exporter) {
             try {
@@ -3422,7 +3410,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $content = '<ul><li><div>';
         $content .= $link;
         if ($exporter->getIsNewFile()) {
-            $content .= ' (' . $this->get_ll('export_file_new') . ')';
+            $content .= ' (' . $this->pi_getLL('export_file_new') . ')';
         }
         $content .= '</div></li>';
         $content .= '</ul>';
@@ -3441,7 +3429,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         /** @var FlashMessageQueue $flashMessageQueue */
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
 
-        $content = '<h2>' . $this->get_ll('import_title') . '</h2>';
+        $content = '<h2>' . $this->pi_getLL('import_title') . '</h2>';
         $mode = $this->piVars['import'];
 
         if (($mode == \Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX) || ($mode == \Ipf\Bib\Utility\Importer\Importer::IMP_XML)) {

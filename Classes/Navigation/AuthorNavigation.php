@@ -57,7 +57,7 @@ class AuthorNavigation extends Navigation
         }
 
         $this->prefix = 'AUTHOR_NAVI';
-        $this->sel_link_title = $pi1->get_ll('authorNav_authorLinkTitle', '%a', true);
+        $this->sel_link_title = $pi1->pi_getLL('authorNav_authorLinkTitle', '%a');
     }
 
     /**
@@ -339,7 +339,7 @@ class AuthorNavigation extends Navigation
 
         // The label
         $navigationLabel = $this->pi1->cObj->stdWrap(
-            $this->pi1->get_ll('authorNav_label'),
+            $this->pi1->pi_getLL('authorNav_label'),
             $this->conf['label.']
         );
 
@@ -377,7 +377,7 @@ class AuthorNavigation extends Navigation
         }
         $letterSeparator = $cObj->stdWrap($letterSeparator, $letterConfiguration['separator.']);
 
-        $titleTemplate = $this->pi1->get_ll('authorNav_LetterLinkTitle', '%l', true);
+        $titleTemplate = $this->pi1->pi_getLL('authorNav_LetterLinkTitle', '%l', true);
 
         // Iterate through letters
         $letterSelection = [];
@@ -410,7 +410,7 @@ class AuthorNavigation extends Navigation
         }
         $sep = $cObj->stdWrap($sep, $letterConfiguration['all_sep.']);
 
-        $txt = $this->pi1->get_ll('authorNav_all_letters', 'All', true);
+        $txt = $this->pi1->pi_getLL('authorNav_all_letters', 'All', true);
         if (strlen($extConf['sel_letter']) == 0) {
             $txt = $cObj->stdWrap($txt, $letterConfiguration['current.']);
         } else {
@@ -453,7 +453,7 @@ class AuthorNavigation extends Navigation
         }
         $sep = $this->pi1->cObj->stdWrap($sep, $configurationSelection['all_sep.']);
 
-        $txt = $this->pi1->get_ll('authorNav_all_authors', 'All', true);
+        $txt = $this->pi1->pi_getLL('authorNav_all_authors', 'All', true);
         if ($cur < 0) {
             $txt = $this->pi1->cObj->stdWrap($txt, $configurationSelection['current.']);
         } else {
@@ -495,7 +495,7 @@ class AuthorNavigation extends Navigation
         }
 
         // The 'All with %l' select option
-        $all = $this->pi1->get_ll('authorNav_select_all', 'All authors', true);
+        $all = $this->pi1->pi_getLL('authorNav_select_all', 'All authors', true);
         $rep = '?';
         if (strlen($this->extConf['sel_letter']) > 0) {
             $rep = htmlspecialchars($this->extConf['sel_letter'], ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
@@ -527,7 +527,7 @@ class AuthorNavigation extends Navigation
         }
         $button = Utility::html_submit_input(
             $this->pi1->prefix_pi1 . '[action][select_author]',
-            $this->pi1->get_ll('button_go'), $attributes
+            $this->pi1->pi_getLL('button_go'), $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
         $content .= $button;

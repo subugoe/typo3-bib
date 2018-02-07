@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ipf\Bib\View;
 
 /* * *************************************************************
@@ -36,6 +38,7 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class EditorView.
@@ -178,21 +181,20 @@ class EditorView extends View
      */
     protected function get_ll($key, $alt = '', $hsc = false)
     {
-        return $this->pi1->get_ll($key, $alt, $hsc);
+        return $this->pi1->pi_getLL($key, $alt, $hsc);
     }
 
     /**
      * @param string $key
      * @param string $alt
-     * @param bool   $hsc
      *
      * @return string
      */
-    protected function get_db_ll($key, $alt = '', $hsc = false)
+    protected function get_db_ll($key, $alt = '')
     {
         $key = str_replace('LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:', '', $key);
 
-        return $this->pi1->get_ll($key, $alt, $hsc);
+        return $this->pi1->pi_getLL($key, $alt);
     }
 
     /**
@@ -370,11 +372,13 @@ class EditorView extends View
             $publicationData['citeid'] = $this->idGenerator->generateId($publicationData);
         }
 
+        $authorCounter = $publicationData['authors'] ?? 0;
+
         // Determine the number of authors
         $this->pi1->piVars['editor']['numAuthors'] = max(
             $this->pi1->piVars['editor']['numAuthors'],
             $this->conf['numAuthors'],
-            sizeof($publicationData['authors']),
+            $authorCounter,
             1
         );
 
@@ -891,8 +895,8 @@ class EditorView extends View
      */
     protected function getDefaultEditWidget($field, $value, $mode)
     {
-        $cfg = &$GLOBALS['TCA'][$this->referenceReader->getReferenceTable()]['columns'][$field]['config'];
-        $pi1 = &$this->pi1;
+        $cfg = $GLOBALS['TCA'][$this->referenceReader->getReferenceTable()]['columns'][$field]['config'];
+        $pi1 = $this->pi1;
         $cclass = $pi1->prefixShort . '-editor_input';
         $Iclass = ' class="' . $cclass . '"';
         $content = '';
@@ -1079,8 +1083,8 @@ class EditorView extends View
                 }
                 $row_con = [];
 
-                $foreName = Utility::filter_pub_html($authors[$i]['forename'], true, $pi1->extConf['charset']['upper']);
-                $surName = Utility::filter_pub_Html($authors[$i]['surname'], true, $pi1->extConf['charset']['upper']);
+                $foreName = Utility::filter_pub_html($authors[$i]['forename'] ?? '', true, $pi1->extConf['charset']['upper']);
+                $surName = Utility::filter_pub_Html($authors[$i]['surname'] ?? '', true, $pi1->extConf['charset']['upper']);
 
                 $row_con[0] = strval($i + 1);
                 if ($mode == self::WIDGET_SHOW) {
@@ -1656,7 +1660,7 @@ class EditorView extends View
      * @param array $errors
      * @param int   $level
      *
-     * @return array An array with error messages
+     * @return string
      */
     protected function validationErrorMessage($errors, $level = 0)
     {

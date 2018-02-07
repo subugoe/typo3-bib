@@ -967,9 +967,9 @@ class ReferenceReader
         // Filter by origin
         if (is_array($filter['origin']) && (sizeof($filter['origin']) > 0)) {
             if (is_numeric($filter['origin']['origin'])) {
-                $wca = $this->getReferenceTable() . '.extern = \'0\'';
+                $wca = $this->getReferenceTable() . '.extern = 0';
                 if (intval($filter['origin']['origin']) != 0) {
-                    $wca = $this->getReferenceTable() . '.extern != \'0\'';
+                    $wca = $this->getReferenceTable() . '.extern != 0';
                 }
                 $whereClause[] = $wca;
             }
@@ -978,9 +978,9 @@ class ReferenceReader
         // Filter by reviewed
         if (is_array($filter['reviewed']) && (sizeof($filter['reviewed']) > 0)) {
             if (is_numeric($filter['reviewed']['value'])) {
-                $wca = $this->getReferenceTable() . '.reviewed = \'0\'';
+                $wca = $this->getReferenceTable() . '.reviewed = 0';
                 if (intval($filter['reviewed']['value']) != 0) {
-                    $wca = $this->getReferenceTable() . '.reviewed != \'0\'';
+                    $wca = $this->getReferenceTable() . '.reviewed != 0';
                 }
                 $whereClause[] = $wca;
             }

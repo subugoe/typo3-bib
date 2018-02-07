@@ -1,15 +1,22 @@
+
 <?php
-
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
-
-$TCA['tx_bib_domain_model_authorships'] = [
-    'ctrl' => $TCA['tx_bib_domain_model_authorships']['ctrl'],
-    'interface' => [
-        'showRecordFieldList' => $TCA['tx_bib_domain_model_authorships']['feInterface']['fe_admin_fieldList'],
+defined('TYPO3_MODE') or die();
+return [
+    'ctrl' => [
+        'title' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships',
+        'label' => 'pub_id',
+        'label_userFunc' => 'Ipf\\Bib\\Utility\\LabelUtility->getAuthorshipLabel',
+        'label_alt_force' => 1,
+        'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',
+        'delete' => 'deleted',
+        'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib').'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
     ],
-    'feInterface' => $TCA['tx_bib_domain_model_authorships']['feInterface'],
+    'interface' => [
+        'showRecordFieldList' => 'pub_id,author_id,sorting',
+    ],
+    'feInterface' => [
+        'fe_admin_fieldList' => 'pub_id,author_id,sorting',
+    ],
     'columns' => [
         'pub_id' => [
             'exclude' => 1,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ipf\Bib\Utility;
 
 /* * *************************************************************
@@ -180,7 +182,7 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function filter_pub_html($content, $htmlSpecialChars = false, $charset)
+    public static function filter_pub_html(string $content = '', $htmlSpecialChars = false, string $charset = '')
     {
         if ($htmlSpecialChars) {
             $content = htmlspecialchars($content, ENT_QUOTES, $charset);
@@ -282,18 +284,18 @@ class Utility
      *
      * @deprecated
      */
-    public static function html_input($type, $name, $value, $attributes = [])
+    public static function html_input(string $type, $name, $value, $attributes = [])
     {
-        $content = '<input type="' . strval($type) . '"';
+        $content = '<input type="' . (string) $type . '"';
         if (strlen($name) > 0) {
-            $content .= ' name="' . strval($name) . '"';
+            $content .= ' name="' . (string) $name . '"';
         }
         if (strlen($value) > 0) {
-            $content .= ' value="' . strval($value) . '"';
+            $content .= ' value="' . (string) $value . '"';
         }
         foreach ($attributes as $a_key => $a_value) {
             if (!($a_value === false)) {
-                $content .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
+                $content .= ' ' . (string) $a_key . '="' . (string) $a_value . '"';
             }
         }
         $content .= '>';
@@ -348,7 +350,7 @@ class Utility
      *
      * @return string The image input element
      */
-    public static function html_image_input($name, $value, $src, $attributes = [])
+    public static function html_image_input(string $name, $value, $src, $attributes = [])
     {
         $attributes = array_merge($attributes, ['src' => $src]);
 
@@ -541,7 +543,7 @@ class Utility
         $res = [];
         if ($noEmpty) {
             foreach ($list as $val) {
-                $val = trim($val);
+                $val = trim((string) $val);
                 if (strlen($val) > 0) {
                     $res[] = strval(intval($val));
                 }

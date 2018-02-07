@@ -214,7 +214,7 @@ class SearchNavigation extends Navigation
             $all['exclude'] = $exclude;
             $filter['all'] = $all;
         } else {
-            $this->pi1->extConf['post_items'] = $this->pi1->get_ll(
+            $this->pi1->extConf['post_items'] = $this->pi1->pi_getLL(
                 'searchNav_insert_request');
             if ($this->conf['clear_start']) {
                 $filter['FALSE'] = true;
@@ -277,7 +277,7 @@ class SearchNavigation extends Navigation
      */
     protected function getLabel()
     {
-        $label = $this->pi1->get_ll('searchNav_label');
+        $label = $this->pi1->pi_getLL('searchNav_label');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
 
         return $label;
@@ -305,7 +305,7 @@ class SearchNavigation extends Navigation
      */
     protected function getExtraButton()
     {
-        $txt = $this->pi1->get_ll('searchNav_extra');
+        $txt = $this->pi1->pi_getLL('searchNav_extra');
         $txt = $this->pi1->cObj->stdWrap($txt, $this->conf['extra.']['label.']);
 
         $attributes = [
@@ -362,7 +362,7 @@ class SearchNavigation extends Navigation
         $sea = $button;
 
         // The search button
-        $txt = $this->pi1->get_ll('searchNav_search');
+        $txt = $this->pi1->pi_getLL('searchNav_search');
 
         $attributes = [];
 
@@ -379,7 +379,7 @@ class SearchNavigation extends Navigation
         $sea .= $button;
 
         // The clear button
-        $txt = $this->pi1->get_ll('searchNav_clear');
+        $txt = $this->pi1->pi_getLL('searchNav_clear');
 
         $attributes = [];
 
@@ -426,7 +426,7 @@ class SearchNavigation extends Navigation
      */
     protected function getAbstractCheck()
     {
-        $txt = $this->pi1->get_ll('searchNav_abstract');
+        $txt = $this->pi1->pi_getLL('searchNav_abstract');
         $txt = $this->pi1->cObj->stdWrap($txt, $this->conf['abstracts.']['label.']);
 
         $attributes = [
@@ -453,19 +453,19 @@ class SearchNavigation extends Navigation
      */
     protected function getSeparatorSelection()
     {
-        $txt = $this->pi1->get_ll('searchNav_separator');
+        $txt = $this->pi1->pi_getLL('searchNav_separator');
         $txt = $this->pi1->cObj->stdWrap($txt, $this->conf['separator.']['label.']);
 
         $types = ['space', 'semi', 'pipe'];
         $pairs = [
-            'none' => $this->pi1->get_ll('searchNav_sep_none' . $types),
+            'none' => $this->pi1->pi_getLL('searchNav_sep_none' . $types),
             'space' => '&nbsp;',
             'semi' => ';',
             'pipe' => '|',
         ];
         foreach ($types as $type) {
             $pairs[$type] .= ' (' .
-                $this->pi1->get_ll('searchNav_sep_' . $type) . ')';
+                $this->pi1->pi_getLL('searchNav_sep_' . $type) . ')';
         }
 
         $attributes = [
@@ -493,7 +493,7 @@ class SearchNavigation extends Navigation
     protected function getRuleSelection()
     {
         $rule = '';
-        $txt = $this->pi1->get_ll('searchNav_rule');
+        $txt = $this->pi1->pi_getLL('searchNav_rule');
         $txt = $this->pi1->cObj->stdWrap($txt, $this->conf['rule.']['label.']);
         $name = $this->pi1->prefix_pi1 . '[search][rule]';
 
@@ -505,7 +505,7 @@ class SearchNavigation extends Navigation
         }
 
         // OR
-        $label = $this->pi1->get_ll('searchNav_OR');
+        $label = $this->pi1->pi_getLL('searchNav_OR');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['rule.']['btn_label.']);
         $checked = ($this->extConf['rule'] == 'OR');
         $button = Utility::html_radio_input(
@@ -518,7 +518,7 @@ class SearchNavigation extends Navigation
         $rule .= $label . $button;
 
         // AND
-        $label = $this->pi1->get_ll('searchNav_AND');
+        $label = $this->pi1->pi_getLL('searchNav_AND');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['rule.']['btn_label.']);
         $checked = ($this->extConf['rule'] == 'AND');
         $button = Utility::html_radio_input(
@@ -539,7 +539,7 @@ class SearchNavigation extends Navigation
      */
     protected function getFulltextCheck()
     {
-        $txt = $this->pi1->get_ll('searchNav_full_text');
+        $txt = $this->pi1->pi_getLL('searchNav_full_text');
         $txt = $this->pi1->cObj->stdWrap($txt, $this->conf['full_text.']['label.']);
 
         $attributes = [

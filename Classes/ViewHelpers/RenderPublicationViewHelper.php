@@ -100,7 +100,7 @@ class RenderPublicationViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function render()
     {

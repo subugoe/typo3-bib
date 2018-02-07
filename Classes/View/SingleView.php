@@ -83,18 +83,17 @@ class SingleView extends View
     /**
      * Initializes this class.
      *
-     * @param tx_bib_pi1
+     * @param \tx_bib_pi1
      */
     public function initialize($pi1)
     {
-
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
         $this->view = $view;
 
-        $this->pi1 = &$pi1;
-        $this->conf = &$pi1->conf['single_view.'];
+        $this->pi1 = $pi1;
+        $this->conf = $pi1->conf['single_view.'];
         $this->referenceReader = &$pi1->referenceReader;
         // Load editor language data
         $this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
@@ -124,7 +123,7 @@ class SingleView extends View
             $content .= '</p>';
         }
 
-        $this->view->assign('linkBack', $this->pi1->get_link($this->pi1->get_ll('link_back_to_list')));
+        $this->view->assign('linkBack', $this->pi1->get_link($this->pi1->pi_getLL('link_back_to_list')));
 
         // remove multiple line breaks
         $content = preg_replace("/\n+/", PHP_EOL, $content);
@@ -191,7 +190,7 @@ class SingleView extends View
         }
 
         // Single view title
-        $title = $this->pi1->get_ll('single_view_title');
+        $title = $this->pi1->pi_getLL('single_view_title');
         $title = $this->pi1->cObj->stdWrap($title, $this->conf['title.']);
 
         // Pre and post text
@@ -246,7 +245,7 @@ class SingleView extends View
 
         $label = trim($label);
         if (strlen($label) > 0) {
-            $label = $this->pi1->get_ll($label, $label, true);
+            $label = $this->pi1->pi_getLL($label, $label, true);
         }
 
         return $label;
