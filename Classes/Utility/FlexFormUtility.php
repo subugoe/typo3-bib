@@ -58,8 +58,10 @@ class FlexFormUtility
 
         foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
             $optionList[] = [
-                0 => LocalizationUtility::translate($this->referenceReader->getReferenceTable() . '_' . $referenceField,
-                    'bib'),
+                0 => LocalizationUtility::translate(
+                    $this->referenceReader->getReferenceTable() . '_' . $referenceField,
+                    'bib'
+                ),
                 1 => $referenceField,
             ];
         }
@@ -83,8 +85,10 @@ class FlexFormUtility
         if (count($searchFields) > 0) {
             foreach ($this->referenceReader->getSearchFields() as $searchField) {
                 $optionList[] = [
-                    0 => LocalizationUtility::translate($this->referenceReader->getSearchPrefix() . '_' . $searchField,
-                        'bib'),
+                    0 => LocalizationUtility::translate(
+                        $this->referenceReader->getSearchPrefix() . '_' . $searchField,
+                        'bib'
+                    ),
                     1 => $searchField,
                 ];
             }

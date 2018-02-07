@@ -163,11 +163,11 @@ class Utility
         $pattern = '/&(([^;]|$){8})/';
         while (preg_match($pattern, $str)) {
             $str = preg_replace($pattern, '&amp;\1', $str);
-        };
+        }
         $pattern = '/&([^;]*?[^a-zA-z;][^;$]*(;|$))/';
         while (preg_match($pattern, $str)) {
             $str = preg_replace($pattern, '&amp;\1', $str);
-        };
+        }
         $str = str_replace('&;', '&amp;;', $str);
 
         return $str;
@@ -511,7 +511,7 @@ class Utility
                 } else {
                     // Find nearest
                     $res = end($stack);
-                    $stackSize = sizeof($stack);
+                    $stackSize = count($stack);
                     for ($ii = 1; $ii < $stackSize; ++$ii) {
                         $d0 = abs($value - $stack[$ii - 1]);
                         $d1 = abs($value - $stack[$ii]);
@@ -652,7 +652,7 @@ class Utility
         GeneralUtility::logDeprecatedFunction();
         if (is_array($delimiters)) {
             $sep = strval($delimiters[0]);
-            $delimiterSize = sizeof($delimiters);
+            $delimiterSize = count($delimiters);
             for ($ii = 1; $ii < $delimiterSize; ++$ii) {
                 $nsep = strval($sep[$ii]);
                 $str = str_replace($nsep, $sep, $str);
@@ -679,7 +679,7 @@ class Utility
     {
         if (is_array($delimiters)) {
             $sep = strval($delimiters[0]);
-            $delimiterSize = sizeof($delimiters);
+            $delimiterSize = count($delimiters);
             for ($ii = 1; $ii < $delimiterSize; ++$ii) {
                 $nsep = strval($delimiters[$ii]);
                 $str = str_replace($nsep, $sep, $str);
@@ -705,10 +705,10 @@ class Utility
         foreach ($lst as $a_str) {
             $name = [];
             $parts = GeneralUtility::trimExplode(',', $a_str, true);
-            if (sizeof($parts) > 1) {
+            if (count($parts) > 1) {
                 $name['forename'] = $parts[1];
             }
-            if (sizeof($parts) > 0) {
+            if (count($parts) > 0) {
                 $name['surname'] = $parts[0];
                 $res[] = $name;
             }
@@ -732,7 +732,7 @@ class Utility
     public static function implode_and_last($arr, $sep, $and)
     {
         $res = [];
-        $size = sizeof($arr);
+        $size = count($arr);
         $c_idx = $size - 2;
         $a_idx = $size - 1;
         for ($ii = 0; $ii < $size; ++$ii) {

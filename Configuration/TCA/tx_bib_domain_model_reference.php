@@ -16,7 +16,7 @@ return [
             'enablecolumns' => [
                 'disabled' => 'hidden',
             ],
-            'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib').'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
+            'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib') . 'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
         ],
     'interface' => [
         'showRecordFieldList' => 'hidden,bibtype,citeid,title,journal,year,month,day,volume,number,number2,pages,abstract,affiliation,note,annotation,keywords,tags,file_url,web_url,web_url_date,misc, editor,publisher,address,howpublished,series,edition,chapter,booktitle,school,institute,organization,institution,event_name,event_place,event_date,state,type,ISBN,ISSN,DOI,extern,reviewed,in_library,borrowed_by',

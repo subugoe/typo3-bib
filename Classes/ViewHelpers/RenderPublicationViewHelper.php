@@ -94,8 +94,13 @@ class RenderPublicationViewHelper extends AbstractViewHelper
         $this->registerArgument('bibliographyItem', 'array', 'the bibliography item to create output for', true);
 
         foreach (self::$variables as $variableName => $variableConfig) {
-            $this->registerArgument($variableName, 'string', $variableConfig['description'], false,
-                $variableConfig['default']);
+            $this->registerArgument(
+                $variableName,
+                'string',
+                $variableConfig['description'],
+                false,
+                $variableConfig['default']
+            );
         }
     }
 

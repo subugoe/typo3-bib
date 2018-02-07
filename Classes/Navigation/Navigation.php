@@ -283,9 +283,9 @@ abstract class Navigation
 
         // Setup the translator
         $res = implode($sep, $sel['prev']);
-        $res .= (sizeof($sel['prev']) ? $sep : '');
+        $res .= (count($sel['prev']) ? $sep : '');
         $res .= implode($sep, $sel['cur']);
-        $res .= (sizeof($sel['next']) ? $sep : '');
+        $res .= (count($sel['next']) ? $sep : '');
         $res .= implode($sep, $sel['next']);
 
         return $res;

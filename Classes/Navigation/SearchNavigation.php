@@ -193,7 +193,7 @@ class SearchNavigation extends Navigation
             }
         }
         $filter = [];
-        if (sizeof($strings) > 0) {
+        if (count($strings) > 0) {
             // Setup search patterns
             $words = [];
             foreach ($strings as $txt) {
@@ -215,13 +215,14 @@ class SearchNavigation extends Navigation
             $filter['all'] = $all;
         } else {
             $this->pi1->extConf['post_items'] = $this->pi1->pi_getLL(
-                'searchNav_insert_request');
+                'searchNav_insert_request'
+            );
             if ($this->conf['clear_start']) {
                 $filter['FALSE'] = true;
             }
         }
 
-        if (sizeof($filter) > 0) {
+        if (count($filter) > 0) {
             $this->pi1->extConf['filters']['search'] = $filter;
         }
     }
@@ -356,7 +357,9 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_text_input(
-            $this->pi1->prefix_pi1 . '[search][text]', $value, $attributes
+            $this->pi1->prefix_pi1 . '[search][text]',
+            $value,
+            $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['search.']['input.']);
         $sea = $button;

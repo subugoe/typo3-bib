@@ -263,7 +263,7 @@ class ReferenceWriter
             }
         }
 
-        if (($uid > 0) && (sizeof($publication['authors']) > 0)) {
+        if (($uid > 0) && (count($publication['authors']) > 0)) {
             try {
                 $this->savePublicationAuthors($uid, $publication['pid'], $publication['authors']);
             } catch (DataException $e) {
@@ -304,7 +304,7 @@ class ReferenceWriter
             if (!is_numeric($author['uid'])) {
                 $uids = $this->referenceReader->fetch_author_uids($author, $pid);
 
-                if (sizeof($uids) > 0) {
+                if (count($uids) > 0) {
                     $author['uid'] = $uids[0]['uid'];
                 } else {
                     // Insert missing author
@@ -325,7 +325,7 @@ class ReferenceWriter
         $db_aships = $this->referenceReader->getAuthorships(['pub_id' => $pub_uid]);
 
         $as_delete = [];
-        $as_new = sizeof($authors) - sizeof($db_aships);
+        $as_new = count($authors) - count($db_aships);
         if ($as_new < 0) {
             // This deletes the first authorships
             $as_new = abs($as_new);
@@ -338,10 +338,10 @@ class ReferenceWriter
 
             $as_new = 0;
         }
-        $as_present = sizeof($authors) - $as_new;
+        $as_present = count($authors) - $as_new;
 
         // Inserts new and updates old authorships
-        $authorsSize = sizeof($authors);
+        $authorsSize = count($authors);
         for ($ii = 0; $ii < $authorsSize; ++$ii) {
             $author = &$authors[$ii];
             if (is_numeric($author['uid'])) {
@@ -444,7 +444,7 @@ class ReferenceWriter
     protected function deleteAuthorships($uids)
     {
         $uid_list = '';
-        $uidSize = sizeof($uids);
+        $uidSize = count($uids);
         for ($ii = 0; $ii < $uidSize; ++$ii) {
             if ($ii > 0) {
                 $uid_list .= ',';

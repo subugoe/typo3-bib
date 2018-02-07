@@ -113,7 +113,7 @@ class DbUtility
             $uids[] = $row['uid'];
         }
 
-        $count = sizeof($uids);
+        $count = count($uids);
         if ($count > 0) {
             $csv = Utility::implode_intval(',', $uids);
 
@@ -170,7 +170,7 @@ class DbUtility
 
         $whereClause = [];
 
-        if (sizeof($this->referenceReader->pid_list) > 0) {
+        if (count($this->referenceReader->pid_list) > 0) {
             $csv = Utility::implode_intval(',', $this->referenceReader->pid_list);
             $whereClause[] = 'pid IN (' . $csv . ')';
         }
@@ -196,7 +196,7 @@ class DbUtility
             } else {
                 if ($err) {
                     $stat['updated'][] = $uid;
-                    if (sizeof($stat['updated']) >= $this->ft_max_num) {
+                    if (count($stat['updated']) >= $this->ft_max_num) {
                         $stat['limit_num'] = 1;
                         break;
                     }
@@ -230,7 +230,7 @@ class DbUtility
             $this->referenceReader->getReferenceTable(),
             $whereClause
         );
-        if (sizeof($rows) != 1) {
+        if (count($rows) != 1) {
             return false;
         }
         $pub = $rows[0];
@@ -284,7 +284,8 @@ class DbUtility
         if ($file_exists && (
                 ($file_mt > $pub['full_text_tstamp']) ||
                 ($pub['file_url'] != $pub['full_text_file_url']) ||
-                $force)
+                $force
+        )
         ) {
             // Check if pdftotext is executable
             if (!is_executable($this->pdftotext_bin)) {

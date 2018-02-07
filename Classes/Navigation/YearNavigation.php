@@ -115,7 +115,7 @@ class YearNavigation extends Navigation
     {
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
 
-        if (sizeof($this->pi1->stat['years']) > 0) {
+        if (count($this->pi1->stat['years']) > 0) {
 
             // The all link
             $delimiter = ' - ';
@@ -135,7 +135,7 @@ class YearNavigation extends Navigation
             if ($cur === false) {
                 $cur = -1;
             }
-            $indices = [0, $cur, sizeof($this->pi1->stat['years']) - 1];
+            $indices = [0, $cur, count($this->pi1->stat['years']) - 1];
 
             $numSel = 3;
             if (array_key_exists('years', $selectionConfiguration)) {
@@ -154,7 +154,7 @@ class YearNavigation extends Navigation
     protected function getYearSelectionForm()
     {
         $selectForm = '';
-        if (sizeof($this->pi1->stat['years']) > 0) {
+        if (count($this->pi1->stat['years']) > 0) {
             $name = $this->pi1->prefix_pi1 . '-year_select_form';
             $action = $this->pi1->get_link_url(['year' => ''], false);
             $selectForm .= '<form name="' . $name . '" ';
@@ -164,7 +164,7 @@ class YearNavigation extends Navigation
             $selectForm .= '>';
 
             $pairs = ['all' => $this->pi1->get_ll('yearNav_all_years', 'All', true)];
-            if (sizeof($this->pi1->stat['years']) > 0) {
+            if (count($this->pi1->stat['years']) > 0) {
                 foreach (array_reverse($this->pi1->stat['years']) as $y) {
                     $pairs[$y] = $y;
                 }
@@ -181,7 +181,10 @@ class YearNavigation extends Navigation
                 $attributes['class'] = $this->conf['select_class'];
             }
             $button = Utility::html_select_input(
-                $pairs, $year, $attributes);
+                $pairs,
+                $year,
+                $attributes
+            );
             $button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
             $selectForm .= $button;
 
@@ -191,7 +194,9 @@ class YearNavigation extends Navigation
             }
             $button = Utility::html_submit_input(
                 $this->pi1->prefix_pi1 . '[action][select_year]',
-                $this->pi1->get_ll('button_go'), $attributes);
+                $this->pi1->get_ll('button_go'),
+                $attributes
+            );
             $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
             $selectForm .= $button;
 

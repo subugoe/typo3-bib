@@ -202,7 +202,7 @@ abstract class Importer
         $pids = $this->pi1->extConf['pid_list'];
         $default_pid = $this->getDefaultPid();
 
-        if (sizeof($pids) > 1) {
+        if (count($pids) > 1) {
             // Fetch page titles
             $pages = Utility::get_page_titles($pids);
 
@@ -350,7 +350,7 @@ abstract class Importer
             // Update full texts
             if ($this->pi1->conf['editor.']['full_text.']['update']) {
                 $arr = $this->databaseUtility->update_full_text_all();
-                if (sizeof($arr['errors']) > 0) {
+                if (count($arr['errors']) > 0) {
                     foreach ($arr['errors'] as $err) {
                         $this->statistics['errors'][] = $err[1]['msg'];
                     }

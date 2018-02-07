@@ -100,7 +100,7 @@ class CiteIdGenerator
         $id = '';
         foreach ($persons as $list) {
             if (strlen($id) == 0) {
-                if (sizeof($list) > 0) {
+                if (count($list) > 0) {
                     $pp = &$list[0];
                     $a_str = '';
                     if (strlen($pp['surname']) > 0) {
@@ -115,7 +115,7 @@ class CiteIdGenerator
                     }
                 }
             }
-            $listSize = sizeof($list);
+            $listSize = count($list);
             for ($i = 1; $i < $listSize; ++$i) {
                 $pp = &$list[$i];
                 $a_str = '';

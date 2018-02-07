@@ -214,7 +214,7 @@ class BibTexExporter extends Exporter
                     break;
                 case 'authors':
                     $value = $publication['authors'];
-                    if (sizeof($value) == 0) {
+                    if (count($value) == 0) {
                         $append = false;
                     }
                     break;
@@ -330,7 +330,7 @@ class BibTexExporter extends Exporter
 
         // Recognize protected tag
         $tmp = explode('<prt>', $content);
-        if (sizeof($tmp) > 1) {
+        if (count($tmp) > 1) {
             $content = '';
             $first = true;
             foreach ($tmp as $v) {
@@ -341,7 +341,7 @@ class BibTexExporter extends Exporter
                     $tmp2 = explode('</prt>', $v);
 
                     $content .= '{' . $tmp2[0] . '}';
-                    $partSize = sizeof($tmp2);
+                    $partSize = count($tmp2);
                     for ($i = 1; $i < $partSize; ++$i) {
                         $content .= $tmp2[$i];
                     }

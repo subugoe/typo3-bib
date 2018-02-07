@@ -146,8 +146,10 @@ class PageNavigation extends Navigation
             $navigationSeparator = $navigationConfiguration['separator'];
         }
         if (is_array($navigationConfiguration['separator.'])) {
-            $navigationSeparator = $this->pi1->cObj->stdWrap($navigationSeparator,
-                $navigationConfiguration['separator.']);
+            $navigationSeparator = $this->pi1->cObj->stdWrap(
+                $navigationSeparator,
+                $navigationConfiguration['separator.']
+            );
         }
 
         // Replace separator

@@ -38,7 +38,6 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class EditorView.
@@ -224,19 +223,19 @@ class EditorView extends View
 
         // Determine widget mode
         switch ($this->pi1->extConf['editor_mode']) {
-            case self::EDIT_SHOW :
+            case self::EDIT_SHOW:
                 $this->widgetMode = self::WIDGET_SHOW;
                 break;
-            case self::EDIT_EDIT :
-            case self::EDIT_NEW :
+            case self::EDIT_EDIT:
+            case self::EDIT_NEW:
                 $this->widgetMode = self::WIDGET_EDIT;
                 break;
-            case self::EDIT_CONFIRM_SAVE :
-            case self::EDIT_CONFIRM_DELETE :
-            case self::EDIT_CONFIRM_ERASE :
+            case self::EDIT_CONFIRM_SAVE:
+            case self::EDIT_CONFIRM_DELETE:
+            case self::EDIT_CONFIRM_ERASE:
                 $this->widgetMode = self::WIDGET_SHOW;
                 break;
-            default :
+            default:
                 $this->widgetMode = self::WIDGET_SHOW;
         }
 
@@ -260,19 +259,19 @@ class EditorView extends View
 
         $title = $this->LLPrefix;
         switch ($this->pi1->extConf['editor_mode']) {
-            case self::EDIT_SHOW :
+            case self::EDIT_SHOW:
                 $title .= 'title_view';
                 break;
-            case self::EDIT_EDIT :
+            case self::EDIT_EDIT:
                 $title .= 'title_edit';
                 break;
-            case self::EDIT_NEW :
+            case self::EDIT_NEW:
                 $title .= 'title_new';
                 break;
-            case self::EDIT_CONFIRM_DELETE :
+            case self::EDIT_CONFIRM_DELETE:
                 $title .= 'title_confirm_delete';
                 break;
-            case self::EDIT_CONFIRM_ERASE :
+            case self::EDIT_CONFIRM_ERASE:
                 $title .= 'title_confirm_erase';
                 break;
             default:
@@ -319,7 +318,7 @@ class EditorView extends View
             // Raise author
             if (is_numeric($this->pi1->piVars['action']['raise_author'])) {
                 $num = intval($this->pi1->piVars['action']['raise_author']);
-                if (($num > 0) && ($num < sizeof($publicationData['authors']))) {
+                if (($num > 0) && ($num < count($publicationData['authors']))) {
                     $tmp = $publicationData['authors'][$num - 1];
                     $publicationData['authors'][$num - 1] = $publicationData['authors'][$num];
                     $publicationData['authors'][$num] = $tmp;
@@ -329,7 +328,7 @@ class EditorView extends View
             // Lower author
             if (is_numeric($this->pi1->piVars['action']['lower_author'])) {
                 $num = intval($this->pi1->piVars['action']['lower_author']);
-                if (($num >= 0) && ($num < (sizeof($publicationData['authors']) - 1))) {
+                if (($num >= 0) && ($num < (count($publicationData['authors']) - 1))) {
                     $tmp = $publicationData['authors'][$num + 1];
                     $publicationData['authors'][$num + 1] = $publicationData['authors'][$num];
                     $publicationData['authors'][$num] = $tmp;
@@ -395,7 +394,7 @@ class EditorView extends View
             $d_err = $this->validatePublicationData($publicationData);
             $title = $this->get_ll($this->LLPrefix . 'title_confirm_save');
 
-            if (sizeof($d_err) > 0) {
+            if (count($d_err) > 0) {
                 $dataValid = false;
                 $cfg = &$this->conf['warn_box.'];
                 $txt = $this->get_ll($this->LLPrefix . 'error_title');
@@ -783,7 +782,9 @@ class EditorView extends View
                 foreach ($all_types as $type) {
                     $cfg_fields[$group][$type] = [];
                     $ff = Utility::multi_explode_trim(
-                        [',', '|'], $cfg_arr[$type], true
+                        [',', '|'],
+                        $cfg_arr[$type],
+                        true
                     );
                     $cfg_fields[$group][$type] = $ff;
                 }
@@ -922,7 +923,7 @@ class EditorView extends View
         $attributes['class'] = $cclass;
 
         switch ($widgetType) {
-            case 'input' :
+            case 'input':
                 if ($cfg['max']) {
                     $attributes['maxlength'] = $cfg['max'];
                 }
@@ -940,7 +941,7 @@ class EditorView extends View
 
                 break;
 
-            case 'text' :
+            case 'text':
                 $content .= '<textarea' . $nameAttr;
                 $content .= ' rows="' . $cfg['rows'] . '"';
                 $content .= ' cols="' . strval($isize) . '"';
@@ -951,14 +952,14 @@ class EditorView extends View
 
                 break;
 
-            case 'select' :
+            case 'select':
                 $attributes['name'] = $fieldAttr;
                 if ($field == 'bibtype') {
                     $attributes['onchange'] = 'click_update_button()';
                 }
 
                 $pairs = [];
-                $itemConfigurationSize = sizeof($cfg['items']);
+                $itemConfigurationSize = count($cfg['items']);
                 for ($ii = 0; $ii < $itemConfigurationSize; ++$ii) {
                     $p_desc = $this->get_db_ll($cfg['items'][$ii][0], $cfg['items'][$ii][0]);
                     $p_val = $cfg['items'][$ii][1];
@@ -973,7 +974,7 @@ class EditorView extends View
 
                 break;
 
-            case 'check' :
+            case 'check':
                 $content .= Utility::html_check_input(
                     $fieldAttr,
                     '1',
@@ -983,7 +984,7 @@ class EditorView extends View
 
                 break;
 
-            default :
+            default:
                 $content .= 'Unknown edit widget: ' . $widgetType;
         }
 
@@ -1026,7 +1027,8 @@ class EditorView extends View
 
                 case 'check':
                     $content .= $this->get_ll(
-                        ($value == 0) ? 'editor_no' : 'editor_yes');
+                        ($value == 0) ? 'editor_no' : 'editor_yes'
+                    );
                     break;
 
                 default:
@@ -1071,9 +1073,9 @@ class EditorView extends View
 
         // Author widget
         $authors = is_array($value) ? $value : [];
-        $aNum = sizeof($authors);
+        $aNum = count($authors);
         $edOpts = &$pi1->piVars['editor'];
-        $edOpts['numAuthors'] = max($edOpts['numAuthors'], sizeof($authors), $pi1->extConf['editor']['numAuthors'], 1);
+        $edOpts['numAuthors'] = max($edOpts['numAuthors'], count($authors), $pi1->extConf['editor']['numAuthors'], 1);
 
         if (($mode == self::WIDGET_SHOW) || ($mode == self::WIDGET_EDIT)) {
             $au_con = [];
@@ -1089,29 +1091,41 @@ class EditorView extends View
                 $row_con[0] = strval($i + 1);
                 if ($mode == self::WIDGET_SHOW) {
                     $row_con[1] = Utility::html_hidden_input(
-                        $key_data . '[' . $i . '][forename]', $foreName);
+                        $key_data . '[' . $i . '][forename]',
+                        $foreName
+                    );
                     $row_con[1] .= $foreName;
 
                     $row_con[2] = Utility::html_hidden_input(
-                        $key_data . '[' . $i . '][surname]', $surName);
+                        $key_data . '[' . $i . '][surname]',
+                        $surName
+                    );
                     $row_con[2] .= $surName;
                 } else {
                     if ($mode == self::WIDGET_EDIT) {
                         $lowerBtn = Utility::html_image_input(
                             $key_action . '[lower_author]',
-                            strval($i), $pi1->icon_src['down']);
+                            strval($i),
+                            $pi1->icon_src['down']
+                        );
 
                         $raiseBtn = Utility::html_image_input(
                             $key_action . '[raise_author]',
-                            strval($i), $pi1->icon_src['up']);
+                            strval($i),
+                            $pi1->icon_src['up']
+                        );
 
                         $row_con[1] = Utility::html_text_input(
-                            $key_data . '[' . $i . '][forename]', $foreName,
-                            ['size' => $isize, 'maxlength' => 255, 'class' => $cclass]);
+                            $key_data . '[' . $i . '][forename]',
+                            $foreName,
+                            ['size' => $isize, 'maxlength' => 255, 'class' => $cclass]
+                        );
 
                         $row_con[2] .= Utility::html_text_input(
-                            $key_data . '[' . $i . '][surname]', $surName,
-                            ['size' => $isize, 'maxlength' => 255, 'class' => $cclass]);
+                            $key_data . '[' . $i . '][surname]',
+                            $surName,
+                            ['size' => $isize, 'maxlength' => 255, 'class' => $cclass]
+                        );
 
                         $row_con[3] = ($i < ($aNum - 1)) ? $lowerBtn : '';
                         $row_con[4] = (($i > 0) && ($i < ($aNum))) ? $raiseBtn : '';
@@ -1146,7 +1160,7 @@ class EditorView extends View
                 $content .= $row_con[1];
                 $content .= '</td><td>';
                 $content .= $row_con[2];
-                if (sizeof($row_con) > 3) {
+                if (count($row_con) > 3) {
                     $content .= '</td><td style="padding: 1px;">';
                     $content .= $row_con[3];
                     $content .= '</td><td style="padding: 1px;">';
@@ -1163,22 +1177,30 @@ class EditorView extends View
             if ($mode == self::WIDGET_EDIT) {
                 $content .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">';
                 $content .= Utility::html_submit_input(
-                    $key_action . '[more_authors]', '+'
+                    $key_action . '[more_authors]',
+                    '+'
                 );
                 $content .= ' ';
                 $content .= Utility::html_submit_input(
-                    $key_action . '[less_authors]', '-'
+                    $key_action . '[less_authors]',
+                    '-'
                 );
                 $content .= '</div>';
             }
         } else {
             if ($mode == self::WIDGET_SILENT) {
-                $authorsSize = sizeof($authors);
+                $authorsSize = count($authors);
                 for ($i = 0; $i < $authorsSize; ++$i) {
-                    $foreName = Utility::filter_pub_html($authors[$i]['forename'], true,
-                        $pi1->extConf['charset']['upper']);
-                    $surName = Utility::filter_pub_Html($authors[$i]['surname'], true,
-                        $pi1->extConf['charset']['upper']);
+                    $foreName = Utility::filter_pub_html(
+                        $authors[$i]['forename'],
+                        true,
+                        $pi1->extConf['charset']['upper']
+                    );
+                    $surName = Utility::filter_pub_Html(
+                        $authors[$i]['surname'],
+                        true,
+                        $pi1->extConf['charset']['upper']
+                    );
 
                     $content .= Utility::html_hidden_input(
                         $key_data . '[' . $i . '][forename]',
@@ -1377,14 +1399,14 @@ class EditorView extends View
         if ($this->conf['full_text.']['update']) {
             $stat = $this->databaseUtility->update_full_text_all();
 
-            $count = sizeof($stat['updated']);
+            $count = count($stat['updated']);
             if ($count > 0) {
                 $message = $this->get_ll('msg_updated_full_text');
                 $message = str_replace('%d', strval($count), $message);
                 $events[] = $message;
             }
 
-            if (sizeof($stat['errors']) > 0) {
+            if (count($stat['errors']) > 0) {
                 foreach ($stat['errors'] as $err) {
                     $message = $err[1]['msg'];
                     $errors[] = $message;
@@ -1471,7 +1493,7 @@ class EditorView extends View
 
         switch ($pi1->extConf['dialog_mode']) {
 
-            case $pi1::DIALOG_SAVE_CONFIRMED :
+            case $pi1::DIALOG_SAVE_CONFIRMED:
                 $publication = $this->getPublicationDataFromHttpRequest();
 
                 // Unset fields that should not be edited
@@ -1489,7 +1511,8 @@ class EditorView extends View
                 try {
                     $referenceWriter->savePublication($publication);
                     /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
-                    $message = GeneralUtility::makeInstance(FlashMessage::class,
+                    $message = GeneralUtility::makeInstance(
+                        FlashMessage::class,
                         $this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
                         $this->get_ll('msg_save_success'),
                         FlashMessage::OK
@@ -1498,7 +1521,8 @@ class EditorView extends View
                     /* @var FlashMessageQueue $flashMessageQueue */
                     $flashMessageQueue->addMessage($message);
                 } catch (DataException $e) {
-                    $message = GeneralUtility::makeInstance(FlashMessage::class,
+                    $message = GeneralUtility::makeInstance(
+                        FlashMessage::class,
                         $e->getMessage(),
                         $this->get_ll('msg_save_fail'),
                         FlashMessage::ERROR
@@ -1507,18 +1531,20 @@ class EditorView extends View
                 }
                 break;
 
-            case $pi1::DIALOG_DELETE_CONFIRMED :
+            case $pi1::DIALOG_DELETE_CONFIRMED:
                 $publication = $this->getPublicationDataFromHttpRequest();
                 try {
                     $referenceWriter->deletePublication($pi1->piVars['uid'], $publication['mod_key']);
-                    $message = GeneralUtility::makeInstance(FlashMessage::class,
+                    $message = GeneralUtility::makeInstance(
+                        FlashMessage::class,
                         $this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
                         $this->get_ll('msg_delete_success'),
                         FlashMessage::OK
                     );
                     $flashMessageQueue->addMessage($message);
                 } catch (DataException $e) {
-                    $message = GeneralUtility::makeInstance(FlashMessage::class,
+                    $message = GeneralUtility::makeInstance(
+                        FlashMessage::class,
                         $e->getMessage(),
                         $this->get_ll('msg_delete_fail'),
                         FlashMessage::ERROR
@@ -1526,8 +1552,9 @@ class EditorView extends View
                     $flashMessageQueue->addMessage($message);
                 }
                 break;
-            default :
-                $message = GeneralUtility::makeInstance(FlashMessage::class,
+            default:
+                $message = GeneralUtility::makeInstance(
+                    FlashMessage::class,
                     'Unknown dialog mode: ' . $pi1->extConf['dialog_mode'],
                     $this->get_ll('msg_delete_fail'),
                     FlashMessage::ERROR
@@ -1573,7 +1600,7 @@ class EditorView extends View
                 if (!$this->conf['no_edit.'][$ff] && !$this->conf['no_show.'][$ff]) {
                     switch ($ff) {
                         case 'authors':
-                            if (!is_array($pub[$ff]) || (sizeof($pub[$ff]) == 0)) {
+                            if (!is_array($pub[$ff]) || (count($pub[$ff]) == 0)) {
                                 $empty[] = $ff;
                             }
                             break;
@@ -1610,7 +1637,7 @@ class EditorView extends View
 
             $empty = array_diff($empty, $clear);
 
-            if (sizeof($empty)) {
+            if (count($empty)) {
                 $err = ['type' => $type];
                 $err['msg'] = $this->get_ll($this->LLPrefix . 'error_empty_fields');
                 $err['list'] = [];
@@ -1664,7 +1691,7 @@ class EditorView extends View
      */
     protected function validationErrorMessage($errors, $level = 0)
     {
-        if (!is_array($errors) || (sizeof($errors) == 0)) {
+        if (!is_array($errors) || (count($errors) == 0)) {
             return '';
         }
 
@@ -1676,10 +1703,11 @@ class EditorView extends View
             $msg = htmlspecialchars($error['msg'], ENT_QUOTES, $charset);
             $errorIterator .= $this->pi1->cObj->stdWrap(
                 $msg,
-                $this->conf['warn_box.']['msg.']);
+                $this->conf['warn_box.']['msg.']
+            );
 
             $list = &$error['list'];
-            if (is_array($list) && (sizeof($list) > 0)) {
+            if (is_array($list) && (count($list) > 0)) {
                 $errorIterator .= '<ul>';
                 $errorIterator .= $this->validationErrorMessage($list, $level + 1);
                 $errorIterator .= '</ul>';

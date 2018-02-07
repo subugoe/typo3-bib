@@ -74,12 +74,11 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
 
         if (empty($citationId)) {
             throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
-        } else {
-            try {
-                return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
-            } catch (\Exception $e) {
-                return ['exception' => $e->getMessage()];
-            }
+        }
+        try {
+            return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
+        } catch (\Exception $e) {
+            return ['exception' => $e->getMessage()];
         }
     }
 

@@ -42,6 +42,6 @@ class RealUrl
      */
     public function pageBrowser($params, &$pObj)
     {
-        return ($params['decodeAlias'] ? --$params['value'] : ++$params['value']);
+        return $params['decodeAlias'] ? --$params['value'] : ++$params['value'];
     }
 }

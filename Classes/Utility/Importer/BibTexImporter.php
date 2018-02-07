@@ -633,8 +633,10 @@ class BibTexImporter extends Importer
 
                     break;
                 default:
-                    throw new ParserException('Illegal BibTeX parser state: "' . strval($this->parserState) . '"',
-                        1378736678);
+                    throw new ParserException(
+                        'Illegal BibTeX parser state: "' . strval($this->parserState) . '"',
+                        1378736678
+                    );
                     break;
             }
         }

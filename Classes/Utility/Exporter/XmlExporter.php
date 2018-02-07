@@ -81,7 +81,7 @@ class XmlExporter extends Exporter
             switch ($key) {
                 case 'authors':
                     $value = $publication['authors'];
-                    if (sizeof($value) == 0) {
+                    if (count($value) == 0) {
                         $append = false;
                     }
                     break;
@@ -130,7 +130,7 @@ class XmlExporter extends Exporter
                         $aXML[] = $a_str;
                     }
                 }
-                if (sizeof($aXML)) {
+                if (count($aXML)) {
                     $value .= PHP_EOL;
                     foreach ($aXML as $author) {
                         $value .= '<person>' . $author . '</person>' . PHP_EOL;

@@ -28,7 +28,6 @@ namespace Ipf\Bib\ViewHelpers;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * @see http://ocoins.info/cobgbook.html
@@ -55,8 +54,9 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
      */
     protected $tagName = 'span';
 
-    public function initializeArguments() {
-        $this->registerArgument('data', 'array', 'The email address to resolve the gravatar for', TRUE);
+    public function initializeArguments()
+    {
+        $this->registerArgument('data', 'array', 'The email address to resolve the gravatar for', true);
     }
 
     /**

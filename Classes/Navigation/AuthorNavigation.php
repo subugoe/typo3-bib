@@ -175,7 +175,7 @@ class AuthorNavigation extends Navigation
         }
 
         // Append filter
-        if (sizeof($filter) > 0) {
+        if (count($filter) > 0) {
             $this->pi1->extConf['filters']['author'] = [];
             $this->pi1->extConf['filters']['author']['author'] = [];
             $this->pi1->extConf['filters']['author']['author']['authors'] = $filter;
@@ -365,7 +365,7 @@ class AuthorNavigation extends Navigation
         $charset = $this->pi1->extConf['charset']['upper'];
         $letterConfiguration = is_array($cfg['letters.']) ? $cfg['letters.'] : [];
 
-        if (sizeof($extConf['letters']) === 0) {
+        if (count($extConf['letters']) === 0) {
             return '';
         }
 
@@ -435,7 +435,7 @@ class AuthorNavigation extends Navigation
 
         // Selection
         $cur = $this->extConf['sel_name_idx'];
-        $max = sizeof($this->pi1->stat['authors']['sel_surnames']) - 1;
+        $max = count($this->pi1->stat['authors']['sel_surnames']) - 1;
 
         $indices = [0, $cur, $max];
 
@@ -461,7 +461,7 @@ class AuthorNavigation extends Navigation
         }
 
         // All together
-        if (sizeof($this->pi1->stat['authors']['sel_surnames']) > 0) {
+        if (count($this->pi1->stat['authors']['sel_surnames']) > 0) {
             $all = $txt . $sep . $sel;
         } else {
             $all = '&nbsp;';
@@ -527,7 +527,8 @@ class AuthorNavigation extends Navigation
         }
         $button = Utility::html_submit_input(
             $this->pi1->prefix_pi1 . '[action][select_author]',
-            $this->pi1->pi_getLL('button_go'), $attributes
+            $this->pi1->pi_getLL('button_go'),
+            $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
         $content .= $button;
@@ -536,7 +537,7 @@ class AuthorNavigation extends Navigation
         $content .= '</form>';
 
         // Finalize
-        if (sizeof($pairs) == 1) {
+        if (count($pairs) == 1) {
             $content = '&nbsp;';
         }
 
