@@ -44,8 +44,6 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      */
     protected $referenceRepository;
 
-    /**
-     */
     public function listAction()
     {
         if ($this->request->hasArgument('pageUid')) {

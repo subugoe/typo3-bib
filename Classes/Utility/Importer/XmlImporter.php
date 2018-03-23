@@ -47,7 +47,7 @@ class XmlImporter extends Importer
     protected function displayInformationBeforeImport()
     {
         $val = $this->pi1->get_ll('import_xml_title', 'import_xml_title', true);
-        $content = '<p>' . $val . '</p>';
+        $content = '<p>'.$val.'</p>';
 
         return $content;
     }
@@ -71,7 +71,7 @@ class XmlImporter extends Importer
 
         $parsed = $this->parseXmlPublications($fstr);
         if (is_string($parsed)) {
-            $stat['failed'] += 1;
+            ++$stat['failed'];
             $stat['errors'][] = $parsed;
         } else {
             foreach ($parsed as $pub) {
@@ -95,7 +95,7 @@ class XmlImporter extends Importer
         $parse_ret = xml_parse_into_struct($parser, $xmlPublications, $tags);
         xml_parser_free($parser);
 
-        if ($parse_ret == 0) {
+        if (0 == $parse_ret) {
             return 'File is not valid XML';
         }
 
@@ -117,17 +117,17 @@ class XmlImporter extends Importer
             $value = $this->importUnicodeString($cTag['value']);
 
             if (!$in_bib) {
-                if (($cTag['tag'] == 'bib') && ($cTag['type'] == 'open')) {
+                if (('bib' == $cTag['tag']) && ('open' == $cTag['type'])) {
                     $in_bib = true;
                 }
             } else {
                 if (!$in_ref) {
-                    if (($cTag['tag'] == 'reference') && ($cTag['type'] == 'open')) {
+                    if (('reference' == $cTag['tag']) && ('open' == $cTag['type'])) {
                         // News reference
                         $in_ref = true;
                         $publication = [];
                     } else {
-                        if (($cTag['tag'] == 'bib') && ($cTag['type'] == 'close')) {
+                        if (('bib' == $cTag['tag']) && ('close' == $cTag['type'])) {
                             // Leave bib
                             $in_bib = false;
                         }
@@ -135,13 +135,13 @@ class XmlImporter extends Importer
                 } else {
                     // In reference
                     if (!$in_authors) {
-                        if (($cTag['tag'] == 'authors') && ($cTag['type'] == 'open')) {
+                        if (('authors' == $cTag['tag']) && ('open' == $cTag['type'])) {
                             // Enter authors
                             $in_authors = true;
                             $publication['authors'] = [];
                         } else {
                             if (in_array($lowerCaseTag, $referenceFields)) {
-                                if ($cTag['type'] == 'complete') {
+                                if ('complete' == $cTag['type']) {
                                     switch ($lowerCaseTag) {
                                         case 'bibtype':
                                             foreach ($this->referenceReader->allBibTypes as $ii => $bib) {
@@ -173,28 +173,28 @@ class XmlImporter extends Importer
                                     }
                                 } else {
                                     // Unknown field
-                                    $this->statistics['warnings'][] = 'Ignored field: ' . $cTag['tag'];
+                                    $this->statistics['warnings'][] = 'Ignored field: '.$cTag['tag'];
                                 }
                             } else {
-                                if (($cTag['tag'] == 'reference') && ($cTag['type'] == 'close')) {
+                                if (('reference' == $cTag['tag']) && ('close' == $cTag['type'])) {
                                     // Leave reference
                                     $in_ref = false;
                                     $publications[] = $publication;
                                 } else {
                                     // Unknown field
-                                    $this->statistics['warnings'][] = 'Ignored field: ' . $cTag['tag'];
+                                    $this->statistics['warnings'][] = 'Ignored field: '.$cTag['tag'];
                                 }
                             }
                         }
                     } else {
                         // In authors
                         if (!$in_person) {
-                            if (($cTag['tag'] == 'person') && ($cTag['type'] == 'open')) {
+                            if (('person' == $cTag['tag']) && ('open' == $cTag['type'])) {
                                 // Enter person
                                 $in_person = true;
                                 $author = [];
                             } else {
-                                if (($cTag['tag'] == 'authors') && ($cTag['type'] == 'close')) {
+                                if (('authors' == $cTag['tag']) && ('close' == $cTag['type'])) {
                                     // Leave authors
                                     $in_authors = false;
                                 }
@@ -203,13 +203,13 @@ class XmlImporter extends Importer
                             // In person
                             $sn_fields = ['surname', 'sn'];
                             $fn_fields = ['forename', 'fn'];
-                            if (in_array($cTag['tag'], $sn_fields) && ($cTag['type'] == 'complete')) {
+                            if (in_array($cTag['tag'], $sn_fields) && ('complete' == $cTag['type'])) {
                                 $author['surname'] = $value;
                             } else {
-                                if (in_array($cTag['tag'], $fn_fields) && ($cTag['type'] == 'complete')) {
+                                if (in_array($cTag['tag'], $fn_fields) && ('complete' == $cTag['type'])) {
                                     $author['forename'] = $value;
                                 } else {
-                                    if (($cTag['tag'] == 'person') && ($cTag['type'] == 'close')) {
+                                    if (('person' == $cTag['tag']) && ('close' == $cTag['type'])) {
                                         // Leave person
                                         $in_person = false;
                                         $publication['authors'][] = $author;

@@ -71,13 +71,13 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
 
         foreach ($this->fieldAssignment as $coinsTitle => $bibTitle) {
             if ($this->arguments['data'][$bibTitle]) {
-                $coinsData[] = 'rft.' . $coinsTitle . '=' . $this->formatEntity($this->arguments['data'][$bibTitle]);
+                $coinsData[] = 'rft.'.$coinsTitle.'='.$this->formatEntity($this->arguments['data'][$bibTitle]);
             }
         }
         if ($this->arguments['data']['authors']) {
             $author = $this->formatAuthor($this->arguments['data']['authors']);
-            $coinsData[] = 'rft.aulast=' . $this->formatEntity($author[0]);
-            $coinsData[] = 'rft.aufirst=' . $this->formatEntity($author[1]);
+            $coinsData[] = 'rft.aulast='.$this->formatEntity($author[0]);
+            $coinsData[] = 'rft.aufirst='.$this->formatEntity($author[1]);
         }
 
         $this->tag->addAttribute('class', 'Z3988');

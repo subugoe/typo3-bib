@@ -56,7 +56,7 @@ class XmlExporter extends Exporter
         $this->pattern[] = '/>/';
         $this->replacement[] = '&gt;';
 
-        $this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.xml');
+        $this->setFileName($this->pi1->extKey.'_'.$this->filterKey.'.xml');
     }
 
     /**
@@ -69,11 +69,11 @@ class XmlExporter extends Exporter
     {
         $charset = $this->pi1->extConf['charset']['lower'];
 
-        if ($charset != 'utf-8') {
+        if ('utf-8' != $charset) {
             $publication = $this->getReferenceReader()->change_pub_charset($publication, $charset, 'utf-8');
         }
 
-        $content = '<reference>' . PHP_EOL;
+        $content = '<reference>'.PHP_EOL;
 
         foreach ($this->getReferenceReader()->getPublicationFields() as $key) {
             $append = true;
@@ -81,13 +81,13 @@ class XmlExporter extends Exporter
             switch ($key) {
                 case 'authors':
                     $value = $publication['authors'];
-                    if (count($value) == 0) {
+                    if (0 == count($value)) {
                         $append = false;
                     }
                     break;
                 default:
                     $value = trim($publication[$key]);
-                    if ((strlen($value) == 0) || ($value == '0')) {
+                    if ((0 == strlen($value)) || ('0' == $value)) {
                         $append = false;
                     }
             }
@@ -97,7 +97,7 @@ class XmlExporter extends Exporter
             }
         }
 
-        $content .= '</reference>' . PHP_EOL;
+        $content .= '</reference>'.PHP_EOL;
 
         return $content;
     }
@@ -121,10 +121,10 @@ class XmlExporter extends Exporter
                     $foreName = $this->xmlFormatString($author['forename']);
                     $surName = $this->xmlFormatString($author['surname']);
                     if (strlen($foreName)) {
-                        $a_str .= '<fn>' . $foreName . '</fn>';
+                        $a_str .= '<fn>'.$foreName.'</fn>';
                     }
                     if (strlen($surName)) {
-                        $a_str .= '<sn>' . $surName . '</sn>';
+                        $a_str .= '<sn>'.$surName.'</sn>';
                     }
                     if (strlen($a_str)) {
                         $aXML[] = $a_str;
@@ -133,7 +133,7 @@ class XmlExporter extends Exporter
                 if (count($aXML)) {
                     $value .= PHP_EOL;
                     foreach ($aXML as $author) {
-                        $value .= '<person>' . $author . '</person>' . PHP_EOL;
+                        $value .= '<person>'.$author.'</person>'.PHP_EOL;
                     }
                 }
                 break;
@@ -148,7 +148,7 @@ class XmlExporter extends Exporter
             default:
                 $value = $this->xmlFormatString($value);
         }
-        $content .= '<' . $key . '>' . $value . '</' . $key . '>' . PHP_EOL;
+        $content .= '<'.$key.'>'.$value.'</'.$key.'>'.PHP_EOL;
 
         return $content;
     }
@@ -172,11 +172,11 @@ class XmlExporter extends Exporter
      */
     protected function fileIntro($infoArr = [])
     {
-        $content = '<?xml version="1.0" encoding="utf-8"?>' . PHP_EOL;
-        $content .= '<bib>' . PHP_EOL;
-        $content .= '<comment>' . PHP_EOL;
+        $content = '<?xml version="1.0" encoding="utf-8"?>'.PHP_EOL;
+        $content .= '<bib>'.PHP_EOL;
+        $content .= '<comment>'.PHP_EOL;
         $content .= $this->xmlFormatString($this->getGeneralInformationText($infoArr));
-        $content .= '</comment>' . PHP_EOL;
+        $content .= '</comment>'.PHP_EOL;
 
         return $content;
     }
@@ -188,7 +188,7 @@ class XmlExporter extends Exporter
      */
     protected function fileOutro($infoArr = [])
     {
-        $content = '</bib>' . PHP_EOL;
+        $content = '</bib>'.PHP_EOL;
 
         return $content;
     }

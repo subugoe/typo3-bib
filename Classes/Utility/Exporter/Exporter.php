@@ -107,19 +107,15 @@ abstract class Exporter
         $this->setupExportFile();
     }
 
-    /**
-     */
     protected function setupFilters()
     {
         $this->setFilters($this->pi1->extConf['filters']);
         unset($this->filters['br_page']);
 
         // The filter key is used for the filename
-        $this->filterKey = 'export' . strval($GLOBALS['TSFE']->id);
+        $this->filterKey = 'export'.strval($GLOBALS['TSFE']->id);
     }
 
-    /**
-     */
     protected function setupExportFile()
     {
         // Setup export file path and name
@@ -128,7 +124,7 @@ abstract class Exporter
             $this->filePath = 'uploads/tx_bib';
         }
 
-        $this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.dat');
+        $this->setFileName($this->pi1->extKey.'_'.$this->filterKey.'.dat');
         $this->setIsNewFile(false);
     }
 
@@ -202,7 +198,7 @@ abstract class Exporter
                 $this->setIsNewFile(true);
             } else {
                 throw new FileOperationErrorException(
-                    $this->pi1->extKey . ' error: Could not open file ' . $file_abs . ' for writing.',
+                    $this->pi1->extKey.' error: Could not open file '.$file_abs.' for writing.',
                     1379067524
                 );
             }
@@ -214,31 +210,31 @@ abstract class Exporter
     /**
      * Returns absolute system file path.
      *
-     * @return String The absolute file path
+     * @return string The absolute file path
      */
     protected function getAbsoluteFilePath()
     {
-        return PATH_site . $this->getRelativeFilePath();
+        return PATH_site.$this->getRelativeFilePath();
     }
 
     /**
      * Returns the composed path/file name.
      *
-     * @return String The file address
+     * @return string The file address
      */
     public function getRelativeFilePath()
     {
-        return $this->filePath . '/' . $this->fileName;
+        return $this->filePath.'/'.$this->fileName;
     }
 
     /**
      * Checks if the file exists and is newer than
      * the latest change (tstamp) in the publication database.
      *
-     * @param String $file
+     * @param string $file
      *
      * @return bool TRUE if file exists and is newer than the
-     *              database content, FALSE otherwise.
+     *              database content, FALSE otherwise
      */
     protected function isFileMoreUpToDate($file)
     {
@@ -246,7 +242,7 @@ abstract class Exporter
 
         if (file_exists($file)) {
             $fileModificationTIme = filemtime($file);
-            if (!($fileModificationTIme === false) && ($databaseTimestamp < $fileModificationTIme)) {
+            if (!(false === $fileModificationTIme) && ($databaseTimestamp < $fileModificationTIme)) {
                 return true;
             }
         }
@@ -326,8 +322,6 @@ abstract class Exporter
      */
     abstract protected function fileOutro($infoArr = []);
 
-    /**
-     */
     protected function cleanUpResource()
     {
         if (!$this->dynamic) {
@@ -429,20 +423,20 @@ abstract class Exporter
     {
         $num = intval($infoArr['pubNum']);
 
-        $content = 'This file was created by the TYPO3 extension' . PHP_EOL;
+        $content = 'This file was created by the TYPO3 extension'.PHP_EOL;
         $content .= $this->pi1->extKey;
         if (is_array($this->extensionManagerConfiguration)) {
-            $content .= ' version ' . $this->extensionManagerConfiguration['version'] . PHP_EOL;
+            $content .= ' version '.$this->extensionManagerConfiguration['version'].PHP_EOL;
         }
         $content .= PHP_EOL;
-        $content .= '--- Timezone: ' . date('T') . PHP_EOL;
-        $content .= 'Creation date: ' . date('Y-m-d') . PHP_EOL;
-        $content .= 'Creation time: ' . date('H-i-s') . PHP_EOL;
+        $content .= '--- Timezone: '.date('T').PHP_EOL;
+        $content .= 'Creation date: '.date('Y-m-d').PHP_EOL;
+        $content .= 'Creation time: '.date('H-i-s').PHP_EOL;
 
         if ($num >= 0) {
-            $content .= '--- Number of references' . PHP_EOL;
-            $content .= '' . $num . PHP_EOL;
-            $content .= '' . PHP_EOL;
+            $content .= '--- Number of references'.PHP_EOL;
+            $content .= ''.$num.PHP_EOL;
+            $content .= ''.PHP_EOL;
         }
 
         return $content;

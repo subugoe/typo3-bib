@@ -89,14 +89,14 @@ class SingleView extends View
     {
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename('typo3conf/ext/' . $pi1->extKey . '/Resources/Private/Templates/Single/Index.html');
+        $view->setTemplatePathAndFilename('typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Templates/Single/Index.html');
         $this->view = $view;
 
         $this->pi1 = $pi1;
         $this->conf = $pi1->conf['single_view.'];
         $this->referenceReader = &$pi1->referenceReader;
         // Load editor language data
-        $this->pi1->extend_ll('EXT:' . $this->pi1->extKey . '/Resources/Private/Language/locallang_editor.xml');
+        $this->pi1->extend_ll('EXT:'.$this->pi1->extKey.'/Resources/Private/Language/locallang_editor.xml');
     }
 
     /**
@@ -119,7 +119,7 @@ class SingleView extends View
             }
         } else {
             $content .= '<p>';
-            $content .= 'No publication with uid ' . $uid;
+            $content .= 'No publication with uid '.$uid;
             $content .= '</p>';
         }
 
@@ -164,14 +164,14 @@ class SingleView extends View
                     $label = $this->pi1->cObj->stdWrap($label, $this->conf['all_labels.']);
 
                     $value = strval($publicationData[$field]);
-                    $stdWrap = $this->pi1->conf['field.'][$field . '.'];
+                    $stdWrap = $this->pi1->conf['field.'][$field.'.'];
 
-                    if (isset($this->pi1->conf['field.'][$bib_str . '.'][$field . '.'])) {
-                        $stdWrap = $this->pi1->conf['field.'][$bib_str . '.'][$field . '.'];
+                    if (isset($this->pi1->conf['field.'][$bib_str.'.'][$field.'.'])) {
+                        $stdWrap = $this->pi1->conf['field.'][$bib_str.'.'][$field.'.'];
                     }
 
-                    if (isset($this->conf['field_wrap.'][$field . '.'])) {
-                        $stdWrap = $this->conf['field_wrap.'][$field . '.'];
+                    if (isset($this->conf['field_wrap.'][$field.'.'])) {
+                        $stdWrap = $this->conf['field_wrap.'][$field.'.'];
                     }
 
                     if (isset($stdWrap['single_view_link'])) {
@@ -184,7 +184,7 @@ class SingleView extends View
                     $value = $this->pi1->cObj->stdWrap($value, $stdWrap);
 
                     $this->view->assign($field, $value);
-                    $this->view->assign('label' . ucfirst($field), $label);
+                    $this->view->assign('label'.ucfirst($field), $label);
                 }
             }
         }
@@ -224,17 +224,17 @@ class SingleView extends View
      */
     protected function getFieldLabel($field, $identifier)
     {
-        $label = $this->referenceReader->getReferenceTable() . '_' . $field;
+        $label = $this->referenceReader->getReferenceTable().'_'.$field;
 
         switch ($field) {
             case 'authors':
-                $label = $this->referenceReader->getAuthorTable() . '_' . $field;
+                $label = $this->referenceReader->getAuthorTable().'_'.$field;
                 break;
         }
 
         $over = [
             $this->pi1->conf['editor.']['olabel.']['all.'][$field],
-            $this->pi1->conf['editor.']['olabel.'][$identifier . '.'][$field],
+            $this->pi1->conf['editor.']['olabel.'][$identifier.'.'][$field],
         ];
 
         foreach ($over as $lvar) {

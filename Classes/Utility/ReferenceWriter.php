@@ -172,7 +172,7 @@ class ReferenceWriter
                 $uid = intval($pub_db['uid']);
             } else {
                 throw new DataException(
-                    'The publication reference with uid ' . $publication['uid'] . ' could not be updated' .
+                    'The publication reference with uid '.$publication['uid'].' could not be updated'.
                     ' because it does not exist in the database (anymore?).',
                     1378973300
                 );
@@ -191,7 +191,7 @@ class ReferenceWriter
         // Check if the pid is in the allowed list
         if (!in_array($publication['pid'], $this->referenceReader->pid_list)) {
             throw new DataException(
-                'The given storage folder (pid=' . strval($publication['pid']) .
+                'The given storage folder (pid='.strval($publication['pid']).
                 ') is not in the list of allowed publication storage folders',
                 1378973653
             );
@@ -215,7 +215,7 @@ class ReferenceWriter
 
         if ($uid >= 0) {
             if ($publication['mod_key'] == $pub_db['mod_key']) {
-                $whereClause = 'uid=' . intval($uid);
+                $whereClause = 'uid='.intval($uid);
 
                 $ret = $this->db->exec_UPDATEquery(
                     $referenceTable,
@@ -223,16 +223,16 @@ class ReferenceWriter
                     $referenceRow
                 );
 
-                if ($ret == false) {
+                if (false == $ret) {
                     throw new DataException(
-                        'A publication reference could not be updated uid=' . strval($uid),
+                        'A publication reference could not be updated uid='.strval($uid),
                         1378973748
                     );
                 }
             } else {
                 throw new DataException(
-                    'The publication reference could not be updated' .
-                    ' because the modification key does not match.' .
+                    'The publication reference could not be updated'.
+                    ' because the modification key does not match.'.
                     ' Maybe someone edited this reference meanwhile.',
                     1378973836
                 );
@@ -272,7 +272,7 @@ class ReferenceWriter
         }
 
         if ($new) {
-            $this->referenceLog('A new publication reference was inserted (pid=' . $publication['pid'] . ')', $uid);
+            $this->referenceLog('A new publication reference was inserted (pid='.$publication['pid'].')', $uid);
         } else {
             $this->referenceLog('A publication reference was modified', $uid);
         }
@@ -298,7 +298,7 @@ class ReferenceWriter
         $sort = 0;
         foreach ($authors as &$author) {
             // Set new sorting value
-            $sort += 1;
+            ++$sort;
             $author['sorting'] = $sort;
 
             if (!is_numeric($author['uid'])) {
@@ -314,7 +314,7 @@ class ReferenceWriter
                     $author['uid'] = $this->insertAuthor($ia);
                     if (!(intval($author['uid']) > 0)) {
                         throw new DataException(
-                            'An author ' . $ia['surename'] . '  could not be inserted into the database',
+                            'An author '.$ia['surename'].'  could not be inserted into the database',
                             1378976979
                         );
                     }
@@ -357,13 +357,13 @@ class ReferenceWriter
 
                     $ret = $this->db->exec_UPDATEquery(
                         $this->referenceReader->getAuthorshipTable(),
-                        'uid=' . intval($as_uid),
+                        'uid='.intval($as_uid),
                         $as
                     );
 
-                    if ($ret == false) {
+                    if (false == $ret) {
                         throw new DataException(
-                            'An authorship could not be updated uid=' . strval($as_uid),
+                            'An authorship could not be updated uid='.strval($as_uid),
                             1378977083
                         );
                     }
@@ -431,7 +431,7 @@ class ReferenceWriter
         GeneralUtility::logDeprecatedFunction();
         $this->db->exec_UPDATEquery(
             $this->referenceReader->getAuthorshipTable(),
-            'uid=' . intval($uid) . ' AND deleted=0',
+            'uid='.intval($uid).' AND deleted=0',
             ['deleted' => 1]
         );
     }
@@ -454,7 +454,7 @@ class ReferenceWriter
 
         $this->db->exec_UPDATEquery(
             $this->referenceReader->getAuthorshipTable(),
-            'uid IN (' . $uid_list . ') AND deleted=0',
+            'uid IN ('.$uid_list.') AND deleted=0',
             ['deleted' => 1]
         );
     }
@@ -471,14 +471,14 @@ class ReferenceWriter
 
         $this->db->exec_UPDATEquery(
             $this->referenceReader->getReferenceTable(),
-            'uid=' . strval($uid),
+            'uid='.strval($uid),
             [
                 'hidden' => ($hidden ? '1' : '0'),
                 'tstamp' => time(),
             ]
         );
 
-        $this->referenceLog('A publication reference was ' . ($hidden ? 'hidden' : 'revealed'), $uid);
+        $this->referenceLog('A publication reference was '.($hidden ? 'hidden' : 'revealed'), $uid);
         $this->clear_page_cache();
     }
 
@@ -501,18 +501,17 @@ class ReferenceWriter
         $db_pub = $this->referenceReader->getPublicationDetails($uid);
         if (is_array($db_pub)) {
             if ($db_pub['mod_key'] == $mod_key) {
-
                 // Delete authorships
                 $this->db->exec_UPDATEquery(
                     $this->referenceReader->getAuthorshipTable(),
-                    'pub_id=' . intval($uid) . ' AND deleted=0',
+                    'pub_id='.intval($uid).' AND deleted=0',
                     ['deleted' => $deleted]
                 );
 
                 // Delete reference
                 $this->db->exec_UPDATEquery(
                     $this->referenceReader->getReferenceTable(),
-                    'uid=' . intval($uid) . ' AND deleted=0',
+                    'uid='.intval($uid).' AND deleted=0',
                     [
                         'deleted' => $deleted,
                         'tstamp' => time(),
@@ -524,15 +523,15 @@ class ReferenceWriter
                 $this->referenceLog('A publication reference was deleted', $uid);
             } else {
                 throw new DataException(
-                    'The publication reference could not be deleted' .
-                    ' because the modification key does not match.' .
+                    'The publication reference could not be deleted'.
+                    ' because the modification key does not match.'.
                     ' Maybe someone edited this reference meanwhile.',
                     1378975765
                 );
             }
         } else {
             throw new DataException(
-                'The publication reference could not be deleted' .
+                'The publication reference could not be deleted'.
                 ' because it does not exist in the database.',
                 1378975870
             );
@@ -563,7 +562,7 @@ class ReferenceWriter
      */
     protected function referenceLog($message, $uid, $error = 0)
     {
-        $message = $message . ' (' . $this->referenceReader->getReferenceTable() . ':' . intval($uid) . ')';
+        $message = $message.' ('.$this->referenceReader->getReferenceTable().':'.intval($uid).')';
         $this->log($message, $error);
     }
 }

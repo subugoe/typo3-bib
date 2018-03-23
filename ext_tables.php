@@ -10,19 +10,19 @@ if (!defined('TYPO3_MODE')) {
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_bib_domain_model_authorships');
 
 // Plugin 1: Publication List
-$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY . '_pi1'] = 'layout,select_key';
-$TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . '_pi1'] = 'pi_flexform';
+$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1'] = 'layout,select_key';
+$TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi1'] = 'pi_flexform';
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     [
         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tt_content.list_type_pi1',
-        $_EXTKEY . '_pi1',
+        $_EXTKEY.'_pi1',
     ],
     'list_type'
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
-    $_EXTKEY . '_pi1',
+    $_EXTKEY.'_pi1',
     'FILE:EXT:bib/Configuration/FlexForms/flexform_ds.xml'
 );
 
@@ -33,7 +33,7 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . '_pi1'] = 'pi
 );
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-    'Ipf.' . $_EXTKEY,
+    'Ipf.'.$_EXTKEY,
     'rest',
     'Bib REST Service'
 );

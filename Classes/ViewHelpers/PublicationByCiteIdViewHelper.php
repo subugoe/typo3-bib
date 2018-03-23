@@ -73,7 +73,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
         $this->hasArgument('storagePid') ? $storagePid = intval($this->arguments['storagePid']) : $storagePid = null;
 
         if (empty($citationId)) {
-            throw new \Exception('A citation Id has to be Provided for ' . __CLASS__, 1378194424);
+            throw new \Exception('A citation Id has to be Provided for '.__CLASS__, 1378194424);
         }
         try {
             return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
@@ -92,7 +92,6 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
      */
     protected function getBibliographicDataFromCitationId($citationId, $storagePid)
     {
-
         /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
 
@@ -107,7 +106,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
                 ]
             );
         } else {
-            throw new DataException('Citation Id ' . $citationId . ' does not exist', 1378195258);
+            throw new DataException('Citation Id '.$citationId.' does not exist', 1378195258);
         }
 
         $citationUid = $referenceReader->getUidFromCitationId($citationId);

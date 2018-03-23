@@ -33,17 +33,17 @@ namespace Ipf\Bib\Domain\Model;
 class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
     /**
-     * @var String
+     * @var string
      */
     protected $foreName;
 
     /**
-     * @var String
+     * @var string
      */
     protected $surName;
 
     /**
-     * @var String
+     * @var string
      */
     protected $url;
 
@@ -53,7 +53,7 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $frontEndUserId;
 
     /**
-     * @return String
+     * @return string
      */
     public function getForeName()
     {
@@ -61,7 +61,7 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param String $foreName
+     * @param string $foreName
      */
     public function setForeName($foreName)
     {
@@ -85,7 +85,7 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @return String
+     * @return string
      */
     public function getSurName()
     {
@@ -93,7 +93,7 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param String $surName
+     * @param string $surName
      */
     public function setSurName($surName)
     {
@@ -101,7 +101,7 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @return String
+     * @return string
      */
     public function getUrl()
     {
@@ -109,7 +109,7 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param String $url
+     * @param string $url
      */
     public function setUrl($url)
     {

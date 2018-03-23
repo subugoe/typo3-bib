@@ -40,7 +40,7 @@ class DbUtility
     public $referenceReader;
 
     /**
-     * @var String
+     * @var string
      */
     public $charset = 'UTF-8';
 
@@ -99,8 +99,8 @@ class DbUtility
     public function deleteAuthorsWithoutPublications()
     {
         $selectQuery = 'SELECT t_au.uid';
-        $selectQuery .= ' FROM ' . $this->referenceReader->getAuthorTable() . ' AS t_au';
-        $selectQuery .= ' LEFT OUTER JOIN ' . $this->referenceReader->getAuthorshipTable() . ' AS t_as ';
+        $selectQuery .= ' FROM '.$this->referenceReader->getAuthorTable().' AS t_au';
+        $selectQuery .= ' LEFT OUTER JOIN '.$this->referenceReader->getAuthorshipTable().' AS t_as ';
         $selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ';
         $selectQuery .= ' WHERE t_au.deleted = 0 ';
         $selectQuery .= ' GROUP BY t_au.uid ';
@@ -119,7 +119,7 @@ class DbUtility
 
             $this->db->exec_UPDATEquery(
                 $this->referenceReader->getAuthorTable(),
-                'uid IN ( ' . $csv . ')',
+                'uid IN ( '.$csv.')',
                 [
                     'deleted' => '1',
                 ]
@@ -172,7 +172,7 @@ class DbUtility
 
         if (count($this->referenceReader->pid_list) > 0) {
             $csv = Utility::implode_intval(',', $this->referenceReader->pid_list);
-            $whereClause[] = 'pid IN (' . $csv . ')';
+            $whereClause[] = 'pid IN ('.$csv.')';
         }
         $whereClause[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
@@ -224,13 +224,13 @@ class DbUtility
      */
     protected function update_full_text($uid, $force = false)
     {
-        $whereClause = 'uid=' . intval($uid);
+        $whereClause = 'uid='.intval($uid);
         $rows = $this->db->exec_SELECTgetRows(
             'file_url,full_text_tstamp,full_text_file_url',
             $this->referenceReader->getReferenceTable(),
             $whereClause
         );
-        if (count($rows) != 1) {
+        if (1 != count($rows)) {
             return false;
         }
         $pub = $rows[0];
@@ -243,14 +243,14 @@ class DbUtility
         $file_exists = false;
 
         if ((strlen($file) > 0)
-            && ($file_start == 'fileadmin')
-            && ($file_end == '.pdf')
+            && ('fileadmin' == $file_start)
+            && ('.pdf' == $file_end)
         ) {
             $root = PATH_site;
-            if (substr($root, -1, 1) != '/') {
+            if ('/' != substr($root, -1, 1)) {
                 $root .= '/';
             }
-            $file = $root . $file;
+            $file = $root.$file;
             if (file_exists($file)) {
                 $file_mt = filemtime($file);
                 $file_exists = true;
@@ -290,7 +290,7 @@ class DbUtility
             // Check if pdftotext is executable
             if (!is_executable($this->pdftotext_bin)) {
                 $err = [];
-                $err['msg'] = 'The pdftotext binary \'' . strval($this->pdftotext_bin) .
+                $err['msg'] = 'The pdftotext binary \''.strval($this->pdftotext_bin).
                     '\' is no executable';
 
                 return $err;
@@ -298,9 +298,9 @@ class DbUtility
 
             // Determine temporary text file
             $target = tempnam($this->tmp_dir, 'bib_pdftotext');
-            if ($target === false) {
+            if (false === $target) {
                 $err = [];
-                $err['msg'] = 'Could not create temporary file in ' . strval($this->tmp_dir);
+                $err['msg'] = 'Could not create temporary file in '.strval($this->tmp_dir);
 
                 return $err;
             }
@@ -312,17 +312,17 @@ class DbUtility
 
             $cmd = strval($this->pdftotext_bin);
             if (strlen($charset) > 0) {
-                $cmd .= ' -enc ' . $charset;
+                $cmd .= ' -enc '.$charset;
             }
-            $cmd .= ' ' . $file_shell;
-            $cmd .= ' ' . $target_shell;
+            $cmd .= ' '.$file_shell;
+            $cmd .= ' '.$target_shell;
 
             $cmd_txt = [];
             $retval = false;
             exec($cmd, $cmd_txt, $retval);
-            if ($retval != 0) {
+            if (0 != $retval) {
                 $err = [];
-                $err['msg'] = 'pdftotext failed on ' . strval($pub['file_url']) . ': ' . implode('', $cmd_txt);
+                $err['msg'] = 'pdftotext failed on '.strval($pub['file_url']).': '.implode('', $cmd_txt);
 
                 return $err;
             }
@@ -346,9 +346,9 @@ class DbUtility
                 $whereClause,
                 $db_data
             );
-            if ($ret == false) {
+            if (false == $ret) {
                 $err = [];
-                $err['msg'] = 'Full text update failed: ' . $this->db->sql_error();
+                $err['msg'] = 'Full text update failed: '.$this->db->sql_error();
 
                 return $err;
             }
@@ -366,15 +366,15 @@ class DbUtility
     {
         $this->db->exec_DELETEquery(
             $this->referenceReader->getAuthorshipTable(),
-            'pid = ' . $pid
+            'pid = '.$pid
         );
         $this->db->exec_DELETEquery(
             $this->referenceReader->getAuthorTable(),
-            'pid = ' . $pid
+            'pid = '.$pid
         );
         $this->db->exec_DELETEquery(
             $this->referenceReader->getReferenceTable(),
-            'pid = ' . $pid
+            'pid = '.$pid
         );
     }
 }

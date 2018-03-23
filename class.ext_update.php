@@ -41,7 +41,7 @@ class ext_update
         if ($num > 0) {
             $res .= '<h3>Missing authorship pids</h3>';
             $res .= '<p>';
-            $res .= 'Found ' . $num . ' authorships with missing pid';
+            $res .= 'Found '.$num.' authorships with missing pid';
             $res .= '<p>';
             $res .= '<ul>';
             if ($this->fix_wrong_aship_pid()) {
@@ -69,7 +69,7 @@ class ext_update
 		';
         $res = $GLOBALS['TYPO3_DB']->sql_query($query);
         $error = $GLOBALS['TYPO3_DB']->sql_error();
-        if ((strlen($error) == 0) && $res) {
+        if ((0 == strlen($error)) && $res) {
             $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
             $num = intval($row['count(*)']);
         }
@@ -101,7 +101,7 @@ class ext_update
 		';
         $res = $GLOBALS['TYPO3_DB']->sql_query($query);
         $sql_error = $GLOBALS['TYPO3_DB']->sql_error();
-        if (strlen($error) == 0) {
+        if (0 == strlen($error)) {
         } else {
             $error = true;
         }
@@ -115,7 +115,7 @@ class ext_update
     public function access()
     {
         $update = false;
-        if ($this->num_wrong_aship_pid() != 0) {
+        if (0 != $this->num_wrong_aship_pid()) {
             $update = true;
         }
 

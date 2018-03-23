@@ -59,7 +59,7 @@ class FlexFormUtility
         foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
             $optionList[] = [
                 0 => LocalizationUtility::translate(
-                    $this->referenceReader->getReferenceTable() . '_' . $referenceField,
+                    $this->referenceReader->getReferenceTable().'_'.$referenceField,
                     'bib'
                 ),
                 1 => $referenceField,
@@ -86,7 +86,7 @@ class FlexFormUtility
             foreach ($this->referenceReader->getSearchFields() as $searchField) {
                 $optionList[] = [
                     0 => LocalizationUtility::translate(
-                        $this->referenceReader->getSearchPrefix() . '_' . $searchField,
+                        $this->referenceReader->getSearchPrefix().'_'.$searchField,
                         'bib'
                     ),
                     1 => $searchField,
@@ -105,14 +105,13 @@ class FlexFormUtility
      */
     public function addSortFieldsToFlexForm(&$configuration)
     {
-
         /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
         $optionList = [];
 
         foreach ($referenceReader->getSortFields() as $sortField) {
             $optionList[] = [
-                0 => LocalizationUtility::translate($referenceReader->getSortPrefix() . '_' . $sortField, 'bib'),
+                0 => LocalizationUtility::translate($referenceReader->getSortPrefix().'_'.$sortField, 'bib'),
                 1 => $sortField,
             ];
         }

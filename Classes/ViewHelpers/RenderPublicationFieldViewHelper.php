@@ -67,24 +67,22 @@ class RenderPublicationFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\
         }
     }
 
-    /**
-     */
     public function render()
     {
         $fieldConfiguration = $this->arguments;
         foreach (array_keys(RenderPublicationViewHelper::$variables) as $variableName) {
-            if ($fieldConfiguration[$variableName] === null) {
-                $fieldConfiguration[$variableName] = $this->templateVariableContainer->get('tx_bib_' . $variableName);
+            if (null === $fieldConfiguration[$variableName]) {
+                $fieldConfiguration[$variableName] = $this->templateVariableContainer->get('tx_bib_'.$variableName);
             }
         }
 
         $fieldConfiguration['children'] = $this->renderChildren();
-        if ($fieldConfiguration['children'] !== null) {
+        if (null !== $fieldConfiguration['children']) {
             $fieldConfiguration['children'] = trim($fieldConfiguration['children']);
         }
 
         $bibliographyItem = $this->templateVariableContainer->get(RenderPublicationViewHelper::$bibliographyItemVariableName);
-        if ($bibliographyItem[$fieldConfiguration['field']] || $fieldConfiguration['children'] !== null) {
+        if ($bibliographyItem[$fieldConfiguration['field']] || null !== $fieldConfiguration['children']) {
             $container = $this->templateVariableContainer->get(RenderPublicationViewHelper::$containerVariableName);
             $container[] = $fieldConfiguration;
             $this->templateVariableContainer->remove(RenderPublicationViewHelper::$containerVariableName);

@@ -138,9 +138,9 @@ class BibTexImporter extends Importer
 
         foreach ($replace as $key => $val) {
             $pRegExpTranslator
-                ->push('/\\\\' . $key . '\{(\w)\}' . '/', $val)
-                ->push('/\{\\\\' . $key . '(\w)\}' . '/', $val)
-                ->push('/\\\\' . $key . '(\w)' . '/', $val);
+                ->push('/\\\\'.$key.'\{(\w)\}'.'/', $val)
+                ->push('/\{\\\\'.$key.'(\w)\}'.'/', $val)
+                ->push('/\\\\'.$key.'(\w)'.'/', $val);
         }
 
         $pRegExpTranslator
@@ -197,7 +197,7 @@ class BibTexImporter extends Importer
         ];
 
         foreach ($replace as $key => $val) {
-            $pRegExpTranslator->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
+            $pRegExpTranslator->push('/\\\\'.$key.'([^\w]|$)/', $val.'\\1');
         }
 
         // Lesser, greater, amp
@@ -252,7 +252,7 @@ class BibTexImporter extends Importer
         ];
 
         foreach ($replace as $key => $val) {
-            $pRegExpTranslator->push('/\\\\' . $key . '([^\w]|$)/', $val . '\\1');
+            $pRegExpTranslator->push('/\\\\'.$key.'([^\w]|$)/', $val.'\\1');
         }
 
         // Environment markers
@@ -309,7 +309,7 @@ class BibTexImporter extends Importer
     {
         /** @var StandaloneView $view */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/BibTexInformation.html');
+        $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib').'Resources/Private/Templates/Importer/BibTexInformation.html');
 
         return $view->render();
     }
@@ -351,12 +351,12 @@ class BibTexImporter extends Importer
                     ++$ii;
                     $this->switchParserState();
                     if (($count > 1) && ($ii < $count)) {
-                        $this->pline += 1;
+                        ++$this->pline;
                     }
                 }
             }
         } catch (ParserException $parserException) {
-            $this->statistics['errors'][] = 'Line ' . strval($this->pline) . ': ' . $parserException->getMessage();
+            $this->statistics['errors'][] = 'Line '.strval($this->pline).': '.$parserException->getMessage();
         }
 
         fclose($handle);
@@ -415,10 +415,9 @@ class BibTexImporter extends Importer
         // Parse buffer chunk
         while (strlen($this->getBuffer()) > 0) {
             switch ($this->parserState) {
-
                 case self::PARSER_SEARCH_REFERENCE:
                     $pos = strpos($this->getBuffer(), '@');
-                    if ($pos === false) {
+                    if (false === $pos) {
                         $this->setBuffer('');
                     } else {
                         $this->parserState = self::PARSER_READ_REFERENCE_TYPE;
@@ -434,7 +433,7 @@ class BibTexImporter extends Importer
                         $this->raw_ref['type'] .= $type;
                         $this->setBuffer(substr($this->getBuffer(), strlen($type)));
                     } else {
-                        if (strlen($this->raw_ref['type']) == 0) {
+                        if (0 == strlen($this->raw_ref['type'])) {
                             throw new ParserException('Empty bibliography type', 1378736591);
                         }
                         $this->parserState = self::PARSER_SEARCH_REFERENCE_BEGIN;
@@ -443,7 +442,7 @@ class BibTexImporter extends Importer
                 case self::PARSER_SEARCH_REFERENCE_BEGIN:
                     $this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
                     if (strlen($this->getBuffer()) > 0) {
-                        if (substr($this->getBuffer(), 0, 1) == '{') {
+                        if ('{' == substr($this->getBuffer(), 0, 1)) {
                             $this->setBuffer(substr($this->getBuffer(), 1));
                             $this->parserState = self::PARSER_SEARCH_CITE_ID;
                         } else {
@@ -468,7 +467,7 @@ class BibTexImporter extends Importer
                         $this->raw_ref['citeid'] .= $id;
                         $this->setBuffer(substr($this->getBuffer(), strlen($id)));
                     } else {
-                        if (strlen($this->raw_ref['citeid']) === 0) {
+                        if (0 === strlen($this->raw_ref['citeid'])) {
                             throw new ParserException('Empty cite Id', 1378736569);
                         }
 
@@ -479,16 +478,16 @@ class BibTexImporter extends Importer
                     $this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
                     if (strlen($this->getBuffer()) > 0) {
                         $char = substr($this->getBuffer(), 0, 1);
-                        if ($char === ',') {
+                        if (',' === $char) {
                             $this->setBuffer(substr($this->getBuffer(), 1));
                             $this->parserState = self::PARSER_SEARCH_PAIR_NAME;
                         } else {
-                            if ($char === '}') {
+                            if ('}' === $char) {
                                 $this->setBuffer(substr($this->getBuffer(), 1));
                                 $this->pushCurrentRawReferenceToList();
                                 $this->parserState = self::PARSER_SEARCH_REFERENCE;
                             } else {
-                                throw new ParserException('Expected "," or "}" but found: "' . $char . '"', 1378736559);
+                                throw new ParserException('Expected "," or "}" but found: "'.$char.'"', 1378736559);
                             }
                         }
                     }
@@ -501,12 +500,12 @@ class BibTexImporter extends Importer
                             $this->pair_name = '';
                             $this->parserState = self::PARSER_READ_PAIR_NAME;
                         } else {
-                            if ($char === '}') {
+                            if ('}' === $char) {
                                 $this->setBuffer(substr($this->getBuffer(), 1));
                                 $this->pushCurrentRawReferenceToList();
                                 $this->parserState = self::PARSER_SEARCH_REFERENCE;
                             } else {
-                                throw new ParserException('Found illegal pair name character: ' . $char, 1378736549);
+                                throw new ParserException('Found illegal pair name character: '.$char, 1378736549);
                             }
                         }
                     }
@@ -518,7 +517,7 @@ class BibTexImporter extends Importer
                         $this->pair_name .= $str;
                         $this->setBuffer(substr($this->getBuffer(), strlen($str)));
                     } else {
-                        if (strlen($this->pair_name) === 0) {
+                        if (0 === strlen($this->pair_name)) {
                             throw new ParserException('Empty value name', 1378736541);
                         }
                         $this->parserState = self::PARSER_SEARCH_ASSIGN;
@@ -528,11 +527,11 @@ class BibTexImporter extends Importer
                     $this->setBuffer(preg_replace('/^\s*/', '', $this->getBuffer()));
                     if (strlen($this->getBuffer()) > 0) {
                         $char = substr($this->getBuffer(), 0, 1);
-                        if ($char === '=') {
+                        if ('=' === $char) {
                             $this->setBuffer(substr($this->getBuffer(), 1));
                             $this->parserState = self::PARSER_SEARCH_PAIR_VALUE;
                         } else {
-                            throw new ParserException('Expected "=" but found "' . $char . '"', 1378736530);
+                            throw new ParserException('Expected "=" but found "'.$char.'"', 1378736530);
                         }
                     }
                     break;
@@ -541,7 +540,7 @@ class BibTexImporter extends Importer
                     if (strlen($this->getBuffer()) > 0) {
                         $char = substr($this->getBuffer(), 0, 1);
                         if (preg_match('/^[^}=]/', $char) > 0) {
-                            if (($char == '{') || ($char == "'") || ($char == '"')) {
+                            if (('{' == $char) || ("'" == $char) || ('"' == $char)) {
                                 $this->pair_start = $char;
                                 $this->pair_value = '';
                             } else {
@@ -552,7 +551,7 @@ class BibTexImporter extends Importer
                             $this->setBuffer(substr($this->getBuffer(), 1));
                             $this->parserState = self::PARSER_READ_PAIR_VALUE;
                         } else {
-                            throw new ParserException('Found illegal pair value begin character: ' . $char, 1378736499);
+                            throw new ParserException('Found illegal pair value begin character: '.$char, 1378736499);
                         }
                     }
                     break;
@@ -566,14 +565,14 @@ class BibTexImporter extends Importer
                         if ($ii > 0) {
                             $prev_char = $char;
                         }
-                        $char = $this->buffer{$ii};
+                        $char = $this->buffer[$ii];
                         $last = $ii;
 
                         switch ($char) {
                             case '"':
                             case "'":
-                                if (($prev_char != '\\') && ($this->pair_start == $char)) {
-                                    if ($this->pair_brace != 0) {
+                                if (('\\' != $prev_char) && ($this->pair_start == $char)) {
+                                    if (0 != $this->pair_brace) {
                                         throw new ParserException('Unbalanced brace count', 1378736624);
                                     }
                                     $go_on = false;
@@ -583,19 +582,19 @@ class BibTexImporter extends Importer
                                 break;
                             case '{':
                                 $this->pair_value .= $char;
-                                if ($prev_char != '\\') {
+                                if ('\\' != $prev_char) {
                                     ++$this->pair_brace;
                                 }
                                 break;
                             case '}':
-                                if ($prev_char == '\\') {
+                                if ('\\' == $prev_char) {
                                     $this->pair_value .= $char;
                                 } else {
                                     --$this->pair_brace;
                                     if ($this->pair_brace >= 0) {
                                         $this->pair_value .= $char;
                                     } else {
-                                        if ($this->pair_start == '{') {
+                                        if ('{' == $this->pair_start) {
                                             $go_on = false;
                                         } else {
                                             throw new ParserException('Unbalanced brace count', 1378736661);
@@ -606,7 +605,7 @@ class BibTexImporter extends Importer
                             case ' ':
                             case "\t":
                             case ',':
-                                if ($this->pair_start == '') {
+                                if ('' == $this->pair_start) {
                                     --$last;
                                     $go_on = false;
                                 } else {
@@ -634,7 +633,7 @@ class BibTexImporter extends Importer
                     break;
                 default:
                     throw new ParserException(
-                        'Illegal BibTeX parser state: "' . strval($this->parserState) . '"',
+                        'Illegal BibTeX parser state: "'.strval($this->parserState).'"',
                         1378736678
                     );
                     break;
@@ -660,7 +659,7 @@ class BibTexImporter extends Importer
         if (in_array($raw_val, $this->referenceReader->allBibTypes)) {
             $publication['bibtype'] = array_search($raw_val, $this->referenceReader->allBibTypes);
         } else {
-            throw new TranslatorException('Unknown bibtype: "' . strval($raw_val) . '"', 1378736700);
+            throw new TranslatorException('Unknown bibtype: "'.strval($raw_val).'"', 1378736700);
         }
 
         // Citeid
@@ -703,7 +702,7 @@ class BibTexImporter extends Importer
                         }
                         $publication[$r_key] = $r_val;
                     } else {
-                        $this->statistics['warnings'][] = 'Ignored field: ' . $r_key;
+                        $this->statistics['warnings'][] = 'Ignored field: '.$r_key;
                     }
             }
         }
@@ -742,7 +741,7 @@ class BibTexImporter extends Importer
         foreach ($arr as $a_str) {
             $author = [];
             $a_str = trim($a_str);
-            if (strpos($a_str, ',') === false) {
+            if (false === strpos($a_str, ',')) {
                 // No comma in author string
                 $a_split = preg_split('/\s+/', $a_str);
                 foreach ($a_split as &$a_part) {

@@ -50,8 +50,6 @@ class PRegExpTranslator
         $this->clear();
     }
 
-    /**
-     */
     protected function clear()
     {
         $this->pattern = [];

@@ -96,14 +96,15 @@ abstract class Navigation
           'Author' => 'authorNav',
           'Preference' => 'prefNav',
           'Page' => 'pageNav',
-          'Statistics' => 'statNav'
+          'Statistics' => 'statNav',
         ];
         if (isset($templateMapping[$templateName])) {
-            $templateFileName = $this->pi1->conf[$templateMapping[$templateName] . '.']['template'];
+            $templateFileName = $this->pi1->conf[$templateMapping[$templateName].'.']['template'];
             $templateFile = GeneralUtility::getFileAbsFileName($templateFileName);
         } else {
-            $templateFile = ExtensionManagementUtility::extPath($this->pi1->extKey) . '/Resources/Private/Templates/Navigation/' . $templateName . '.html';
+            $templateFile = ExtensionManagementUtility::extPath($this->pi1->extKey).'/Resources/Private/Templates/Navigation/'.$templateName.'.html';
         }
+
         return $templateFile;
     }
 
@@ -114,23 +115,23 @@ abstract class Navigation
      */
     public function translator()
     {
-        $pref = '###' . $this->prefix;
+        $pref = '###'.$this->prefix;
         $content = $this->get();
 
         $res = [];
-        $res[$pref . '###'] = $content;
+        $res[$pref.'###'] = $content;
 
         $val = '';
-        if ($this->conf['top_disable'] == 0) {
+        if (0 == $this->conf['top_disable']) {
             $val = $this->pi1->cObj->stdWrap($content, $this->conf['top.']);
         }
-        $res[$pref . '_TOP###'] = $val;
+        $res[$pref.'_TOP###'] = $val;
 
         $val = '';
-        if ($this->conf['bottom_disable'] == 0) {
+        if (0 == $this->conf['bottom_disable']) {
             $val = $this->pi1->cObj->stdWrap($content, $this->conf['bottom.']);
         }
-        $res[$pref . '_BOTTOM###'] = $val;
+        $res[$pref.'_BOTTOM###'] = $val;
 
         return $res;
     }
@@ -219,7 +220,7 @@ abstract class Navigation
                     $wrap = $cfgSel['below.'];
                 }
             } else {
-                if ($ii == 0) { // First
+                if (0 == $ii) { // First
                     $key = 'prev';
                     $wrap = $cfgSel['first.'];
                 } else {
@@ -269,7 +270,7 @@ abstract class Navigation
             }
 
             $sel[$key][] = $text;
-            $ii += 1;
+            ++$ii;
         }
 
         // Item separator

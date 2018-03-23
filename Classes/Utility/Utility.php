@@ -70,13 +70,13 @@ class Utility
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
             'title',
             'pages',
-            'uid=' . intval($uid)
+            'uid='.intval($uid)
         );
 
         $p_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
         if (is_array($p_row)) {
             $title = htmlspecialchars($p_row['title'], true);
-            $title .= ' (' . strval($uid) . ')';
+            $title .= ' ('.strval($uid).')';
         }
 
         return $title;
@@ -97,7 +97,7 @@ class Utility
         if (strlen($str) > $len) {
             $le = ceil($len / 2.0);
             $ls = $len - $le;
-            $res = mb_substr($str, 0, $ls, $charset) . '...';
+            $res = mb_substr($str, 0, $ls, $charset).'...';
             $res .= mb_substr($str, strlen($str) - $le, $le, $charset);
         }
 
@@ -116,18 +116,18 @@ class Utility
      */
     public static function filter_pub_html_display($content, $htmlSpecialChars = false, $charset = 'UTF-8')
     {
-        $rand = strval(rand()) . strval(rand());
+        $rand = strval(rand()).strval(rand());
         $content = str_replace(['<prt>', '</prt>'], '', $content);
 
-        $LE = '#LE' . $rand . 'LE#';
-        $GE = '#GE' . $rand . 'GE#';
+        $LE = '#LE'.$rand.'LE#';
+        $GE = '#GE'.$rand.'GE#';
 
         /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
 
         foreach ($referenceReader->getAllowedTags() as $tag) {
-            $content = str_replace('<' . $tag . '>', $LE . $tag . $GE, $content);
-            $content = str_replace('</' . $tag . '>', $LE . '/' . $tag . $GE, $content);
+            $content = str_replace('<'.$tag.'>', $LE.$tag.$GE, $content);
+            $content = str_replace('</'.$tag.'>', $LE.'/'.$tag.$GE, $content);
         }
 
         $content = str_replace('<', '&lt;', $content);
@@ -141,7 +141,7 @@ class Utility
         // End of remove not allowed tags
 
         // Handle illegal ampersands
-        if (!(strpos($content, '&') === false)) {
+        if (!(false === strpos($content, '&'))) {
             $content = self::fix_html_ampersand($content);
         }
 
@@ -210,7 +210,7 @@ class Utility
         ) {
             if (is_string($groups)) {
                 $groups = strtolower($groups);
-                if (!(strpos($groups, 'all') === false)) {
+                if (!(false === strpos($groups, 'all'))) {
                     return true;
                 }
                 $groups = GeneralUtility::intExplode(',', $groups);
@@ -286,16 +286,16 @@ class Utility
      */
     public static function html_input(string $type, $name, $value, $attributes = [])
     {
-        $content = '<input type="' . (string) $type . '"';
+        $content = '<input type="'.(string) $type.'"';
         if (strlen($name) > 0) {
-            $content .= ' name="' . (string) $name . '"';
+            $content .= ' name="'.(string) $name.'"';
         }
         if (strlen($value) > 0) {
-            $content .= ' value="' . (string) $value . '"';
+            $content .= ' value="'.(string) $value.'"';
         }
         foreach ($attributes as $a_key => $a_value) {
-            if (!($a_value === false)) {
-                $content .= ' ' . (string) $a_key . '="' . (string) $a_value . '"';
+            if (!(false === $a_value)) {
+                $content .= ' '.(string) $a_key.'="'.(string) $a_value.'"';
             }
         }
         $content .= '>';
@@ -396,7 +396,7 @@ class Utility
      * @param $value
      * @param array $attributes
      *
-     * @return String The select element
+     * @return string The select element
      *
      * @deprecated
      */
@@ -405,14 +405,14 @@ class Utility
         $value = strval($value);
         $content = '<select';
         foreach ($attributes as $a_key => $a_value) {
-            if (!($a_value === false)) {
-                $content .= ' ' . strval($a_key) . '="' . strval($a_value) . '"';
+            if (!(false === $a_value)) {
+                $content .= ' '.strval($a_key).'="'.strval($a_value).'"';
             }
         }
         $content .= '>';
         foreach ($pairs as $p_value => $p_name) {
             $p_value = strval($p_value);
-            $content .= '<option value="' . $p_value . '"';
+            $content .= '<option value="'.$p_value.'"';
             if ($p_value == strval($value)) {
                 $content .= ' selected="selected"';
             }
@@ -439,10 +439,10 @@ class Utility
             $res .= '<tr>';
             if (is_array($row)) {
                 foreach ($row as $cell) {
-                    $res .= '<td>' . strval($cell) . '</td>';
+                    $res .= '<td>'.strval($cell).'</td>';
                 }
             } else {
-                $res .= '<td>' . strval($row) . '</td>';
+                $res .= '<td>'.strval($row).'</td>';
             }
             $res .= '</tr>';
         }
@@ -464,7 +464,7 @@ class Utility
         foreach ($messages as $msg) {
             $msg = strval($msg);
             if (array_key_exists($msg, $res)) {
-                $res[$msg] += 1;
+                ++$res[$msg];
             } else {
                 $res[$msg] = 1;
             }
@@ -760,12 +760,12 @@ class Utility
      */
     public static function check_file_nexist($file)
     {
-        if ((strlen($file) > 0) && (substr($file, 0, 10) == 'fileadmin/')) {
+        if ((strlen($file) > 0) && ('fileadmin/' == substr($file, 0, 10))) {
             $root = PATH_site;
-            if (substr($root, -1, 1) != '/') {
+            if ('/' != substr($root, -1, 1)) {
                 $root .= '/';
             }
-            $file = $root . $file;
+            $file = $root.$file;
 
             return !file_exists($file);
         }

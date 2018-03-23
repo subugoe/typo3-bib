@@ -47,7 +47,7 @@ class BibTexExporter extends Exporter
     {
         parent::initialize($pi1);
 
-        $this->setFileName($this->pi1->extKey . '_' . $this->filterKey . '.bib');
+        $this->setFileName($this->pi1->extKey.'_'.$this->filterKey.'.bib');
 
         /** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
         $bibTexTranslator = GeneralUtility::makeInstance(PRegExpTranslator::class);
@@ -200,8 +200,8 @@ class BibTexExporter extends Exporter
         $bibliographyType = ucfirst($this->getReferenceReader()->allBibTypes[$publication['bibtype']]);
 
         $content = '@';
-        $content .= $bibliographyType . ' { ';
-        $content .= trim($publication['citeid']) . ",\n";
+        $content .= $bibliographyType.' { ';
+        $content .= trim($publication['citeid']).",\n";
 
         $entries = [];
         foreach ($this->getReferenceReader()->getPublicationFields() as $publicationField) {
@@ -214,13 +214,13 @@ class BibTexExporter extends Exporter
                     break;
                 case 'authors':
                     $value = $publication['authors'];
-                    if (count($value) == 0) {
+                    if (0 == count($value)) {
                         $append = false;
                     }
                     break;
                 default:
                     $value = trim($publication[$publicationField]);
-                    if ((strlen($value) == 0) || ($value == '0')) {
+                    if ((0 == strlen($value)) || ('0' == $value)) {
                         $append = false;
                     }
             }
@@ -229,13 +229,13 @@ class BibTexExporter extends Exporter
                 $astr = '   ';
                 switch ($publicationField) {
                     case 'authors':
-                        $astr .= 'author' . ' = {';
+                        $astr .= 'author'.' = {';
                         break;
                     case 'file_url':
-                        $astr .= 'url' . ' = {';
+                        $astr .= 'url'.' = {';
                         break;
                     default:
-                        $astr .= $publicationField . ' = {';
+                        $astr .= $publicationField.' = {';
                 }
                 $astr .= $this->bibTexFormatField($publicationField, $value);
                 $astr .= '}';
@@ -246,7 +246,7 @@ class BibTexExporter extends Exporter
         $content .= implode(",\n", $entries);
         $content .= PHP_EOL;
         $content .= '}';
-        $content .= PHP_EOL . PHP_EOL;
+        $content .= PHP_EOL.PHP_EOL;
 
         return $content;
     }
@@ -263,7 +263,7 @@ class BibTexExporter extends Exporter
         $matchPattern = '/^[A-Za-z0-9_-]+$/';
         $matcher = preg_match($matchPattern, $publicationCiteId);
 
-        if ($matcher === 0) {
+        if (0 === $matcher) {
             $replacePattern = '/[^a-zA-Z0-9_-]/';
             $publicationCiteId = preg_replace($replacePattern, '_', $publicationCiteId);
         }
@@ -293,9 +293,9 @@ class BibTexExporter extends Exporter
                     $forename = $this->bibTexFormatString($a['forename']);
                     $surname = $this->bibTexFormatString($a['surname']);
                     if (strlen($surname) && strlen($forename)) {
-                        $value .= $surname . ', ' . $forename;
+                        $value .= $surname.', '.$forename;
                     } else {
-                        $value .= $surname . $forename;
+                        $value .= $surname.$forename;
                     }
                 }
                 break;
@@ -317,7 +317,6 @@ class BibTexExporter extends Exporter
      */
     protected function bibTexFormatString($content)
     {
-
         // Convert characters to html sequences
         $charset = $this->pi1->extConf['charset']['upper'];
         // Replace illegal html ampersands with &amp;
@@ -340,7 +339,7 @@ class BibTexExporter extends Exporter
                 } else {
                     $tmp2 = explode('</prt>', $v);
 
-                    $content .= '{' . $tmp2[0] . '}';
+                    $content .= '{'.$tmp2[0].'}';
                     $partSize = count($tmp2);
                     for ($i = 1; $i < $partSize; ++$i) {
                         $content .= $tmp2[$i];
@@ -359,8 +358,8 @@ class BibTexExporter extends Exporter
      */
     protected function fileIntro($infoArr = [])
     {
-        $str = PHP_EOL . $this->getGeneralInformationText($infoArr);
-        $str = preg_replace('/^/m', '% ', $str) . PHP_EOL;
+        $str = PHP_EOL.$this->getGeneralInformationText($infoArr);
+        $str = preg_replace('/^/m', '% ', $str).PHP_EOL;
 
         return $str;
     }

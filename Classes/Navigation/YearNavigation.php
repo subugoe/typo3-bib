@@ -95,7 +95,6 @@ class YearNavigation extends Navigation
      */
     protected function get()
     {
-
         // The label
         $label = $this->pi1->get_ll('yearNav_label');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
@@ -116,7 +115,6 @@ class YearNavigation extends Navigation
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
 
         if (count($this->pi1->stat['years']) > 0) {
-
             // The all link
             $delimiter = ' - ';
             if (isset($selectionConfiguration['all_sep'])) {
@@ -132,7 +130,7 @@ class YearNavigation extends Navigation
             }
 
             $cur = array_search($this->pi1->extConf['year'], $this->pi1->stat['years']);
-            if ($cur === false) {
+            if (false === $cur) {
                 $cur = -1;
             }
             $indices = [0, $cur, count($this->pi1->stat['years']) - 1];
@@ -144,7 +142,7 @@ class YearNavigation extends Navigation
 
             $selection = $this->selection($selectionConfiguration, $indices, $numSel);
 
-            return $this->pi1->cObj->stdWrap($txt . $delimiter . $selection, $selectionConfiguration['all_wrap.']);
+            return $this->pi1->cObj->stdWrap($txt.$delimiter.$selection, $selectionConfiguration['all_wrap.']);
         }
     }
 
@@ -155,12 +153,12 @@ class YearNavigation extends Navigation
     {
         $selectForm = '';
         if (count($this->pi1->stat['years']) > 0) {
-            $name = $this->pi1->prefix_pi1 . '-year_select_form';
+            $name = $this->pi1->prefix_pi1.'-year_select_form';
             $action = $this->pi1->get_link_url(['year' => ''], false);
-            $selectForm .= '<form name="' . $name . '" ';
-            $selectForm .= 'action="' . $action . '"';
+            $selectForm .= '<form name="'.$name.'" ';
+            $selectForm .= 'action="'.$action.'"';
             $selectForm .= ' method="post"';
-            $selectForm .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+            $selectForm .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
             $selectForm .= '>';
 
             $pairs = ['all' => $this->pi1->get_ll('yearNav_all_years', 'All', true)];
@@ -174,7 +172,7 @@ class YearNavigation extends Navigation
             }
 
             $attributes = [
-                'name' => $this->pi1->prefix_pi1 . '[year]',
+                'name' => $this->pi1->prefix_pi1.'[year]',
                 'onchange' => 'this.form.submit()',
             ];
             if (strlen($this->conf['select_class']) > 0) {
@@ -193,7 +191,7 @@ class YearNavigation extends Navigation
                 $attributes['class'] = $this->conf['go_btn_class'];
             }
             $button = Utility::html_submit_input(
-                $this->pi1->prefix_pi1 . '[action][select_year]',
+                $this->pi1->prefix_pi1.'[action][select_year]',
                 $this->pi1->get_ll('button_go'),
                 $attributes
             );

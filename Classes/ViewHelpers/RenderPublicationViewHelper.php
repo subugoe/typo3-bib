@@ -115,7 +115,7 @@ class RenderPublicationViewHelper extends AbstractViewHelper
         $this->templateVariableContainer->add(self::$bibliographyItemVariableName, $bibliographyItem);
         $this->templateVariableContainer->add(self::$containerVariableName, []);
         foreach (array_keys(self::$variables) as $variableName) {
-            $this->templateVariableContainer->add(self::$prefixString . $variableName, $this->arguments[$variableName]);
+            $this->templateVariableContainer->add(self::$prefixString.$variableName, $this->arguments[$variableName]);
         }
 
         // Render contained RenderPublicationField View Helpers and retrieve the data.
@@ -126,7 +126,7 @@ class RenderPublicationViewHelper extends AbstractViewHelper
         $this->templateVariableContainer->remove(self::$containerVariableName);
         $this->templateVariableContainer->remove(self::$bibliographyItemVariableName);
         foreach (array_keys(self::$variables) as $variableName) {
-            $this->templateVariableContainer->remove(self::$prefixString . $variableName);
+            $this->templateVariableContainer->remove(self::$prefixString.$variableName);
         }
 
         return $this->createMarkup($bibliographyItem, $fieldArray);
@@ -145,13 +145,13 @@ class RenderPublicationViewHelper extends AbstractViewHelper
     {
         $document = new \DomDocument();
         $recordSpan = $document->createElement('span');
-        $recordSpan->setAttribute('class', self::$prefixString . 'record recordType-' . $bibliographyItem['bibtype']);
-        $recordSpan->setAttribute('id', 'citekey-' . $this->arguments['citeId']);
+        $recordSpan->setAttribute('class', self::$prefixString.'record recordType-'.$bibliographyItem['bibtype']);
+        $recordSpan->setAttribute('id', 'citekey-'.$this->arguments['citeId']);
         $document->appendChild($recordSpan);
 
         foreach ($fieldArray as $fieldIndex => $fieldInfo) {
             $content = $fieldInfo['children'];
-            if ($content !== null) {
+            if (null !== $content) {
                 if ($fieldInfo['xml']) {
                     $childXML = new \DOMDocument();
                     $childXML->loadXML($content);
@@ -171,18 +171,18 @@ class RenderPublicationViewHelper extends AbstractViewHelper
 
             if ($contentXML) {
                 $fieldSpan = $document->createElement('span');
-                $fieldClass = self::$prefixString . 'field';
+                $fieldClass = self::$prefixString.'field';
                 if ($fieldInfo['field']) {
-                    $fieldClass .= ' ' . self::$prefixString . 'field-' . $fieldInfo['field'];
+                    $fieldClass .= ' '.self::$prefixString.'field-'.$fieldInfo['field'];
                 }
                 $fieldSpan->setAttribute('class', $fieldClass);
 
-                $prefixKey = 'prefix' . (($fieldIndex === 0) ? 'IfFirst' : '');
+                $prefixKey = 'prefix'.((0 === $fieldIndex) ? 'IfFirst' : '');
                 $fieldSpan->appendChild($document->createTextNode($fieldInfo[$prefixKey]));
 
                 $fieldSpan->appendChild($contentXML);
 
-                $suffixKey = 'suffix' . ($fieldIndex < count($fieldArray) - 1 ? '' : 'IfLast');
+                $suffixKey = 'suffix'.($fieldIndex < count($fieldArray) - 1 ? '' : 'IfLast');
                 $fieldSpan->appendChild($document->createTextNode($fieldInfo[$suffixKey]));
 
                 $recordSpan->appendChild($fieldSpan);

@@ -107,7 +107,7 @@ class StatisticsNavigation extends Navigation
                 break;
             case $pi1::STAT_YEAR_TOTAL:
                 $label = $this->pi1->get_ll('stat_year_total_label', 'this year', true);
-                $stat_str = $year_str . ' / ' . $total_str;
+                $stat_str = $year_str.' / '.$total_str;
                 break;
         }
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);

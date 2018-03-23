@@ -1,6 +1,7 @@
 
 <?php
 defined('TYPO3_MODE') or die();
+
 return [
     'ctrl' => [
             'title' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author',
@@ -12,7 +13,7 @@ return [
             'cruser_id' => 'cruser_id',
             'default_sortby' => 'ORDER BY surname',
             'delete' => 'deleted',
-            'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib') . 'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
+            'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib').'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
         ],
     'interface' => [
         'showRecordFieldList' => 'surname,forename,url',

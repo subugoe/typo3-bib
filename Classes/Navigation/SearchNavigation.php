@@ -71,7 +71,6 @@ class SearchNavigation extends Navigation
      */
     public function hook_init()
     {
-
         // Clear string
         if (isset($this->pi1->piVars['action']['clear_search'])) {
             $clear = true;
@@ -177,14 +176,12 @@ class SearchNavigation extends Navigation
         $this->pi1->extConf['link_vars']['search']['sep'] = $sep_id;
     }
 
-    /**
-     */
     public function hook_filter()
     {
         $strings = [];
         if (strlen($this->pi1->extConf['search_navi']['string']) > 0) {
             $delimiter = $this->pi1->extConf['search_navi']['sep'];
-            if ($delimiter == 'none') {
+            if ('none' == $delimiter) {
                 $strings[] = $this->pi1->extConf['search_navi']['string'];
             } else {
                 // Explode search string
@@ -234,7 +231,6 @@ class SearchNavigation extends Navigation
      */
     public function get()
     {
-
         // Append hidden input
         $this->append_hidden('extra_b', true);
         if (!$this->extConf['extra']) {
@@ -268,7 +264,7 @@ class SearchNavigation extends Navigation
             $val = $val ? '1' : '0';
         }
         $this->hidden_input[] = Utility::html_hidden_input(
-            $this->pi1->prefix_pi1 . '[search][' . $key . ']',
+            $this->pi1->prefix_pi1.'[search]['.$key.']',
             $val
         );
     }
@@ -292,10 +288,10 @@ class SearchNavigation extends Navigation
         $attributes = [
             'search' => '',
         ];
-        $formTag = '<form name="' . $this->pi1->prefix_pi1 . '-search_form" ';
-        $formTag .= 'action="' . $this->pi1->get_link_url($attributes, false) . '"';
+        $formTag = '<form name="'.$this->pi1->prefix_pi1.'-search_form" ';
+        $formTag .= 'action="'.$this->pi1->get_link_url($attributes, false).'"';
         $formTag .= ' method="post"';
-        $formTag .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+        $formTag .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
         $formTag .= '>';
 
         return $formTag;
@@ -318,7 +314,7 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_check_input(
-            $this->pi1->prefix_pi1 . '[search][extra]',
+            $this->pi1->prefix_pi1.'[search][extra]',
             '1',
             $this->extConf['extra'],
             $attributes
@@ -326,7 +322,7 @@ class SearchNavigation extends Navigation
 
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['extra.']['btn.']);
 
-        return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['extra.']['widget.']);
+        return $this->pi1->cObj->stdWrap($txt.$button, $this->conf['extra.']['widget.']);
     }
 
     /**
@@ -337,11 +333,11 @@ class SearchNavigation extends Navigation
         $size = intval($this->conf['search.']['input_size']);
         $length = intval($this->conf['search.']['input_maxlength']);
 
-        if ($size == 0) {
+        if (0 == $size) {
             $size = 24;
         }
 
-        if ($length == 0) {
+        if (0 == $length) {
             $size = 512;
         }
 
@@ -357,7 +353,7 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_text_input(
-            $this->pi1->prefix_pi1 . '[search][text]',
+            $this->pi1->prefix_pi1.'[search][text]',
             $value,
             $attributes
         );
@@ -374,7 +370,7 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_submit_input(
-            $this->pi1->prefix_pi1 . '[action][search]',
+            $this->pi1->prefix_pi1.'[action][search]',
             $txt,
             $attributes
         );
@@ -391,7 +387,7 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_submit_input(
-            $this->pi1->prefix_pi1 . '[action][clear_search]',
+            $this->pi1->prefix_pi1.'[action][clear_search]',
             $txt,
             $attributes
         );
@@ -413,8 +409,6 @@ class SearchNavigation extends Navigation
         return $form_end;
     }
 
-    /**
-     */
     protected function getAdvancedSearch()
     {
         $this->view
@@ -441,14 +435,14 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_check_input(
-            $this->pi1->prefix_pi1 . '[search][abstracts]',
+            $this->pi1->prefix_pi1.'[search][abstracts]',
             '1',
             $this->extConf['abstracts'],
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['abstracts.']['btn.']);
 
-        return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['abstracts.']['widget.']);
+        return $this->pi1->cObj->stdWrap($txt.$button, $this->conf['abstracts.']['widget.']);
     }
 
     /**
@@ -461,18 +455,18 @@ class SearchNavigation extends Navigation
 
         $types = ['space', 'semi', 'pipe'];
         $pairs = [
-            'none' => $this->pi1->pi_getLL('searchNav_sep_none' . $types),
+            'none' => $this->pi1->pi_getLL('searchNav_sep_none'.$types),
             'space' => '&nbsp;',
             'semi' => ';',
             'pipe' => '|',
         ];
         foreach ($types as $type) {
-            $pairs[$type] .= ' (' .
-                $this->pi1->pi_getLL('searchNav_sep_' . $type) . ')';
+            $pairs[$type] .= ' ('.
+                $this->pi1->pi_getLL('searchNav_sep_'.$type).')';
         }
 
         $attributes = [
-            'name' => $this->pi1->prefix_pi1 . '[search][sep]',
+            'name' => $this->pi1->prefix_pi1.'[search][sep]',
             'onchange' => 'this.form.submit()',
         ];
 
@@ -487,7 +481,7 @@ class SearchNavigation extends Navigation
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['separator.']['select.']);
 
-        return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['separator.']['widget.']);
+        return $this->pi1->cObj->stdWrap($txt.$button, $this->conf['separator.']['widget.']);
     }
 
     /**
@@ -498,7 +492,7 @@ class SearchNavigation extends Navigation
         $rule = '';
         $txt = $this->pi1->pi_getLL('searchNav_rule');
         $txt = $this->pi1->cObj->stdWrap($txt, $this->conf['rule.']['label.']);
-        $name = $this->pi1->prefix_pi1 . '[search][rule]';
+        $name = $this->pi1->prefix_pi1.'[search][rule]';
 
         $attributes = [
             'onchange' => 'this.form.submit()',
@@ -510,7 +504,7 @@ class SearchNavigation extends Navigation
         // OR
         $label = $this->pi1->pi_getLL('searchNav_OR');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['rule.']['btn_label.']);
-        $checked = ($this->extConf['rule'] == 'OR');
+        $checked = ('OR' == $this->extConf['rule']);
         $button = Utility::html_radio_input(
             $name,
             'OR',
@@ -518,12 +512,12 @@ class SearchNavigation extends Navigation
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['rule.']['btn.']);
-        $rule .= $label . $button;
+        $rule .= $label.$button;
 
         // AND
         $label = $this->pi1->pi_getLL('searchNav_AND');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['rule.']['btn_label.']);
-        $checked = ($this->extConf['rule'] == 'AND');
+        $checked = ('AND' == $this->extConf['rule']);
         $button = Utility::html_radio_input(
             $name,
             'AND',
@@ -532,9 +526,9 @@ class SearchNavigation extends Navigation
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['rule.']['btn.']);
 
-        $rule .= $label . $button;
+        $rule .= $label.$button;
 
-        return $this->pi1->cObj->stdWrap($txt . $rule, $this->conf['rule.']['widget.']);
+        return $this->pi1->cObj->stdWrap($txt.$rule, $this->conf['rule.']['widget.']);
     }
 
     /**
@@ -554,14 +548,14 @@ class SearchNavigation extends Navigation
         }
 
         $button = Utility::html_check_input(
-            $this->pi1->prefix_pi1 . '[search][full_text]',
+            $this->pi1->prefix_pi1.'[search][full_text]',
             '1',
             $this->extConf['full_text'],
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['full_text.']['btn.']);
 
-        return $this->pi1->cObj->stdWrap($txt . $button, $this->conf['full_text.']['widget.']);
+        return $this->pi1->cObj->stdWrap($txt.$button, $this->conf['full_text.']['widget.']);
     }
 
     /**

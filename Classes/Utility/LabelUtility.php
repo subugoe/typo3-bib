@@ -51,17 +51,17 @@ class LabelUtility
             $author_id = $item['author_id'];
             if ($author_id) {
                 $author = BackendUtility::getRecord('tx_bib_domain_model_author', $author_id);
-                $title .= $author['surname'] . ', ' . $author['forename'];
+                $title .= $author['surname'].', '.$author['forename'];
             }
 
             $pub_id = $item['pub_id'];
             if ($pub_id) {
                 $pub = BackendUtility::getRecord('tx_bib_domain_model_reference', $pub_id);
-                $title .= ' [' . $pub['title'] . ']';
+                $title .= ' ['.$pub['title'].']';
             }
         }
 
-        if (strlen($title) == 0) {
+        if (0 == strlen($title)) {
             $title = '[Error!]';
         }
 

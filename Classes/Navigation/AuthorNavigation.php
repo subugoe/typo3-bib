@@ -105,9 +105,9 @@ class AuthorNavigation extends Navigation
 
             $txt = $this->extConf['sel_letter'];
             $spec = htmlentities($txt, ENT_QUOTES, $charset);
-            $pats = [$txt . '%'];
+            $pats = [$txt.'%'];
             if ($spec != $txt) {
-                $pats[] = $spec . '%';
+                $pats[] = $spec.'%';
             }
 
             // Append surname letter to filter
@@ -129,7 +129,7 @@ class AuthorNavigation extends Navigation
             $sel_up = mb_strtoupper($this->extConf['sel_letter'], $charset);
             $sel_low = mb_strtolower($this->extConf['sel_letter'], $charset);
             foreach ($this->pi1->stat['authors']['sel_surnames'] as $name) {
-                if (!(strpos($name, '&') === false)) {
+                if (!(false === strpos($name, '&'))) {
                     $name = html_entity_decode($name, ENT_COMPAT, $charset);
                     $spec = true;
                 }
@@ -152,7 +152,7 @@ class AuthorNavigation extends Navigation
         }
 
         // Setup filter for selected author
-        if ($this->extConf['sel_author'] != '0') {
+        if ('0' != $this->extConf['sel_author']) {
             $spec = htmlentities($this->extConf['sel_author'], ENT_QUOTES, $charset);
 
             // Check if the selected author is available
@@ -220,12 +220,11 @@ class AuthorNavigation extends Navigation
      */
     protected function first_letters($names, $charset)
     {
-
         // Acquire letters
         $letters = [];
         foreach ($names as $name) {
             $ll = mb_substr($name, 0, 1, $charset);
-            if ($ll == '&') {
+            if ('&' == $ll) {
                 $match = preg_match('/^(&[^;]{1,7};)/', $name, $grp);
                 if ($match) {
                     $ll = html_entity_decode($grp[1], ENT_QUOTES, $charset);
@@ -265,13 +264,13 @@ class AuthorNavigation extends Navigation
         $index = -1;
         if ($sel1 != $null) {
             $index = array_search($sel1, $list);
-            if ($index === false) {
+            if (false === $index) {
                 $index = array_search($sel2, $list);
             }
-            if ($index === false) {
+            if (false === $index) {
                 $index = array_search($sel3, $list);
             }
-            if ($index === false) {
+            if (false === $index) {
                 $index = -1;
             }
         }
@@ -365,7 +364,7 @@ class AuthorNavigation extends Navigation
         $charset = $this->pi1->extConf['charset']['upper'];
         $letterConfiguration = is_array($cfg['letters.']) ? $cfg['letters.'] : [];
 
-        if (count($extConf['letters']) === 0) {
+        if (0 === count($extConf['letters'])) {
             return '';
         }
 
@@ -411,14 +410,14 @@ class AuthorNavigation extends Navigation
         $sep = $cObj->stdWrap($sep, $letterConfiguration['all_sep.']);
 
         $txt = $this->pi1->pi_getLL('authorNav_all_letters', 'All', true);
-        if (strlen($extConf['sel_letter']) == 0) {
+        if (0 == strlen($extConf['sel_letter'])) {
             $txt = $cObj->stdWrap($txt, $letterConfiguration['current.']);
         } else {
             $txt = $this->pi1->get_link($txt, ['author_letter' => '', 'author' => '']);
         }
 
         // Compose
-        $txt = $txt . $sep . $lst;
+        $txt = $txt.$sep.$lst;
         $txt = $cObj->stdWrap($txt, $letterConfiguration['all_wrap.']);
 
         return $txt;
@@ -462,7 +461,7 @@ class AuthorNavigation extends Navigation
 
         // All together
         if (count($this->pi1->stat['authors']['sel_surnames']) > 0) {
-            $all = $txt . $sep . $sel;
+            $all = $txt.$sep.$sel;
         } else {
             $all = '&nbsp;';
         }
@@ -479,10 +478,10 @@ class AuthorNavigation extends Navigation
      */
     protected function getHtmlSelectFormField()
     {
-        $content = '<form name="' . $this->pi1->prefix_pi1 . '-author_select_form" ';
-        $content .= 'action="' . $this->pi1->get_link_url(['author' => ''], false) . '"';
+        $content = '<form name="'.$this->pi1->prefix_pi1.'-author_select_form" ';
+        $content .= 'action="'.$this->pi1->get_link_url(['author' => ''], false).'"';
         $content .= ' method="post"';
-        $content .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+        $content .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
         $content .= '>';
 
         // The raw data
@@ -509,7 +508,7 @@ class AuthorNavigation extends Navigation
             $pairs[$name] = $name;
         }
         $attributes = [
-            'name' => $this->pi1->prefix_pi1 . '[author]',
+            'name' => $this->pi1->prefix_pi1.'[author]',
             'onchange' => 'this.form.submit()',
         ];
         if (strlen($this->conf['select_class']) > 0) {
@@ -526,7 +525,7 @@ class AuthorNavigation extends Navigation
             $attributes['class'] = $this->conf['go_btn_class'];
         }
         $button = Utility::html_submit_input(
-            $this->pi1->prefix_pi1 . '[action][select_author]',
+            $this->pi1->prefix_pi1.'[action][select_author]',
             $this->pi1->pi_getLL('button_go'),
             $attributes
         );
@@ -537,7 +536,7 @@ class AuthorNavigation extends Navigation
         $content .= '</form>';
 
         // Finalize
-        if (count($pairs) == 1) {
+        if (1 == count($pairs)) {
             $content = '&nbsp;';
         }
 

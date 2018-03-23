@@ -159,13 +159,13 @@ abstract class Importer
         $res = $this->db->exec_SELECTquery(
             'title',
             'pages',
-            'uid=' . intval($uid)
+            'uid='.intval($uid)
         );
         $page = $this->db->sql_fetch_assoc($res);
         $charset = $this->pi1->extConf['charset']['upper'];
         if (is_array($page)) {
             $title = htmlspecialchars($page['title'], ENT_NOQUOTES, $charset);
-            $title .= ' (' . strval($uid) . ')';
+            $title .= ' ('.strval($uid).')';
         }
 
         return $title;
@@ -207,14 +207,14 @@ abstract class Importer
             $pages = Utility::get_page_titles($pids);
 
             $val = $this->pi1->get_ll('import_storage_info', 'import_storage_info', true);
-            $content .= '<p>' . $val . '</p>';
+            $content .= '<p>'.$val.'</p>';
 
             $val = Utility::html_select_input(
                 $pages,
                 $default_pid,
-                ['name' => $this->pi1->prefixId . '[import_pid]']
+                ['name' => $this->pi1->prefixId.'[import_pid]']
             );
-            $content .= '<p>' . $val . '</p>';
+            $content .= '<p>'.$val.'</p>';
         }
 
         return $content;
@@ -259,7 +259,7 @@ abstract class Importer
             unset($publication['uid']);
         }
 
-        if (strlen($publication['citeid']) == 0) {
+        if (0 == strlen($publication['citeid'])) {
             $publication['citeid'] = $this->idGenerator->generateId($publication);
         }
 
@@ -306,7 +306,7 @@ abstract class Importer
                 $content .= $this->getImportStatistics();
                 break;
             default:
-                throw new \Exception('Bad import state ' . $this->state, 1378910596);
+                throw new \Exception('Bad import state '.$this->state, 1378910596);
         }
 
         return $content;
@@ -324,7 +324,7 @@ abstract class Importer
      */
     protected function importFileSelectionState()
     {
-        $this->view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/Import.html');
+        $this->view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib').'Resources/Private/Templates/Importer/Import.html');
 
         // Pre import information
         $this->view->assign('content', $this->displayInformationBeforeImport());
@@ -346,7 +346,6 @@ abstract class Importer
     protected function postImport()
     {
         if ($this->statistics['succeeded'] > 0) {
-
             // Update full texts
             if ($this->pi1->conf['editor.']['full_text.']['update']) {
                 $arr = $this->databaseUtility->update_full_text_all();
@@ -369,7 +368,7 @@ abstract class Importer
     {
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib') . 'Resources/Private/Templates/Importer/Statistics.html');
+        $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib').'Resources/Private/Templates/Importer/Statistics.html');
 
         $view->assign('fileName', $this->statistics['file_name']);
         $view->assign('fileSize', $this->statistics['file_size']);
@@ -395,7 +394,7 @@ abstract class Importer
             $val = '';
             foreach ($messages as $msg => $count) {
                 $str = $this->getMessageOccurrenceCounter($msg, $count);
-                $val .= '<li>' . $str . '</li>';
+                $val .= '<li>'.$str.'</li>';
             }
             $view->assign('warnings', $val);
         }
@@ -408,7 +407,7 @@ abstract class Importer
             $messages = Utility::string_counter($this->statistics['errors']);
             foreach ($messages as $msg => $count) {
                 $str = $this->getMessageOccurrenceCounter($msg, $count);
-                $val .= '<li>' . $str . '</li>';
+                $val .= '<li>'.$str.'</li>';
             }
             $this->view->assign('errors', $val);
         }
@@ -427,7 +426,7 @@ abstract class Importer
         $charset = $this->pi1->extConf['charset']['upper'];
         $content = htmlspecialchars($message, ENT_QUOTES, $charset);
         if ($count > 1) {
-            $content .= ' (' . strval($count);
+            $content .= ' ('.strval($count);
             $content .= ' times)';
         }
 
@@ -475,7 +474,7 @@ abstract class Importer
             $charset = $this->pi1->extConf['charset']['lower'];
         }
 
-        if ($charset != 'utf-8') {
+        if ('utf-8' != $charset) {
             $content = $GLOBALS['TSFE']->csConvObj->utf8_decode($content, $charset, true);
         }
 

@@ -87,13 +87,11 @@ class PreferenceNavigation extends Navigation
         return $this->view->render();
     }
 
-    /**
-     */
     protected function getKeywordConfiguration()
     {
         // Show keywords
         $show = false;
-        if ($this->pi1->piVars['show_keywords'] != 0) {
+        if (0 != $this->pi1->piVars['show_keywords']) {
             $show = true;
         }
         $this->pi1->extConf['hide_fields']['keywords'] = $show ? false : true;
@@ -101,21 +99,17 @@ class PreferenceNavigation extends Navigation
         $this->pi1->extConf['link_vars']['show_keywords'] = $show ? '1' : '0';
     }
 
-    /**
-     */
     protected function getAbstractConfiguration()
     {
         // Show abstracts
         $show = false;
-        if ($this->pi1->piVars['show_abstracts'] != 0) {
+        if (0 != $this->pi1->piVars['show_abstracts']) {
             $show = true;
         }
         $this->pi1->extConf['hide_fields']['abstract'] = $show ? false : true;
         $this->pi1->extConf['link_vars']['show_abstracts'] = $show ? '1' : '0';
     }
 
-    /**
-     */
     protected function getItemsPerPageConfiguration()
     {
         // Available ipp values
@@ -151,10 +145,10 @@ class PreferenceNavigation extends Navigation
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['ipp.']['label.']);
         $pairs = [];
         foreach ($this->extConf['pref_ipps'] as $ii) {
-            $pairs[$ii] = '&nbsp;' . strval($ii) . '&nbsp;';
+            $pairs[$ii] = '&nbsp;'.strval($ii).'&nbsp;';
         }
         $attributes = [
-            'name' => $this->pi1->prefix_pi1 . '[items_per_page]',
+            'name' => $this->pi1->prefix_pi1.'[items_per_page]',
             'onchange' => 'this.form.submit()',
         ];
         if (strlen($this->conf['ipp.']['select_class']) > 0) {
@@ -163,7 +157,7 @@ class PreferenceNavigation extends Navigation
         $button = Utility::html_select_input($pairs, $this->pi1->extConf['sub_page']['ipp'], $attributes);
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['ipp.']['select.']);
 
-        return $this->pi1->cObj->stdWrap($label . $button, $this->conf['ipp.']['widget.']);
+        return $this->pi1->cObj->stdWrap($label.$button, $this->conf['ipp.']['widget.']);
     }
 
     /**
@@ -182,14 +176,14 @@ class PreferenceNavigation extends Navigation
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['abstract.']['label.']);
         $check = $this->pi1->extConf['hide_fields']['abstract'] ? false : true;
         $button = Utility::html_check_input(
-            $this->pi1->prefix_pi1 . '[show_abstracts]',
+            $this->pi1->prefix_pi1.'[show_abstracts]',
             '1',
             $check,
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['abstract.']['btn.']);
 
-        return $this->pi1->cObj->stdWrap($label . $button, $this->conf['abstract.']['widget.']);
+        return $this->pi1->cObj->stdWrap($label.$button, $this->conf['abstract.']['widget.']);
     }
 
     /**
@@ -208,14 +202,14 @@ class PreferenceNavigation extends Navigation
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['keywords.']['label.']);
         $check = $this->pi1->extConf['hide_fields']['keywords'] ? false : true;
         $button = Utility::html_check_input(
-            $this->pi1->prefix_pi1 . '[show_keywords]',
+            $this->pi1->prefix_pi1.'[show_keywords]',
             '1',
             $check,
             $attributes
         );
         $button = $this->pi1->cObj->stdWrap($button, $this->conf['keywords.']['btn.']);
 
-        return $this->pi1->cObj->stdWrap($label . $button, $this->conf['keywords.']['widget.']);
+        return $this->pi1->cObj->stdWrap($label.$button, $this->conf['keywords.']['widget.']);
     }
 
     /**
@@ -230,7 +224,7 @@ class PreferenceNavigation extends Navigation
             $attributes['class'] = $this->conf['go_btn_class'];
         }
         $widget = Utility::html_submit_input(
-            $this->pi1->prefix_pi1 . '[action][eval_pref]',
+            $this->pi1->prefix_pi1.'[action][eval_pref]',
             $this->pi1->get_ll('button_go'),
             $attributes
         );
@@ -263,10 +257,10 @@ class PreferenceNavigation extends Navigation
             'show_keywords' => '',
         ];
         $formStart = '';
-        $formStart .= '<form name="' . $this->pi1->prefix_pi1 . '-preferences_form" ';
-        $formStart .= 'action="' . $this->pi1->get_link_url($emptySelection, false) . '"';
+        $formStart .= '<form name="'.$this->pi1->prefix_pi1.'-preferences_form" ';
+        $formStart .= 'action="'.$this->pi1->get_link_url($emptySelection, false).'"';
         $formStart .= ' method="post"';
-        $formStart .= strlen($this->conf['form_class']) ? ' class="' . $this->conf['form_class'] . '"' : '';
+        $formStart .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
         $formStart .= '>';
 
         return $formStart;

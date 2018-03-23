@@ -1,6 +1,7 @@
 
 <?php
 defined('TYPO3_MODE') or die();
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships',
@@ -9,7 +10,7 @@ return [
         'label_alt_force' => 1,
         'default_sortby' => 'ORDER BY pub_id DESC, sorting ASC',
         'delete' => 'deleted',
-        'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib') . 'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
+        'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('bib').'Resources/Public/Icons/icon_tx_bib_domain_model_reference.png',
     ],
     'interface' => [
         'showRecordFieldList' => 'pub_id,author_id,sorting',

@@ -484,7 +484,7 @@ class ReferenceReader
                     $uidSize = count($uids);
                     for ($i = 0; $i < $uidSize; ++$i) {
                         $uid = $uids[$i];
-                        if ($i == 0) {
+                        if (0 == $i) {
                             $a['uid'] = $uid['uid'];
                             $a['pid'] = $uid['pid'];
                         } else {
@@ -526,15 +526,15 @@ class ReferenceReader
                 if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
                     $chk = ' LIKE ';
                 }
-                $whereClause[] = $field . $chk . $this->db->fullQuoteStr($word, $this->getAuthorTable());
+                $whereClause[] = $field.$chk.$this->db->fullQuoteStr($word, $this->getAuthorTable());
             }
         }
 
         if (count($whereClause) > 0) {
             if (is_array($pids)) {
-                $whereClause[] = 'pid IN (' . implode(',', $pids) . ')';
+                $whereClause[] = 'pid IN ('.implode(',', $pids).')';
             } else {
-                $whereClause[] = 'pid=' . intval($pids);
+                $whereClause[] = 'pid='.intval($pids);
             }
             $whereClause = implode(' AND ', $whereClause);
             $whereClause .= $this->enable_fields($this->getAuthorTable());
@@ -564,13 +564,13 @@ class ReferenceReader
      */
     public function enable_fields($table, $alias = '', $show_hidden = false)
     {
-        if (strlen($alias) == 0) {
+        if (0 == strlen($alias)) {
             $alias = $table;
         }
         if (isset($this->cObj)) {
             $whereClause = $this->cObj->enableFields($table, $show_hidden ? 1 : 0);
         } else {
-            $whereClause = ' AND ' . $table . '.deleted=0';
+            $whereClause = ' AND '.$table.'.deleted=0';
         }
         if ($alias != $table) {
             $whereClause = str_replace($table, $alias, $whereClause);
@@ -634,10 +634,10 @@ class ReferenceReader
         }
         if (is_array($wrap) && (count($wrap) > 0)) {
             foreach ($words as $key => $txt) {
-                $words[$key] = strval($wrap[0]) . strval($txt) . strval($wrap[1]);
+                $words[$key] = strval($wrap[0]).strval($txt).strval($wrap[1]);
             }
         }
-        if (count($words) == 1) {
+        if (1 == count($words)) {
             return $words[0];
         }
 
@@ -656,21 +656,21 @@ class ReferenceReader
      */
     public function citeIdExists($citeId, $uid = -1)
     {
-        if (strlen($citeId) == 0) {
+        if (0 == strlen($citeId)) {
             return false;
         }
 
         $num = 0;
         $whereClause = [];
-        $whereClause[] = 'citeid=' . $this->db->fullQuoteStr($citeId, $this->getReferenceTable());
+        $whereClause[] = 'citeid='.$this->db->fullQuoteStr($citeId, $this->getReferenceTable());
 
         if (is_numeric($uid) && ($uid >= 0)) {
-            $whereClause[] = 'uid!=' . "'" . intval($uid) . "'";
+            $whereClause[] = 'uid!='."'".intval($uid)."'";
         }
 
         if (count($this->pid_list) > 0) {
             $csv = Utility::implode_intval(',', $this->pid_list);
-            $whereClause[] = 'pid IN (' . $csv . ')';
+            $whereClause[] = 'pid IN ('.$csv.')';
         }
 
         $whereClause = implode(' AND ', $whereClause);
@@ -694,9 +694,9 @@ class ReferenceReader
      */
     public function getNumberOfPublications()
     {
-        $select = $this->getReferenceSelectClause($this->getReferenceTable() . '.uid', null);
+        $select = $this->getReferenceSelectClause($this->getReferenceTable().'.uid', null);
         $select = preg_replace('/;\s*$/', '', $select);
-        $query = 'SELECT count(pubs.uid) FROM (' . $select . ') pubs;';
+        $query = 'SELECT count(pubs.uid) FROM ('.$select.') pubs;';
         $res = $this->db->sql_query($query);
         $row = $this->db->sql_fetch_assoc($res);
 
@@ -728,7 +728,7 @@ class ReferenceReader
 
         $groupClause = '';
         if (is_string($group)) {
-            $groupClause = strlen($group) ? $group : $this->getReferenceTable() . '.uid';
+            $groupClause = strlen($group) ? $group : $this->getReferenceTable().'.uid';
         }
 
         $orderClause = '';
@@ -741,16 +741,16 @@ class ReferenceReader
         // Find the tables that should be included
         $tables = [$this->t_ref_default];
         foreach ($fields as $field) {
-            if (!(strpos($field, $this->getAuthorshipTable()) === false)) {
+            if (!(false === strpos($field, $this->getAuthorshipTable()))) {
                 $tables[] = $this->t_as_default;
             }
-            if (!(strpos($field, $this->getAuthorTable()) === false)) {
+            if (!(false === strpos($field, $this->getAuthorTable()))) {
                 $tables[] = $this->t_au_default;
             }
         }
 
         foreach ($columns as $column) {
-            if (!(strpos($column, $this->getAuthorshipTable()) === false)) {
+            if (!(false === strpos($column, $this->getAuthorshipTable()))) {
                 $table = $this->t_as_default;
                 $table['table'] = $column;
 
@@ -761,16 +761,16 @@ class ReferenceReader
 
         $q = $this->select_clause_start($fields, $tables);
         if (strlen($whereClause)) {
-            $q .= ' WHERE ' . $whereClause;
+            $q .= ' WHERE '.$whereClause;
         }
         if (strlen($groupClause)) {
-            $q .= ' GROUP BY ' . $groupClause;
+            $q .= ' GROUP BY '.$groupClause;
         }
         if (strlen($orderClause)) {
-            $q .= ' ORDER BY ' . $orderClause;
+            $q .= ' ORDER BY '.$orderClause;
         }
         if (strlen($limitClause)) {
-            $q .= ' LIMIT ' . $limitClause;
+            $q .= ' LIMIT '.$limitClause;
         }
         $q .= ';';
 
@@ -808,10 +808,10 @@ class ReferenceReader
 
             foreach ($columns as &$column) {
                 $column = preg_replace('/\.[^\.]*$/', '', $column);
-                if (!(strpos($column, $this->getReferenceTable()) === false)) {
+                if (!(false === strpos($column, $this->getReferenceTable()))) {
                     $whereClause .= $this->enable_fields($this->getReferenceTable(), $column, $this->show_hidden);
                 }
-                if (!(strpos($column, $this->getAuthorshipTable()) === false)) {
+                if (!(false === strpos($column, $this->getAuthorshipTable()))) {
                     $whereClause .= $this->enable_fields($this->getAuthorshipTable(), $column);
                 }
             }
@@ -842,13 +842,13 @@ class ReferenceReader
         // Filter by UID
         if (is_array($filter['uid']) && (count($filter['uid']) > 0)) {
             $csv = Utility::implode_intval(',', $filter['uid']);
-            $whereClause[] = $this->getReferenceTable() . '.uid IN (' . $csv . ')';
+            $whereClause[] = $this->getReferenceTable().'.uid IN ('.$csv.')';
         }
 
         // Filter by storage PID
         if (is_array($filter['pid']) && (count($filter['pid']) > 0)) {
             $csv = Utility::implode_intval(',', $filter['pid']);
-            $whereClause[] = $this->getReferenceTable() . '.pid IN (' . $csv . ')';
+            $whereClause[] = $this->getReferenceTable().'.pid IN ('.$csv.')';
         }
 
         // Filter by year
@@ -857,7 +857,7 @@ class ReferenceReader
             // years
             if (is_array($filter['year']['years']) && (count($filter['year']['years']) > 0)) {
                 $csv = Utility::implode_intval(',', $filter['year']['years']);
-                $wca .= ' ' . $this->getReferenceTable() . '.year IN (' . $csv . ')';
+                $wca .= ' '.$this->getReferenceTable().'.year IN ('.$csv.')';
             }
             // ranges
             if (is_array($filter['year']['ranges']) && count($filter['year']['ranges'])) {
@@ -872,13 +872,13 @@ class ReferenceReader
                             $wca .= '(';
                         }
                         if (isset($filter['year']['ranges'][$i]['from'])) {
-                            $wca .= $this->getReferenceTable() . '.year >= ' . intval($filter['year']['ranges'][$i]['from']);
+                            $wca .= $this->getReferenceTable().'.year >= '.intval($filter['year']['ranges'][$i]['from']);
                         }
                         if ($both) {
                             $wca .= ' AND ';
                         }
                         if (isset($filter['year']['ranges'][$i]['to'])) {
-                            $wca .= $this->getReferenceTable() . '.year <= ' . intval($filter['year']['ranges'][$i]['to']);
+                            $wca .= $this->getReferenceTable().'.year <= '.intval($filter['year']['ranges'][$i]['to']);
                         }
                         if ($both) {
                             $wca .= ')';
@@ -886,13 +886,13 @@ class ReferenceReader
                     }
                 }
             }
-            $whereClause[] = '(' . $wca . ')';
+            $whereClause[] = '('.$wca.')';
         }
 
         // Filter by authors
         if (is_array($filter['author']) && (count($filter['author']) > 0)) {
             $f = &$filter['author'];
-            if ($f['rule'] == 1) {
+            if (1 == $f['rule']) {
                 // AND
                 if (is_array($f['sets']) && (count($f['sets']) > 0)) {
                     $wc_set = [];
@@ -908,9 +908,9 @@ class ReferenceReader
                         if (count($uid_lst) > 0) {
                             $uid_lst = implode(',', $uid_lst);
                             $col_num = $runvar['aShip_count'];
-                            $runvar['aShip_count'] += 1;
-                            $column = $this->getAuthorshipTable() . (($col_num > 0) ? strval($col_num) : '');
-                            $wc_set[] = $column . '.author_id IN (' . $uid_lst . ')';
+                            ++$runvar['aShip_count'];
+                            $column = $this->getAuthorshipTable().(($col_num > 0) ? strval($col_num) : '');
+                            $wc_set[] = $column.'.author_id IN ('.$uid_lst.')';
                             $runvar['columns'][] = $column;
                         }
                     }
@@ -937,9 +937,9 @@ class ReferenceReader
                     if (count($uid_lst) > 0) {
                         $uid_lst = implode(',', $uid_lst);
                         $col_num = $runvar['aShip_count'];
-                        $runvar['aShip_count'] += 1;
-                        $column = $this->getAuthorshipTable() . (($col_num > 0) ? strval($col_num) : '');
-                        $whereClause[] = $column . '.author_id IN (' . $uid_lst . ')';
+                        ++$runvar['aShip_count'];
+                        $column = $this->getAuthorshipTable().(($col_num > 0) ? strval($col_num) : '');
+                        $whereClause[] = $column.'.author_id IN ('.$uid_lst.')';
                         $runvar['columns'][] = $column;
                     } else {
                         $whereClause[] = 'FALSE';
@@ -952,7 +952,7 @@ class ReferenceReader
         if (is_array($filter['bibtype']) && (count($filter['bibtype']) > 0)) {
             if (is_array($filter['bibtype']['types']) && (count($filter['bibtype']['types']) > 0)) {
                 $csv = Utility::implode_intval(',', $filter['bibtype']['types']);
-                $whereClause[] = $this->getReferenceTable() . '.bibtype IN (' . $csv . ')';
+                $whereClause[] = $this->getReferenceTable().'.bibtype IN ('.$csv.')';
             }
         }
 
@@ -960,16 +960,16 @@ class ReferenceReader
         if (is_array($filter['state']) && (count($filter['state']) > 0)) {
             if (is_array($filter['state']['states']) && (count($filter['state']['states']) > 0)) {
                 $csv = Utility::implode_intval(',', $filter['state']['states']);
-                $whereClause[] = $this->getReferenceTable() . '.state IN (' . $csv . ')';
+                $whereClause[] = $this->getReferenceTable().'.state IN ('.$csv.')';
             }
         }
 
         // Filter by origin
         if (is_array($filter['origin']) && (count($filter['origin']) > 0)) {
             if (is_numeric($filter['origin']['origin'])) {
-                $wca = $this->getReferenceTable() . '.extern = 0';
-                if (intval($filter['origin']['origin']) != 0) {
-                    $wca = $this->getReferenceTable() . '.extern != 0';
+                $wca = $this->getReferenceTable().'.extern = 0';
+                if (0 != intval($filter['origin']['origin'])) {
+                    $wca = $this->getReferenceTable().'.extern != 0';
                 }
                 $whereClause[] = $wca;
             }
@@ -978,9 +978,9 @@ class ReferenceReader
         // Filter by reviewed
         if (is_array($filter['reviewed']) && (count($filter['reviewed']) > 0)) {
             if (is_numeric($filter['reviewed']['value'])) {
-                $wca = $this->getReferenceTable() . '.reviewed = 0';
-                if (intval($filter['reviewed']['value']) != 0) {
-                    $wca = $this->getReferenceTable() . '.reviewed != 0';
+                $wca = $this->getReferenceTable().'.reviewed = 0';
+                if (0 != intval($filter['reviewed']['value'])) {
+                    $wca = $this->getReferenceTable().'.reviewed != 0';
                 }
                 $whereClause[] = $wca;
             }
@@ -989,9 +989,9 @@ class ReferenceReader
         // Filter by borrowed
         if (is_array($filter['borrowed']) && (count($filter['borrowed']) > 0)) {
             if (is_numeric($filter['borrowed']['value'])) {
-                $wca = 'LENGTH(' . $this->getReferenceTable() . '.borrowed_by) = \'0\'';
-                if (intval($filter['borrowed']['value']) != 0) {
-                    $wca = 'LENGTH(' . $this->getReferenceTable() . '.borrowed_by) != \'0\'';
+                $wca = 'LENGTH('.$this->getReferenceTable().'.borrowed_by) = \'0\'';
+                if (0 != intval($filter['borrowed']['value'])) {
+                    $wca = 'LENGTH('.$this->getReferenceTable().'.borrowed_by) != \'0\'';
                 }
                 $whereClause[] = $wca;
             }
@@ -1000,9 +1000,9 @@ class ReferenceReader
         // Filter by in_library
         if (is_array($filter['in_library']) && (count($filter['in_library']) > 0)) {
             if (is_numeric($filter['in_library']['value'])) {
-                $wca = $this->getReferenceTable() . '.in_library = \'0\'';
-                if (intval($filter['in_library']['value']) != 0) {
-                    $wca = $this->getReferenceTable() . '.in_library != \'0\'';
+                $wca = $this->getReferenceTable().'.in_library = \'0\'';
+                if (0 != intval($filter['in_library']['value'])) {
+                    $wca = $this->getReferenceTable().'.in_library != \'0\'';
                 }
                 $whereClause[] = $wca;
             }
@@ -1011,15 +1011,14 @@ class ReferenceReader
         // Filter by citeid
         if (is_array($filter['citeid']) && (count($filter['citeid']) > 0)) {
             if (is_array($filter['citeid']['ids']) && (count($filter['citeid']['ids']) > 0)) {
-                $wca = $this->getReferenceTable() . '.citeid IN (';
+                $wca = $this->getReferenceTable().'.citeid IN (';
                 $citeIdSize = count($filter['citeid']['ids']);
                 for ($i = 0; $i < $citeIdSize; ++$i) {
                     if ($i > 0) {
                         $wca .= ',';
                     }
-                    {
-                        $wca .= $this->db->fullQuoteStr($filter['citeid']['ids'][$i], $this->getReferenceTable());
-                    }
+
+                    $wca .= $this->db->fullQuoteStr($filter['citeid']['ids'][$i], $this->getReferenceTable());
                 }
                 $wca .= ')';
                 $whereClause[] = $wca;
@@ -1138,7 +1137,7 @@ class ReferenceReader
             if (in_array($field, $refFields)) {
                 foreach ($proc_words as $word) {
                     $word = $this->db->fullQuoteStr($word, $this->getReferenceTable());
-                    $wca[] = $this->getReferenceTable() . '.' . $field . ' LIKE ' . $word;
+                    $wca[] = $this->getReferenceTable().'.'.$field.' LIKE '.$word;
                 }
             }
         }
@@ -1151,12 +1150,12 @@ class ReferenceReader
                 foreach ($a_ships as $as) {
                     $uids[] = intval($as['pub_id']);
                 }
-                $wca[] = $this->getReferenceTable() . '.uid IN (' . implode(',', $uids) . ')';
+                $wca[] = $this->getReferenceTable().'.uid IN ('.implode(',', $uids).')';
             }
         }
 
         if (count($wca) > 0) {
-            $res = ' ( ' . implode(PHP_EOL . ' OR ', $wca) . ' )';
+            $res = ' ( '.implode(PHP_EOL.' OR ', $wca).' )';
         }
 
         return $res;
@@ -1181,7 +1180,7 @@ class ReferenceReader
             foreach ($authors as $author) {
                 $uids[] = intval($author['uid']);
             }
-            $whereClause = 'author_id IN (' . implode(',', $uids) . ')';
+            $whereClause = 'author_id IN ('.implode(',', $uids).')';
             $whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
             $res = $this->db->exec_SELECTquery(
@@ -1221,20 +1220,20 @@ class ReferenceReader
                 foreach ($all_fields as $field) {
                     if (in_array($field, $fields)) {
                         if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
-                            $wca[] = $field . ' LIKE ' . $word;
+                            $wca[] = $field.' LIKE '.$word;
                         } else {
-                            $wca[] = $field . '=' . $word;
+                            $wca[] = $field.'='.$word;
                         }
                     }
                 }
             }
         }
-        $whereClause[] = '(' . implode(' OR ', $wca) . ')';
+        $whereClause[] = '('.implode(' OR ', $wca).')';
         if (is_array($pids)) {
             $csv = Utility::implode_intval(',', $pids);
-            $whereClause[] = 'pid IN (' . $csv . ')';
+            $whereClause[] = 'pid IN ('.$csv.')';
         } else {
-            $whereClause[] = 'pid=' . intval($pids);
+            $whereClause[] = 'pid='.intval($pids);
         }
 
         $whereClause = implode(' AND ', $whereClause);
@@ -1270,7 +1269,7 @@ class ReferenceReader
                 $sortingFilterSize = count($filter['sorting']);
                 for ($i = 0; $i < $sortingFilterSize; ++$i) {
                     if (isset($filter['sorting'][$i]['field']) && isset($filter['sorting'][$i]['dir'])) {
-                        if (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE . '.editor') {
+                        if (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE.'.editor') {
                             if (isset($this->editor_stop_words) && !empty($this->editor_stop_words)) {
                                 $editorStopWords = explode('#', $this->editor_stop_words);
                                 $oc = '';
@@ -1280,14 +1279,14 @@ class ReferenceReader
                                 $oc .= trim($filter['sorting'][$i]['field']);
                                 $oc .= ',';
                                 foreach ($editorStopWords as $key => $editorStopWord) {
-                                    $oc .= "'" . $editorStopWord . "', '')";
+                                    $oc .= "'".$editorStopWord."', '')";
                                     if ($key < count($editorStopWords) - 1) {
                                         $oc .= ',';
                                     }
                                 }
                                 $orderClause[] = $oc;
                             }
-                        } elseif (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE . '.title') {
+                        } elseif (trim($filter['sorting'][$i]['field']) == self::REFERENCE_TABLE.'.title') {
                             if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
                                 $titleStopWords = explode('#', $this->title_stop_words);
                                 $oc = '';
@@ -1297,7 +1296,7 @@ class ReferenceReader
                                 $oc .= trim($filter['sorting'][$i]['field']);
                                 $oc .= ',';
                                 foreach ($titleStopWords as $key => $titleStopWord) {
-                                    $oc .= "'" . $titleStopWord . "',";
+                                    $oc .= "'".$titleStopWord."',";
                                     switch ($titleStopWord) {
                                         case 'Ä':
                                             $oc .= "'Ae')";
@@ -1327,17 +1326,17 @@ class ReferenceReader
                                 $orderClause[] = $oc;
                             }
                         } else {
-                            if ($sortingFilterSize == 1 && trim($filter['sorting'][$i]['field']) == self::AUTHOR_TABLE . '.surname') {
+                            if (1 == $sortingFilterSize && trim($filter['sorting'][$i]['field']) == self::AUTHOR_TABLE.'.surname') {
                                 if (isset($this->title_stop_words) && !empty($this->title_stop_words)) {
                                     $titleStopWords = explode('#', $this->title_stop_words);
                                     $oc = '';
                                     for ($k = 0; $k < count($titleStopWords); ++$k) {
                                         $oc .= 'REPLACE(';
                                     }
-                                    $oc .= self::REFERENCE_TABLE . '.title';
+                                    $oc .= self::REFERENCE_TABLE.'.title';
                                     $oc .= ',';
                                     foreach ($titleStopWords as $key => $titleStopWord) {
-                                        $oc .= "'" . $titleStopWord . "',";
+                                        $oc .= "'".$titleStopWord."',";
                                         switch ($titleStopWord) {
                                             case 'Ä':
                                                 $oc .= "'Ae')";
@@ -1365,9 +1364,9 @@ class ReferenceReader
                                         }
                                     }
                                 }
-                                $orderClause[] = 'CASE WHEN ' . $filter['sorting'][$i]['field'] . '!=\'\' THEN ' . $filter['sorting'][$i]['field'] . 'ELSE ' . $oc . ' END ' . $filter['sorting'][$i]['dir'];
+                                $orderClause[] = 'CASE WHEN '.$filter['sorting'][$i]['field'].'!=\'\' THEN '.$filter['sorting'][$i]['field'].'ELSE '.$oc.' END '.$filter['sorting'][$i]['dir'];
                             } else {
-                                $orderClause[] = $filter['sorting'][$i]['field'] . ' ' . $filter['sorting'][$i]['dir'];
+                                $orderClause[] = $filter['sorting'][$i]['field'].' '.$filter['sorting'][$i]['dir'];
                             }
                         }
                     }
@@ -1391,7 +1390,7 @@ class ReferenceReader
         foreach ($this->filters as $filter) {
             if (is_array($filter['limit'])) {
                 if (isset($filter['limit']['start']) && isset($filter['limit']['num'])) {
-                    $limitClause = intval($filter['limit']['start']) . ',' . intval($filter['limit']['num']);
+                    $limitClause = intval($filter['limit']['start']).','.intval($filter['limit']['num']);
                 }
             }
         }
@@ -1431,8 +1430,8 @@ class ReferenceReader
                 }
             }
 
-            $selectClause = 'SELECT ' . implode(',', $fields);
-            $selectClause .= ' FROM ' . $base['table'] . ' ' . $base['table'];
+            $selectClause = 'SELECT '.implode(',', $fields);
+            $selectClause .= ' FROM '.$base['table'].' '.$base['table'];
             $selectClause .= $joins;
         }
 
@@ -1493,9 +1492,9 @@ class ReferenceReader
         }
 
         $aliases[] = $join['table'];
-        $joinStatement .= ' LEFT JOIN ' . $join['table'] . ' AS ' . $join['table'];
-        $joinStatement .= ' ON ' . $table['table'] . '.' . $tableMatchField;
-        $joinStatement .= '=' . $join['table'] . '.' . $joinMatchField;
+        $joinStatement .= ' LEFT JOIN '.$join['table'].' AS '.$join['table'];
+        $joinStatement .= ' ON '.$table['table'].'.'.$tableMatchField;
+        $joinStatement .= '='.$join['table'].'.'.$joinMatchField;
 
         return $joinStatement;
     }
@@ -1507,11 +1506,11 @@ class ReferenceReader
      */
     public function getLatestTimestamp()
     {
-        $maximalValueFromReferenceTable = 'max(' . $this->getReferenceTable() . '.tstamp)';
-        $maximumValueFromAuthorTable = 'max(' . $this->getReferenceTable() . '.tstamp)';
+        $maximalValueFromReferenceTable = 'max('.$this->getReferenceTable().'.tstamp)';
+        $maximumValueFromAuthorTable = 'max('.$this->getReferenceTable().'.tstamp)';
 
         $query = $this->getReferenceSelectClause(
-            $maximalValueFromReferenceTable . ', ' . $maximumValueFromAuthorTable,
+            $maximalValueFromReferenceTable.', '.$maximumValueFromAuthorTable,
             null,
             null
         );
@@ -1539,8 +1538,8 @@ class ReferenceReader
         $histogram = [];
 
         $query = $this->getReferenceSelectClause(
-            $this->getReferenceTable() . '.' . $field,
-            $this->getReferenceTable() . '.' . $field . ' ASC'
+            $this->getReferenceTable().'.'.$field,
+            $this->getReferenceTable().'.'.$field.' ASC'
         );
         $res = $this->db->sql_query($query);
 
@@ -1571,9 +1570,9 @@ class ReferenceReader
         $names = [];
 
         $query = $this->getReferenceSelectClause(
-            'distinct(' . $this->getAuthorTable() . '.surname)',
-            $this->getAuthorTable() . '.surname ASC',
-            $this->getAuthorTable() . '.uid'
+            'distinct('.$this->getAuthorTable().'.surname)',
+            $this->getAuthorTable().'.surname ASC',
+            $this->getAuthorTable().'.uid'
         );
 
         $res = $this->db->sql_query($query);
@@ -1596,11 +1595,11 @@ class ReferenceReader
     {
         $whereClause = [];
 
-        $whereClause[] = 'uid = ' . intval($uid);
+        $whereClause[] = 'uid = '.intval($uid);
 
         if (count($this->pid_list) > 0) {
             $csv = Utility::implode_intval(',', $this->pid_list);
-            $whereClause[] = 'pid IN (' . $csv . ')';
+            $whereClause[] = 'pid IN ('.$csv.')';
         }
 
         $whereClause = implode(' AND ', $whereClause);
@@ -1637,23 +1636,23 @@ class ReferenceReader
 
         $whereClause = '';
 
-        $whereClause .= $this->getAuthorshipTable() . '.pub_id=' . intval($pub_id);
+        $whereClause .= $this->getAuthorshipTable().'.pub_id='.intval($pub_id);
 
         $whereClause .= $this->enable_fields($this->getAuthorshipTable(), $this->getAuthorshipTable());
         $whereClause .= $this->enable_fields($this->getAuthorTable(), $this->getAuthorTable());
 
-        $orderClause = $this->getAuthorshipTable() . '.sorting ASC';
+        $orderClause = $this->getAuthorshipTable().'.sorting ASC';
 
-        $field_csv = $this->getAuthorTable() . '.' . implode(
-            ',' . $this->getAuthorTable() . '.',
+        $field_csv = $this->getAuthorTable().'.'.implode(
+            ','.$this->getAuthorTable().'.',
                 $this->getAuthorAllFields()
         );
         $query = $this->select_clause_start(
-            [$field_csv, $this->getAuthorshipTable() . '.sorting'],
+            [$field_csv, $this->getAuthorshipTable().'.sorting'],
             [$this->t_au_default, $this->t_as_default]
         );
-        $query .= ' WHERE ' . $whereClause;
-        $query .= ' ORDER BY ' . $orderClause;
+        $query .= ' WHERE '.$whereClause;
+        $query .= ' ORDER BY '.$orderClause;
         $query .= ';';
 
         $res = $this->db->sql_query($query);
@@ -1692,15 +1691,15 @@ class ReferenceReader
      */
     public function initializeReferenceFetching()
     {
-        $field_csv = $this->getReferenceTable() . '.' . implode(
-            ',' . $this->getReferenceTable() . '.',
+        $field_csv = $this->getReferenceTable().'.'.implode(
+            ','.$this->getReferenceTable().'.',
                 $this->refAllFields
         );
-        $field_csv1 = $this->getAuthorTable() . '.' . implode(
-            ',' . $this->getReferenceTable() . '.',
+        $field_csv1 = $this->getAuthorTable().'.'.implode(
+            ','.$this->getReferenceTable().'.',
                 $this->sortExtraFields
         );
-        $field_csv = $field_csv . ',' . $field_csv1;
+        $field_csv = $field_csv.','.$field_csv1;
         $query = $this->getReferenceSelectClause($field_csv);
         $this->setDatabaseResource($this->db->sql_query($query));
     }
@@ -1769,13 +1768,13 @@ class ReferenceReader
             if (isset($authorship['pub_id']) || isset($authorship['author_id']) || isset($authorship['pid'])) {
                 $whereClause = [];
                 if (isset($authorship['pub_id'])) {
-                    $whereClause[] = 'pub_id=' . intval($authorship['pub_id']);
+                    $whereClause[] = 'pub_id='.intval($authorship['pub_id']);
                 }
                 if (isset($authorship['author_id'])) {
-                    $whereClause[] = 'author_id=' . intval($authorship['author_id']);
+                    $whereClause[] = 'author_id='.intval($authorship['author_id']);
                 }
                 if (isset($authorship['pid'])) {
-                    $whereClause[] = 'pid=' . intval($authorship['pid']);
+                    $whereClause[] = 'pid='.intval($authorship['pid']);
                 }
                 $whereClause = implode(' AND ', $whereClause);
                 $whereClause .= $this->enable_fields($this->getAuthorshipTable());
@@ -1808,10 +1807,10 @@ class ReferenceReader
 
         if (count($this->pid_list) > 0) {
             $csv = Utility::implode_intval(',', $this->pid_list);
-            $whereClause[] = 'pid IN (' . $csv . ')';
+            $whereClause[] = 'pid IN ('.$csv.')';
         }
 
-        $whereClause[] = 'citeid = "' . $citationId . '"';
+        $whereClause[] = 'citeid = "'.$citationId.'"';
 
         $whereClause = implode(' AND ', $whereClause);
         $whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
