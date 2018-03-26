@@ -100,8 +100,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_authorships_sorting',
             'config' => [
                 'type' => 'input',
-                'size' => '10',
-                'max' => '255',
+                'size' => 10,
+                'max' => 255,
                 'eval' => 'int',
             ],
         ],

@@ -25,8 +25,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_surname',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim,required',
             ],
         ],
@@ -35,8 +35,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_forename',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -45,8 +45,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_author_url',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'checkbox' => '0',
                 'wizards' => [
                     '_PADDING' => 2,

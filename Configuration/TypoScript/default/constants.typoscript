@@ -1,0 +1,5 @@
+#cat=PLUGIN.BIB/clist/a; type=string; label=Storage folder list: A comma separated list of page IDs where database entries are be stored.
+plugin.tx_bib_pi1.pid_list = 0
+
+#cat=PLUGIN.BIB//b; type=check; label=Debug: Enable debug messages
+plugin.tx_bib_pi1.debug = 0

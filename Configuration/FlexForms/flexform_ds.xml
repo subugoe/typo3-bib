@@ -1,972 +1,1203 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <T3DataStructure>
-<meta>
-	<langDisable>1</langDisable>
-	<!--  <langChildren>1</langChildren>!-->
-</meta>
-<sheets>
-
-<!-- GENERAL VIEW (Default sheet) -->
-<sDEF>
-<ROOT>
-
-	<!-- GENERAL -->
-	<TCEforms>
-		<sheetTitle>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.sheet_general</sheetTitle>
-	</TCEforms>
-
-	<type>array</type>
-	<el>
-
-
-		<!-- List type -->
-		<display_mode>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode</label>
-				<config>
-					<type>select</type>
-					<items type="array">
-						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.TS</numIndex>
-							<numIndex index="1">-1</numIndex>
-						</numIndex>
-						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.0</numIndex>
-							<numIndex index="1">0</numIndex>
-						</numIndex>
-						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.1</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.2</numIndex>
-							<numIndex index="1">2</numIndex>
-						</numIndex>
-					</items>
-					<maxitems>1</maxitems>
-					<size>1</size>
-					<default>-1</default>
-				</config>
-			</TCEforms>
-		</display_mode>
-
-		<!-- Enumeration style -->
-		<enum_style>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum_style</label>
-				<config>
-					<type>select</type>
-					<items type="array">
-						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.TS</numIndex>
-							<numIndex index="1">-1</numIndex>
-						</numIndex>
-						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.count_page</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.count_all</numIndex>
-							<numIndex index="1">2</numIndex>
-						</numIndex>
-						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.bullets</numIndex>
-							<numIndex index="1">3</numIndex>
-						</numIndex>
-						<numIndex index="4" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.empty</numIndex>
-							<numIndex index="1">4</numIndex>
-						</numIndex>
-						<numIndex index="5" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.file_icon</numIndex>
-							<numIndex index="1">5</numIndex>
-						</numIndex>
-					</items>
-					<maxitems>1</maxitems>
-					<size>1</size>
-					<default>-1</default>
-				</config>
-			</TCEforms>
-		</enum_style>
-
-		<!-- Show search bar -->
-		<show_search>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_search</label>
-				<config>
-					<type>check</type>
-					<default>0</default>
-				</config>
-			</TCEforms>
-		</show_search>
-
-		<!-- Show author navigation -->
-		<show_authors>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_authors</label>
-				<config>
-					<type>check</type>
-					<default>0</default>
-				</config>
-			</TCEforms>
-		</show_authors>
-
-		<!-- Show preferences navigation -->
-		<show_pref>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_preferences</label>
-				<config>
-					<type>check</type>
-					<default>0</default>
-				</config>
-			</TCEforms>
-		</show_pref>
-
-		<!-- general sorting -->
-		<sorting>
-			<TCEforms>
-				<label>Sortierung</label>
-				<config>
-					<type>select</type>
-					<itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSortFieldsToFlexForm</itemsProcFunc>
-					<maxitems>5</maxitems>
-					<size>3</size>
-				</config>
-			</TCEforms>
-		</sorting>
-		<!-- general sorting -->
-
-		<!-- default search fields -->
-		<search_fields>
-			<TCEforms>
-				<label>Search Fields</label>
-				<config>
-					<type>select</type>
-					<itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSearchFieldsToFlexForm</itemsProcFunc>
-					<maxitems>5</maxitems>
-					<size>3</size>
-				</config>
-			</TCEforms>
-		</search_fields>
-		<!-- default search fields -->
-
-		<!-- Date sorting -->
-		<date_sorting>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting</label>
-				<config>
-					<type>select</type>
-					<items type="array">
-						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.TS</numIndex>
-							<numIndex index="1">-1</numIndex>
-						</numIndex>
-						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.0</numIndex>
-							<numIndex index="1">0</numIndex>
-						</numIndex>
-						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.1</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-					</items>
-					<maxitems>1</maxitems>
-					<size>1</size>
-					<default>-1</default>
-				</config>
-			</TCEforms>
-		</date_sorting>
-
-		<!-- Show textfields -->
-		<show_textfields>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields</label>
-				<config>
-					<type>select</type>
-					<items type="array">
-						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.abstract</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.annotation</numIndex>
-							<numIndex index="1">2</numIndex>
-						</numIndex>
-						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.note</numIndex>
-							<numIndex index="1">3</numIndex>
-						</numIndex>
-						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.keywords</numIndex>
-							<numIndex index="1">4</numIndex>
-						</numIndex>
-						<numIndex index="4" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.tags</numIndex>
-							<numIndex index="1">5</numIndex>
-						</numIndex>
-					</items>
-					<maxitems>5</maxitems>
-					<size>3</size>
-				</config>
-			</TCEforms>
-		</show_textfields>
-
-		<!-- Split up bibliography types -->
-		<split_bibtypes>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.split_bibtypes</label>
-				<config>
-					<type>check</type>
-					<default>0</default>
-				</config>
-			</TCEforms>
-		</split_bibtypes>
-
-		<!-- GENERAL: items per page -->
-		<items_per_page>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.items_per_page</label>
-				<config>
-					<type>input</type>
-					<size>3</size>
-					<default>-1</default>
-				</config>
-			</TCEforms>
-		</items_per_page>
-
-		<!-- GENERAL: Number of authors per page -->
-		<max_authors>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.max_authors</label>
-				<config>
-					<type>input</type>
-					<size>3</size>
-					<default>-1</default>
-				</config>
-			</TCEforms>
-		</max_authors>
-
-		<!-- GENERAL: Author name separator -->
-		<separator>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.separator</label>
-				<config>
-					<type>input</type>
-					<size>3</size>
-					<default>;</default>
-				</config>
-			</TCEforms>
-		</separator>
-
-		<!-- GENERAL: Editor Stop words -->
-		<editor_stop_words>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.editor_stop_words</label>
-				<config>
-					<type>text</type>
-				</config>
-			</TCEforms>
-		</editor_stop_words>
-
-		<!-- GENERAL: Title Stop words -->
-		<title_stop_words>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.title_stop_words</label>
-				<config>
-					<type>text</type>
-				</config>
-			</TCEforms>
-		</title_stop_words>
-
-		<!-- Statistic mode -->
-		<stat_mode>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode</label>
-				<config>
-					<type>select</type>
-					<items type="array">
-						<numIndex index="0" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.TS</numIndex>
-							<numIndex index="1">-1</numIndex>
-						</numIndex>
-						<numIndex index="1" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.0</numIndex>
-							<numIndex index="1">0</numIndex>
-						</numIndex>
-						<numIndex index="2" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.1</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-						<numIndex index="3" type="array">
-							<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.2</numIndex>
-							<numIndex index="1">2</numIndex>
-						</numIndex>
-					</items>
-					<maxitems>1</maxitems>
-					<size>1</size>
-					<default>-1</default>
-				</config>
-			</TCEforms>
-		</stat_mode>
-
-		<!-- GENERAL: export options -->
-		<export_mode>
-			<TCEforms>
- 				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_export_links</label>
-				<config>
-					<type>check</type>
-					<default>1</default>
-					</config>
-			</TCEforms>
-		</export_mode>
-
-	</el>
-
-</ROOT>
-</sDEF>
-
-<!-- Filter -->
-<s_filter>
-	<ROOT>
-
-		<TCEforms>
-			<sheetTitle>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.sheet_filter</sheetTitle>
-		</TCEforms>
-
-		<type>array</type>
-		<el>
-
-			<!-- Year filter -->
-			<!-- Enable filter -->
-			<enable_year>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_year</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_year>
-
-			<!-- year -->
-			<years>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.years</label>
-					<config>
-						<type>text</type>
-						<cols>30</cols>
-						<rows>2</rows>
-					</config>
-				</TCEforms>
-			</years>
-
-			<!-- Author filter -->
-			<!-- Enable filter -->
-			<enable_author>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_author</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_author>
-
-			<!-- author list -->
-			<authors>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.authors</label>
-					<config>
-						<type>text</type>
-						<cols>30</cols>
-						<rows>4</rows>
-					</config>
-				</TCEforms>
-			</authors>
-
-			<!-- Author rule -->
-			<author_rule>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule</label>
-					<config>
-						<type>radio</type>
-						<items>
-							<numIndex index="0">
-								<numIndex
-											 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule.OR</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1">
-								<numIndex
-											 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule.AND</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</author_rule>
-
-			<highlight_authors>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.highlight_authors</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</highlight_authors>
-
-			<!-- Tags filter -->
-			<!-- Enable filter -->
-			<enable_tags>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_tags</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_tags>
-
-			<!-- Tags list -->
-			<tags>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.tags</label>
-					<config>
-						<type>text</type>
-						<cols>30</cols>
-						<rows>4</rows>
-					</config>
-				</TCEforms>
-			</tags>
-
-			<!-- Tags rule -->
-			<tags_rule>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.tags_rule</label>
-					<config>
-						<type>radio</type>
-						<items>
-							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</tags_rule>
-
-
-			<!-- Keyword filter -->
-			<!-- Enable filter -->
-			<enable_keywords>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_keywords</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_keywords>
-
-			<!-- keyword list -->
-			<keywords>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.keywords</label>
-					<config>
-						<type>text</type>
-						<cols>30</cols>
-						<rows>4</rows>
-					</config>
-				</TCEforms>
-			</keywords>
-
-			<!-- Keyword rule -->
-			<keywords_rule>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.keywords_rule</label>
-					<config>
-						<type>radio</type>
-						<items>
-							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</keywords_rule>
-
-			<!-- State filter -->
-			<!-- Enable filter -->
-			<enable_state>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_state</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_state>
-
-			<!-- State (submitted, accepted, unpublished) -->
-			<states>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pub_states</label>
-					<config>
-						<type>check</type>
-						<items>
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.0</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.1</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-							<numIndex index="2" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.2</numIndex>
-								<numIndex index="1">2</numIndex>
-							</numIndex>
-							<numIndex index="3" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.3</numIndex>
-								<numIndex index="1">3</numIndex>
-							</numIndex>
-							<numIndex index="4" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.4</numIndex>
-								<numIndex index="1">4</numIndex>
-							</numIndex>
-						</items>
-						<minitems>0</minitems>
-						<maxitems>1</maxitems>
-						<size>1</size>
-					</config>
-				</TCEforms>
-			</states>
-
-			<!-- Bibtype filter -->
-			<!-- Enable filter -->
-			<enable_bibtype>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_bibtype</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_bibtype>
-
-			<!-- bibtype list -->
-			<bibtypes>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.bibtypes</label>
-					<config>
-						<type>select</type>
-						<items type="array">
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_1</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_2</numIndex>
-								<numIndex index="1">2</numIndex>
-							</numIndex>
-							<numIndex index="2" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_3</numIndex>
-								<numIndex index="1">3</numIndex>
-							</numIndex>
-							<numIndex index="3" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_4</numIndex>
-								<numIndex index="1">4</numIndex>
-							</numIndex>
-							<numIndex index="4" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_5</numIndex>
-								<numIndex index="1">5</numIndex>
-							</numIndex>
-							<numIndex index="5" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_6</numIndex>
-								<numIndex index="1">6</numIndex>
-							</numIndex>
-							<numIndex index="6" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_7</numIndex>
-								<numIndex index="1">7</numIndex>
-							</numIndex>
-							<numIndex index="7" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_8</numIndex>
-								<numIndex index="1">8</numIndex>
-							</numIndex>
-							<numIndex index="8" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_9</numIndex>
-								<numIndex index="1">9</numIndex>
-							</numIndex>
-							<numIndex index="9" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_10</numIndex>
-								<numIndex index="1">10</numIndex>
-							</numIndex>
-							<numIndex index="10" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_11</numIndex>
-								<numIndex index="1">11</numIndex>
-							</numIndex>
-							<numIndex index="11" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_12</numIndex>
-								<numIndex index="1">12</numIndex>
-							</numIndex>
-							<numIndex index="12" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_13</numIndex>
-								<numIndex index="1">13</numIndex>
-							</numIndex>
-							<numIndex index="13" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_14</numIndex>
-								<numIndex index="1">14</numIndex>
-							</numIndex>
-							<numIndex index="14" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_15</numIndex>
-								<numIndex index="1">15</numIndex>
-							</numIndex>
-							<numIndex index="15" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_16</numIndex>
-								<numIndex index="1">16</numIndex>
-							</numIndex>
-							<numIndex index="16" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_17</numIndex>
-								<numIndex index="1">17</numIndex>
-							</numIndex>
-							<numIndex index="17" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_18</numIndex>
-								<numIndex index="1">18</numIndex>
-							</numIndex>
-							<numIndex index="18" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_19</numIndex>
-								<numIndex index="1">19</numIndex>
-							</numIndex>
-							<numIndex index="19" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_20</numIndex>
-								<numIndex index="1">20</numIndex>
-							</numIndex>
-							<numIndex index="20" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_21</numIndex>
-								<numIndex index="1">21</numIndex>
-							</numIndex>
-						</items>
-						<maxitems>22</maxitems>
-						<size>5</size>
-					</config>
-				</TCEforms>
-			</bibtypes>
-
-			<!-- Origin filter -->
-			<!-- Enable filter -->
-			<enable_origin>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_origin</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_origin>
-
-			<!-- Origins -->
-			<origins>
-				<TCEforms>
-					<!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.origins</label> -->
-					<config>
-						<type>select</type>
-						<items type="array">
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.origins.0</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.origins.1</numIndex>
-								<numIndex index="1">2</numIndex>
-							</numIndex>
-						</items>
-						<minitems>0</minitems>
-						<maxitems>1</maxitems>
-					</config>
-				</TCEforms>
-			</origins>
-
-			<!-- Reviewed filter -->
-			<!-- Enable filter -->
-			<enable_reviewes>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_reviewes</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_reviewes>
-
-			<!-- Reviewes -->
-			<reviewes>
-				<TCEforms>
-					<!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.reviewes</label> -->
-					<config>
-						<type>select</type>
-						<items type="array">
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.reviewes.0</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.reviewes.1</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<maxitems>1</maxitems>
-						<size>1</size>
-					</config>
-				</TCEforms>
-			</reviewes>
-
-			<!-- In library filter -->
-			<!-- Enable filter -->
-			<enable_in_library>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_in_library</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_in_library>
-
-			<!-- In library -->
-			<in_library>
-				<TCEforms>
-					<!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.in_library</label> -->
-					<config>
-						<type>select</type>
-						<items type="array">
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.in_library.0</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.in_library.1</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<maxitems>1</maxitems>
-						<size>1</size>
-					</config>
-				</TCEforms>
-			</in_library>
-
-			<!-- borrowed filter -->
-			<!-- Enable filter -->
-			<enable_borrowed>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_borrowed</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_borrowed>
-
-			<!-- borrowed -->
-			<borrowed>
-				<TCEforms>
-					<!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.borrowed</label> -->
-					<config>
-						<type>select</type>
-						<items type="array">
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.borrowed.0</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.borrowed.1</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<maxitems>1</maxitems>
-						<size>1</size>
-					</config>
-				</TCEforms>
-			</borrowed>
-
-			<!-- Citeid filter -->
-			<!-- Enable filter -->
-			<enable_citeid>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_citeid</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_citeid>
-
-			<!-- citeid list -->
-			<citeids>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.citeids</label>
-					<config>
-						<type>text</type>
-						<cols>30</cols>
-						<rows>5</rows>
-					</config>
-				</TCEforms>
-			</citeids>
-
-			<!-- Search all filter -->
-			<!-- Enable filter -->
-			<enable_search_all>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_search_all</label>
-					<config>
-						<type>check</type>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</enable_search_all>
-
-			<!-- Search all word list -->
-			<search_all>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.search_all</label>
-					<config>
-						<type>text</type>
-						<cols>30</cols>
-						<rows>5</rows>
-					</config>
-				</TCEforms>
-			</search_all>
-
-			<!-- Search all rule -->
-			<search_all_rule>
-				<TCEforms>
-					<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.search_all_rule</label>
-					<config>
-						<type>radio</type>
-						<items>
-							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_OR</numIndex>
-								<numIndex index="1">0</numIndex>
-							</numIndex>
-							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_AND</numIndex>
-								<numIndex index="1">1</numIndex>
-							</numIndex>
-						</items>
-						<default>0</default>
-					</config>
-				</TCEforms>
-			</search_all_rule>
-
-		</el>
-
-	</ROOT>
-</s_filter>
-
-
-<!-- Frontend editor configuration -->
-<s_fe_editor>
-<ROOT>
-
-	<TCEforms>
-		<sheetTitle>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.sheet_fe_editor</sheetTitle>
-	</TCEforms>
-
-	<type>array</type>
-	<el>
-
-		<!-- Allow editing -->
-		<enable_editor>
-			<TCEforms>
- 				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_editor</label>
-				<config>
-					<type>check</type>
-					<default>0</default>
-				</config>
-			</TCEforms>
-		</enable_editor>
-
-		<!-- Automatic cite id generation -->
-		<citeid_gen_new>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_new</label>
-				<config>
-					<type>radio</type>
-					<items>
-						<numIndex index="0">
-							<numIndex
-								  index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
-							<numIndex index="1">0</numIndex>
-						</numIndex>
-						<numIndex index="1">
-							<numIndex
-								  index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-						<numIndex index="2">
-							<numIndex
-								  index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.full_automatic</numIndex>
-							<numIndex index="1">2</numIndex>
-						</numIndex>
-					</items>
-					<default>0</default>
-					</config>
-			</TCEforms>
-		</citeid_gen_new>
-
-
-		<!-- Automatic cite id generation -->
-		<citeid_gen_old>
-			<TCEforms>
-				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_old</label>
-				<config>
-					<type>radio</type>
-					<items>
-						<numIndex index="0">
-							<numIndex
-										 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.off</numIndex>
-							<numIndex index="1">0</numIndex>
-						</numIndex>
-						<numIndex index="1">
-							<numIndex
-										 index="0">LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.half_automatic</numIndex>
-							<numIndex index="1">1</numIndex>
-						</numIndex>
-					</items>
-					<default>0</default>
-				</config>
-			</TCEforms>
-		</citeid_gen_old>
-
-
-		<!-- Automatic cite id generation -->
-		<clear_cache>
-			<TCEforms>
- 				<label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.clear_page_cache</label>
-				<config>
-					<type>check</type>
-					<default>1</default>
-				</config>
-			</TCEforms>
-		</clear_cache>
-
-	</el>
-
-</ROOT>
-</s_fe_editor>
-
-
-</sheets>
+    <meta>
+        <langDisable>1</langDisable>
+        <!--  <langChildren>1</langChildren>!-->
+    </meta>
+    <sheets>
+
+        <!-- GENERAL VIEW (Default sheet) -->
+        <sDEF>
+            <ROOT>
+
+                <!-- GENERAL -->
+                <TCEforms>
+                    <sheetTitle>
+                        LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.sheet_general
+                    </sheetTitle>
+                </TCEforms>
+
+                <type>array</type>
+                <el>
+                    <!-- List type -->
+                    <display_mode>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode
+                            </label>
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.TS
+                                        </numIndex>
+                                        <numIndex index="1">-1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.display_mode.2
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                                <default>-1</default>
+                            </config>
+                        </TCEforms>
+                    </display_mode>
+
+                    <!-- Enumeration style -->
+                    <enum_style>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum_style
+                            </label>
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.TS
+                                        </numIndex>
+                                        <numIndex index="1">-1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.count_page
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.count_all
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.bullets
+                                        </numIndex>
+                                        <numIndex index="1">3</numIndex>
+                                    </numIndex>
+                                    <numIndex index="4" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.empty
+                                        </numIndex>
+                                        <numIndex index="1">4</numIndex>
+                                    </numIndex>
+                                    <numIndex index="5" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.file_icon
+                                        </numIndex>
+                                        <numIndex index="1">5</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                                <default>-1</default>
+                            </config>
+                        </TCEforms>
+                    </enum_style>
+
+                    <!-- Show search bar -->
+                    <show_search>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_search
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </show_search>
+
+                    <!-- Show author navigation -->
+                    <show_authors>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_authors
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </show_authors>
+
+                    <!-- Show preferences navigation -->
+                    <show_pref>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_preferences
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </show_pref>
+
+                    <!-- general sorting -->
+                    <sorting>
+                        <TCEforms>
+                            <label>Sortierung</label>
+                            <config>
+                                <type>select</type>
+                                <itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSortFieldsToFlexForm</itemsProcFunc>
+                                <maxitems>5</maxitems>
+                                <size>3</size>
+                            </config>
+                        </TCEforms>
+                    </sorting>
+                    <!-- general sorting -->
+
+                    <!-- default search fields -->
+                    <search_fields>
+                        <TCEforms>
+                            <label>Search Fields</label>
+                            <config>
+                                <type>select</type>
+                                <itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSearchFieldsToFlexForm
+                                </itemsProcFunc>
+                                <maxitems>5</maxitems>
+                                <size>3</size>
+                            </config>
+                        </TCEforms>
+                    </search_fields>
+                    <!-- default search fields -->
+
+                    <!-- Date sorting -->
+                    <date_sorting>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting
+                            </label>
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.TS
+                                        </numIndex>
+                                        <numIndex index="1">-1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.date_sorting.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                                <default>-1</default>
+                            </config>
+                        </TCEforms>
+                    </date_sorting>
+
+                    <!-- Show textfields -->
+                    <show_textfields>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields
+                            </label>
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.abstract
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.annotation
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.note
+                                        </numIndex>
+                                        <numIndex index="1">3</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.keywords
+                                        </numIndex>
+                                        <numIndex index="1">4</numIndex>
+                                    </numIndex>
+                                    <numIndex index="4" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.show_textfields.tags
+                                        </numIndex>
+                                        <numIndex index="1">5</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>5</maxitems>
+                                <size>3</size>
+                            </config>
+                        </TCEforms>
+                    </show_textfields>
+
+                    <!-- Split up bibliography types -->
+                    <split_bibtypes>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.split_bibtypes
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </split_bibtypes>
+
+                    <!-- GENERAL: items per page -->
+                    <items_per_page>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.items_per_page
+                            </label>
+                            <config>
+                                <type>input</type>
+                                <size>3</size>
+                                <default>-1</default>
+                            </config>
+                        </TCEforms>
+                    </items_per_page>
+
+                    <!-- GENERAL: Number of authors per page -->
+                    <max_authors>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.max_authors
+                            </label>
+                            <config>
+                                <type>input</type>
+                                <size>3</size>
+                                <default>-1</default>
+                            </config>
+                        </TCEforms>
+                    </max_authors>
+
+                    <!-- GENERAL: Author name separator -->
+                    <separator>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.separator
+                            </label>
+                            <config>
+                                <type>input</type>
+                                <size>3</size>
+                                <default>;</default>
+                            </config>
+                        </TCEforms>
+                    </separator>
+
+                    <!-- GENERAL: Editor Stop words -->
+                    <editor_stop_words>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.editor_stop_words
+                            </label>
+                            <config>
+                                <type>text</type>
+                            </config>
+                        </TCEforms>
+                    </editor_stop_words>
+
+                    <!-- GENERAL: Title Stop words -->
+                    <title_stop_words>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.title_stop_words
+                            </label>
+                            <config>
+                                <type>text</type>
+                            </config>
+                        </TCEforms>
+                    </title_stop_words>
+
+                    <!-- Statistic mode -->
+                    <stat_mode>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode
+                            </label>
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.TS
+                                        </numIndex>
+                                        <numIndex index="1">-1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.stat_mode.2
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                                <default>-1</default>
+                            </config>
+                        </TCEforms>
+                    </stat_mode>
+
+                    <!-- GENERAL: export options -->
+                    <export_mode>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_export_links
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>1</default>
+                            </config>
+                        </TCEforms>
+                    </export_mode>
+
+                </el>
+
+            </ROOT>
+        </sDEF>
+
+        <!-- Filter -->
+        <s_filter>
+            <ROOT>
+
+                <TCEforms>
+                    <sheetTitle>
+                        LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.sheet_filter
+                    </sheetTitle>
+                </TCEforms>
+
+                <type>array</type>
+                <el>
+
+                    <!-- Year filter -->
+                    <!-- Enable filter -->
+                    <enable_year>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_year
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_year>
+
+                    <!-- year -->
+                    <years>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.years
+                            </label>
+                            <config>
+                                <type>text</type>
+                                <cols>30</cols>
+                                <rows>2</rows>
+                            </config>
+                        </TCEforms>
+                    </years>
+
+                    <!-- Author filter -->
+                    <!-- Enable filter -->
+                    <enable_author>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_author
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_author>
+
+                    <!-- author list -->
+                    <authors>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.authors
+                            </label>
+                            <config>
+                                <type>text</type>
+                                <cols>30</cols>
+                                <rows>4</rows>
+                            </config>
+                        </TCEforms>
+                    </authors>
+
+                    <!-- Author rule -->
+                    <author_rule>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule
+                            </label>
+                            <config>
+                                <type>radio</type>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule.OR
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.author_rule.AND
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </author_rule>
+
+                    <highlight_authors>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.highlight_authors
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </highlight_authors>
+
+                    <!-- Tags filter -->
+                    <!-- Enable filter -->
+                    <enable_tags>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_tags
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_tags>
+
+                    <!-- Tags list -->
+                    <tags>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.tags
+                            </label>
+                            <config>
+                                <type>text</type>
+                                <cols>30</cols>
+                                <rows>4</rows>
+                            </config>
+                        </TCEforms>
+                    </tags>
+
+                    <!-- Tags rule -->
+                    <tags_rule>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.tags_rule
+                            </label>
+                            <config>
+                                <type>radio</type>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_OR
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_AND
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </tags_rule>
+
+
+                    <!-- Keyword filter -->
+                    <!-- Enable filter -->
+                    <enable_keywords>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_keywords
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_keywords>
+
+                    <!-- keyword list -->
+                    <keywords>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.keywords
+                            </label>
+                            <config>
+                                <type>text</type>
+                                <cols>30</cols>
+                                <rows>4</rows>
+                            </config>
+                        </TCEforms>
+                    </keywords>
+
+                    <!-- Keyword rule -->
+                    <keywords_rule>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.keywords_rule
+                            </label>
+                            <config>
+                                <type>radio</type>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_OR
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_AND
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </keywords_rule>
+
+                    <!-- State filter -->
+                    <!-- Enable filter -->
+                    <enable_state>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_state
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_state>
+
+                    <!-- State (submitted, accepted, unpublished) -->
+                    <states>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pub_states
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <items>
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.2
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.3
+                                        </numIndex>
+                                        <numIndex index="1">3</numIndex>
+                                    </numIndex>
+                                    <numIndex index="4" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.pubstate.4
+                                        </numIndex>
+                                        <numIndex index="1">4</numIndex>
+                                    </numIndex>
+                                </items>
+                                <minitems>0</minitems>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                            </config>
+                        </TCEforms>
+                    </states>
+
+                    <!-- Bibtype filter -->
+                    <!-- Enable filter -->
+                    <enable_bibtype>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_bibtype
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_bibtype>
+
+                    <!-- bibtype list -->
+                    <bibtypes>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.bibtypes
+                            </label>
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_2
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_3
+                                        </numIndex>
+                                        <numIndex index="1">3</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_4
+                                        </numIndex>
+                                        <numIndex index="1">4</numIndex>
+                                    </numIndex>
+                                    <numIndex index="4" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_5
+                                        </numIndex>
+                                        <numIndex index="1">5</numIndex>
+                                    </numIndex>
+                                    <numIndex index="5" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_6
+                                        </numIndex>
+                                        <numIndex index="1">6</numIndex>
+                                    </numIndex>
+                                    <numIndex index="6" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_7
+                                        </numIndex>
+                                        <numIndex index="1">7</numIndex>
+                                    </numIndex>
+                                    <numIndex index="7" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_8
+                                        </numIndex>
+                                        <numIndex index="1">8</numIndex>
+                                    </numIndex>
+                                    <numIndex index="8" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_9
+                                        </numIndex>
+                                        <numIndex index="1">9</numIndex>
+                                    </numIndex>
+                                    <numIndex index="9" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_10
+                                        </numIndex>
+                                        <numIndex index="1">10</numIndex>
+                                    </numIndex>
+                                    <numIndex index="10" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_11
+                                        </numIndex>
+                                        <numIndex index="1">11</numIndex>
+                                    </numIndex>
+                                    <numIndex index="11" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_12
+                                        </numIndex>
+                                        <numIndex index="1">12</numIndex>
+                                    </numIndex>
+                                    <numIndex index="12" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_13
+                                        </numIndex>
+                                        <numIndex index="1">13</numIndex>
+                                    </numIndex>
+                                    <numIndex index="13" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_14
+                                        </numIndex>
+                                        <numIndex index="1">14</numIndex>
+                                    </numIndex>
+                                    <numIndex index="14" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_15
+                                        </numIndex>
+                                        <numIndex index="1">15</numIndex>
+                                    </numIndex>
+                                    <numIndex index="15" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_16
+                                        </numIndex>
+                                        <numIndex index="1">16</numIndex>
+                                    </numIndex>
+                                    <numIndex index="16" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_17
+                                        </numIndex>
+                                        <numIndex index="1">17</numIndex>
+                                    </numIndex>
+                                    <numIndex index="17" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_18
+                                        </numIndex>
+                                        <numIndex index="1">18</numIndex>
+                                    </numIndex>
+                                    <numIndex index="18" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_19
+                                        </numIndex>
+                                        <numIndex index="1">19</numIndex>
+                                    </numIndex>
+                                    <numIndex index="19" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_20
+                                        </numIndex>
+                                        <numIndex index="1">20</numIndex>
+                                    </numIndex>
+                                    <numIndex index="20" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_bibtype_I_21
+                                        </numIndex>
+                                        <numIndex index="1">21</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>22</maxitems>
+                                <size>5</size>
+                            </config>
+                        </TCEforms>
+                    </bibtypes>
+
+                    <!-- Origin filter -->
+                    <!-- Enable filter -->
+                    <enable_origin>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_origin
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_origin>
+
+                    <!-- Origins -->
+                    <origins>
+                        <TCEforms>
+                            <!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.origins</label> -->
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.origins.0
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.origins.1
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                </items>
+                                <minitems>0</minitems>
+                                <maxitems>1</maxitems>
+                            </config>
+                        </TCEforms>
+                    </origins>
+
+                    <!-- Reviewed filter -->
+                    <!-- Enable filter -->
+                    <enable_reviewes>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_reviewes
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_reviewes>
+
+                    <!-- Reviewes -->
+                    <reviewes>
+                        <TCEforms>
+                            <!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.reviewes</label> -->
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.reviewes.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.reviewes.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                            </config>
+                        </TCEforms>
+                    </reviewes>
+
+                    <!-- In library filter -->
+                    <!-- Enable filter -->
+                    <enable_in_library>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_in_library
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_in_library>
+
+                    <!-- In library -->
+                    <in_library>
+                        <TCEforms>
+                            <!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.in_library</label> -->
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.in_library.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.in_library.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                            </config>
+                        </TCEforms>
+                    </in_library>
+
+                    <!-- borrowed filter -->
+                    <!-- Enable filter -->
+                    <enable_borrowed>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_borrowed
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_borrowed>
+
+                    <!-- borrowed -->
+                    <borrowed>
+                        <TCEforms>
+                            <!-- <label>LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.borrowed</label> -->
+                            <config>
+                                <type>select</type>
+                                <items type="array">
+                                    <numIndex index="0" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.borrowed.0
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1" type="array">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.borrowed.1
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <maxitems>1</maxitems>
+                                <size>1</size>
+                            </config>
+                        </TCEforms>
+                    </borrowed>
+
+                    <!-- Citeid filter -->
+                    <!-- Enable filter -->
+                    <enable_citeid>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_citeid
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_citeid>
+
+                    <!-- citeid list -->
+                    <citeids>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.citeids
+                            </label>
+                            <config>
+                                <type>text</type>
+                                <cols>30</cols>
+                                <rows>5</rows>
+                            </config>
+                        </TCEforms>
+                    </citeids>
+
+                    <!-- Search all filter -->
+                    <!-- Enable filter -->
+                    <enable_search_all>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_search_all
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_search_all>
+
+                    <!-- Search all word list -->
+                    <search_all>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.search_all
+                            </label>
+                            <config>
+                                <type>text</type>
+                                <cols>30</cols>
+                                <rows>5</rows>
+                            </config>
+                        </TCEforms>
+                    </search_all>
+
+                    <!-- Search all rule -->
+                    <search_all_rule>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.search_all_rule
+                            </label>
+                            <config>
+                                <type>radio</type>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_OR
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.rule_AND
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </search_all_rule>
+
+                </el>
+
+            </ROOT>
+        </s_filter>
+
+
+        <!-- Frontend editor configuration -->
+        <s_fe_editor>
+            <ROOT>
+
+                <TCEforms>
+                    <sheetTitle>
+                        LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.sheet_fe_editor
+                    </sheetTitle>
+                </TCEforms>
+
+                <type>array</type>
+                <el>
+
+                    <!-- Allow editing -->
+                    <enable_editor>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enable_editor
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </enable_editor>
+
+                    <!-- Automatic cite id generation -->
+                    <citeid_gen_new>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_new
+                            </label>
+                            <config>
+                                <type>radio</type>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.off
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.half_automatic
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.full_automatic
+                                        </numIndex>
+                                        <numIndex index="1">2</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </citeid_gen_new>
+
+
+                    <!-- Automatic cite id generation -->
+                    <citeid_gen_old>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.citeid_gen_old
+                            </label>
+                            <config>
+                                <type>radio</type>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.off
+                                        </numIndex>
+                                        <numIndex index="1">0</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex
+                                                index="0">
+                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.half_automatic
+                                        </numIndex>
+                                        <numIndex index="1">1</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </citeid_gen_old>
+
+
+                    <!-- Automatic cite id generation -->
+                    <clear_cache>
+                        <TCEforms>
+                            <label>
+                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.clear_page_cache
+                            </label>
+                            <config>
+                                <type>check</type>
+                                <default>1</default>
+                            </config>
+                        </TCEforms>
+                    </clear_cache>
+
+                </el>
+
+            </ROOT>
+        </s_fe_editor>
+
+
+    </sheets>
 </T3DataStructure>

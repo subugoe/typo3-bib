@@ -27,7 +27,7 @@ return [
     ],    'columns' => [
         'hidden' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
+            'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'default' => '0',
@@ -138,8 +138,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_citeid',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'nospace,uniqueInPid',
             ],
         ],
@@ -148,8 +148,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_title',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '3',
+                'cols' => 48,
+                'rows' => 3,
             ],
         ],
         'journal' => [
@@ -157,8 +157,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_journal',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -167,7 +167,7 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_year',
             'config' => [
                 'type' => 'input',
-                'size' => '4',
+                'size' => 4,
                 'eval' => 'int',
             ],
         ],
@@ -176,8 +176,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_volume',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -186,8 +186,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_number',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -196,8 +196,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_number2',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -206,8 +206,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_pages',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -285,8 +285,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_abstract',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '10',
+                'cols' => 48,
+                'rows' => 10,
             ],
         ],
         'affiliation' => [
@@ -294,8 +294,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_affiliation',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '2',
+                'cols' => 48,
+                'rows' => 2,
                 'eval' => 'trim',
             ],
         ],
@@ -304,8 +304,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_note',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '5',
+                'cols' => 48,
+                'rows' => 5,
             ],
         ],
         'annotation' => [
@@ -313,8 +313,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_annotation',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '5',
+                'cols' => 48,
+                'rows' => 5,
             ],
         ],
         'keywords' => [
@@ -322,8 +322,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_keywords',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '2',
+                'cols' => 48,
+                'rows' => 2,
             ],
         ],
         'tags' => [
@@ -331,8 +331,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_tags',
             'config' => [
                 'type' => 'text',
-                'cols' => '48',
-                'rows' => '2',
+                'cols' => 48,
+                'rows' => 2,
             ],
         ],
         'file_url' => [
@@ -340,8 +340,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_file_url',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'checkbox' => '0',
                 'eval' => 'trim',
                 'wizards' => [
@@ -366,8 +366,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'checkbox' => '0',
                 'wizards' => [
                     '_PADDING' => 2,
@@ -391,7 +391,7 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url_date',
             'config' => [
                 'type' => 'input',
-                'size' => '10',
+                'size' => 10,
                 'eval' => 'trim',
             ],
         ],
@@ -400,8 +400,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url2',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'checkbox' => '0',
                 'wizards' => [
                     '_PADDING' => 2,
@@ -425,7 +425,7 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_web_url2_date',
             'config' => [
                 'type' => 'input',
-                'size' => '10',
+                'size' => 10,
                 'eval' => 'trim',
             ],
         ],
@@ -434,8 +434,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_misc',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -444,8 +444,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_misc2',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -454,8 +454,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_editor',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -464,8 +464,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_publisher',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -474,8 +474,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_address',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -484,8 +484,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_howpublished',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -494,8 +494,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_series',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -504,8 +504,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_edition',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -514,8 +514,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_chapter',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -534,8 +534,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_school',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -544,8 +544,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_institute',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -554,8 +554,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_organization',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -564,8 +564,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_institution',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -574,8 +574,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_event_name',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -584,8 +584,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_event_place',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -594,8 +594,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_event_date',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -636,8 +636,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_type',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -646,8 +646,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_language',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -656,8 +656,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_ISBN',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -666,8 +666,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_ISSN',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -676,8 +676,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_DOI',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
@@ -710,8 +710,8 @@ return [
             'label' => 'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tx_bib_domain_model_reference_borrowed_by',
             'config' => [
                 'type' => 'input',
-                'size' => '48',
-                'max' => '255',
+                'size' => 48,
+                'max' => 255,
                 'eval' => 'trim',
             ],
         ],
