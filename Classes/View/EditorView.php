@@ -169,23 +169,6 @@ class EditorView extends View
     }
 
     /**
-     * Get the string in the local language to a given key from
-     * the database language file.
-     *
-     * @todo find out why we should need that - just a wrapper for pi1->get_ll
-     *
-     * @param string $key
-     * @param string $alt
-     * @param bool   $hsc
-     *
-     * @return string The string in the local language
-     */
-    protected function get_ll($key, $alt = '', $hsc = false)
-    {
-        return $this->pi1->pi_getLL($key, $alt, $hsc);
-    }
-
-    /**
      * @param string $key
      * @param string $alt
      *
@@ -280,7 +263,7 @@ class EditorView extends View
                 $title .= 'title_edit';
                 break;
         }
-        $title = $this->get_ll($title);
+        $title = $this->languageService->getLL($title);
 
         // Load default data
         if ($this->isFirstEdit) {
@@ -393,12 +376,12 @@ class EditorView extends View
         // Data validation
         if (self::EDIT_CONFIRM_SAVE == $this->pi1->extConf['editor_mode']) {
             $d_err = $this->validatePublicationData($publicationData);
-            $title = $this->get_ll($this->LLPrefix.'title_confirm_save');
+            $title = $this->languageService->getLL($this->LLPrefix.'title_confirm_save');
 
             if (count($d_err) > 0) {
                 $dataValid = false;
                 $cfg = &$this->conf['warn_box.'];
-                $txt = $this->get_ll($this->LLPrefix.'error_title');
+                $txt = $this->languageService->getLL($this->LLPrefix.'error_title');
                 $box = $this->pi1->cObj->stdWrap($txt, $cfg['title.']);
                 $box .= $this->validationErrorMessage($d_err);
                 $box .= $editButton;
@@ -530,7 +513,7 @@ class EditorView extends View
             // Append header and table if there are rows
             if (strlen($rows_vis) > 0) {
                 $content .= '<h3>';
-                $content .= $this->get_ll($this->LLPrefix.'fields_'.$fg);
+                $content .= $this->languageService->getLL($this->LLPrefix.'fields_'.$fg);
                 $content .= '</h3>';
 
                 $content .= '<table class="'.$this->pi1->prefixShort.'-editor_fields">';
@@ -588,7 +571,7 @@ class EditorView extends View
 
             $helpButton = '<span class="'.$this->buttonClass.'">'.
                 '<a href="'.$url.'" target="_blank" class="button-help">'.
-                $this->get_ll($this->LLPrefix.'btn_syntax_help').'</a></span>';
+                $this->languageService->getLL($this->LLPrefix.'btn_syntax_help').'</a></span>';
         }
 
         return $helpButton;
@@ -607,7 +590,7 @@ class EditorView extends View
             } else {
                 $editButton .= 'name="'.$this->pi1->prefix_pi1.'[action][edit]" ';
             }
-            $editButton .= 'value="'.$this->get_ll($this->LLPrefix.'btn_edit').'" class="'.$this->buttonClass.'"/>';
+            $editButton .= 'value="'.$this->languageService->getLL($this->LLPrefix.'btn_edit').'" class="'.$this->buttonClass.'"/>';
         }
 
         return $editButton;
@@ -620,7 +603,7 @@ class EditorView extends View
     {
         $cancelButton = '<span class="'.$this->buttonClass.'">'.
             $this->pi1->get_link(
-                $this->get_ll($this->LLPrefix.'btn_cancel')
+                $this->languageService->getLL($this->LLPrefix.'btn_cancel')
             ).
             '</span>';
 
@@ -636,7 +619,7 @@ class EditorView extends View
         if (self::WIDGET_EDIT == $this->widgetMode) {
             $citeIdeGeneratorButton = '<input type="submit" '.
                 'name="'.$this->pi1->prefix_pi1.'[action][generate_id]" '.
-                'value="'.$this->get_ll($this->LLPrefix.'btn_generate_id').
+                'value="'.$this->languageService->getLL($this->LLPrefix.'btn_generate_id').
                 '" class="'.$this->buttonClass.'"/>';
         }
 
@@ -650,7 +633,7 @@ class EditorView extends View
     {
         $updateButton = '';
         $updateButtonName = $this->pi1->prefix_pi1.'[action][update_form]';
-        $updateButtonValue = $this->get_ll($this->LLPrefix.'btn_update_form');
+        $updateButtonValue = $this->languageService->getLL($this->LLPrefix.'btn_update_form');
         if (self::WIDGET_EDIT == $this->widgetMode) {
             $updateButton = '<input type="submit"'.
                 ' name="'.$updateButtonName.'"'.
@@ -675,7 +658,7 @@ class EditorView extends View
         }
         if (strlen($saveButton) > 0) {
             $saveButton = '<input type="submit" name="'.$this->pi1->prefix_pi1.$saveButton.'" '.
-                'value="'.$this->get_ll($this->LLPrefix.'btn_save').
+                'value="'.$this->languageService->getLL($this->LLPrefix.'btn_save').
                 '" class="'.$this->buttonClass.'"/>';
         }
 
@@ -701,7 +684,7 @@ class EditorView extends View
             }
             if (strlen($deleteButton)) {
                 $deleteButton = '<input type="submit" name="'.$this->pi1->prefix_pi1.$deleteButton.'" '.
-                    'value="'.$this->get_ll($this->LLPrefix.'btn_delete').
+                    'value="'.$this->languageService->getLL($this->LLPrefix.'btn_delete').
                     '" class="'.$this->buttonClass.' '.$buttonDeleteClass.'"/>';
             }
         }
@@ -748,7 +731,7 @@ class EditorView extends View
 
         $label = trim($label);
         if (strlen($label) > 0) {
-            $label = $this->get_ll($label, $label, true);
+            $label = $this->languageService->getLL($label, true);
         }
 
         return $label;
@@ -865,7 +848,7 @@ class EditorView extends View
      *
      * @return string The field widget
      */
-    protected function getWidget($field, $value, $mode)
+    protected function getWidget(string $field, $value, int $mode): string
     {
         $content = '';
 
@@ -1054,7 +1037,7 @@ class EditorView extends View
      *
      * @return string The authors widget
      */
-    protected function getAuthorsWidget($value, $mode)
+    protected function getAuthorsWidget(array $value, int $mode): string
     {
         $content = '';
         $cclass = $this->pi1->prefixShort.'-editor_input';

@@ -692,7 +692,7 @@ class ReferenceReader
      */
     public function getNumberOfPublications()
     {
-        $select = $this->getReferenceSelectClause($this->getReferenceTable().'.uid', null);
+        $select = $this->getReferenceSelectClause([$this->getReferenceTable().'.uid'], null);
         $select = preg_replace('/;\s*$/', '', $select);
         $query = 'SELECT count(pubs.uid) FROM ('.$select.') pubs;';
         $res = $this->db->sql_query($query);

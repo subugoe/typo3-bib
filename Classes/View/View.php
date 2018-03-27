@@ -27,6 +27,9 @@ namespace Ipf\Bib\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Lang\LanguageService;
+
 /**
  * Class View.
  */
@@ -36,4 +39,14 @@ abstract class View
     const VIEW_SINGLE = 1;
     const VIEW_EDITOR = 2;
     const VIEW_DIALOG = 3;
+
+    /**
+     * @var LanguageService
+     */
+    protected $languageService;
+
+    public function __construct()
+    {
+        $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
+    }
 }

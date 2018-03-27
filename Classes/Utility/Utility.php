@@ -30,6 +30,7 @@ namespace Ipf\Bib\Utility;
  * ************************************************************* */
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 /**
  * This class provides some utility methods and acts mainly a a namespace.
@@ -278,7 +279,7 @@ class Utility
      * @param $value
      * @param array $attributes
      *
-     * @return string The hidden input element
+     * @return string The input element
      *
      * @deprecated
      */
@@ -384,7 +385,13 @@ class Utility
      */
     public static function html_text_input($name, $value, $attributes = [])
     {
-        return self::html_input('text', $name, $value, $attributes);
+        $tagBuilder = new TagBuilder('text');
+        $localAttributes = ['name' => $name, 'value' => $value];
+        $attributes = array_merge($localAttributes, $attributes);
+
+        $tagBuilder->addAttributes($attributes);
+
+        return $tagBuilder->render();
     }
 
     /**
