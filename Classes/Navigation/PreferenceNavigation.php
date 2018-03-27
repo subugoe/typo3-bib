@@ -141,7 +141,7 @@ class PreferenceNavigation extends Navigation
      */
     protected function getItemsPerPageSelection()
     {
-        $label = $this->pi1->get_ll('prefNav_ipp_sel');
+        $label = $this->languageService->getLL('prefNav_ipp_sel');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['ipp.']['label.']);
         $pairs = [];
         foreach ($this->extConf['pref_ipps'] as $ii) {
@@ -172,7 +172,7 @@ class PreferenceNavigation extends Navigation
             $attributes['class'] = $this->conf['abstract.']['btn_class'];
         }
 
-        $label = $this->pi1->get_ll('prefNav_show_abstracts');
+        $label = $this->languageService->getLL('prefNav_show_abstracts');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['abstract.']['label.']);
         $check = $this->pi1->extConf['hide_fields']['abstract'] ? false : true;
         $button = Utility::html_check_input(
@@ -198,7 +198,7 @@ class PreferenceNavigation extends Navigation
             $attributes['class'] = $this->conf['keywords.']['btn_class'];
         }
 
-        $label = $this->pi1->get_ll('prefNav_show_keywords');
+        $label = $this->languageService->getLL('prefNav_show_keywords');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['keywords.']['label.']);
         $check = $this->pi1->extConf['hide_fields']['keywords'] ? false : true;
         $button = Utility::html_check_input(
@@ -225,7 +225,7 @@ class PreferenceNavigation extends Navigation
         }
         $widget = Utility::html_submit_input(
             $this->pi1->prefix_pi1.'[action][eval_pref]',
-            $this->pi1->get_ll('button_go'),
+            $this->languageService->getLL('button_go'),
             $attributes
         );
 
@@ -239,7 +239,7 @@ class PreferenceNavigation extends Navigation
      */
     protected function getPreferenceNavigationLabel()
     {
-        $label = $this->pi1->get_ll('prefNav_label');
+        $label = $this->languageService->getLL('prefNav_label');
 
         return $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
     }

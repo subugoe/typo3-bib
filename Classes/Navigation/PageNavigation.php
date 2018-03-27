@@ -45,7 +45,8 @@ class PageNavigation extends Navigation
         }
 
         $this->prefix = 'PAGE_NAVI';
-        $this->sel_link_title = $pi1->get_ll('pageNav_pageLinkTitle', '%p', true);
+
+        $this->sel_link_title = $this->languageService->getLL('pageNav_pageLinkTitle', '%p');
     }
 
     /**
@@ -100,15 +101,15 @@ class PageNavigation extends Navigation
 
         // The label
         $label = $this->pi1->cObj->stdWrap(
-            $this->pi1->get_ll('pageNav_label'),
+            $this->languageService->getLL('pageNav_label'),
             $this->conf['label.']
         );
 
         // The previous/next buttons
-        $nav_prev = $this->pi1->get_ll('pageNav_previous', 'previous', true);
+        $nav_prev = $this->languageService->getLL('pageNav_previous', 'previous');
         if ($subPage['current'] > 0) {
             $page = max($subPage['current'] - 1, 0);
-            $title = $this->pi1->get_ll('pageNav_previousLinkTitle', 'previous', true);
+            $title = $this->languageService->getLL('pageNav_previousLinkTitle', 'previous');
             $nav_prev = $this->pi1->get_link(
                 $nav_prev,
                 [
@@ -121,10 +122,10 @@ class PageNavigation extends Navigation
             );
         }
 
-        $nav_next = $this->pi1->get_ll('pageNav_next', 'next', true);
+        $nav_next = $this->languageService->getLL('pageNav_next', 'next');
         if ($subPage['current'] < $subPage['max']) {
             $page = min($subPage['current'] + 1, $subPage['max']);
-            $title = $this->pi1->get_ll('pageNav_nextLinkTitle', 'next', true);
+            $title = $this->languageService->getLL('pageNav_nextLinkTitle', 'next');
             $nav_next = $this->pi1->get_link(
                 $nav_next,
                 [

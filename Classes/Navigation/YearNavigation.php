@@ -47,7 +47,7 @@ class YearNavigation extends Navigation
         }
 
         $this->prefix = 'YEAR_NAVI';
-        $this->sel_link_title = $pi1->get_ll('yearNav_yearLinkTitle', '%y', true);
+        $this->sel_link_title = $this->languageService->getLL('yearNav_yearLinkTitle', '%y');
     }
 
     /**
@@ -96,7 +96,7 @@ class YearNavigation extends Navigation
     protected function get()
     {
         // The label
-        $label = $this->pi1->get_ll('yearNav_label');
+        $label = $this->languageService->getLL('yearNav_label');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
 
         $this->view
@@ -110,7 +110,7 @@ class YearNavigation extends Navigation
     /**
      * @return string
      */
-    protected function getYearSelection()
+    protected function getYearSelection(): string
     {
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
 
@@ -122,7 +122,7 @@ class YearNavigation extends Navigation
             }
             $delimiter = $this->pi1->cObj->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
 
-            $txt = $this->pi1->get_ll('yearNav_all_years', 'All', true);
+            $txt = $this->languageService->getLL('yearNav_all_years', 'All');
             if (is_numeric($this->pi1->extConf['year'])) {
                 $txt = $this->pi1->get_link($txt, ['year' => 'all']);
             } else {
@@ -144,6 +144,8 @@ class YearNavigation extends Navigation
 
             return $this->pi1->cObj->stdWrap($txt.$delimiter.$selection, $selectionConfiguration['all_wrap.']);
         }
+
+        return '';
     }
 
     /**
@@ -161,7 +163,7 @@ class YearNavigation extends Navigation
             $selectForm .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
             $selectForm .= '>';
 
-            $pairs = ['all' => $this->pi1->get_ll('yearNav_all_years', 'All', true)];
+            $pairs = ['all' => $this->languageService->getLL('yearNav_all_years', 'All')];
             if (count($this->pi1->stat['years']) > 0) {
                 foreach (array_reverse($this->pi1->stat['years']) as $y) {
                     $pairs[$y] = $y;
@@ -192,7 +194,7 @@ class YearNavigation extends Navigation
             }
             $button = Utility::html_submit_input(
                 $this->pi1->prefix_pi1.'[action][select_year]',
-                $this->pi1->get_ll('button_go'),
+                $this->languageService->getLL('button_go'),
                 $attributes
             );
             $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);

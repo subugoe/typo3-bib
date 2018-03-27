@@ -30,6 +30,7 @@ namespace Ipf\Bib\Navigation;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Class Navigation.
@@ -69,6 +70,16 @@ abstract class Navigation
      * @var \TYPO3\CMS\Fluid\View\StandaloneView
      */
     protected $view;
+
+    /**
+     * @var LanguageService
+     */
+    protected $languageService;
+
+    public function __construct()
+    {
+        $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
+    }
 
     /**
      * @param \tx_bib_pi1 $pi1
@@ -165,7 +176,7 @@ abstract class Navigation
      *
      * @return string
      */
-    protected function selection($cfgSel, $indices, $numSel)
+    protected function selection(array $cfgSel, array $indices, int $numSel): string
     {
         $cObj = &$this->pi1->cObj;
 

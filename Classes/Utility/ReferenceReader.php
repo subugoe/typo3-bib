@@ -230,8 +230,6 @@ class ReferenceReader
 
     /**
      * The constructor.
-     *
-     * @return \Ipf\Bib\Utility\ReferenceReader
      */
     public function __construct()
     {

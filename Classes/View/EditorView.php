@@ -33,11 +33,13 @@ use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\DbUtility;
 use Ipf\Bib\Utility\Generator\AuthorsCiteIdGenerator;
 use Ipf\Bib\Utility\Generator\CiteIdGenerator;
+use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\ReferenceWriter;
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Class EditorView.
@@ -138,15 +140,16 @@ class EditorView extends View
         /* @var \tx_bib_pi1 pi1 */
         $this->pi1 = &$pi1;
         $this->conf = &$pi1->conf['editor.'];
-        $this->referenceReader = &$pi1->referenceReader;
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
         $this->referenceReader->setClearCache($this->pi1->extConf['editor']['clear_page_cache']);
         // Load editor language data
+        $languageService = GeneralUtility::makeInstance(LanguageService::class);
         $this->pi1->extend_ll('EXT:'.$this->pi1->extKey.'/Resources/Private/Language/locallang.xml');
 
         // setup db_utility
         /** @var \Ipf\Bib\Utility\DbUtility $databaseUtility */
         $databaseUtility = GeneralUtility::makeInstance(DbUtility::class);
-        $databaseUtility->initialize($pi1->referenceReader);
+        $databaseUtility->initialize($this->referenceReader);
         $databaseUtility->charset = $pi1->extConf['charset']['upper'];
         $databaseUtility->readFullTextGenerationConfiguration($this->conf['full_text.']);
 
@@ -914,7 +917,7 @@ class EditorView extends View
         $widgetType = $cfg['type'];
         $fieldAttr = $pi1->prefix_pi1.'[DATA][pub]['.$field.']';
         $nameAttr = ' name="'.$fieldAttr.'"';
-        $htmlValue = Utility::filter_pub_html($value, true, $pi1->extConf['charset']['upper']);
+        $htmlValue = Utility::filter_pub_html((string) $value, true, $pi1->extConf['charset']['upper']);
 
         $attributes = [];
         $attributes['class'] = $cclass;
@@ -1004,7 +1007,7 @@ class EditorView extends View
         // Default widget
         $widgetType = $configuration['type'];
         $fieldAttributes = $this->pi1->prefix_pi1.'[DATA][pub]['.$field.']';
-        $htmlValue = Utility::filter_pub_html($value, true, $this->pi1->extConf['charset']['upper']);
+        $htmlValue = Utility::filter_pub_html((string) $value, true, $this->pi1->extConf['charset']['upper']);
 
         $content = '';
         if (self::WIDGET_SHOW == $mode) {
@@ -1715,8 +1718,4 @@ class EditorView extends View
 
         return $content;
     }
-}
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/EditorView.php']) {
-    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/View/EditorView.php'];
 }

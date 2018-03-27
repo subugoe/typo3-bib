@@ -57,7 +57,7 @@ class AuthorNavigation extends Navigation
         }
 
         $this->prefix = 'AUTHOR_NAVI';
-        $this->sel_link_title = $pi1->pi_getLL('authorNav_authorLinkTitle', '%a');
+        $this->sel_link_title = $this->languageService->getLL('authorNav_authorLinkTitle');
     }
 
     /**

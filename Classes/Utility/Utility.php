@@ -77,7 +77,7 @@ class Utility
             ->fetchAll();
 
         if (is_array($result)) {
-            $title = htmlspecialchars($result[0]['title'], true);
+            $title = htmlspecialchars($result[0]['title']);
             $title .= ' ('.$uid.')';
         }
 
