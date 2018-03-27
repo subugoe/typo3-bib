@@ -26,6 +26,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -362,20 +363,22 @@ class DbUtility
     /**
      * @param int $pid
      */
-    public function deleteAllFromPid($pid)
+    public function deleteAllFromPid(int $pid)
     {
-        $this->db->exec_DELETEquery(
-            $this->referenceReader->getAuthorshipTable(),
-            'pid = '.$pid
-        );
-        $this->db->exec_DELETEquery(
-            $this->referenceReader->getAuthorTable(),
-            'pid = '.$pid
-        );
-        $this->db->exec_DELETEquery(
-            $this->referenceReader->getReferenceTable(),
-            'pid = '.$pid
-        );
+        $tables = [$this->referenceReader->getAuthorshipTable(), $this->referenceReader->getAuthorTable(), $this->referenceReader->getReferenceTable()];
+
+        $delete = function ($table) use ($pid) {
+            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+
+            $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+
+            $queryBuilder
+               ->delete($table)
+               ->where($queryBuilder->expr()->eq('pid', $pid))
+               ->execute();
+        };
+
+        array_map($delete, $tables);
     }
 }
 

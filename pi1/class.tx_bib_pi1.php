@@ -3370,11 +3370,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $label = '';
         switch ($mode) {
             case 'bibtex':
-                $exporterClass = 'Ipf\\Bib\\Utility\\Exporter\\BibTexExporter';
+                $exporterClass = \Ipf\Bib\Utility\Exporter\BibTexExporter::class;
                 $label = 'export_bibtex';
                 break;
             case 'xml':
-                $exporterClass = 'Ipf\\Bib\\Utility\\Exporter\\XmlExporter';
+                $exporterClass = \Ipf\Bib\Utility\Exporter\XmlExporter::class;
                 $label = 'export_xml';
                 break;
             default:

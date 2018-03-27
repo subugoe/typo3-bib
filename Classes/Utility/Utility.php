@@ -28,6 +28,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -40,15 +41,15 @@ class Utility
      *
      * @param array $uids
      *
-     * @return string|bool The title string or FALSE
+     * @return array
      */
-    public static function get_page_titles($uids)
+    public static function get_page_titles($uids): array
     {
         $titles = [];
         foreach ($uids as $uid) {
-            $uid = intval($uid);
+            $uid = (int) $uid;
             $title = self::get_page_title($uid);
-            if ($title) {
+            if (!empty($title)) {
                 $titles[$uid] = $title;
             }
         }
@@ -61,22 +62,23 @@ class Utility
      *
      * @param int $uid
      *
-     * @return string|bool The title string or FALSE
+     * @return string The title string
      */
-    public static function get_page_title($uid)
+    private static function get_page_title(int $uid)
     {
-        $title = false;
+        $title = '';
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
 
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'title',
-            'pages',
-            'uid='.intval($uid)
-        );
+        $result = $queryBuilder
+            ->select('title')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', $uid))
+            ->execute()
+            ->fetchAll();
 
-        $p_row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-        if (is_array($p_row)) {
-            $title = htmlspecialchars($p_row['title'], true);
-            $title .= ' ('.strval($uid).')';
+        if (is_array($result)) {
+            $title = htmlspecialchars($result[0]['title'], true);
+            $title .= ' ('.$uid.')';
         }
 
         return $title;
@@ -108,13 +110,9 @@ class Utility
      * This replaces unnecessary tags and prepares the argument string
      * for html output.
      *
-     * @param string $content
-     * @param bool   $htmlSpecialChars
-     * @param string $charset
-     *
      * @return string The string filtered for html output
      */
-    public static function filter_pub_html_display($content, $htmlSpecialChars = false, $charset = 'UTF-8')
+    public static function filter_pub_html_display(string $content, bool $htmlSpecialChars = false, string $charset = 'UTF-8'): string
     {
         $rand = strval(rand()).strval(rand());
         $content = str_replace(['<prt>', '</prt>'], '', $content);
@@ -158,7 +156,7 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function fix_html_ampersand($str)
+    public static function fix_html_ampersand(string $str): string
     {
         $pattern = '/&(([^;]|$){8})/';
         while (preg_match($pattern, $str)) {
