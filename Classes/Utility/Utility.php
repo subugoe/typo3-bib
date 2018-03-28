@@ -283,23 +283,19 @@ class Utility
      *
      * @deprecated
      */
-    public static function html_input(string $type, $name, $value, $attributes = [])
+    public static function html_input(string $type, string $name, string $value, array $attributes = []): string
     {
-        $content = '<input type="'.(string) $type.'"';
-        if (strlen($name) > 0) {
-            $content .= ' name="'.(string) $name.'"';
-        }
-        if (strlen($value) > 0) {
-            $content .= ' value="'.(string) $value.'"';
-        }
-        foreach ($attributes as $a_key => $a_value) {
-            if (!(false === $a_value)) {
-                $content .= ' '.(string) $a_key.'="'.(string) $a_value.'"';
-            }
-        }
-        $content .= '>';
+        $tagBuilder = new TagBuilder('input');
+        $localAttributes = [
+            'type' => $type,
+            'name' => $name,
+            'value' => $value,
+        ];
 
-        return $content;
+        $attributes = array_merge($attributes, $localAttributes);
+        $tagBuilder->addAttributes($attributes);
+
+        return $tagBuilder->render();
     }
 
     /**
@@ -314,13 +310,20 @@ class Utility
      *
      * @deprecated
      */
-    public static function html_radio_input($name, $value, $checked, $attributes = [])
+    public static function html_radio_input(string $name, string $value, bool $checked, array $attributes = [])
     {
-        if ($checked) {
-            $attributes['checked'] = 'checked';
-        }
+        $tagBuilder = new TagBuilder('input');
+        $localAttributes = [
+            'type' => 'radio',
+            'name' => $name,
+            'value' => $value,
+            'checked' => $checked ? 'checked' : '',
+          ];
 
-        return self::html_input('radio', $name, $value, $attributes);
+        $attributes = array_merge($attributes, $localAttributes);
+        $tagBuilder->addAttributes($attributes);
+
+        return $tagBuilder->render();
     }
 
     /**
@@ -385,8 +388,8 @@ class Utility
      */
     public static function html_text_input($name, $value, $attributes = [])
     {
-        $tagBuilder = new TagBuilder('text');
-        $localAttributes = ['name' => $name, 'value' => $value];
+        $tagBuilder = new TagBuilder('input');
+        $localAttributes = ['name' => $name, 'value' => $value, 'type' => 'text'];
         $attributes = array_merge($localAttributes, $attributes);
 
         $tagBuilder->addAttributes($attributes);

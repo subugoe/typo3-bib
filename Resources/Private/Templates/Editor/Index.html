@@ -1,0 +1,30 @@
+<h2>{title}</h2>
+
+<form name="{formName}" method="post" action="{formAction}">
+    <script type="text/javascript">
+    function click_update_button() {
+      var btn = document.getElementsByName('{prefix_pi1}[action][update_form]')[0];
+      btn.click();
+      return;
+    }
+
+    </script>
+
+    <div class="{prefixShort}-editor">
+
+    <div class="{prefixShort}-editor_button_box">
+    <span class="{prefixShort}-box_right">
+    {deleteButton}
+    </span>
+    <span class="{prefixShort}-box_left">
+      {saveButton}
+      {editButton}
+      {cancelButton}
+      {helpButton}
+    </span>
+    </div>
+
+</form>
+
+{preContent -> f:format.raw()}
+{content -> f:format.raw()}

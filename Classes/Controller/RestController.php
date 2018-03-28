@@ -26,6 +26,7 @@ namespace Ipf\Bib\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Domain\Repository\ReferenceRepository;
 use Ipf\Bib\Exception\DataException;
 
 /**
@@ -40,9 +41,14 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
     /**
      * @var \Ipf\Bib\Domain\Repository\ReferenceRepository
-     * @inject
      */
     protected $referenceRepository;
+
+    public function __construct(ReferenceRepository $referenceRepository)
+    {
+        parent::__construct();
+        $this->referenceRepository = $referenceRepository;
+    }
 
     public function listAction()
     {

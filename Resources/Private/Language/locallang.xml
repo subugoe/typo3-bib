@@ -143,7 +143,6 @@
 			<label index="sort_fields_web_url2">Web URL 2</label>
 			<label index="sort_fields_web_url2_date">Web URL 2 Last Checked</label>
 			<label index="sort_fields_year">Year</label>
-
 			<label index="tx_bib_domain_model_reference_hidden">Hidden</label>
 			<label index="tx_bib_domain_model_reference_pid">Storage folder</label>
 			<label index="tx_bib_domain_model_reference_uid">uid</label>
@@ -196,7 +195,6 @@
 			<label index="tx_bib_domain_model_reference_web_url2">Web URL 2</label>
 			<label index="tx_bib_domain_model_reference_web_url2_date">Web URL 2 Last Checked</label>
 			<label index="tx_bib_domain_model_reference_year">Year</label>
-
 			<label index="import_bibtex_text.0">The BibTeX format is not strictly defined anywhere. Therefore this parser merely tries to get the best out of it. If in doubt try it on an empty storage folder first.</label>
 			<label index="import_bibtex_text.1">@String( var = "some text" ) placeholders are not supported</label>
 		</languageKey>
@@ -242,7 +240,96 @@
 			<label index="tx_bib_domain_model_reference_bibtype">Bibliographie-Typ</label>
 			<label index="import_bibtex_text.0">Das BibTeX-Format ist nicht strikt definiert. der Parser versucht die Daten so gut wie möglich zu importieren. Ggf. sollte erst ein Test mit einem leeren StorageFolder durchgeführt werden.</label>
 			<label index="import_bibtex_text.1">@String( var = "some text" ) Platzhalter werden nicht unterstützt</label>
-
+			<label index="tt_content.list_type_pi1">Veröffentlichungsliste</label>
+			<label index="tt_content.list_type_pi2">Filter der Veröffentlichungsliste</label>
+			<label index="tt_content.list_type_pi3">Suche der Veröffentlichungsliste</label>
+			<label index="tx_bib_domain_model_author">Bib authors</label>
+			<label index="tx_bib_domain_model_author_authors">Autor(en)</label>
+			<label index="tx_bib_domain_model_author_fe_user_id">Frontend Benutzer Id</label>
+			<label index="tx_bib_domain_model_author_forename">Vorname</label>
+			<label index="tx_bib_domain_model_author_surname">Nachname</label>
+			<label index="tx_bib_domain_model_author_url">Datei / URL</label>
+			<label index="tx_bib_domain_model_authorships">Bib Autorenschaften</label>
+			<label index="tx_bib_domain_model_authorships_author_id">Autoren UID</label>
+			<label index="tx_bib_domain_model_authorships_pub_id">Publikation UID</label>
+			<label index="tx_bib_domain_model_authorships_sorting">Sortierung</label>
+			<label index="tx_bib_domain_model_reference">Bib Publikationsreferenzen</label>
+			<label index="tx_bib_domain_model_reference_ISBN">ISBN</label>
+			<label index="tx_bib_domain_model_reference_ISSN">ISSN</label>
+			<label index="tx_bib_domain_model_reference_abstract">Zusammenfassung</label>
+			<label index="tx_bib_domain_model_reference_address">Verlagsort</label>
+			<label index="tx_bib_domain_model_reference_affiliation">Zugehörigkeit</label>
+			<label index="tx_bib_domain_model_reference_annotation">Anmerkung</label>
+			<label index="tx_bib_domain_model_reference_bibtype">Bibliographie-Typ</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_0">Unbekannt</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_1">Artikel</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_10">Masterarbeit</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_11">Doktorarbeit</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_12">Technischer Bericht</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_13">Noch nicht publiziert</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_14">Verschiedenes</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_15">Zeichenkette</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_16">Poster</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_17">These</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_18">Manuskript</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_19">Bericht</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_20">Verschiedene</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_21">URL</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_2">Buch</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_3">Beitrag zu Buch</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_4">Broschüre</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_5">Konferenz</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_6">Beitrag zu Sammlung</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_7">Verhandlung</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_8">Beitrag zu Verhandlung</label>
+			<label index="tx_bib_domain_model_reference_bibtype_I_9">Handbuch</label>
+			<label index="tx_bib_domain_model_reference_booktitle">Buchtitel</label>
+			<label index="tx_bib_domain_model_reference_borrowed_by">Ausgeliehen von</label>
+			<label index="tx_bib_domain_model_reference_chapter">Kapitel</label>
+			<label index="tx_bib_domain_model_reference_citeid">Zitations-ID</label>
+			<label index="tx_bib_domain_model_reference_day">Tag</label>
+			<label index="tx_bib_domain_model_reference_DOI">DOI</label>
+			<label index="tx_bib_domain_model_reference_edition">Edition</label>
+			<label index="tx_bib_domain_model_reference_editor">Editor</label>
+			<label index="tx_bib_domain_model_reference_event_date">Veranstaltungs Datum</label>
+			<label index="tx_bib_domain_model_reference_event_name">Veranstaltungs Name</label>
+			<label index="tx_bib_domain_model_reference_event_place">Veranstaltungs Ort</label>
+			<label index="tx_bib_domain_model_reference_extern">Extern</label>
+			<label index="tx_bib_domain_model_reference_file_url">Datei / URL</label>
+			<label index="tx_bib_domain_model_reference_howpublished">Wie publiziert</label>
+			<label index="tx_bib_domain_model_reference_in_library">In Bibliothek vorhanden</label>
+			<label index="tx_bib_domain_model_reference_institute">Institut</label>
+			<label index="tx_bib_domain_model_reference_institution">Institution</label>
+			<label index="tx_bib_domain_model_reference_journal">Journal</label>
+			<label index="tx_bib_domain_model_reference_keywords">Schlüsselwörter</label>
+			<label index="tx_bib_domain_model_reference_language">Sprache</label>
+			<label index="tx_bib_domain_model_reference_misc">Verschiedenes</label>
+			<label index="tx_bib_domain_model_reference_misc2">Verschiedenes 2</label>
+			<label index="tx_bib_domain_model_reference_month">Monat</label>
+			<label index="tx_bib_domain_model_reference_note">Bemerkung</label>
+			<label index="tx_bib_domain_model_reference_number">Nummer</label>
+			<label index="tx_bib_domain_model_reference_number2">Nummer 2</label>
+			<label index="tx_bib_domain_model_reference_organization">Organisation</label>
+			<label index="tx_bib_domain_model_reference_pages">Seite(n)</label>
+			<label index="tx_bib_domain_model_reference_publisher">Verlag</label>
+			<label index="tx_bib_domain_model_reference_reviewed">Begutachtet</label>
+			<label index="tx_bib_domain_model_reference_school">Schule</label>
+			<label index="tx_bib_domain_model_reference_series">Reihe</label>
+			<label index="tx_bib_domain_model_reference_state">Zustand</label>
+			<label index="tx_bib_domain_model_reference_state_I_0">publiziert</label>
+			<label index="tx_bib_domain_model_reference_state_I_1">akzeptiert</label>
+			<label index="tx_bib_domain_model_reference_state_I_2">eingereicht</label>
+			<label index="tx_bib_domain_model_reference_state_I_3">noch nicht publiziert</label>
+			<label index="tx_bib_domain_model_reference_state_I_4">in Vorbereitung</label>
+			<label index="tx_bib_domain_model_reference_tags">Marker</label>
+			<label index="tx_bib_domain_model_reference_title">Titel</label>
+			<label index="tx_bib_domain_model_reference_type">Typ</label>
+			<label index="tx_bib_domain_model_reference_volume">Band</label>
+			<label index="tx_bib_domain_model_reference_web_url">Web URL</label>
+			<label index="tx_bib_domain_model_reference_web_url_date">Web URL Abrufdatum</label>
+			<label index="tx_bib_domain_model_reference_web_url2">Web URL 2</label>
+			<label index="tx_bib_domain_model_reference_web_url2_date">Web URL 2 Abrufdatum</label>
+			<label index="tx_bib_domain_model_reference_year">Jahr</label>
 		</languageKey>
 		<languageKey index="it" type="array">
 			<label index="editor_btn_cancel">Annulla</label>

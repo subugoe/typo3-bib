@@ -28,7 +28,6 @@ namespace Ipf\Bib\View;
  * ************************************************************* */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Class SingleView.
@@ -87,10 +86,7 @@ class SingleView extends View
      */
     public function initialize($pi1)
     {
-        /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename('typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Templates/Single/Index.html');
-        $this->view = $view;
+        $this->view->setTemplatePathAndFilename('typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Templates/Single/Index.html');
 
         $this->pi1 = $pi1;
         $this->conf = $pi1->conf['single_view.'];
@@ -122,11 +118,10 @@ class SingleView extends View
             $content .= 'No publication with uid '.$uid;
             $content .= '</p>';
         }
+        $content = preg_replace("/\n+/", PHP_EOL, $content);
 
         $this->view->assign('linkBack', $this->pi1->get_link($this->pi1->pi_getLL('link_back_to_list')));
-
-        // remove multiple line breaks
-        $content = preg_replace("/\n+/", PHP_EOL, $content);
+        $this->view->assign('content', $content);
 
         return $this->view->render();
     }
