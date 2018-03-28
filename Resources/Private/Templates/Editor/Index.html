@@ -1,6 +1,14 @@
+<f:comment>
+    {mode}:
+        0: show
+        1: edit
+        2: silent
+        3: confirm save
+</f:comment>
+
 <h2>{title}</h2>
 
-<form name="{formName}" method="post" action="{formAction}">
+<f:form name="{formName}" method="post" action="{formAction}">
     <script type="text/javascript">
     function click_update_button() {
       var btn = document.getElementsByName('{prefix_pi1}[action][update_form]')[0];
@@ -17,14 +25,11 @@
     {deleteButton}
     </span>
     <span class="{prefixShort}-box_left">
-      {saveButton}
-      {editButton}
-      {cancelButton}
-      {helpButton}
+        <f:render partial="Editor/Buttons" arguments="{_all}" />
     </span>
     </div>
 
-</form>
+</f:form>
 
 {preContent -> f:format.raw()}
 {content -> f:format.raw()}

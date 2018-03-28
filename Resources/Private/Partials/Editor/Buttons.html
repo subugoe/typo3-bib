@@ -1,0 +1,7 @@
+{saveButton}
+{editButton}
+  <f:form.button class="tx_bib-editor_button"><a href=""><f:translate key="editor_btn_cancel" extensionName="bib" /></a></f:form.button>
+
+  <f:if condition="{mode} == 1">
+      <f:form.button class="tx_bib-editor_button" onclick="window.open('/typo3conf/ext/bib/Resources/Public/Html/Syntax.html'); return false;">{f:translate(key:'editor_btn_syntax_help',extensionName:'bib')}</f:form.button>
+  </f:if>

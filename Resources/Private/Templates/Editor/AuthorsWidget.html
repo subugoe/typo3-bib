@@ -1,0 +1,59 @@
+<f:comment>
+    {mode}:
+        0: show
+        1: edit
+        2: silent
+        3: confirm save
+</f:comment>
+
+<f:if condition="{authors -> f:count() > 0">
+    <table class="tx_bib-editor_author">
+        <thead>
+        <tr>
+            <th></th>
+            <th>
+                <f:translate key="tx_bib_domain_model_author_forename" extensionName="bib"/>
+            </th>
+            <th>
+                <f:translate key="tx_bib_domain_model_author_surname" extensionName="bib"/>
+            </th>
+            <f:if condition="{mode} == 1">
+                <th></th><th></th>
+            </f:if>
+        </tr>
+        </thead>
+        <tbody>
+
+        <f:for each="{authors}" as="author" iteration="loop">
+            <tr>
+                <th class="tx_bib-editor_author_num">
+                    {loop.cycle}
+                </th>
+                <td>
+                    <input type="text" name="tx_bib_pi1[DATA][pub][authors][{loop.index}][forename]" value="{author.forename}" class="tx_bib-editor_input"/>
+                </td>
+                <td>
+                    <input type="text" name="tx_bib_pi1[DATA][pub][authors][{loop.index}][surname]" value="{author.surname}" class="tx_bib-editor_input"/>
+                </td>
+                <f:if condition="{author -> f:count} > 3">
+                    <td style="padding: 1px;">
+                        {author.3}
+                        <f:form.submit name="tx_bib_pi1[action][lower_author]" value="{loop.index}" />↑
+                    </td>
+                    <td style="padding: 1px;">
+                        {author.4}
+                        <f:form.submit name="tx_bib_pi1[action][raise_author]" value="{loop.index}"/>↓
+                    </td>
+                </f:if>
+            </tr>
+        </f:for>
+        </tbody>
+    </table>
+</f:if>
+<f:if condition="{mode} == 1">
+    <div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">
+        <f:form.submit name="tx_bib_pi1[action][mode_authors]" value="+" />
+        <f:form.submit name="tx_bib_pi1[action][less_authors]" value="-" />
+    </div>
+</f:if>
+{content}

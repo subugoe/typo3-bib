@@ -39,6 +39,7 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -167,6 +168,7 @@ class EditorView extends View
         $this->idGenerator->initialize($pi1);
 
         $this->view->setTemplatePathAndFilename('typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Templates/Editor/Index.html');
+        $this->view->setPartialRootPaths([10 => 'typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Partials/']);
     }
 
     /**
@@ -279,6 +281,7 @@ class EditorView extends View
             }
         }
 
+        $this->view->assign('mode', $this->widgetMode);
         $this->view->assign('preContent', $preContent);
         $this->view->assign('title', $title);
         $this->view->assign('formName', $this->pi1->prefix_pi1.'_ref_data_form');
@@ -287,14 +290,12 @@ class EditorView extends View
         $this->view->assign('prefix_pi1', $this->pi1->prefix_pi1);
         $this->view->assign('deleteButton', $this->getDeleteButton());
         $this->view->assign('saveButton', $this->getSaveButton());
-        $this->view->assign('cancelButton', $this->getCancelButton());
         $this->view->assign('editButton', $this->getEditButton());
-        $this->view->assign('helpButton', $this->getSyntaxHelpButton());
 
         $content = $this->getFieldGroups($publicationData, $content);
 
         $content = $this->invisibleUidAndModKeyField($publicationData, $content);
-        $content = $this->footerButtons($content);
+        //$content = $this->footerButtons($content);
 
         $this->view->assign('content', $content);
 
@@ -388,23 +389,6 @@ class EditorView extends View
         return $flashMessageQueue->renderFlashMessages();
     }
 
-    /**
-     * @return string
-     */
-    private function getSyntaxHelpButton()
-    {
-        $helpButton = '';
-        if (self::WIDGET_EDIT === $this->widgetMode) {
-            $url = $GLOBALS['TSFE']->tmpl->getFileName('EXT:bib/Resources/Public/Html/Syntax.html');
-
-            $helpButton = '<span class="'.$this->buttonClass.'">'.
-                '<a href="'.$url.'" target="_blank" class="button-help">'.
-                $this->languageService->getLL($this->LLPrefix.'btn_syntax_help').'</a></span>';
-        }
-
-        return $helpButton;
-    }
-
     private function getEditButton(): string
     {
         $editButton = '';
@@ -419,17 +403,6 @@ class EditorView extends View
         }
 
         return $editButton;
-    }
-
-    private function getCancelButton(): string
-    {
-        $cancelButton = '<span class="'.$this->buttonClass.'">'.
-            $this->pi1->get_link(
-                $this->languageService->getLL($this->LLPrefix.'btn_cancel')
-            ).
-            '</span>';
-
-        return $cancelButton;
     }
 
     private function getCiteIdGeneratorButton(): string
@@ -484,8 +457,7 @@ class EditorView extends View
         $buttonDeleteClass = $this->pi1->prefixShort.'-delete_button';
 
         if (!$this->isNew) {
-            if ((self::EDIT_SHOW != $this->pi1->extConf['editor_mode']) &&
-                (self::EDIT_CONFIRM_SAVE != $this->pi1->extConf['editor_mode'])
+            if ((self::EDIT_SHOW !== (int) $this->pi1->extConf['editor_mode']) && (self::EDIT_CONFIRM_SAVE !== (int) $this->pi1->extConf['editor_mode'])
             ) {
                 $deleteButton = '[action][confirm_delete]';
             }
@@ -863,15 +835,11 @@ class EditorView extends View
     private function getAuthorsWidget(array $value, int $mode): string
     {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplatePathAndFilename('typo3conf/ext/'.$this->pi1->extKey.'/Resources/Private/Templates/Editor/AuthorsWidget.html');
+        $view->assign('mode', $mode);
+        $view->assign('authors', $value);
 
         $content = '';
-        $cclass = $this->pi1->prefixShort.'-editor_input';
-
-        $isize = 25;
-        $ivar = $this->conf['input_size.']['author'];
-        if (is_numeric($ivar)) {
-            $isize = (int) $ivar;
-        }
 
         $key_action = $this->pi1->prefix_pi1.'[action]';
         $key_data = $this->pi1->prefix_pi1.'[DATA][pub][authors]';
@@ -889,7 +857,7 @@ class EditorView extends View
         if ((self::WIDGET_SHOW === $mode) || (self::WIDGET_EDIT === $mode)) {
             $au_con = [];
             for ($i = 0; $i < $edOpts['numAuthors']; ++$i) {
-                if ($i > ($aNum - 1) && (self::WIDGET_EDIT != $mode)) {
+                if ($i > ($aNum - 1) && (self::WIDGET_EDIT !== $mode)) {
                     break;
                 }
                 $row_con = [];
@@ -914,26 +882,14 @@ class EditorView extends View
                     if (self::WIDGET_EDIT === $mode) {
                         $lowerBtn = Utility::html_image_input(
                             $key_action.'[lower_author]',
-                            strval($i),
+                            (string) $i,
                             $this->pi1->icon_src['down']
                         );
 
                         $raiseBtn = Utility::html_image_input(
                             $key_action.'[raise_author]',
-                            strval($i),
+                            (string) $i,
                             $this->pi1->icon_src['up']
-                        );
-
-                        $row_con[1] = Utility::html_text_input(
-                            $key_data.'['.$i.'][forename]',
-                            $foreName,
-                            ['size' => $isize, 'maxlength' => 255, 'class' => $cclass]
-                        );
-
-                        $row_con[2] .= Utility::html_text_input(
-                            $key_data.'['.$i.'][surname]',
-                            $surName,
-                            ['size' => $isize, 'maxlength' => 255, 'class' => $cclass]
                         );
 
                         $row_con[3] = ($i < ($aNum - 1)) ? $lowerBtn : '';
@@ -944,58 +900,6 @@ class EditorView extends View
                 $au_con[] = $row_con;
             }
 
-            $content .= '<table class="'.$this->pi1->prefixShort.'-editor_author">';
-            $content .= '<tbody>';
-
-            // Head rows
-            $content .= '<tr><th></th>';
-            $content .= '<th>';
-            $content .= $this->languageService->getLL($this->referenceReader->getAuthorTable().'_forename');
-            $content .= '</th>';
-            $content .= '<th>';
-            $content .= $this->languageService->getLL($this->referenceReader->getAuthorTable().'_surname');
-            $content .= '</th>';
-            if (self::WIDGET_EDIT === $mode) {
-                $content .= '<th></th><th></th>';
-            }
-            $content .= '</tr>';
-
-            // Author data rows
-            foreach ($au_con as $row_con) {
-                $content .= '<tr>';
-                $content .= '<th class="'.$this->pi1->prefixShort.'-editor_author_num">';
-                $content .= $row_con[0];
-                $content .= '</th><td>';
-                $content .= $row_con[1];
-                $content .= '</td><td>';
-                $content .= $row_con[2];
-                if (count($row_con) > 3) {
-                    $content .= '</td><td style="padding: 1px;">';
-                    $content .= $row_con[3];
-                    $content .= '</td><td style="padding: 1px;">';
-                    $content .= $row_con[4];
-                }
-                $content .= '</td>';
-                $content .= '</tr>';
-            }
-
-            $content .= '</tbody>';
-            $content .= '</table>';
-
-            // Bottom buttons
-            if (self::WIDGET_EDIT === $mode) {
-                $content .= '<div style="padding-top: 0.5ex; padding-bottom: 0.5ex;">';
-                $content .= Utility::html_submit_input(
-                    $key_action.'[more_authors]',
-                    '+'
-                );
-                $content .= ' ';
-                $content .= Utility::html_submit_input(
-                    $key_action.'[less_authors]',
-                    '-'
-                );
-                $content .= '</div>';
-            }
         } else {
             if (self::WIDGET_SILENT === $mode) {
                 $authorsSize = count($authors);
@@ -1024,7 +928,8 @@ class EditorView extends View
             }
         }
 
-        return $content;
+        $view->assign('content', $content);
+        return $view->render();
     }
 
     /**
