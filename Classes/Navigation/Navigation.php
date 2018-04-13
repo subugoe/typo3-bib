@@ -97,7 +97,7 @@ abstract class Navigation
     /**
      * @return string
      */
-    protected function getTemplateFileFromCallingClass()
+    protected function getTemplateFileFromCallingClass(): string
     {
         $classParts = explode('\\', get_called_class());
         $templateName = str_replace('Navigation', '', $classParts[3]);
@@ -113,7 +113,7 @@ abstract class Navigation
             $templateFileName = $this->pi1->conf[$templateMapping[$templateName].'.']['template'];
             $templateFile = GeneralUtility::getFileAbsFileName($templateFileName);
         } else {
-            $templateFile = ExtensionManagementUtility::extPath($this->pi1->extKey).'/Resources/Private/Templates/Navigation/'.$templateName.'.html';
+            $templateFile = ExtensionManagementUtility::extPath('bib').'/Resources/Private/Templates/Navigation/'.$templateName.'.html';
         }
 
         return $templateFile;
@@ -124,40 +124,25 @@ abstract class Navigation
      *
      * @return array
      */
-    public function translator()
+    public function translator(): string
     {
-        $pref = '###'.$this->prefix;
         $content = $this->get();
 
-        $res = [];
-        $res[$pref.'###'] = $content;
-
         $val = '';
-        if (0 == $this->conf['top_disable']) {
+        if (0 === (int) $this->conf['top_disable']) {
             $val = $this->pi1->cObj->stdWrap($content, $this->conf['top.']);
         }
-        $res[$pref.'_TOP###'] = $val;
 
-        $val = '';
-        if (0 == $this->conf['bottom_disable']) {
+        if (0 === (int) $this->conf['bottom_disable']) {
             $val = $this->pi1->cObj->stdWrap($content, $this->conf['bottom.']);
         }
-        $res[$pref.'_BOTTOM###'] = $val;
 
-        return $res;
+        return $val;
     }
 
-    /**
-     * @return string
-     */
-    abstract protected function get();
+    abstract protected function get(): string;
 
-    /**
-     * @param $index
-     *
-     * @return mixed
-     */
-    abstract protected function sel_get_text($index);
+    abstract protected function sel_get_text(int $index): string;
 
     /**
      * @param $text
@@ -178,7 +163,7 @@ abstract class Navigation
      */
     protected function selection(array $cfgSel, array $indices, int $numSel): string
     {
-        $cObj = &$this->pi1->cObj;
+        $cObj = $this->pi1->cObj;
 
         $sel = [
             'prev' => [],

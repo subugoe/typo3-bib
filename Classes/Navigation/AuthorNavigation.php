@@ -27,6 +27,7 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Author;
 use Ipf\Bib\Utility\Utility;
 
 /**
@@ -63,30 +64,32 @@ class AuthorNavigation extends Navigation
     /**
      * Hook in to pi1 at init stage.
      */
-    public function hook_init()
+    public function hook_init(array $configuration): array
     {
-        $this->pi1->extConf['link_vars']['author_letter'] = '';
+        $configuration['link_vars']['author_letter'] = '';
         $pvar = $this->pi1->piVars['author_letter'];
         if (strlen($pvar) > 0) {
-            $this->pi1->extConf['author_navi']['sel_letter'] = $pvar;
-            $this->pi1->extConf['link_vars']['author_letter'] = $pvar;
+            $configuration['author_navi']['sel_letter'] = $pvar;
+            $configuration['link_vars']['author_letter'] = $pvar;
         }
 
-        $this->pi1->extConf['link_vars']['author'] = '';
+        $configuration['link_vars']['author'] = '';
         $pvar = $this->pi1->piVars['author'];
-        $this->pi1->extConf['author_navi']['sel_author'] = '0';
+        $configuration['author_navi']['sel_author'] = '0';
         if (strlen($pvar) > 0) {
-            $this->pi1->extConf['author_navi']['sel_author'] = $pvar;
-            $this->pi1->extConf['link_vars']['author'] = $pvar;
+            $configuration['author_navi']['sel_author'] = $pvar;
+            $configuration['link_vars']['author'] = $pvar;
         }
+
+        return $configuration;
     }
 
     /**
      * Hook in to pi1 at filter stage.
      */
-    public function hook_filter()
+    public function hook_filter(array $configuration): array
     {
-        $charset = $this->pi1->extConf['charset']['upper'];
+        $charset = $configuration['charset']['upper'];
 
         // Init statistics
         $this->pi1->stat['authors'] = [];
@@ -100,10 +103,10 @@ class AuthorNavigation extends Navigation
 
         // Filter for selected author letter
         // with a temporary filter
-        if (strlen($this->extConf['sel_letter']) > 0) {
-            $filters = $this->pi1->extConf['filters'];
+        if (strlen($configuration['sel_letter']) > 0) {
+            $filters = $configuration['filters'];
 
-            $txt = $this->extConf['sel_letter'];
+            $txt = $configuration['sel_letter'];
             $spec = htmlentities($txt, ENT_QUOTES, $charset);
             $pats = [$txt.'%'];
             if ($spec != $txt) {
@@ -126,20 +129,21 @@ class AuthorNavigation extends Navigation
             // Remove ampersand strings from surname list
             $lst = [];
             $spec = false;
-            $sel_up = mb_strtoupper($this->extConf['sel_letter'], $charset);
-            $sel_low = mb_strtolower($this->extConf['sel_letter'], $charset);
-            foreach ($this->pi1->stat['authors']['sel_surnames'] as $name) {
-                if (!(false === strpos($name, '&'))) {
-                    $name = html_entity_decode($name, ENT_COMPAT, $charset);
+            $sel_up = mb_strtoupper($configuration['sel_letter'], $charset);
+            $sel_low = mb_strtolower($configuration['sel_letter'], $charset);
+            /** @var Author $author */
+            foreach ($this->pi1->stat['authors']['sel_surnames'] as $author) {
+                if (!(false === strpos($author->getSurName(), '&'))) {
+                    $author->setSurName(html_entity_decode($author->getSurName(), ENT_COMPAT, $charset));
                     $spec = true;
                 }
                 // check if first letter matches
-                $ll = mb_substr($name, 0, 1, $charset);
+                $ll = mb_substr($author->getSurName(), 0, 1, $charset);
                 if (($ll != $sel_up) && ($ll != $sel_low)) {
                     continue;
                 }
-                if (!in_array($name, $lst)) {
-                    $lst[] = $name;
+                if (!in_array($author->getSurName(), $lst)) {
+                    $lst[] = $author->getSurName();
                 }
             }
             if ($spec) {
@@ -148,19 +152,19 @@ class AuthorNavigation extends Navigation
             $this->pi1->stat['authors']['sel_surnames'] = $lst;
 
             // Restore filter
-            $this->pi1->referenceReader->set_filters($this->pi1->extConf['filters']);
+            $this->pi1->referenceReader->set_filters($configuration['filters']);
         }
 
         // Setup filter for selected author
-        if ('0' != $this->extConf['sel_author']) {
-            $spec = htmlentities($this->extConf['sel_author'], ENT_QUOTES, $charset);
+        if ('0' != $configuration['sel_author']) {
+            $spec = htmlentities($configuration['sel_author'], ENT_QUOTES, $charset);
 
             // Check if the selected author is available
-            if (in_array($this->extConf['sel_author'], $this->pi1->stat['authors']['sel_surnames'])
+            if (in_array($configuration['sel_author'], $this->pi1->stat['authors']['sel_surnames'])
                 || in_array($spec, $this->pi1->stat['authors']['sel_surnames'])
             ) {
-                $pats = [$this->extConf['sel_author']];
-                if ($spec != $this->extConf['sel_author']) {
+                $pats = [$configuration['sel_author']];
+                if ($spec != $configuration['sel_author']) {
                     $pats[] = $spec;
                 }
 
@@ -170,18 +174,20 @@ class AuthorNavigation extends Navigation
                     $filter[] = ['surname' => $pat];
                 }
             } else {
-                $this->extConf['sel_author'] = '0';
+                $configuration['sel_author'] = '0';
             }
         }
 
         // Append filter
         if (count($filter) > 0) {
-            $this->pi1->extConf['filters']['author'] = [];
-            $this->pi1->extConf['filters']['author']['author'] = [];
-            $this->pi1->extConf['filters']['author']['author']['authors'] = $filter;
+            $configuration['filters']['author'] = [];
+            $configuration['filters']['author']['author'] = [];
+            $configuration['filters']['author']['author']['authors'] = $filter;
 
-            $this->pi1->referenceReader->set_filters($this->pi1->extConf['filters']);
+            $this->pi1->referenceReader->set_filters($configuration['filters']);
         }
+
+        return $configuration;
     }
 
     /**
@@ -189,17 +195,16 @@ class AuthorNavigation extends Navigation
      *
      * @param array $names
      */
-    protected function initializeLetters($names)
+    protected function initializeLetters(array $names)
     {
         $extConf = &$this->extConf;
-        $charset = $this->pi1->extConf['charset']['upper'];
 
         // Acquire letter
-        $letters = $this->first_letters($names, $charset);
+        $letters = $this->first_letters($names, 'UTF-8');
 
         // Acquire selected letter
         $selectedLetter = strval($extConf['sel_letter']);
-        $idx = $this->string_index($selectedLetter, $letters, '', $charset);
+        $idx = $this->string_index($selectedLetter, $letters, '', 'UTF-8');
         if ($idx < 0) {
             $selectedLetter = '';
         } else {
@@ -222,10 +227,11 @@ class AuthorNavigation extends Navigation
     {
         // Acquire letters
         $letters = [];
-        foreach ($names as $name) {
-            $ll = mb_substr($name, 0, 1, $charset);
+        /** @var Author $author */
+        foreach ($names as $author) {
+            $ll = mb_substr($author->getSurName(), 0, 1, $charset);
             if ('&' == $ll) {
-                $match = preg_match('/^(&[^;]{1,7};)/', $name, $grp);
+                $match = preg_match('/^(&[^;]{1,7};)/', $author->getSurName(), $grp);
                 if ($match) {
                     $ll = html_entity_decode($grp[1], ENT_QUOTES, $charset);
                 } else {
@@ -280,12 +286,8 @@ class AuthorNavigation extends Navigation
 
     /**
      * Creates a text for a given index.
-     *
-     * @param int $index
-     *
-     * @return string
      */
-    protected function sel_get_text($index)
+    protected function sel_get_text(int $index): string
     {
         $txt = strval($this->pi1->stat['authors']['sel_surnames'][$index]);
         $txt = htmlspecialchars($txt, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
@@ -321,10 +323,8 @@ class AuthorNavigation extends Navigation
 
     /**
      * Returns content.
-     *
-     * @return string
      */
-    protected function get()
+    protected function get(): string
     {
         $charset = $this->pi1->extConf['charset']['upper'];
 

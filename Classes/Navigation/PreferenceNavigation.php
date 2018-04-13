@@ -62,19 +62,19 @@ class PreferenceNavigation extends Navigation
     /*
      * Hook in to pi1 at init stage
      */
-    public function hook_init()
+    public function hook_init(array $configuration): array
     {
-        $this->getItemsPerPageConfiguration();
-        $this->getAbstractConfiguration();
-        $this->getKeywordConfiguration();
+        $configuration = $this->getItemsPerPageConfiguration($configuration);
+        $configuration = $this->getAbstractConfiguration($configuration);
+        $configuration = $this->getKeywordConfiguration($configuration);
+
+        return $configuration;
     }
 
     /**
      * Returns the preference navigation bar.
-     *
-     * @return string
      */
-    protected function get()
+    protected function get(): string
     {
         $this->view
             ->assign('label', $this->getPreferenceNavigationLabel())
@@ -87,51 +87,58 @@ class PreferenceNavigation extends Navigation
         return $this->view->render();
     }
 
-    protected function getKeywordConfiguration()
+    protected function getKeywordConfiguration(array $configuration): array
     {
         // Show keywords
         $show = false;
         if (0 != $this->pi1->piVars['show_keywords']) {
             $show = true;
         }
-        $this->pi1->extConf['hide_fields']['keywords'] = $show ? false : true;
-        $this->pi1->extConf['hide_fields']['tags'] = $this->pi1->extConf['hide_fields']['keywords'];
-        $this->pi1->extConf['link_vars']['show_keywords'] = $show ? '1' : '0';
+
+        $configuration['hide_fields']['keywords'] = $show ? false : true;
+        $configuration['hide_fields']['tags'] = $configuration['hide_fields']['keywords'];
+        $configuration['link_vars']['show_keywords'] = $show ? '1' : '0';
+
+        return $configuration;
     }
 
-    protected function getAbstractConfiguration()
+    protected function getAbstractConfiguration(array $configuration): array
     {
         // Show abstracts
         $show = false;
-        if (0 != $this->pi1->piVars['show_abstracts']) {
+        if (0 !== (int) $this->pi1->piVars['show_abstracts']) {
             $show = true;
         }
-        $this->pi1->extConf['hide_fields']['abstract'] = $show ? false : true;
-        $this->pi1->extConf['link_vars']['show_abstracts'] = $show ? '1' : '0';
+        $configuration['hide_fields']['abstract'] = $show ? false : true;
+        $configuration['link_vars']['show_abstracts'] = $show ? '1' : '0';
+
+        return $configuration;
     }
 
-    protected function getItemsPerPageConfiguration()
+    protected function getItemsPerPageConfiguration(array $configuration): array
     {
         // Available ipp values
-        $this->extConf['pref_ipps'] = GeneralUtility::intExplode(',', $this->conf['ipp_values']);
+        $configuration['pref_ipps'] = GeneralUtility::intExplode(',', $this->conf['ipp_values']);
 
         // Default ipp value
         if (is_numeric($this->conf['ipp_default'])) {
-            $this->pi1->extConf['sub_page']['ipp'] = intval($this->conf['ipp_default']);
-            $this->extConf['pref_ipp'] = $this->pi1->extConf['sub_page']['ipp'];
+            $configuration['sub_page']['ipp'] = intval($this->conf['ipp_default']);
+            $configuration['pref_ipp'] = $configuration['sub_page']['ipp'];
         }
 
         // Selected ipp value
         $itemsPerPage = $this->pi1->piVars['items_per_page'];
         if (is_numeric($itemsPerPage)) {
             $itemsPerPage = max(intval($itemsPerPage), 0);
-            if (in_array($itemsPerPage, $this->extConf['pref_ipps'])) {
-                $this->pi1->extConf['sub_page']['ipp'] = $itemsPerPage;
-                if ($this->pi1->extConf['sub_page']['ipp'] != $this->extConf['pref_ipp']) {
-                    $this->pi1->extConf['link_vars']['items_per_page'] = $this->pi1->extConf['sub_page']['ipp'];
+            if (in_array($itemsPerPage, $configuration['pref_ipps'])) {
+                $configuration['sub_page']['ipp'] = $itemsPerPage;
+                if ($configuration['sub_page']['ipp'] != $configuration['pref_ipp']) {
+                    $configuration['link_vars']['items_per_page'] = $configuration['sub_page']['ipp'];
                 }
             }
         }
+
+        return $configuration;
     }
 
     /**
@@ -266,13 +273,9 @@ class PreferenceNavigation extends Navigation
         return $formStart;
     }
 
-    /**
-     * @param int $index
-     *
-     * @return string
-     */
-    protected function sel_get_text($index)
+    protected function sel_get_text(int $index): string
     {
+        return '';
     }
 
     /**

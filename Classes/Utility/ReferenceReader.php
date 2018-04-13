@@ -27,6 +27,9 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Author;
+use TYPO3\CMS\Core\Charset\CharsetConverter;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -118,29 +121,36 @@ class ReferenceReader
         3 => 'unpublished',
         4 => 'in_preparation',
     ];
+
     protected $filter;
+
     /**
      * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
      */
     protected $cObj;
+
     /**
-     * @var bool|\mysqli_result|object
+     * @var bool|\mysqli_result
      */
     protected $databaseResource = null;
+
     /**
      * @var bool
      */
     protected $clearCache = false;
+
     /**
      * @var array
      */
     protected $search_fields;
+
     /**
      * The following tags are allowed in a reference string.
      *
      * @var array
      */
     protected $allowedTags = ['em', 'strong', 'sup', 'sub'];
+
     /**
      * These are the author relevant fields
      * that can be found in the reference table $this->getAuthorTable().
@@ -149,14 +159,17 @@ class ReferenceReader
      * @var array
      */
     protected $authorFields = ['surname', 'forename', 'url', 'fe_user_id'];
+
     /**
      * @var array
      */
     protected $authorAllFields;
+
     /**
      * @var array
      */
     protected $filters = [];
+
     /**
      * These are the publication relevant fields
      * that can be found in the reference table $this->referenceTable.
@@ -215,6 +228,7 @@ class ReferenceReader
         'in_library',
         'borrowed_by',
     ];
+
     /**
      * These are the publication relevant fields
      * that can be found in a php publication array.
@@ -223,29 +237,16 @@ class ReferenceReader
      * @var array
      */
     protected $publicationFields;
-    /**
-     * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected $db;
 
-    /**
-     * The constructor.
-     */
     public function __construct()
     {
-        $this->t_ref_default['table'] = $this->getReferenceTable();
-        $this->t_as_default['table'] = $this->getAuthorshipTable();
-        $this->t_au_default['table'] = $this->getAuthorTable();
-
-        $this->db = $GLOBALS['TYPO3_DB'];
+        $this->t_ref_default['table'] = self::REFERENCE_TABLE;
+        $this->t_as_default['table'] = self::AUTHORSHIP_TABLE;
+        $this->t_au_default['table'] = self::AUTHOR_TABLE;
 
         // setup authorAllFields
-        $this->setAuthorAllFields(
-            ['uid', 'pid', 'tstamp', 'crdate', 'cruser_id']
-        );
-        $this->setAuthorAllFields(
-            array_merge($this->getAuthorAllFields(), $this->getAuthorFields())
-        );
+        $this->authorAllFields = ['uid', 'pid', 'tstamp', 'crdate', 'cruser_id'];
+        $this->authorAllFields = array_merge($this->authorAllFields, $this->authorFields);
 
         // setup refAllFields
         $typo3_fields = [
@@ -257,25 +258,33 @@ class ReferenceReader
             'crdate',
             'cruser_id',
         ];
-        $this->refAllFields = array_merge($typo3_fields, $this->getReferenceFields());
+        $this->refAllFields = array_merge($typo3_fields, $this->referenceFields);
 
         // setup pubFields
-        $this->setPublicationFields($this->getReferenceFields());
+        $this->publicationFields = $this->referenceFields;
         $this->publicationFields[] = 'authors';
 
         // setup pubAllFields
-        $this->pubAllFields = array_merge($typo3_fields, $this->getPublicationFields());
+        $this->pubAllFields = array_merge($typo3_fields, $this->publicationFields);
 
         $this->sortExtraFields = ['surname'];
 
-        $searchFields = $this->getReferenceFields();
+        $searchFields = $this->referenceFields;
         array_push($searchFields, 'authors');
         natcasesort($searchFields);
         $this->setSearchFields($searchFields);
 
-        $sortFields = $this->getReferenceFields();
+        $sortFields = $this->referenceFields;
         $sortFields = array_merge($sortFields, $this->sortExtraFields);
         $this->setSortFields($sortFields);
+    }
+
+    /**
+     * @return mixed|\TYPO3\CMS\Core\Database\DatabaseConnection
+     */
+    private function getDatabaseConnection()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 
     /**
@@ -375,16 +384,6 @@ class ReferenceReader
     }
 
     /**
-     * set the cObject.
-     *
-     * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
-     */
-    public function set_cObj(&$cObj)
-    {
-        $this->cObj = &$cObj;
-    }
-
-    /**
      * This changes the character set of a publication (array).
      *
      * @param array  $publication
@@ -393,24 +392,26 @@ class ReferenceReader
      *
      * @return array The character set adjusted publication
      */
-    public function change_pub_charset($publication, $originalCharset, $targetCharset)
+    public function change_pub_charset(array $publication, string $originalCharset, string $targetCharset)
     {
         if (is_array($publication) && strlen($originalCharset) && strlen($targetCharset)
             && ($originalCharset != $targetCharset)
         ) {
+            $charsetConverter = GeneralUtility::makeInstance(CharsetConverter::class);
+
             $keys = array_keys($publication);
             foreach ($keys as $key) {
                 switch ($key) {
                     case 'authors':
                         if (is_array($publication[$key])) {
                             foreach ($publication[$key] as &$author) {
-                                $author['forename'] = $GLOBALS['TSFE']->csConvObj->conv(
+                                $author['forename'] = $charsetConverter->conv(
                                     $author['forename'],
                                     $originalCharset,
                                     $targetCharset
                                 );
 
-                                $author['surname'] = $GLOBALS['TSFE']->csConvObj->conv(
+                                $author['surname'] = $charsetConverter->conv(
                                     $author['surname'],
                                     $originalCharset,
                                     $targetCharset
@@ -420,7 +421,7 @@ class ReferenceReader
                         break;
                     default:
                         if (is_string($publication[$key])) {
-                            $publication[$key] = $GLOBALS['TSFE']->csConvObj->conv(
+                            $publication[$key] = $charsetConverter->conv(
                                 $publication[$key],
                                 $originalCharset,
                                 $targetCharset
@@ -524,7 +525,7 @@ class ReferenceReader
                 if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
                     $chk = ' LIKE ';
                 }
-                $whereClause[] = $field.$chk.$this->db->fullQuoteStr($word, $this->getAuthorTable());
+                $whereClause[] = $field.$chk.$this->getDatabaseConnection()->fullQuoteStr($word, $this->getAuthorTable());
             }
         }
 
@@ -532,18 +533,18 @@ class ReferenceReader
             if (is_array($pids)) {
                 $whereClause[] = 'pid IN ('.implode(',', $pids).')';
             } else {
-                $whereClause[] = 'pid='.intval($pids);
+                $whereClause[] = 'pid='.(int) $pids;
             }
             $whereClause = implode(' AND ', $whereClause);
             $whereClause .= $this->enable_fields($this->getAuthorTable());
 
-            $res = $this->db->exec_SELECTquery(
+            $res = $this->getDatabaseConnection()->exec_SELECTquery(
                 'uid,pid',
                 $this->getAuthorTable(),
                 $whereClause
             );
 
-            while ($row = $this->db->sql_fetch_assoc($res)) {
+            while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
                 $uids[] = ['uid' => $row['uid'], 'pid' => $row['pid']];
             }
         }
@@ -560,9 +561,9 @@ class ReferenceReader
      *
      * @return string The where clause part
      */
-    public function enable_fields($table, $alias = '', $show_hidden = false)
+    public function enable_fields(string $table, string $alias = '', bool $show_hidden = false)
     {
-        if (0 == strlen($alias)) {
+        if (0 === strlen($alias)) {
             $alias = $table;
         }
         if (isset($this->cObj)) {
@@ -660,7 +661,7 @@ class ReferenceReader
 
         $num = 0;
         $whereClause = [];
-        $whereClause[] = 'citeid='.$this->db->fullQuoteStr($citeId, $this->getReferenceTable());
+        $whereClause[] = 'citeid='.$this->getDatabaseConnection()->fullQuoteStr($citeId, $this->getReferenceTable());
 
         if (is_numeric($uid) && ($uid >= 0)) {
             $whereClause[] = 'uid!='."'".intval($uid)."'";
@@ -674,8 +675,8 @@ class ReferenceReader
         $whereClause = implode(' AND ', $whereClause);
         $whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
 
-        $res = $this->db->exec_SELECTquery('count(uid)', $this->getReferenceTable(), $whereClause);
-        $row = $this->db->sql_fetch_assoc($res);
+        $res = $this->getDatabaseConnection()->exec_SELECTquery('count(uid)', $this->getReferenceTable(), $whereClause);
+        $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
 
         if (is_array($row)) {
             $num = intval($row['count(uid)']);
@@ -695,8 +696,8 @@ class ReferenceReader
         $select = $this->getReferenceSelectClause([$this->getReferenceTable().'.uid'], null);
         $select = preg_replace('/;\s*$/', '', $select);
         $query = 'SELECT count(pubs.uid) FROM ('.$select.') pubs;';
-        $res = $this->db->sql_query($query);
-        $row = $this->db->sql_fetch_assoc($res);
+        $res = $this->getDatabaseConnection()->sql_query($query);
+        $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
 
         if (is_array($row)) {
             return intval($row['count(pubs.uid)']);
@@ -709,18 +710,14 @@ class ReferenceReader
      * This function returns the SQL LIMIT clause configured
      * by the filter.
      *
-     * @param array  $fields
+     * @param string $fields
      * @param string $order
      * @param string $group
      *
      * @return string The LIMIT clause string
      */
-    protected function getReferenceSelectClause($fields, $order = '', $group = '')
+    protected function getReferenceSelectClause(array $fields, $order = '', $group = '')
     {
-        if (!is_array($fields)) {
-            $fields = [$fields];
-        }
-
         $columns = [];
         $whereClause = $this->getReferenceWhereClause($columns);
 
@@ -1016,7 +1013,7 @@ class ReferenceReader
                         $wca .= ',';
                     }
 
-                    $wca .= $this->db->fullQuoteStr($filter['citeid']['ids'][$i], $this->getReferenceTable());
+                    $wca .= $this->getDatabaseConnection()->fullQuoteStr($filter['citeid']['ids'][$i], $this->getReferenceTable());
                 }
                 $wca .= ')';
                 $whereClause[] = $wca;
@@ -1134,7 +1131,7 @@ class ReferenceReader
         foreach ($fields as $field) {
             if (in_array($field, $refFields)) {
                 foreach ($proc_words as $word) {
-                    $word = $this->db->fullQuoteStr($word, $this->getReferenceTable());
+                    $word = $this->getDatabaseConnection()->fullQuoteStr($word, $this->getReferenceTable());
                     $wca[] = $this->getReferenceTable().'.'.$field.' LIKE '.$word;
                 }
             }
@@ -1181,13 +1178,13 @@ class ReferenceReader
             $whereClause = 'author_id IN ('.implode(',', $uids).')';
             $whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
-            $res = $this->db->exec_SELECTquery(
+            $res = $this->getDatabaseConnection()->exec_SELECTquery(
                 '*',
                 $this->getAuthorshipTable(),
                 $whereClause
             );
 
-            while ($row = $this->db->sql_fetch_assoc($res)) {
+            while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
                 $authorships[] = $row;
             }
         }
@@ -1214,7 +1211,7 @@ class ReferenceReader
         foreach ($words as $word) {
             $word = trim(strval($word));
             if (strlen($word) > 0) {
-                $word = $this->db->fullQuoteStr($word, $this->getAuthorTable());
+                $word = $this->getDatabaseConnection()->fullQuoteStr($word, $this->getAuthorTable());
                 foreach ($all_fields as $field) {
                     if (in_array($field, $fields)) {
                         if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
@@ -1239,13 +1236,13 @@ class ReferenceReader
 
         $field_csv = implode(',', $this->getAuthorAllFields());
 
-        $res = $this->db->exec_SELECTquery(
+        $res = $this->getDatabaseConnection()->exec_SELECTquery(
             $field_csv,
             $this->getAuthorTable(),
             $whereClause
         );
 
-        while ($row = $this->db->sql_fetch_assoc($res)) {
+        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
             $authors[] = $row;
         }
 
@@ -1508,12 +1505,12 @@ class ReferenceReader
         $maximumValueFromAuthorTable = 'max('.$this->getReferenceTable().'.tstamp)';
 
         $query = $this->getReferenceSelectClause(
-            $maximalValueFromReferenceTable.', '.$maximumValueFromAuthorTable,
+            [$maximalValueFromReferenceTable, $maximumValueFromAuthorTable],
             null,
             null
         );
-        $res = $this->db->sql_query($query);
-        $row = $this->db->sql_fetch_assoc($res);
+        $res = $this->getDatabaseConnection()->sql_query($query);
+        $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
 
         if (is_array($row)) {
             return max($row);
@@ -1536,14 +1533,14 @@ class ReferenceReader
         $histogram = [];
 
         $query = $this->getReferenceSelectClause(
-            $this->getReferenceTable().'.'.$field,
+            [$this->getReferenceTable().'.'.$field],
             $this->getReferenceTable().'.'.$field.' ASC'
         );
-        $res = $this->db->sql_query($query);
+        $res = $this->getDatabaseConnection()->sql_query($query);
 
         $cVal = null;
         $cNum = null;
-        while ($row = $this->db->sql_fetch_assoc($res)) {
+        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
             $val = $row[$field];
             if ($cVal == $val) {
                 ++$cNum;
@@ -1553,7 +1550,7 @@ class ReferenceReader
                 $cNum = &$histogram[$val];
             }
         }
-        $this->db->sql_free_result($res);
+        $this->getDatabaseConnection()->sql_free_result($res);
 
         return $histogram;
     }
@@ -1565,21 +1562,24 @@ class ReferenceReader
      */
     public function getSurnamesOfAllAuthors()
     {
-        $names = [];
+        $authors = [];
 
-        $query = $this->getReferenceSelectClause(
-            'distinct('.$this->getAuthorTable().'.surname)',
-            $this->getAuthorTable().'.surname ASC',
-            $this->getAuthorTable().'.uid'
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHOR_TABLE);
 
-        $res = $this->db->sql_query($query);
+        $results = $queryBuilder->select('surname')
+            ->from(self::AUTHOR_TABLE)
+            ->groupBy('surname')
+            ->orderBy('surname', 'ASC')
+            ->execute()
+            ->fetchAll();
 
-        while ($row = $this->db->sql_fetch_assoc($res)) {
-            $names[] = $row['surname'];
+        foreach ($results as $result) {
+            $author = new Author();
+            $author->setSurName($result['surname']);
+            $authors[] = $author;
         }
 
-        return $names;
+        return $authors;
     }
 
     /**
@@ -1589,31 +1589,26 @@ class ReferenceReader
      *
      * @return array The publication data from the database
      */
-    public function getPublicationDetails($uid)
+    public function getPublicationDetails(int $uid)
     {
-        $whereClause = [];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(static::REFERENCE_TABLE);
 
-        $whereClause[] = 'uid = '.intval($uid);
+        $queryBuilder->select('*')
+            ->from(static::REFERENCE_TABLE)
+            ->where($queryBuilder->expr()->eq('uid', $uid));
 
         if (count($this->pid_list) > 0) {
-            $csv = Utility::implode_intval(',', $this->pid_list);
-            $whereClause[] = 'pid IN ('.$csv.')';
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->pid_list));
         }
 
-        $whereClause = implode(' AND ', $whereClause);
-        $whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
+        if (!$this->show_hidden) {
+            $queryBuilder
+                ->andWhere($queryBuilder->expr()->eq('hidden', 0));
+        }
 
-        $field_csv = implode(',', $this->refAllFields);
-
-        $res = $this->db->exec_SELECTquery(
-            $field_csv,
-            $this->getReferenceTable(),
-            $whereClause
-        );
-
-        $publication = $this->db->sql_fetch_assoc($res);
-
-        if (is_array($publication)) {
+        $results = $queryBuilder->execute()->fetchAll();
+        $publication = $results[0];
+        if (is_array($results)) {
             $publication['authors'] = $this->getAuthorByPublication($publication['uid']);
             $publication['mod_key'] = $this->getModificationKey($publication);
         }
@@ -1628,7 +1623,7 @@ class ReferenceReader
      *
      * @return array An array containing author array
      */
-    protected function getAuthorByPublication($pub_id)
+    protected function getAuthorByPublication(int $pub_id)
     {
         $authors = [];
 
@@ -1653,8 +1648,8 @@ class ReferenceReader
         $query .= ' ORDER BY '.$orderClause;
         $query .= ';';
 
-        $res = $this->db->sql_query($query);
-        while ($row = $this->db->sql_fetch_assoc($res)) {
+        $res = $this->getDatabaseConnection()->sql_query($query);
+        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
             $authors[] = $row;
         }
 
@@ -1689,17 +1684,21 @@ class ReferenceReader
      */
     public function initializeReferenceFetching()
     {
-        $field_csv = $this->getReferenceTable().'.'.implode(
-            ','.$this->getReferenceTable().'.',
+        $field_csv = self::REFERENCE_TABLE.'.'.implode(
+            ','.self::REFERENCE_TABLE.'.',
                 $this->refAllFields
         );
-        $field_csv1 = $this->getAuthorTable().'.'.implode(
-            ','.$this->getReferenceTable().'.',
+        $field_csv1 = self::AUTHOR_TABLE.'.'.implode(
+            ','.self::REFERENCE_TABLE.'.',
                 $this->sortExtraFields
         );
         $field_csv = $field_csv.','.$field_csv1;
+        $field_csv = explode(',', $field_csv);
         $query = $this->getReferenceSelectClause($field_csv);
-        $this->setDatabaseResource($this->db->sql_query($query));
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::REFERENCE_TABLE);
+
+        $this->databaseResource = $this->getDatabaseConnection()->sql_query($query);
     }
 
     /**
@@ -1709,23 +1708,7 @@ class ReferenceReader
      */
     public function numberOfReferencesToBeFetched()
     {
-        return $this->db->sql_num_rows($this->getDatabaseResource());
-    }
-
-    /**
-     * @return bool|\mysqli_result|object
-     */
-    public function getDatabaseResource()
-    {
-        return $this->databaseResource;
-    }
-
-    /**
-     * @param bool|\mysqli_result|object $databaseResource
-     */
-    public function setDatabaseResource($databaseResource)
-    {
-        $this->databaseResource = $databaseResource;
+        return $this->getDatabaseConnection()->sql_num_rows($this->databaseResource);
     }
 
     /**
@@ -1735,7 +1718,7 @@ class ReferenceReader
      */
     public function getReference()
     {
-        $row = $this->db->sql_fetch_assoc($this->getDatabaseResource());
+        $row = $this->getDatabaseConnection()->sql_fetch_assoc($this->databaseResource);
         if ($row) {
             $row['authors'] = $this->getAuthorByPublication($row['uid']);
             $row['mod_key'] = $this->getModificationKey($row);
@@ -1749,7 +1732,7 @@ class ReferenceReader
      */
     public function finalizeReferenceFetching()
     {
-        $this->db->sql_free_result($this->getDatabaseResource());
+        $this->getDatabaseConnection()->sql_free_result($this->databaseResource);
     }
 
     /**
@@ -1777,13 +1760,13 @@ class ReferenceReader
                 $whereClause = implode(' AND ', $whereClause);
                 $whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
-                $res = $this->db->exec_SELECTquery(
+                $res = $this->getDatabaseConnection()->exec_SELECTquery(
                     '*',
                     $this->getAuthorshipTable(),
                     $whereClause
                 );
 
-                while ($row = $this->db->sql_fetch_assoc($res)) {
+                while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
                     $ret[] = $row;
                 }
             }
@@ -1813,7 +1796,7 @@ class ReferenceReader
         $whereClause = implode(' AND ', $whereClause);
         $whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
 
-        $query = $this->db->exec_SELECTQuery(
+        $query = $this->getDatabaseConnection()->exec_SELECTQuery(
             'uid',
             $this->getReferenceTable(),
             $whereClause,
@@ -1822,7 +1805,7 @@ class ReferenceReader
             1
         );
 
-        while ($row = $this->db->sql_fetch_assoc($query)) {
+        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($query)) {
             $result = $row['uid'];
         }
 

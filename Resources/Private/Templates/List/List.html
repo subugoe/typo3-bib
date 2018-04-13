@@ -1,0 +1,48 @@
+{namespace b=Ipf\Bib\ViewHelpers}
+
+<!-- ###LIST_VIEW### begin -->
+<div class="tx_bib-top_navigation">
+    <f:if condition="{configuration.edit_mode}">
+        <f:translate key="manipulators_new" extensionName="bib"/>
+        <f:link.page class="new-record" additionalParams="{action : {new:1}}" title="{f:translate(key:'manipulators_new')}"><f:translate key="manipulators_new" extensionName="bib"/></f:link.page>
+    </f:if>
+
+{newEntry}
+    <!-- ###HAS_SEARCH_NAVI### begin -->###SEARCH_NAVI_TOP###<!-- ###HAS_SEARCH_NAVI### end -->
+<f:if condition="{configuration.show_nav_search}">
+    {configuration.search_navi.obj.translator}
+</f:if>
+{yearNavigation -> f:format.raw()}
+{authorNavigation -> f:format.raw()}
+{preferenceNavigation -> f:format.raw()}
+{statisticsNavigation -> f:format.raw()}
+</div>
+{pageNavigation}
+<div class="tx_bib-navi_main_label">###LABEL_REFERENCES###</div>
+<div class="tx_bib-list_container">
+<!-- ###HAS_ITEMS### begin -->
+<table cellspacing="0" cellpadding="0" border="0" class="tx_bib-list">
+<tbody>
+<f:for each="{items}" as="item">
+    {item.title}
+</f:for>
+</tbody>
+</table>
+<div class="tx_bib-float_clear"></div>
+<!-- ###HAS_ITEMS### end -->
+###NO_ITEMS###
+</div>
+<div class="tx_bib-bottom_navigation">
+{pageNavigation}
+{statisticsNavigation}
+<f:if condition="{configuration.edit_mode}">
+    <f:translate key="import_bibtex" extensionName="bib" />
+    <f:link.page title="{f:translate(key:'import_bibtexLinkTitle')}" additionalParams="{import:1}"><f:translate key="import_bibtex" extensionName="bib" /></f:link.page>
+
+    <f:translate key="import_xml" extensionName="bib" />
+    <f:link.page title="{f:translate(key:'import_xmlLinkTitle')}" additionalParams="{import:1}"><f:translate key="import_xml" extensionName="bib" /></f:link.page>
+</f:if>
+{exportNavigation}
+</div>
+<!-- ###LIST_VIEW### end -->
+

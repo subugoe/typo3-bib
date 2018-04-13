@@ -80,19 +80,25 @@ class SingleView extends View
     protected $view;
 
     /**
+     * @var array
+     */
+    private $extConf;
+
+    /**
      * Initializes this class.
      *
      * @param \tx_bib_pi1
      */
-    public function initialize($pi1)
+    public function initialize(array $configuration): string
     {
-        $this->view->setTemplatePathAndFilename('typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Templates/Single/Index.html');
-
+        $this->view->setTemplatePathAndFilename('typo3conf/ext/bib/Resources/Private/Templates/Single/Index.html');
         $this->pi1 = $pi1;
         $this->conf = $pi1->conf['single_view.'];
         $this->referenceReader = &$pi1->referenceReader;
         // Load editor language data
-        $this->pi1->extend_ll('EXT:'.$this->pi1->extKey.'/Resources/Private/Language/locallang_editor.xml');
+        $this->pi1->extend_ll('EXT:bib/Resources/Private/Language/locallang.xml', $configuration);
+
+        return $this->singleView($configuration);
     }
 
     /**
@@ -100,16 +106,16 @@ class SingleView extends View
      *
      * @return string
      */
-    public function singleView()
+    public function singleView(array $configuration)
     {
         $content = '';
 
-        $uid = intval($this->pi1->extConf['single_view']['uid']);
+        $uid = (int) $configuration['single_view']['uid'];
         $ref = $this->referenceReader->getPublicationDetails($uid);
 
         if (is_array($ref)) {
             try {
-                $this->typeReference($ref);
+                $this->typeReference($ref, $configuration);
             } catch (\Exception $e) {
                 $content .= $e->getMessage();
             }
@@ -126,23 +132,14 @@ class SingleView extends View
         return $this->view->render();
     }
 
-    /**
-     * @throws \Exception
-     *
-     * @param $ref
-     *
-     * @return string
-     */
-    protected function typeReference($ref)
+    private function typeReference($ref, array $configuration)
     {
-        $warnings = [];
-
         // Store the cObj Data for later recovery
         $contentObjectBackup = $this->pi1->cObj->data;
 
         // Prepare the publication data and environment
-        $this->pi1->prepareItemSetup();
-        $publicationData = $this->pi1->preparePublicationData($ref, $warnings, true);
+        $configuration = $this->pi1->prepareItemSetup($configuration);
+        $publicationData = $this->pi1->preparePublicationData($ref, $configuration);
         $this->pi1->prepare_pub_cObj_data($publicationData);
 
         $bib_str = $publicationData['bibtype_short'];

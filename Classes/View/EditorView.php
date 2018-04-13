@@ -29,6 +29,8 @@ namespace Ipf\Bib\View;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Author;
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\DbUtility;
 use Ipf\Bib\Utility\Generator\AuthorsCiteIdGenerator;
@@ -36,10 +38,10 @@ use Ipf\Bib\Utility\Generator\CiteIdGenerator;
 use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\ReferenceWriter;
 use Ipf\Bib\Utility\Utility;
+use Subugoe\Substaff\Domain\Model\Publication;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -136,21 +138,19 @@ class EditorView extends View
      *
      * @param \tx_bib_pi1 $pi1
      */
-    public function initialize($pi1)
+    public function initialize(array $configuration): string
     {
-        /* @var \tx_bib_pi1 pi1 */
-        $this->pi1 = &$pi1;
         $this->conf = &$pi1->conf['editor.'];
         $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
-        $this->referenceReader->setClearCache($this->pi1->extConf['editor']['clear_page_cache']);
+        $this->referenceReader->setClearCache($configuration['editor']['clear_page_cache']);
         // Load editor language data
-        $this->pi1->extend_ll('EXT:'.$this->pi1->extKey.'/Resources/Private/Language/locallang.xml');
+        $configuration = $this->pi1->extend_ll('EXT:bib/Resources/Private/Language/locallang.xml', $configuration);
 
         // setup db_utility
         /** @var \Ipf\Bib\Utility\DbUtility $databaseUtility */
         $databaseUtility = GeneralUtility::makeInstance(DbUtility::class);
         $databaseUtility->initialize($this->referenceReader);
-        $databaseUtility->charset = $pi1->extConf['charset']['upper'];
+        $databaseUtility->charset = $configuration['charset']['upper'];
         $databaseUtility->readFullTextGenerationConfiguration($this->conf['full_text.']);
 
         $this->databaseUtility = $databaseUtility;
@@ -167,8 +167,10 @@ class EditorView extends View
         }
         $this->idGenerator->initialize($pi1);
 
-        $this->view->setTemplatePathAndFilename('typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Templates/Editor/Index.html');
-        $this->view->setPartialRootPaths([10 => 'typo3conf/ext/'.$pi1->extKey.'/Resources/Private/Partials/']);
+        $this->view->setTemplatePathAndFilename('typo3conf/ext/bib/Resources/Private/Templates/Editor/Index.html');
+        $this->view->setPartialRootPaths([10 => 'typo3conf/ext/bib/Resources/Private/Partials/']);
+
+        return $this->editor_view($configuration);
     }
 
     /**
@@ -179,19 +181,19 @@ class EditorView extends View
      *
      * @return string A publication editor
      */
-    public function editor_view()
+    public function editor_view(array $configuration): string
     {
         $content = '';
 
         // check whether the BE user is authorized
-        if (!$this->pi1->extConf['edit_mode']) {
+        if (!$configuration['edit_mode']) {
             throw new \Exception('You are not authorized to edit the publication database.', 1379074809);
         }
 
         $pub_http = $this->getPublicationDataFromHttpRequest();
         $publicationData = [];
         $preContent = '';
-        $this->buttonClass = $this->pi1->prefixShort.'-editor_button';
+        $this->buttonClass = 'tx_bib-editor_button';
 
         $this->determineWidgetMode();
         $uid = $this->determinEntryUid();
@@ -295,7 +297,6 @@ class EditorView extends View
         $content = $this->getFieldGroups($publicationData, $content);
 
         $content = $this->invisibleUidAndModKeyField($publicationData, $content);
-        //$content = $this->footerButtons($content);
 
         $this->view->assign('content', $content);
 
@@ -899,7 +900,6 @@ class EditorView extends View
 
                 $au_con[] = $row_con;
             }
-
         } else {
             if (self::WIDGET_SILENT === $mode) {
                 $authorsSize = count($authors);
@@ -929,6 +929,7 @@ class EditorView extends View
         }
 
         $view->assign('content', $content);
+
         return $view->render();
     }
 
@@ -1047,6 +1048,8 @@ class EditorView extends View
      */
     private function getPublicationDataFromHttpRequest(bool $htmlSpecialChars = false): array
     {
+        $publication = new Reference();
+
         $Publication = [];
         $charset = $this->pi1->extConf['charset']['upper'];
         $fields = $this->referenceReader->getPublicationFields();
@@ -1060,16 +1063,17 @@ class EditorView extends View
                 switch ($ff) {
                     case 'authors':
                         if (is_array($data[$ff])) {
+                            $author = new Author();
                             $Publication['authors'] = [];
                             foreach ($data[$ff] as $v) {
-                                $foreName = trim($v['forename']);
-                                $sureName = trim($v['surname']);
+                                $author->setForeName(trim($v['forename']));
+                                $author->setSurName(trim($v['surname']));
                                 if ($htmlSpecialChars) {
-                                    $foreName = htmlspecialchars($foreName, ENT_QUOTES, $charset);
-                                    $sureName = htmlspecialchars($sureName, ENT_QUOTES, $charset);
+                                    $author->setForeName(htmlspecialchars($author->getForeName(), ENT_QUOTES, $charset));
+                                    $author->setSurName(htmlspecialchars($author->getSurName(), ENT_QUOTES, $charset));
                                 }
-                                if (strlen($foreName) || strlen($sureName)) {
-                                    $Publication['authors'][] = ['forename' => $foreName, 'surname' => $sureName];
+                                if (strlen($author->getForeName()) || strlen($author->getSurName())) {
+                                    $publication->addAuthor($author);
                                 }
                             }
                         }
@@ -1077,7 +1081,6 @@ class EditorView extends View
                         break;
 
                     default:
-
                         if (array_key_exists($ff, $data)) {
                             $Publication[$ff] = $data[$ff];
                             if ($htmlSpecialChars) {
@@ -1377,28 +1380,6 @@ class EditorView extends View
             $content .= '</tbody>';
             $content .= '</table>';
         }
-
-        return $content;
-    }
-
-    /**
-     * @param $content
-     *
-     * @return string
-     */
-    private function footerButtons(string $content): string
-    {
-        $content .= '<div class="'.$this->pi1->prefixShort.'-editor_button_box">';
-        $content .= '<span class="'.$this->pi1->prefixShort.'-box_right">';
-        $content .= $this->getDeleteButton();
-        $content .= '</span>';
-        $content .= '<span class="'.$this->pi1->prefixShort.'-box_left">';
-        $content .= $this->getSaveButton().$this->getEditButton().$this->getCancelButton();
-        $content .= '</span>';
-        $content .= '</div>';
-
-        $content .= '</div>';
-        $content .= '</form>';
 
         return $content;
     }

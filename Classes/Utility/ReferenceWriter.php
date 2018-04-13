@@ -171,9 +171,9 @@ class ReferenceWriter
             if (is_array($pub_db)) {
                 $uid = intval($pub_db['uid']);
             } else {
-                throw new DataException(
-                    'The publication reference with uid '.$publication['uid'].' could not be updated'.
-                    ' because it does not exist in the database (anymore?).',
+                throw new DataException(sprintf(
+                    'The publication reference with uid %s could not be updated'.
+                    ' because it does not exist in the database (anymore?).', $publication['uid']),
                     1378973300
                 );
             }

@@ -99,7 +99,7 @@ class CiteIdGenerator
 
         $id = '';
         foreach ($persons as $list) {
-            if (0 == strlen($id)) {
+            if (0 === strlen($id)) {
                 if (count($list) > 0) {
                     $pp = &$list[0];
                     $a_str = '';
@@ -132,7 +132,7 @@ class CiteIdGenerator
             }
         }
 
-        if (0 == strlen($id)) {
+        if (0 === strlen($id)) {
             $id = GeneralUtility::shortMD5(serialize($row));
         }
         if ($row['year'] > 0) {
@@ -162,7 +162,7 @@ class CiteIdGenerator
         $idLength = mb_strlen($id, $this->charset);
         for ($i = 0; $i < $idLength; ++$i) {
             $c = mb_substr($id, $i, 1, $this->charset);
-            if (ctype_alnum($c) || ('_' == $c)) {
+            if (ctype_alnum($c) || ('_' === $c)) {
                 $tmpId .= $c;
             }
         }

@@ -61,7 +61,7 @@ class LabelUtility
             }
         }
 
-        if (0 == strlen($title)) {
+        if (0 === strlen($title)) {
             $title = '[Error!]';
         }
 

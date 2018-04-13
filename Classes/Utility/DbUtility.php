@@ -65,17 +65,9 @@ class DbUtility
      */
     public $tmp_dir = '/tmp';
 
-    /**
-     * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected $db;
-
-    /**
-     * constructor.
-     */
-    public function __construct()
+    private function getDatabaseConnection()
     {
-        $this->db = $GLOBALS['TYPO3_DB'];
+        return $GLOBALS['TYPO3_DB'];
     }
 
     /**
@@ -108,9 +100,9 @@ class DbUtility
         $selectQuery .= ' HAVING count(t_as.uid) = 0;';
 
         $uids = [];
-        $res = $this->db->sql_query($selectQuery);
+        $res = $this->getDatabaseConnection()->sql_query($selectQuery);
 
-        while ($row = $this->db->sql_fetch_assoc($res)) {
+        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
             $uids[] = $row['uid'];
         }
 
@@ -118,7 +110,7 @@ class DbUtility
         if ($count > 0) {
             $csv = Utility::implode_intval(',', $uids);
 
-            $this->db->exec_UPDATEquery(
+            $this->getDatabaseConnection()->exec_UPDATEquery(
                 $this->referenceReader->getAuthorTable(),
                 'uid IN ( '.$csv.')',
                 [
@@ -179,13 +171,13 @@ class DbUtility
 
         $whereClause = implode(' AND ', $whereClause);
         $whereClause .= $this->referenceReader->enable_fields($this->referenceReader->getReferenceTable());
-        $res = $this->db->exec_SELECTquery(
+        $res = $this->getDatabaseConnection()->exec_SELECTquery(
             'uid',
             $this->referenceReader->getReferenceTable(),
             $whereClause
         );
 
-        while ($row = $this->db->sql_fetch_assoc($res)) {
+        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
             $uids[] = intval($row['uid']);
         }
 
@@ -226,12 +218,12 @@ class DbUtility
     protected function update_full_text($uid, $force = false)
     {
         $whereClause = 'uid='.intval($uid);
-        $rows = $this->db->exec_SELECTgetRows(
+        $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
             'file_url,full_text_tstamp,full_text_file_url',
             $this->referenceReader->getReferenceTable(),
             $whereClause
         );
-        if (1 != count($rows)) {
+        if (1 !== count($rows)) {
             return false;
         }
         $pub = $rows[0];
@@ -244,8 +236,8 @@ class DbUtility
         $file_exists = false;
 
         if ((strlen($file) > 0)
-            && ('fileadmin' == $file_start)
-            && ('.pdf' == $file_end)
+            && ('fileadmin' === $file_start)
+            && ('.pdf' === $file_end)
         ) {
             $root = PATH_site;
             if ('/' != substr($root, -1, 1)) {
@@ -268,7 +260,7 @@ class DbUtility
             if (strlen($pub['full_text_file_url']) > 0) {
                 $clear = true;
                 if (strlen($pub['file_url']) > 0) {
-                    if ($pub['file_url'] == $pub['full_text_file_url']) {
+                    if ($pub['file_url'] === $pub['full_text_file_url']) {
                         $clear = false;
                     }
                 }
@@ -342,14 +334,14 @@ class DbUtility
         }
 
         if ($db_update) {
-            $ret = $this->db->exec_UPDATEquery(
+            $ret = $this->getDatabaseConnection()->exec_UPDATEquery(
                 $this->referenceReader->getReferenceTable(),
                 $whereClause,
                 $db_data
             );
-            if (false == $ret) {
+            if (false === $ret) {
                 $err = [];
-                $err['msg'] = 'Full text update failed: '.$this->db->sql_error();
+                $err['msg'] = 'Full text update failed: '.$this->getDatabaseConnection()->sql_error();
 
                 return $err;
             }

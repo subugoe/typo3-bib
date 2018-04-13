@@ -48,13 +48,9 @@ class StatisticsNavigation extends Navigation
         $this->prefix = 'STAT_NAVI';
     }
 
-    /**
-     * @param int $index
-     *
-     * @return mixed|void
-     */
-    protected function sel_get_text($index)
+    protected function sel_get_text(int $index): string
     {
+        return '';
     }
 
     /**
@@ -72,7 +68,7 @@ class StatisticsNavigation extends Navigation
      *
      * @return string
      */
-    protected function get()
+    protected function get(): string
     {
         $label = '';
         $stat_str = '';

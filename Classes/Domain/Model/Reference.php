@@ -273,6 +273,11 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $DOI;
 
     /**
+     * @var string
+     */
+    private $DOIUrl;
+
+    /**
      * @var bool
      */
     protected $extern;
@@ -293,866 +298,1027 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $borrowedBy;
 
     /**
-     * @return string
+     * @var array
      */
-    public function getDOI()
-    {
-        return $this->DOI;
-    }
+    private $authors = [];
 
     /**
-     * @param string $DOI
+     * @var bool
      */
-    public function setDOI($DOI)
-    {
-        $this->DOI = $DOI;
-    }
+    private $hidden = false;
 
     /**
-     * @return string
+     * @var string
      */
-    public function getISBN()
-    {
-        return $this->ISBN;
-    }
-
-    /**
-     * @param string $ISBN
-     */
-    public function setISBN($ISBN)
-    {
-        $this->ISBN = $ISBN;
-    }
-
-    /**
-     * @return string
-     */
-    public function getISSN()
-    {
-        return $this->ISSN;
-    }
-
-    /**
-     * @param string $ISSN
-     */
-    public function setISSN($ISSN)
-    {
-        $this->ISSN = $ISSN;
-    }
-
-    /**
-     * @param int $languageUid
-     */
-    public function setLanguageUid($languageUid)
-    {
-        $this->_languageUid = $languageUid;
-    }
+    private $autoUrl;
 
     /**
      * @return int
      */
-    public function getLanguageUid()
-    {
-        return $this->_languageUid;
-    }
-
-    /**
-     * @param int $localizedUid
-     */
-    public function setLocalizedUid($localizedUid)
-    {
-        $this->_localizedUid = $localizedUid;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLocalizedUid()
-    {
-        return $this->_localizedUid;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAbstract()
-    {
-        return $this->abstract;
-    }
-
-    /**
-     * @param string $abstract
-     */
-    public function setAbstract($abstract)
-    {
-        $this->abstract = $abstract;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
-     * @param string $address
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAffiliation()
-    {
-        return $this->affiliation;
-    }
-
-    /**
-     * @param string $affiliation
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAnnotation()
-    {
-        return $this->annotation;
-    }
-
-    /**
-     * @param string $annotation
-     */
-    public function setAnnotation($annotation)
-    {
-        $this->annotation = $annotation;
-    }
-
-    /**
-     * @return int
-     */
-    public function getBibtype()
+    public function getBibtype(): int
     {
         return $this->bibtype;
     }
 
     /**
      * @param int $bibtype
+     * @return Reference
      */
-    public function setBibtype($bibtype)
+    public function setBibtype(int $bibtype): Reference
     {
         $this->bibtype = $bibtype;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getBooktitle()
-    {
-        return $this->booktitle;
-    }
-
-    /**
-     * @param string $booktitle
-     */
-    public function setBooktitle($booktitle)
-    {
-        $this->booktitle = $booktitle;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBorrowedBy()
-    {
-        return $this->borrowedBy;
-    }
-
-    /**
-     * @param string $borrowedBy
-     */
-    public function setBorrowedBy($borrowedBy)
-    {
-        $this->borrowedBy = $borrowedBy;
-    }
-
-    /**
-     * @return string
-     */
-    public function getChapter()
-    {
-        return $this->chapter;
-    }
-
-    /**
-     * @param string $chapter
-     */
-    public function setChapter($chapter)
-    {
-        $this->chapter = $chapter;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCiteid()
+    public function getCiteid(): string
     {
         return $this->citeid;
     }
 
     /**
      * @param string $citeid
+     * @return Reference
      */
-    public function setCiteid($citeid)
+    public function setCiteid(string $citeid): Reference
     {
         $this->citeid = $citeid;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDay()
-    {
-        return $this->day;
-    }
-
-    /**
-     * @param int $day
-     */
-    public function setDay($day)
-    {
-        $this->day = $day;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getEdition()
-    {
-        return $this->edition;
-    }
-
-    /**
-     * @param string $edition
-     */
-    public function setEdition($edition)
-    {
-        $this->edition = $edition;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEditor()
-    {
-        return $this->editor;
-    }
-
-    /**
-     * @param string $editor
-     */
-    public function setEditor($editor)
-    {
-        $this->editor = $editor;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEventDate()
-    {
-        return $this->eventDate;
-    }
-
-    /**
-     * @param string $eventDate
-     */
-    public function setEventDate($eventDate)
-    {
-        $this->eventDate = $eventDate;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEventName()
-    {
-        return $this->eventName;
-    }
-
-    /**
-     * @param string $eventName
-     */
-    public function setEventName($eventName)
-    {
-        $this->eventName = $eventName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEventPlace()
-    {
-        return $this->eventPlace;
-    }
-
-    /**
-     * @param string $eventPlace
-     */
-    public function setEventPlace($eventPlace)
-    {
-        $this->eventPlace = $eventPlace;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getExtern()
-    {
-        return $this->extern;
-    }
-
-    /**
-     * @param bool $extern
-     */
-    public function setExtern($extern)
-    {
-        $this->extern = $extern;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFileUrl()
-    {
-        return $this->fileUrl;
-    }
-
-    /**
-     * @param string $fileUrl
-     */
-    public function setFileUrl($fileUrl)
-    {
-        $this->fileUrl = $fileUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFullText()
-    {
-        return $this->fullText;
-    }
-
-    /**
-     * @param string $fullText
-     */
-    public function setFullText($fullText)
-    {
-        $this->fullText = $fullText;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFullTextFileUrl()
-    {
-        return $this->fullTextFileUrl;
-    }
-
-    /**
-     * @param string $fullTextFileUrl
-     */
-    public function setFullTextFileUrl($fullTextFileUrl)
-    {
-        $this->fullTextFileUrl = $fullTextFileUrl;
-    }
-
-    /**
-     * @return int
-     */
-    public function getFullTextTstamp()
-    {
-        return $this->fullTextTstamp;
-    }
-
-    /**
-     * @param int $fullTextTstamp
-     */
-    public function setFullTextTstamp($fullTextTstamp)
-    {
-        $this->fullTextTstamp = $fullTextTstamp;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHowpublished()
-    {
-        return $this->howpublished;
-    }
-
-    /**
-     * @param string $howpublished
-     */
-    public function setHowpublished($howpublished)
-    {
-        $this->howpublished = $howpublished;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getInLibrary()
-    {
-        return $this->inLibrary;
-    }
-
-    /**
-     * @param bool $inLibrary
-     */
-    public function setInLibrary($inLibrary)
-    {
-        $this->inLibrary = $inLibrary;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInstitute()
-    {
-        return $this->institute;
-    }
-
-    /**
-     * @param string $institute
-     */
-    public function setInstitute($institute)
-    {
-        $this->institute = $institute;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInstitution()
-    {
-        return $this->institution;
-    }
-
-    /**
-     * @param string $institution
-     */
-    public function setInstitution($institution)
-    {
-        $this->institution = $institution;
-    }
-
-    /**
-     * @return string
-     */
-    public function getJournal()
-    {
-        return $this->journal;
-    }
-
-    /**
-     * @param string $journal
-     */
-    public function setJournal($journal)
-    {
-        $this->journal = $journal;
-    }
-
-    /**
-     * @return string
-     */
-    public function getKeywords()
-    {
-        return $this->keywords;
-    }
-
-    /**
-     * @param string $keywords
-     */
-    public function setKeywords($keywords)
-    {
-        $this->keywords = $keywords;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-    /**
-     * @param string $language
-     */
-    public function setLanguage($language)
-    {
-        $this->language = $language;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMisc()
-    {
-        return $this->misc;
-    }
-
-    /**
-     * @param string $misc
-     */
-    public function setMisc($misc)
-    {
-        $this->misc = $misc;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMisc2()
-    {
-        return $this->misc2;
-    }
-
-    /**
-     * @param mixed $misc2
-     */
-    public function setMisc2($misc2)
-    {
-        $this->misc2 = $misc2;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMonth()
-    {
-        return $this->month;
-    }
-
-    /**
-     * @param int $month
-     */
-    public function setMonth($month)
-    {
-        $this->month = $month;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNote()
-    {
-        return $this->note;
-    }
-
-    /**
-     * @param string $note
-     */
-    public function setNote($note)
-    {
-        $this->note = $note;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
-    /**
-     * @param string $number
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumber2()
-    {
-        return $this->number2;
-    }
-
-    /**
-     * @param string $number2
-     */
-    public function setNumber2($number2)
-    {
-        $this->number2 = $number2;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOrganization()
-    {
-        return $this->organization;
-    }
-
-    /**
-     * @param string $organization
-     */
-    public function setOrganization($organization)
-    {
-        $this->organization = $organization;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPages()
-    {
-        return $this->pages;
-    }
-
-    /**
-     * @param string $pages
-     */
-    public function setPages($pages)
-    {
-        $this->pages = $pages;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPublisher()
-    {
-        return $this->publisher;
-    }
-
-    /**
-     * @param string $publisher
-     */
-    public function setPublisher($publisher)
-    {
-        $this->publisher = $publisher;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getReviewed()
-    {
-        return $this->reviewed;
-    }
-
-    /**
-     * @param bool $reviewed
-     */
-    public function setReviewed($reviewed)
-    {
-        $this->reviewed = $reviewed;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSchool()
-    {
-        return $this->school;
-    }
-
-    /**
-     * @param string $school
-     */
-    public function setSchool($school)
-    {
-        $this->school = $school;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSeries()
-    {
-        return $this->series;
-    }
-
-    /**
-     * @param string $series
-     */
-    public function setSeries($series)
-    {
-        $this->series = $series;
-    }
-
-    /**
-     * @return int
-     */
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param int $state
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
-    /**
-     * @param string $tags
-     */
-    public function setTags($tags)
-    {
-        $this->tags = $tags;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
     /**
      * @param string $title
+     * @return Reference
      */
-    public function setTitle($title)
+    public function setTitle(string $title): Reference
     {
         $this->title = $title;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getType()
+    public function getJournal(): string
     {
-        return $this->type;
+        return $this->journal;
     }
 
     /**
-     * @param string $type
+     * @param string $journal
+     * @return Reference
      */
-    public function setType($type)
+    public function setJournal(string $journal): Reference
     {
-        $this->type = $type;
-    }
-
-    /**
-     * @return string
-     */
-    public function getVolume()
-    {
-        return $this->volume;
-    }
-
-    /**
-     * @param string $volume
-     */
-    public function setVolume($volume)
-    {
-        $this->volume = $volume;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWebUrl()
-    {
-        return $this->webUrl;
-    }
-
-    /**
-     * @param string $webUrl
-     */
-    public function setWebUrl($webUrl)
-    {
-        $this->webUrl = $webUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWebUrl2()
-    {
-        return $this->webUrl2;
-    }
-
-    /**
-     * @param string $webUrl2
-     */
-    public function setWebUrl2($webUrl2)
-    {
-        $this->webUrl2 = $webUrl2;
+        $this->journal = $journal;
+        return $this;
     }
 
     /**
      * @return int
      */
-    public function getYear()
+    public function getYear(): int
     {
         return $this->year;
     }
 
     /**
      * @param int $year
+     * @return Reference
      */
-    public function setYear($year)
+    public function setYear(int $year): Reference
     {
         $this->year = $year;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMonth(): int
+    {
+        return $this->month;
+    }
+
+    /**
+     * @param int $month
+     * @return Reference
+     */
+    public function setMonth(int $month): Reference
+    {
+        $this->month = $month;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDay(): int
+    {
+        return $this->day;
+    }
+
+    /**
+     * @param int $day
+     * @return Reference
+     */
+    public function setDay(int $day): Reference
+    {
+        $this->day = $day;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getWebUrl2Date()
+    public function getVolume(): string
     {
-        return $this->webUrl2Date;
+        return $this->volume;
     }
 
     /**
-     * @param string $webUrl2Date
+     * @param string $volume
+     * @return Reference
      */
-    public function setWebUrl2Date($webUrl2Date)
+    public function setVolume(string $volume): Reference
     {
-        $this->webUrl2Date = $webUrl2Date;
+        $this->volume = $volume;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getWebUrlDate()
+    public function getNumber(): string
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param string $number
+     * @return Reference
+     */
+    public function setNumber(string $number): Reference
+    {
+        $this->number = $number;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumber2(): string
+    {
+        return $this->number2;
+    }
+
+    /**
+     * @param string $number2
+     * @return Reference
+     */
+    public function setNumber2(string $number2): Reference
+    {
+        $this->number2 = $number2;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPages(): string
+    {
+        return $this->pages;
+    }
+
+    /**
+     * @param string $pages
+     * @return Reference
+     */
+    public function setPages(string $pages): Reference
+    {
+        $this->pages = $pages;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbstract(): string
+    {
+        return $this->abstract;
+    }
+
+    /**
+     * @param string $abstract
+     * @return Reference
+     */
+    public function setAbstract(string $abstract): Reference
+    {
+        $this->abstract = $abstract;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullText(): string
+    {
+        return $this->fullText;
+    }
+
+    /**
+     * @param string $fullText
+     * @return Reference
+     */
+    public function setFullText(string $fullText): Reference
+    {
+        $this->fullText = $fullText;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFullTextTstamp(): int
+    {
+        return $this->fullTextTstamp;
+    }
+
+    /**
+     * @param int $fullTextTstamp
+     * @return Reference
+     */
+    public function setFullTextTstamp(int $fullTextTstamp): Reference
+    {
+        $this->fullTextTstamp = $fullTextTstamp;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullTextFileUrl(): string
+    {
+        return $this->fullTextFileUrl;
+    }
+
+    /**
+     * @param string $fullTextFileUrl
+     * @return Reference
+     */
+    public function setFullTextFileUrl(string $fullTextFileUrl): Reference
+    {
+        $this->fullTextFileUrl = $fullTextFileUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAffiliation(): string
+    {
+        return $this->affiliation;
+    }
+
+    /**
+     * @param string $affiliation
+     * @return Reference
+     */
+    public function setAffiliation(string $affiliation): Reference
+    {
+        $this->affiliation = $affiliation;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNote(): string
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param string $note
+     * @return Reference
+     */
+    public function setNote(string $note): Reference
+    {
+        $this->note = $note;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnnotation(): string
+    {
+        return $this->annotation;
+    }
+
+    /**
+     * @param string $annotation
+     * @return Reference
+     */
+    public function setAnnotation(string $annotation): Reference
+    {
+        $this->annotation = $annotation;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeywords(): string
+    {
+        return $this->keywords;
+    }
+
+    /**
+     * @param string $keywords
+     * @return Reference
+     */
+    public function setKeywords(string $keywords): Reference
+    {
+        $this->keywords = $keywords;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTags(): string
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param string $tags
+     * @return Reference
+     */
+    public function setTags(string $tags): Reference
+    {
+        $this->tags = $tags;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileUrl(): string
+    {
+        return $this->fileUrl;
+    }
+
+    /**
+     * @param string $fileUrl
+     * @return Reference
+     */
+    public function setFileUrl(string $fileUrl): Reference
+    {
+        $this->fileUrl = $fileUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebUrl(): string
+    {
+        return $this->webUrl;
+    }
+
+    /**
+     * @param string $webUrl
+     * @return Reference
+     */
+    public function setWebUrl(string $webUrl): Reference
+    {
+        $this->webUrl = $webUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebUrlDate(): string
     {
         return $this->webUrlDate;
     }
 
     /**
      * @param string $webUrlDate
+     * @return Reference
      */
-    public function setWebUrlDate($webUrlDate)
+    public function setWebUrlDate(string $webUrlDate): Reference
     {
         $this->webUrlDate = $webUrlDate;
+        return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getWebUrl2(): string
+    {
+        return $this->webUrl2;
+    }
+
+    /**
+     * @param string $webUrl2
+     * @return Reference
+     */
+    public function setWebUrl2(string $webUrl2): Reference
+    {
+        $this->webUrl2 = $webUrl2;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebUrl2Date(): string
+    {
+        return $this->webUrl2Date;
+    }
+
+    /**
+     * @param string $webUrl2Date
+     * @return Reference
+     */
+    public function setWebUrl2Date(string $webUrl2Date): Reference
+    {
+        $this->webUrl2Date = $webUrl2Date;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMisc(): string
+    {
+        return $this->misc;
+    }
+
+    /**
+     * @param string $misc
+     * @return Reference
+     */
+    public function setMisc(string $misc): Reference
+    {
+        $this->misc = $misc;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMisc2(): string
+    {
+        return $this->misc2;
+    }
+
+    /**
+     * @param string $misc2
+     * @return Reference
+     */
+    public function setMisc2(string $misc2): Reference
+    {
+        $this->misc2 = $misc2;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEditor(): string
+    {
+        return $this->editor;
+    }
+
+    /**
+     * @param string $editor
+     * @return Reference
+     */
+    public function setEditor(string $editor): Reference
+    {
+        $this->editor = $editor;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublisher(): string
+    {
+        return $this->publisher;
+    }
+
+    /**
+     * @param string $publisher
+     * @return Reference
+     */
+    public function setPublisher(string $publisher): Reference
+    {
+        $this->publisher = $publisher;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHowpublished(): string
+    {
+        return $this->howpublished;
+    }
+
+    /**
+     * @param string $howpublished
+     * @return Reference
+     */
+    public function setHowpublished(string $howpublished): Reference
+    {
+        $this->howpublished = $howpublished;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param string $address
+     * @return Reference
+     */
+    public function setAddress(string $address): Reference
+    {
+        $this->address = $address;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeries(): string
+    {
+        return $this->series;
+    }
+
+    /**
+     * @param string $series
+     * @return Reference
+     */
+    public function setSeries(string $series): Reference
+    {
+        $this->series = $series;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEdition(): string
+    {
+        return $this->edition;
+    }
+
+    /**
+     * @param string $edition
+     * @return Reference
+     */
+    public function setEdition(string $edition): Reference
+    {
+        $this->edition = $edition;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChapter(): string
+    {
+        return $this->chapter;
+    }
+
+    /**
+     * @param string $chapter
+     * @return Reference
+     */
+    public function setChapter(string $chapter): Reference
+    {
+        $this->chapter = $chapter;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBooktitle(): string
+    {
+        return $this->booktitle;
+    }
+
+    /**
+     * @param string $booktitle
+     * @return Reference
+     */
+    public function setBooktitle(string $booktitle): Reference
+    {
+        $this->booktitle = $booktitle;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchool(): string
+    {
+        return $this->school;
+    }
+
+    /**
+     * @param string $school
+     * @return Reference
+     */
+    public function setSchool(string $school): Reference
+    {
+        $this->school = $school;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInstitute(): string
+    {
+        return $this->institute;
+    }
+
+    /**
+     * @param string $institute
+     * @return Reference
+     */
+    public function setInstitute(string $institute): Reference
+    {
+        $this->institute = $institute;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrganization(): string
+    {
+        return $this->organization;
+    }
+
+    /**
+     * @param string $organization
+     * @return Reference
+     */
+    public function setOrganization(string $organization): Reference
+    {
+        $this->organization = $organization;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInstitution(): string
+    {
+        return $this->institution;
+    }
+
+    /**
+     * @param string $institution
+     * @return Reference
+     */
+    public function setInstitution(string $institution): Reference
+    {
+        $this->institution = $institution;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventName(): string
+    {
+        return $this->eventName;
+    }
+
+    /**
+     * @param string $eventName
+     * @return Reference
+     */
+    public function setEventName(string $eventName): Reference
+    {
+        $this->eventName = $eventName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventPlace(): string
+    {
+        return $this->eventPlace;
+    }
+
+    /**
+     * @param string $eventPlace
+     * @return Reference
+     */
+    public function setEventPlace(string $eventPlace): Reference
+    {
+        $this->eventPlace = $eventPlace;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventDate(): string
+    {
+        return $this->eventDate;
+    }
+
+    /**
+     * @param string $eventDate
+     * @return Reference
+     */
+    public function setEventDate(string $eventDate): Reference
+    {
+        $this->eventDate = $eventDate;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getState(): int
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param int $state
+     * @return Reference
+     */
+    public function setState(int $state): Reference
+    {
+        $this->state = $state;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return Reference
+     */
+    public function setType(string $type): Reference
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguage(): string
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param string $language
+     * @return Reference
+     */
+    public function setLanguage(string $language): Reference
+    {
+        $this->language = $language;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getISBN(): string
+    {
+        return $this->ISBN;
+    }
+
+    /**
+     * @param string $ISBN
+     * @return Reference
+     */
+    public function setISBN(string $ISBN): Reference
+    {
+        $this->ISBN = $ISBN;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getISSN(): string
+    {
+        return $this->ISSN;
+    }
+
+    /**
+     * @param string $ISSN
+     * @return Reference
+     */
+    public function setISSN(string $ISSN): Reference
+    {
+        $this->ISSN = $ISSN;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDOI(): string
+    {
+        return $this->DOI;
+    }
+
+    /**
+     * @param string $DOI
+     * @return Reference
+     */
+    public function setDOI(string $DOI): Reference
+    {
+        $this->DOI = $DOI;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExtern(): bool
+    {
+        return $this->extern;
+    }
+
+    /**
+     * @param bool $extern
+     * @return Reference
+     */
+    public function setExtern(bool $extern): Reference
+    {
+        $this->extern = $extern;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReviewed(): bool
+    {
+        return $this->reviewed;
+    }
+
+    /**
+     * @param bool $reviewed
+     * @return Reference
+     */
+    public function setReviewed(bool $reviewed): Reference
+    {
+        $this->reviewed = $reviewed;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInLibrary(): bool
+    {
+        return $this->inLibrary;
+    }
+
+    /**
+     * @param bool $inLibrary
+     * @return Reference
+     */
+    public function setInLibrary(bool $inLibrary): Reference
+    {
+        $this->inLibrary = $inLibrary;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBorrowedBy(): string
+    {
+        return $this->borrowedBy;
+    }
+
+    /**
+     * @param string $borrowedBy
+     * @return Reference
+     */
+    public function setBorrowedBy(string $borrowedBy): Reference
+    {
+        $this->borrowedBy = $borrowedBy;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAuthors(): array
+    {
+        return $this->authors;
+    }
+
+    /**
+     * @param array $authors
+     * @return Reference
+     */
+    public function setAuthors(array $authors): Reference
+    {
+        $this->authors = $authors;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDOIUrl(): string
+    {
+        return $this->DOIUrl;
+    }
+
+    /**
+     * @param string $DOIUrl
+     * @return Reference
+     */
+    public function setDOIUrl(string $DOIUrl): Reference
+    {
+        $this->DOIUrl = $DOIUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAutoUrl(): string
+    {
+        return $this->autoUrl;
+    }
+
+    /**
+     * @param string $autoUrl
+     * @return Reference
+     */
+    public function setAutoUrl(string $autoUrl): Reference
+    {
+        $this->autoUrl = $autoUrl;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * @param bool $hidden
+     * @return Reference
+     */
+    public function setHidden(bool $hidden): Reference
+    {
+        $this->hidden = $hidden;
+        return $this;
+    }
+
+
 }

@@ -28,7 +28,7 @@ plugin.tx_bib_pi1 {
     templates {
         main = EXT:bib/Resources/Private/Templates/main.html
         list_blocks = EXT:bib/Resources/Private/Templates/List/Blocks.html
-        list_items = EXT:bib/Resources/Private/Templates/List/Items.html
+        list_items = EXT:bib/Resources/Private/Partials/List/Items.html
         navi_misc = EXT:bib/Resources/Private/Templates/Navigation/Miscellaneous.html
     }
 
@@ -782,7 +782,14 @@ plugin.tx_bib {
             }
         }
     }
-
+    settings {
+        templateRootPaths {
+            10 = EXT:bib/Resources/Private/Templates
+        }
+        partialRootPaths {
+            10 = EXT:bib/Resources/Private/Partials
+        }
+    }
     features {
         skipDefaultArguments = 1
     }

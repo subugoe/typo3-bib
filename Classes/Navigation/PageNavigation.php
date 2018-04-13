@@ -51,14 +51,10 @@ class PageNavigation extends Navigation
 
     /**
      * Creates a text for a given index.
-     *
-     * @param int $index
-     *
-     * @return string
      */
-    protected function sel_get_text($index)
+    protected function sel_get_text(int $index): string
     {
-        return strval($index + 1);
+        return (string) ($index + 1);
     }
 
     /**
@@ -88,10 +84,8 @@ class PageNavigation extends Navigation
 
     /**
      * Returns content.
-     *
-     * @return string
      */
-    protected function get()
+    protected function get(): string
     {
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
         $navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : [];

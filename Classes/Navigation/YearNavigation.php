@@ -52,12 +52,8 @@ class YearNavigation extends Navigation
 
     /**
      * Creates a text for a given index.
-     *
-     * @param int $index
-     *
-     * @return string
      */
-    protected function sel_get_text($index)
+    protected function sel_get_text(int $index): string
     {
         return strval($this->pi1->stat['years'][$index]);
     }
@@ -90,10 +86,8 @@ class YearNavigation extends Navigation
 
     /**
      * Returns content.
-     *
-     * @return string
      */
-    protected function get()
+    protected function get(): string
     {
         // The label
         $label = $this->languageService->getLL('yearNav_label');
