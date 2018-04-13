@@ -81,13 +81,8 @@ abstract class Navigation
         $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
     }
 
-    /**
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
+    public function initialize(array $configuration)
     {
-        $this->pi1 = &$pi1;
-
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename($this->getTemplateFileFromCallingClass());

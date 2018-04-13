@@ -530,7 +530,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $configuration['dynamic'] = true;
         $configuration['search_navi'] = [];
-        $configuration['search_navi']['obj'] = $this->getAndInitializeNavigationInstance('SearchNavigation');
+        $configuration['search_navi']['obj'] = $this->getAndInitializeNavigationInstance('SearchNavigation', $configuration);
         $configuration['search_navi']['obj']->hook_init($configuration);
 
         return $configuration;
@@ -538,15 +538,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     /**
      * Returns an instance of a navigation bar class.
-     *
-     * @param string $type
-     *
-     * @return \Ipf\Bib\Navigation\Navigation Instance of the navigation object
      */
-    protected function getAndInitializeNavigationInstance(string $type)
+    protected function getAndInitializeNavigationInstance(string $type, array $configuration): \Ipf\Bib\Navigation\Navigation
     {
+        /** @var \Ipf\Bib\Navigation\Navigation $navigationInstance */
         $navigationInstance = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\'.$type);
-        $navigationInstance->initialize($this);
+        $navigationInstance->initialize($configuration);
 
         return $navigationInstance;
     }
@@ -562,7 +559,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $configuration['dynamic'] = true;
         $configuration['author_navi'] = [];
-        $configuration['author_navi']['obj'] = $this->getAndInitializeNavigationInstance('AuthorNavigation');
+        $configuration['author_navi']['obj'] = $this->getAndInitializeNavigationInstance('AuthorNavigation', $configuration);
         $configuration['author_navi']['obj']->hook_init($configuration);
 
         return $configuration;
@@ -571,7 +568,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function initializePreferenceNavigation(array $configuration): array
     {
         $configuration['pref_navi'] = [];
-        $configuration['pref_navi']['obj'] = $this->getAndInitializeNavigationInstance('PreferenceNavigation');
+        $configuration['pref_navi']['obj'] = $this->getAndInitializeNavigationInstance('PreferenceNavigation', $configuration);
         $configuration['pref_navi']['obj']->hook_init($configuration);
 
         return $configuration;
@@ -1087,8 +1084,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     $kw,
                     true
                 );
-                foreach ($words as &$word) {
-                    $word = $this->referenceReader->getSearchTerm($word, $this->extConf['charset']['upper']);
+                foreach ($words as $word) {
+                    $word = $this->referenceReader->getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
                 $this->extConf['filters']['flexform']['tags'] = $flexFormFilter;
@@ -1112,7 +1109,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
                 foreach ($words as &$word) {
-                    $word = $this->referenceReader->getSearchTerm($word, $configuration['charset']['upper']);
+                    $word = $this->referenceReader->getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
                 $configuration['filters']['flexform']['keywords'] = $flexFormFilter;
@@ -1136,7 +1133,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
                 foreach ($words as &$word) {
-                    $word = $this->referenceReader->getSearchTerm($word, $configuration['charset']['upper']);
+                    $word = $this->referenceReader->getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
                 $configuration['filters']['flexform']['all'] = $flexFormFilter;

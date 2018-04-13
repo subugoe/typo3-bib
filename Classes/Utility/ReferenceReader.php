@@ -635,14 +635,13 @@ class ReferenceReader
      * filter argument.
      *
      * @param string $word
-     * @param string $charset
      * @param array  $wrap
      *
      * @return string|array The search object (string or array)
      */
-    public function getSearchTerm($word, $charset, $wrap = ['%', '%'])
+    public function getSearchTerm($word, $wrap = ['%', '%'])
     {
-        $spec = htmlentities($word, ENT_QUOTES, $charset);
+        $spec = htmlentities($word, ENT_QUOTES, 'UTF-8');
         $words = [$word];
         if ($spec != $word) {
             $words[] = $spec;
@@ -652,7 +651,7 @@ class ReferenceReader
                 $words[$key] = strval($wrap[0]).strval($txt).strval($wrap[1]);
             }
         }
-        if (1 == count($words)) {
+        if (1 === count($words)) {
             return $words[0];
         }
 

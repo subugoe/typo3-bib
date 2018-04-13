@@ -29,6 +29,7 @@ namespace Ipf\Bib\Navigation;
 
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class SearchNavigation.
@@ -47,20 +48,18 @@ class SearchNavigation extends Navigation
 
     /**
      * Intialize.
-     *
-     * @param \tx_bib_pi1 $pi1
      */
-    public function initialize($pi1)
+    public function initialize(array $configuration)
     {
-        parent::initialize($pi1);
+        parent::initialize($configuration);
 
-        if (is_array($pi1->conf['searchNav.'])) {
-            $this->conf = &$pi1->conf['searchNav.'];
+        if (is_array($configuration['searchNav.'])) {
+            $this->conf = $configuration['searchNav.'];
         }
 
         $this->extConf = [];
-        if (is_array($pi1->extConf['search_navi'])) {
-            $this->extConf = &$pi1->extConf['search_navi'];
+        if (is_array($configuration['search_navi'])) {
+            $this->extConf = $configuration['search_navi'];
         }
 
         $this->prefix = 'SEARCH_NAVI';
@@ -196,7 +195,7 @@ class SearchNavigation extends Navigation
             // Setup search patterns
             $words = [];
             foreach ($strings as $txt) {
-                $words[] = $this->pi1->referenceReader->getSearchTerm($txt, $configuration['charset']['upper']);
+                $words[] = $this->pi1->referenceReader->getSearchTerm($txt);
             }
 
             $exclude = [];
@@ -213,9 +212,7 @@ class SearchNavigation extends Navigation
             $all['exclude'] = $exclude;
             $filter['all'] = $all;
         } else {
-            $configuration['post_items'] = $this->pi1->pi_getLL(
-                'searchNav_insert_request'
-            );
+            $configuration['post_items'] = LocalizationUtility::translate('searchNav_insert_request', 'bib');
             if ($this->conf['clear_start']) {
                 $filter['FALSE'] = true;
             }

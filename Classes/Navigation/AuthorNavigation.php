@@ -31,6 +31,8 @@ use Ipf\Bib\Domain\Model\Author;
 use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class AuthorNavigation.
@@ -44,19 +46,17 @@ class AuthorNavigation extends Navigation
 
     /**
      * Initialize.
-     *
-     * @param \tx_bib_pi1
      */
-    public function initialize($pi1)
+    public function initialize(array $configuration)
     {
-        parent::initialize($pi1);
+        parent::initialize($configuration);
         if (is_array($pi1->conf['authorNav.'])) {
             $this->conf = &$pi1->conf['authorNav.'];
         }
 
         $this->extConf = [];
-        if (is_array($pi1->extConf['author_navi'])) {
-            $this->extConf = &$pi1->extConf['author_navi'];
+        if (is_array($configuration['author_navi'])) {
+            $this->extConf = $configuration['author_navi'];
         }
 
         $this->prefix = 'AUTHOR_NAVI';
@@ -110,7 +110,7 @@ class AuthorNavigation extends Navigation
             $filters = $configuration['filters'];
 
             $txt = $configuration['sel_letter'];
-            $spec = htmlentities($txt, ENT_QUOTES, $charset);
+            $spec = htmlentities($txt, ENT_QUOTES);
             $pats = [$txt.'%'];
             if ($spec != $txt) {
                 $pats[] = $spec.'%';
@@ -126,23 +126,23 @@ class AuthorNavigation extends Navigation
             $filters['temp']['author']['authors'] = $filter;
 
             // Fetch selected surnames
-            $this->pi1->referenceReader->set_filters($filters);
-            $this->pi1->stat['authors']['sel_surnames'] = $this->pi1->referenceReader->getSurnamesOfAllAuthors();
+            $referenceReader->set_filters($filters);
+            $this->pi1->stat['authors']['sel_surnames'] = $referenceReader->getSurnamesOfAllAuthors();
 
             // Remove ampersand strings from surname list
             $lst = [];
             $spec = false;
-            $sel_up = mb_strtoupper($configuration['sel_letter'], $charset);
-            $sel_low = mb_strtolower($configuration['sel_letter'], $charset);
+            $sel_up = mb_strtoupper($configuration['sel_letter']);
+            $sel_low = mb_strtolower($configuration['sel_letter']);
             /** @var Author $author */
             foreach ($this->pi1->stat['authors']['sel_surnames'] as $author) {
                 if (!(false === strpos($author->getSurName(), '&'))) {
-                    $author->setSurName(html_entity_decode($author->getSurName(), ENT_COMPAT, $charset));
+                    $author->setSurName(html_entity_decode($author->getSurName(), ENT_COMPAT));
                     $spec = true;
                 }
                 // check if first letter matches
                 $ll = mb_substr($author->getSurName(), 0, 1, $charset);
-                if (($ll != $sel_up) && ($ll != $sel_low)) {
+                if (($ll !== $sel_up) && ($ll !== $sel_low)) {
                     continue;
                 }
                 if (!in_array($author->getSurName(), $lst)) {
@@ -155,12 +155,12 @@ class AuthorNavigation extends Navigation
             $this->pi1->stat['authors']['sel_surnames'] = $lst;
 
             // Restore filter
-            $this->pi1->referenceReader->set_filters($configuration['filters']);
+            $referenceReader->set_filters($configuration['filters']);
         }
 
         // Setup filter for selected author
         if ('0' != $configuration['sel_author']) {
-            $spec = htmlentities($configuration['sel_author'], ENT_QUOTES, $charset);
+            $spec = htmlentities($configuration['sel_author'], ENT_QUOTES);
 
             // Check if the selected author is available
             if (in_array($configuration['sel_author'], $this->pi1->stat['authors']['sel_surnames'])
@@ -187,7 +187,7 @@ class AuthorNavigation extends Navigation
             $configuration['filters']['author']['author'] = [];
             $configuration['filters']['author']['author']['authors'] = $filter;
 
-            $this->pi1->referenceReader->set_filters($configuration['filters']);
+            $referenceReader->set_filters($configuration['filters']);
         }
 
         return $configuration;
@@ -203,7 +203,7 @@ class AuthorNavigation extends Navigation
         $extConf = &$this->extConf;
 
         // Acquire letter
-        $letters = $this->first_letters($names, 'UTF-8');
+        $letters = $this->first_letters($names);
 
         // Acquire selected letter
         $selectedLetter = strval($extConf['sel_letter']);
@@ -226,7 +226,7 @@ class AuthorNavigation extends Navigation
      *
      * @return array
      */
-    protected function first_letters($names, $charset)
+    protected function first_letters($names, $charset = 'UTF-8')
     {
         // Acquire letters
         $letters = [];
@@ -264,7 +264,7 @@ class AuthorNavigation extends Navigation
      *
      * @return int|mixed
      */
-    protected function string_index($string, $list, $null, $charset)
+    protected function string_index($string, $list, $null, string $charset = 'UTF-8')
     {
         $sel1 = $string;
         $sel2 = htmlentities($sel1, ENT_QUOTES, $charset);
@@ -329,19 +329,18 @@ class AuthorNavigation extends Navigation
      */
     public function get(): string
     {
-        $charset = $this->pi1->extConf['charset']['upper'];
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
         // find the index of the selected name
         $this->extConf['sel_name_idx'] = $this->string_index(
             $this->extConf['sel_author'],
             $this->pi1->stat['authors']['sel_surnames'],
-            '0',
-            $charset
+            '0'
         );
 
         // The label
-        $navigationLabel = $this->pi1->cObj->stdWrap(
-            $this->pi1->pi_getLL('authorNav_label'),
+        $navigationLabel = $contentObjectRenderer->stdWrap(
+            LocalizationUtility::translate('authorNav_label', 'bib'),
             $this->conf['label.']
         );
 
@@ -361,13 +360,10 @@ class AuthorNavigation extends Navigation
      */
     protected function getLetterSelection()
     {
-        $cObj = &$this->pi1->cObj;
-        $cfg = &$this->conf;
-        $extConf = &$this->extConf;
-        $charset = $this->pi1->extConf['charset']['upper'];
-        $letterConfiguration = is_array($cfg['letters.']) ? $cfg['letters.'] : [];
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $letterConfiguration = is_array($this->conf['letters.']) ? $this->conf['letters.'] : [];
 
-        if (0 === count($extConf['letters'])) {
+        if (0 === count($this->extConf['letters'])) {
             return '';
         }
 
@@ -377,16 +373,15 @@ class AuthorNavigation extends Navigation
         if (isset($letterConfiguration['separator'])) {
             $letterSeparator = $letterConfiguration['separator'];
         }
-        $letterSeparator = $cObj->stdWrap($letterSeparator, $letterConfiguration['separator.']);
+        $letterSeparator = $contentObjectRenderer->stdWrap($letterSeparator, $letterConfiguration['separator.']);
 
-        $titleTemplate = $this->pi1->pi_getLL('authorNav_LetterLinkTitle', '%l', true);
-
+        $titleTemplate = LocalizationUtility::translate('authorNav_LetterLinkTitle', 'bib');
         // Iterate through letters
         $letterSelection = [];
-        foreach ($extConf['letters'] as $letter) {
-            $txt = htmlspecialchars($letter, ENT_QUOTES, $charset);
-            if ($letter == $extConf['sel_letter']) {
-                $txt = $cObj->stdWrap($txt, $letterConfiguration['current.']);
+        foreach ($this->extConf['letters'] as $letter) {
+            $txt = htmlspecialchars($letter, ENT_QUOTES);
+            if ($letter == $this->extConf['sel_letter']) {
+                $txt = $contentObjectRenderer->stdWrap($txt, $letterConfiguration['current.']);
             } else {
                 $title = str_replace('%l', $txt, $titleTemplate);
                 $txt = $this->pi1->get_link(
@@ -406,22 +401,17 @@ class AuthorNavigation extends Navigation
         $lst = implode($letterSeparator, $letterSelection);
 
         // All link
-        $sep = '-';
-        if (isset($letterConfiguration['all_sep'])) {
-            $sep = $letterConfiguration['all_sep'];
-        }
-        $sep = $cObj->stdWrap($sep, $letterConfiguration['all_sep.']);
 
         $txt = $this->pi1->pi_getLL('authorNav_all_letters', 'All', true);
-        if (0 == strlen($extConf['sel_letter'])) {
-            $txt = $cObj->stdWrap($txt, $letterConfiguration['current.']);
+        if (0 === strlen($this->extConf['sel_letter'])) {
+            $txt = $contentObjectRenderer->stdWrap($txt, $letterConfiguration['current.']);
         } else {
             $txt = $this->pi1->get_link($txt, ['author_letter' => '', 'author' => '']);
         }
 
         // Compose
-        $txt = $txt.$sep.$lst;
-        $txt = $cObj->stdWrap($txt, $letterConfiguration['all_wrap.']);
+        $txt = $txt.'-'.$lst;
+        $txt = $contentObjectRenderer->stdWrap($txt, $letterConfiguration['all_wrap.']);
 
         return $txt;
     }
