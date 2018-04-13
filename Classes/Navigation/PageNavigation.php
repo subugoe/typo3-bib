@@ -85,7 +85,7 @@ class PageNavigation extends Navigation
     /**
      * Returns content.
      */
-    protected function get(): string
+    public function get(): string
     {
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
         $navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : [];

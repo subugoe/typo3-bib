@@ -322,11 +322,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param int $bibtype
+     *
      * @return Reference
      */
     public function setBibtype(int $bibtype): Reference
     {
         $this->bibtype = $bibtype;
+
         return $this;
     }
 
@@ -340,11 +342,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $citeid
+     *
      * @return Reference
      */
     public function setCiteid(string $citeid): Reference
     {
         $this->citeid = $citeid;
+
         return $this;
     }
 
@@ -358,11 +362,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $title
+     *
      * @return Reference
      */
     public function setTitle(string $title): Reference
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -376,11 +382,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $journal
+     *
      * @return Reference
      */
     public function setJournal(string $journal): Reference
     {
         $this->journal = $journal;
+
         return $this;
     }
 
@@ -394,11 +402,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param int $year
+     *
      * @return Reference
      */
     public function setYear(int $year): Reference
     {
         $this->year = $year;
+
         return $this;
     }
 
@@ -412,11 +422,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param int $month
+     *
      * @return Reference
      */
     public function setMonth(int $month): Reference
     {
         $this->month = $month;
+
         return $this;
     }
 
@@ -430,11 +442,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param int $day
+     *
      * @return Reference
      */
     public function setDay(int $day): Reference
     {
         $this->day = $day;
+
         return $this;
     }
 
@@ -448,11 +462,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $volume
+     *
      * @return Reference
      */
     public function setVolume(string $volume): Reference
     {
         $this->volume = $volume;
+
         return $this;
     }
 
@@ -466,11 +482,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $number
+     *
      * @return Reference
      */
     public function setNumber(string $number): Reference
     {
         $this->number = $number;
+
         return $this;
     }
 
@@ -484,11 +502,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $number2
+     *
      * @return Reference
      */
     public function setNumber2(string $number2): Reference
     {
         $this->number2 = $number2;
+
         return $this;
     }
 
@@ -502,11 +522,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $pages
+     *
      * @return Reference
      */
     public function setPages(string $pages): Reference
     {
         $this->pages = $pages;
+
         return $this;
     }
 
@@ -520,11 +542,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $abstract
+     *
      * @return Reference
      */
     public function setAbstract(string $abstract): Reference
     {
         $this->abstract = $abstract;
+
         return $this;
     }
 
@@ -538,11 +562,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $fullText
+     *
      * @return Reference
      */
     public function setFullText(string $fullText): Reference
     {
         $this->fullText = $fullText;
+
         return $this;
     }
 
@@ -556,11 +582,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param int $fullTextTstamp
+     *
      * @return Reference
      */
     public function setFullTextTstamp(int $fullTextTstamp): Reference
     {
         $this->fullTextTstamp = $fullTextTstamp;
+
         return $this;
     }
 
@@ -574,11 +602,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $fullTextFileUrl
+     *
      * @return Reference
      */
     public function setFullTextFileUrl(string $fullTextFileUrl): Reference
     {
         $this->fullTextFileUrl = $fullTextFileUrl;
+
         return $this;
     }
 
@@ -592,11 +622,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $affiliation
+     *
      * @return Reference
      */
     public function setAffiliation(string $affiliation): Reference
     {
         $this->affiliation = $affiliation;
+
         return $this;
     }
 
@@ -610,11 +642,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $note
+     *
      * @return Reference
      */
     public function setNote(string $note): Reference
     {
         $this->note = $note;
+
         return $this;
     }
 
@@ -628,11 +662,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $annotation
+     *
      * @return Reference
      */
     public function setAnnotation(string $annotation): Reference
     {
         $this->annotation = $annotation;
+
         return $this;
     }
 
@@ -646,11 +682,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $keywords
+     *
      * @return Reference
      */
     public function setKeywords(string $keywords): Reference
     {
         $this->keywords = $keywords;
+
         return $this;
     }
 
@@ -664,11 +702,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $tags
+     *
      * @return Reference
      */
     public function setTags(string $tags): Reference
     {
         $this->tags = $tags;
+
         return $this;
     }
 
@@ -682,11 +722,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $fileUrl
+     *
      * @return Reference
      */
     public function setFileUrl(string $fileUrl): Reference
     {
         $this->fileUrl = $fileUrl;
+
         return $this;
     }
 
@@ -700,11 +742,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $webUrl
+     *
      * @return Reference
      */
     public function setWebUrl(string $webUrl): Reference
     {
         $this->webUrl = $webUrl;
+
         return $this;
     }
 
@@ -718,11 +762,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $webUrlDate
+     *
      * @return Reference
      */
     public function setWebUrlDate(string $webUrlDate): Reference
     {
         $this->webUrlDate = $webUrlDate;
+
         return $this;
     }
 
@@ -736,11 +782,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $webUrl2
+     *
      * @return Reference
      */
     public function setWebUrl2(string $webUrl2): Reference
     {
         $this->webUrl2 = $webUrl2;
+
         return $this;
     }
 
@@ -754,11 +802,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $webUrl2Date
+     *
      * @return Reference
      */
     public function setWebUrl2Date(string $webUrl2Date): Reference
     {
         $this->webUrl2Date = $webUrl2Date;
+
         return $this;
     }
 
@@ -772,11 +822,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $misc
+     *
      * @return Reference
      */
     public function setMisc(string $misc): Reference
     {
         $this->misc = $misc;
+
         return $this;
     }
 
@@ -790,11 +842,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $misc2
+     *
      * @return Reference
      */
     public function setMisc2(string $misc2): Reference
     {
         $this->misc2 = $misc2;
+
         return $this;
     }
 
@@ -808,11 +862,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $editor
+     *
      * @return Reference
      */
     public function setEditor(string $editor): Reference
     {
         $this->editor = $editor;
+
         return $this;
     }
 
@@ -826,11 +882,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $publisher
+     *
      * @return Reference
      */
     public function setPublisher(string $publisher): Reference
     {
         $this->publisher = $publisher;
+
         return $this;
     }
 
@@ -844,11 +902,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $howpublished
+     *
      * @return Reference
      */
     public function setHowpublished(string $howpublished): Reference
     {
         $this->howpublished = $howpublished;
+
         return $this;
     }
 
@@ -862,11 +922,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $address
+     *
      * @return Reference
      */
     public function setAddress(string $address): Reference
     {
         $this->address = $address;
+
         return $this;
     }
 
@@ -880,11 +942,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $series
+     *
      * @return Reference
      */
     public function setSeries(string $series): Reference
     {
         $this->series = $series;
+
         return $this;
     }
 
@@ -898,11 +962,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $edition
+     *
      * @return Reference
      */
     public function setEdition(string $edition): Reference
     {
         $this->edition = $edition;
+
         return $this;
     }
 
@@ -916,11 +982,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $chapter
+     *
      * @return Reference
      */
     public function setChapter(string $chapter): Reference
     {
         $this->chapter = $chapter;
+
         return $this;
     }
 
@@ -934,11 +1002,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $booktitle
+     *
      * @return Reference
      */
     public function setBooktitle(string $booktitle): Reference
     {
         $this->booktitle = $booktitle;
+
         return $this;
     }
 
@@ -952,11 +1022,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $school
+     *
      * @return Reference
      */
     public function setSchool(string $school): Reference
     {
         $this->school = $school;
+
         return $this;
     }
 
@@ -970,11 +1042,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $institute
+     *
      * @return Reference
      */
     public function setInstitute(string $institute): Reference
     {
         $this->institute = $institute;
+
         return $this;
     }
 
@@ -988,11 +1062,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $organization
+     *
      * @return Reference
      */
     public function setOrganization(string $organization): Reference
     {
         $this->organization = $organization;
+
         return $this;
     }
 
@@ -1006,11 +1082,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $institution
+     *
      * @return Reference
      */
     public function setInstitution(string $institution): Reference
     {
         $this->institution = $institution;
+
         return $this;
     }
 
@@ -1024,11 +1102,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $eventName
+     *
      * @return Reference
      */
     public function setEventName(string $eventName): Reference
     {
         $this->eventName = $eventName;
+
         return $this;
     }
 
@@ -1042,11 +1122,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $eventPlace
+     *
      * @return Reference
      */
     public function setEventPlace(string $eventPlace): Reference
     {
         $this->eventPlace = $eventPlace;
+
         return $this;
     }
 
@@ -1060,11 +1142,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $eventDate
+     *
      * @return Reference
      */
     public function setEventDate(string $eventDate): Reference
     {
         $this->eventDate = $eventDate;
+
         return $this;
     }
 
@@ -1078,11 +1162,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param int $state
+     *
      * @return Reference
      */
     public function setState(int $state): Reference
     {
         $this->state = $state;
+
         return $this;
     }
 
@@ -1096,11 +1182,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $type
+     *
      * @return Reference
      */
     public function setType(string $type): Reference
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -1114,11 +1202,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $language
+     *
      * @return Reference
      */
     public function setLanguage(string $language): Reference
     {
         $this->language = $language;
+
         return $this;
     }
 
@@ -1132,11 +1222,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $ISBN
+     *
      * @return Reference
      */
     public function setISBN(string $ISBN): Reference
     {
         $this->ISBN = $ISBN;
+
         return $this;
     }
 
@@ -1150,11 +1242,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $ISSN
+     *
      * @return Reference
      */
     public function setISSN(string $ISSN): Reference
     {
         $this->ISSN = $ISSN;
+
         return $this;
     }
 
@@ -1168,11 +1262,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $DOI
+     *
      * @return Reference
      */
     public function setDOI(string $DOI): Reference
     {
         $this->DOI = $DOI;
+
         return $this;
     }
 
@@ -1186,11 +1282,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param bool $extern
+     *
      * @return Reference
      */
     public function setExtern(bool $extern): Reference
     {
         $this->extern = $extern;
+
         return $this;
     }
 
@@ -1204,11 +1302,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param bool $reviewed
+     *
      * @return Reference
      */
     public function setReviewed(bool $reviewed): Reference
     {
         $this->reviewed = $reviewed;
+
         return $this;
     }
 
@@ -1222,11 +1322,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param bool $inLibrary
+     *
      * @return Reference
      */
     public function setInLibrary(bool $inLibrary): Reference
     {
         $this->inLibrary = $inLibrary;
+
         return $this;
     }
 
@@ -1240,11 +1342,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $borrowedBy
+     *
      * @return Reference
      */
     public function setBorrowedBy(string $borrowedBy): Reference
     {
         $this->borrowedBy = $borrowedBy;
+
         return $this;
     }
 
@@ -1258,11 +1362,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param array $authors
+     *
      * @return Reference
      */
     public function setAuthors(array $authors): Reference
     {
         $this->authors = $authors;
+
         return $this;
     }
 
@@ -1276,11 +1382,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $DOIUrl
+     *
      * @return Reference
      */
     public function setDOIUrl(string $DOIUrl): Reference
     {
         $this->DOIUrl = $DOIUrl;
+
         return $this;
     }
 
@@ -1294,11 +1402,13 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param string $autoUrl
+     *
      * @return Reference
      */
     public function setAutoUrl(string $autoUrl): Reference
     {
         $this->autoUrl = $autoUrl;
+
         return $this;
     }
 
@@ -1312,13 +1422,33 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 
     /**
      * @param bool $hidden
+     *
      * @return Reference
      */
     public function setHidden(bool $hidden): Reference
     {
         $this->hidden = $hidden;
+
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getUid(): int
+    {
+        return $this->uid;
+    }
 
+    /**
+     * @param int $uid
+     *
+     * @return Reference
+     */
+    public function setUid(int $uid): Reference
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
 }

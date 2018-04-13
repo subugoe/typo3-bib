@@ -5,14 +5,15 @@ namespace Ipf\Bib\Service;
 use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\Utility;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ItemTransformerService
 {
+    /**
+     * @var array
+     */
     private $configuration;
 
     public function __construct(array $configuration)
@@ -76,15 +77,14 @@ class ItemTransformerService
      *
      * @return Reference The processed publication object
      */
-    public function preparePublicationData(array $publication, array $configuration): Reference
+    public function preparePublicationData(array $publication): Reference
     {
-        $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, ['bib']);
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
 
         $reference = GeneralUtility::makeInstance(Reference::class);
         $reference
+            ->setUid($publication['uid'])
             ->setBibtype((int) $publication['bibtype'])
             ->setCiteid($publication['citeid'])
             ->setTitle($publication['title'])
@@ -254,7 +254,6 @@ class ItemTransformerService
         $order = GeneralUtility::trimExplode(',', $this->conf['auto_url_order'], true);
         $reference->setAutoUrl($this->getAutoUrl($publicationData, $order));
         $publicationData['auto_url_short'] = Utility::crop_middle((string) $reference->getAutoUrl(), $url_max);
-
 
         return $reference;
     }
@@ -554,14 +553,14 @@ class ItemTransformerService
      * Returns the html interpretation of the publication
      * item as it is defined in the html template.
      *
-     * @param Reference  $publicationData
-     * @param string $template
+     * @param Reference $publicationData
+     * @param string    $template
      *
      * @return string HTML string for a single item in the list view
      */
     public function getItemHtml(Reference $publicationData, string $template)
     {
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
         $all_base = 'rnd'.strval(rand()).'rnd';

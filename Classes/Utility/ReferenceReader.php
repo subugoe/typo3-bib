@@ -28,6 +28,8 @@ namespace Ipf\Bib\Utility;
  * ************************************************************* */
 
 use Ipf\Bib\Domain\Model\Author;
+use Ipf\Bib\Domain\Model\Reference;
+use Ipf\Bib\Service\ItemTransformerService;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -87,7 +89,7 @@ class ReferenceReader
     /**
      * @var array
      */
-    public $allBibTypes = [
+    public static $allBibTypes = [
         0 => 'unknown',
         1 => 'article',
         2 => 'book',
@@ -114,7 +116,7 @@ class ReferenceReader
     /**
      * @var array
      */
-    public $allStates = [
+    public static $allStates = [
         0 => 'published',
         1 => 'accepted',
         2 => 'submitted',
@@ -158,7 +160,7 @@ class ReferenceReader
      *
      * @var array
      */
-    protected $authorFields = ['surname', 'forename', 'url', 'fe_user_id'];
+    public static $authorFields = ['surname', 'forename', 'url', 'fe_user_id'];
 
     /**
      * @var array
@@ -177,7 +179,7 @@ class ReferenceReader
      *
      * @var array
      */
-    protected $referenceFields = [
+    public static $referenceFields = [
         'bibtype',
         'citeid',
         'title',
@@ -238,15 +240,29 @@ class ReferenceReader
      */
     protected $publicationFields;
 
-    public function __construct()
+    /**
+     * @var array
+     */
+    private $configuration;
+
+    public function __construct(array $configuration)
     {
+        $this->configuration = $configuration;
+        $this->setPidList($configuration['pid_list']);
+        $this->setClearCache($configuration['editor']['clear_page_cache']);
+        $this->setShowHidden($configuration['show_hidden']);
+        $this->set_searchFields($configuration['search_fields']);
+        $this->set_editorStopWords($configuration['editor_stop_words']);
+        $this->set_titleStopWords($configuration['title_stop_words']);
+        $this->set_filters($configuration['filters']);
+
         $this->t_ref_default['table'] = self::REFERENCE_TABLE;
         $this->t_as_default['table'] = self::AUTHORSHIP_TABLE;
         $this->t_au_default['table'] = self::AUTHOR_TABLE;
 
         // setup authorAllFields
         $this->authorAllFields = ['uid', 'pid', 'tstamp', 'crdate', 'cruser_id'];
-        $this->authorAllFields = array_merge($this->authorAllFields, $this->authorFields);
+        $this->authorAllFields = array_merge($this->authorAllFields, static::$authorFields);
 
         // setup refAllFields
         $typo3_fields = [
@@ -258,10 +274,10 @@ class ReferenceReader
             'crdate',
             'cruser_id',
         ];
-        $this->refAllFields = array_merge($typo3_fields, $this->referenceFields);
+        $this->refAllFields = array_merge($typo3_fields, static::$referenceFields);
 
         // setup pubFields
-        $this->publicationFields = $this->referenceFields;
+        $this->publicationFields = static::$referenceFields;
         $this->publicationFields[] = 'authors';
 
         // setup pubAllFields
@@ -269,12 +285,12 @@ class ReferenceReader
 
         $this->sortExtraFields = ['surname'];
 
-        $searchFields = $this->referenceFields;
+        $searchFields = static::$referenceFields;
         array_push($searchFields, 'authors');
         natcasesort($searchFields);
         $this->setSearchFields($searchFields);
 
-        $sortFields = $this->referenceFields;
+        $sortFields = static::$referenceFields;
         $sortFields = array_merge($sortFields, $this->sortExtraFields);
         $this->setSortFields($sortFields);
     }
@@ -1619,22 +1635,19 @@ class ReferenceReader
     /**
      * Fetches the authors of a publication.
      *
-     * @param int $pub_id
+     * @param Reference $publication
      *
      * @return array An array containing author array
      */
-    protected function getAuthorByPublication(int $pub_id)
+    protected function getAuthorByPublication(Reference $publication)
     {
         $authors = [];
 
         $whereClause = '';
 
-        $whereClause .= $this->getAuthorshipTable().'.pub_id='.intval($pub_id);
+        $whereClause .= self::AUTHORSHIP_TABLE.'.pub_id='.$publication->getUid();
 
-        $whereClause .= $this->enable_fields($this->getAuthorshipTable(), $this->getAuthorshipTable());
-        $whereClause .= $this->enable_fields($this->getAuthorTable(), $this->getAuthorTable());
-
-        $orderClause = $this->getAuthorshipTable().'.sorting ASC';
+        $orderClause = self::AUTHORSHIP_TABLE.'.sorting ASC';
 
         $field_csv = $this->getAuthorTable().'.'.implode(
             ','.$this->getAuthorTable().'.',
@@ -1714,14 +1727,19 @@ class ReferenceReader
     /**
      * Fetches a reference.
      *
-     * @return array A database row
+     * @return Reference
      */
-    public function getReference()
+    public function getReference(): Reference
     {
+        $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration);
         $row = $this->getDatabaseConnection()->sql_fetch_assoc($this->databaseResource);
+
         if ($row) {
-            $row['authors'] = $this->getAuthorByPublication($row['uid']);
+            $reference = $itemTransformer->preparePublicationData($row);
+            $reference->setAuthors($this->getAuthorByPublication($reference));
             $row['mod_key'] = $this->getModificationKey($row);
+
+            return $reference;
         }
 
         return $row;

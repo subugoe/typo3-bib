@@ -87,7 +87,7 @@ class YearNavigation extends Navigation
     /**
      * Returns content.
      */
-    protected function get(): string
+    public function get(): string
     {
         // The label
         $label = $this->languageService->getLL('yearNav_label');

@@ -119,28 +119,7 @@ abstract class Navigation
         return $templateFile;
     }
 
-    /**
-     * Returns the translator for the main template.
-     *
-     * @return array
-     */
-    public function translator(): string
-    {
-        $content = $this->get();
-
-        $val = '';
-        if (0 === (int) $this->conf['top_disable']) {
-            $val = $this->pi1->cObj->stdWrap($content, $this->conf['top.']);
-        }
-
-        if (0 === (int) $this->conf['bottom_disable']) {
-            $val = $this->pi1->cObj->stdWrap($content, $this->conf['bottom.']);
-        }
-
-        return $val;
-    }
-
-    abstract protected function get(): string;
+    abstract public function get(): string;
 
     abstract protected function sel_get_text(int $index): string;
 

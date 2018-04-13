@@ -27,6 +27,9 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Modes\Display;
+use Ipf\Bib\Modes\Statistics;
+
 /**
  * Class StatisticsNavigation.
  */
@@ -68,22 +71,21 @@ class StatisticsNavigation extends Navigation
      *
      * @return string
      */
-    protected function get(): string
+    public function get(): string
     {
         $label = '';
         $stat_str = '';
-        $pi1 = &$this->pi1;
 
         // Setup mode
         $d_mode = $this->pi1->extConf['d_mode'];
         $mode = intval($this->pi1->extConf['stat_mode']);
-        if ($d_mode != $pi1::D_Y_NAV) {
-            if ($mode == $pi1::STAT_YEAR_TOTAL) {
-                $mode = $pi1::STAT_TOTAL;
+        if (Display::D_Y_NAV != $d_mode) {
+            if (Statistics::STAT_YEAR_TOTAL == $mode) {
+                $mode = Statistics::STAT_TOTAL;
             }
         } else {
             if (!is_numeric($this->pi1->extConf['year'])) {
-                $mode = $pi1::STAT_TOTAL;
+                $mode = Statistics::STAT_TOTAL;
             }
         }
 
@@ -97,11 +99,11 @@ class StatisticsNavigation extends Navigation
 
         // Setup strings
         switch ($mode) {
-            case $pi1::STAT_TOTAL:
+            case Statistics::STAT_TOTAL:
                 $label = $this->pi1->get_ll('stat_total_label', 'total', true);
                 $stat_str = $total_str;
                 break;
-            case $pi1::STAT_YEAR_TOTAL:
+            case Statistics::STAT_YEAR_TOTAL:
                 $label = $this->pi1->get_ll('stat_year_total_label', 'this year', true);
                 $stat_str = $year_str.' / '.$total_str;
                 break;

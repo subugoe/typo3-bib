@@ -137,8 +137,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         $storagePid = $this->getStoragePid($conf);
 
-        $this->initializeReferenceReader();
-
         $configuration = $this->getExtensionConfiguration($configuration);
         $configuration = $this->getTypoScriptConfiguration($configuration);
         $configuration = $this->getCharacterSet($configuration);
@@ -167,13 +165,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration = $this->getSortFilter($configuration);
         $configuration = $this->disableNavigationOnDemand($configuration);
 
-        $this->referenceReader->setPidList($configuration['pid_list']);
-        $this->referenceReader->setClearCache($configuration['editor']['clear_page_cache']);
-        $this->referenceReader->setShowHidden($configuration['show_hidden']);
-        $this->referenceReader->set_searchFields($configuration['search_fields']);
-        $this->referenceReader->set_editorStopWords($configuration['editor_stop_words']);
-        $this->referenceReader->set_titleStopWords($configuration['title_stop_words']);
-        $this->referenceReader->set_filters($configuration['filters']);
+        $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class, $configuration);
 
         $this->determineNumberOfPublications();
 
@@ -252,15 +244,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $this->view = $view;
 
         return $this;
-    }
-
-    /**
-     * Initialize a ReferenceReader instance and pass it to the class variable.
-     */
-    protected function initializeReferenceReader()
-    {
-        /* @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-        $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class);
     }
 
     /**
@@ -446,7 +429,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $configuration['pid_list'] = array_reverse($pidList);
         } else {
             // Use current page as storage
-            $configuration['pid_list'] = [intval($GLOBALS['TSFE']->id)];
+            $configuration['pid_list'] = [(int) $GLOBALS['TSFE']->id];
         }
 
         return $configuration;
@@ -492,8 +475,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             default:
                 $configuration['stat_mode'] = \Ipf\Bib\Modes\Statistics::STAT_TOTAL;
         }
-        $configuration['sub_page']['ipp'] = max(intval($configuration['sub_page']['ipp']), 0);
-        $configuration['max_authors'] = max(intval($configuration['max_authors']), 0);
+        $configuration['sub_page']['ipp'] = max((int) $configuration['sub_page']['ipp'], 0);
+        $configuration['max_authors'] = max((int) $configuration['max_authors'], 0);
 
         return $configuration;
     }
@@ -741,10 +724,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
                 switch ($table) {
                     case 'ref':
-                        $allFields = $this->referenceReader->getReferenceFields();
+                        $allFields = \Ipf\Bib\Utility\ReferenceReader::$referenceFields;
                         break;
                     case 'authors':
-                        $allFields = $this->referenceReader->getAuthorFields();
+                        $allFields = \Ipf\Bib\Utility\ReferenceReader::$authorFields;
                         break;
                     default:
                         continue;
@@ -899,16 +882,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             foreach ($arr as $year) {
                 if (false === strpos($year, '-')) {
                     if (is_numeric($year)) {
-                        $flexFormFilter['years'][] = intval($year);
+                        $flexFormFilter['years'][] = (int) $year;
                     }
                 } else {
                     $range = [];
                     $elms = GeneralUtility::trimExplode('-', $year, false);
                     if (is_numeric($elms[0])) {
-                        $range['from'] = intval($elms[0]);
+                        $range['from'] = (int) $elms[0];
                     }
                     if (is_numeric($elms[1])) {
-                        $range['to'] = intval($elms[1]);
+                        $range['to'] = (int) $elms[1];
                     }
                     if (count($range) > 0) {
                         $flexFormFilter['ranges'][] = $range;
@@ -935,7 +918,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $flexFormFilter = [];
             $flexFormFilter['authors'] = [];
             $flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'author_rule', $this->flexFormFilterSheet);
-            $flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+            $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
 
             $authors = $this->pi_getFFvalue($this->flexForm, 'authors', $this->flexFormFilterSheet);
             $authors = \Ipf\Bib\Utility\Utility::multi_explode_trim(
@@ -970,10 +953,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_state', $this->flexFormFilterSheet)) {
             $flexFormFilter = [];
             $flexFormFilter['states'] = [];
-            $states = intval($this->pi_getFFvalue($this->flexForm, 'states', $this->flexFormFilterSheet));
+            $states = (int) $this->pi_getFFvalue($this->flexForm, 'states', $this->flexFormFilterSheet);
 
             $j = 1;
-            $referenceReaderStateSize = count($this->referenceReader->allStates);
+            $referenceReaderStateSize = count(\Ipf\Bib\Utility\ReferenceReader::$allStates);
             for ($i = 0; $i < $referenceReaderStateSize; ++$i) {
                 if ($states & $j) {
                     $flexFormFilter['states'][] = $i;
@@ -996,8 +979,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $types = $this->pi_getFFvalue($this->flexForm, 'bibtypes', $this->flexFormFilterSheet);
             $types = explode(',', $types);
             foreach ($types as $type) {
-                $type = intval($type);
-                if (($type >= 0) && ($type < count($this->referenceReader->allBibTypes))) {
+                $type = (int) $type;
+                if (($type >= 0) && ($type < count(\Ipf\Bib\Utility\ReferenceReader::$allBibTypes))) {
                     $flexFormFilter['types'][] = $type;
                 }
             }
@@ -1092,7 +1075,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         if ($this->pi_getFFvalue($this->flexForm, 'enable_tags', $this->flexFormFilterSheet)) {
             $flexFormFilter = [];
             $flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'tags_rule', $this->flexFormFilterSheet);
-            $flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+            $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
             $kw = $this->pi_getFFvalue($this->flexForm, 'tags', $this->flexFormFilterSheet);
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim(
@@ -1124,7 +1107,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 'keywords_rule',
                 $this->flexFormFilterSheet
             );
-            $flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+            $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
             $kw = $this->pi_getFFvalue($this->flexForm, 'keywords', $this->flexFormFilterSheet);
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
@@ -1148,7 +1131,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 'search_all_rule',
                 $this->flexFormFilterSheet
             );
-            $flexFormFilter['rule'] = intval($flexFormFilter['rule']);
+            $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
             $kw = $this->pi_getFFvalue($this->flexForm, 'search_all', $this->flexFormFilterSheet);
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
@@ -1288,8 +1271,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $this->initializeEditIcons();
 
             // Switch to an import view on demand
-            $allImport = intval(\Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX | \Ipf\Bib\Utility\Importer\Importer::IMP_XML);
-            if (isset($this->piVars['import']) && (intval($this->piVars['import']) & $allImport)) {
+            $allImport = (int) \Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX | \Ipf\Bib\Utility\Importer\Importer::IMP_XML;
+            if (isset($this->piVars['import']) && ((int) $this->piVars['import'] & $allImport)) {
                 $configuration['view_mode'] = View::VIEW_DIALOG;
                 $configuration['dialog_mode'] = \Ipf\Bib\Modes\Dialog::DIALOG_IMPORT;
             }
@@ -1393,11 +1376,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $this->stat['num_page'] = $this->stat['num_all'];
 
             // Determine the year to display
-            $configuration['year'] = intval(date('Y')); // System year
+            $configuration['year'] = (int) date('Y'); // System year
 
             $exportPluginVariables = strtolower($this->piVars['year']);
             if (is_numeric($exportPluginVariables)) {
-                $configuration['year'] = intval($exportPluginVariables);
+                $configuration['year'] = (int) $exportPluginVariables;
             } else {
                 if ('all' === $exportPluginVariables) {
                     $configuration['year'] = $exportPluginVariables;
@@ -1494,7 +1477,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             foreach ($sortFields as $sortField) {
                 if ('surname' === $sortField) {
                     $sort = [
-                        'field' => $this->referenceReader->getAuthorTable().'.'.$sortField.' ',
+                        'field' => \Ipf\Bib\Utility\ReferenceReader::AUTHOR_TABLE.'.'.$sortField.' ',
                         'dir' => 'ASC',
                     ];
                 } else {
@@ -1590,7 +1573,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         // Bibtype data blocks
         $bib_types = [];
-        foreach ($this->referenceReader->allBibTypes as $val) {
+        foreach (\Ipf\Bib\Utility\ReferenceReader::$allBibTypes as $val) {
             $bib_types[] = strtoupper($val).'_DATA';
         }
         $bib_types[] = 'DEFAULT_DATA';

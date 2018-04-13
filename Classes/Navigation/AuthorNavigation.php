@@ -28,7 +28,9 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 use Ipf\Bib\Domain\Model\Author;
+use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class AuthorNavigation.
@@ -89,6 +91,7 @@ class AuthorNavigation extends Navigation
      */
     public function hook_filter(array $configuration): array
     {
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
         $charset = $configuration['charset']['upper'];
 
         // Init statistics
@@ -97,7 +100,7 @@ class AuthorNavigation extends Navigation
         $filter = [];
 
         // Fetch all surnames and initialize letters
-        $this->pi1->stat['authors']['surnames'] = $this->pi1->referenceReader->getSurnamesOfAllAuthors();
+        $this->pi1->stat['authors']['surnames'] = $referenceReader->getSurnamesOfAllAuthors();
         $this->pi1->stat['authors']['sel_surnames'] = [];
         $this->initializeLetters($this->pi1->stat['authors']['surnames']);
 
@@ -324,7 +327,7 @@ class AuthorNavigation extends Navigation
     /**
      * Returns content.
      */
-    protected function get(): string
+    public function get(): string
     {
         $charset = $this->pi1->extConf['charset']['upper'];
 

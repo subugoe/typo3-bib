@@ -58,9 +58,7 @@ class ListView extends View
         $trans = '';
 
         if ($this->extConf['show_nav_year']) {
-            $obj = GeneralUtility::makeInstance(YearNavigation::class);
-
-            return $obj->translator();
+            return GeneralUtility::makeInstance(YearNavigation::class)->translator();
         }
 
         return $trans;
@@ -74,7 +72,7 @@ class ListView extends View
         $trans = '';
 
         if ($this->extConf['show_nav_author']) {
-            return $this->extConf['author_navi']['obj']->translator();
+            return $this->extConf['author_navi']['obj']->get();
         }
 
         return $trans;
@@ -102,9 +100,7 @@ class ListView extends View
         $trans = '';
 
         if ($this->extConf['show_nav_page']) {
-            $obj = GeneralUtility::makeInstance(PageNavigation::class);
-
-            return $obj->translator();
+            return GeneralUtility::makeInstance(PageNavigation::class)->get();
         }
 
         return $trans;
@@ -174,9 +170,7 @@ class ListView extends View
         $trans = '';
 
         if ($this->extConf['show_nav_stat']) {
-            $obj = GeneralUtility::makeInstance(StatisticsNavigation::class);
-
-            return $obj->translator();
+            return GeneralUtility::makeInstance(StatisticsNavigation::class)->get();
         }
 
         return $trans;
@@ -253,7 +247,7 @@ class ListView extends View
             $this->extConf['split_years'] = true;
         }
 
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->extConf);
 
         // Database reading initialization
         $referenceReader->initializeReferenceFetching();
@@ -288,14 +282,13 @@ class ListView extends View
         while ($pub = $referenceReader->getReference()) {
             // Get prepared publication data
             $warnings = [];
-            $pdata = $itemTransformer->preparePublicationData($pub, $this->extConf);
 
             // All publications counter
             $i_all = $publicationsBefore + $i_page;
 
             // Determine evenOdd
             if ($this->extConf['split_bibtypes']) {
-                if ($pdata->getBibtype() !== $prevBibType) {
+                if ($pub->getBibtype() !== $prevBibType) {
                     $i_bibtype = 1;
                 }
                 $evenOdd = $i_bibtype % 2;
@@ -304,11 +297,11 @@ class ListView extends View
             }
 
             // Setup the item template
-            $listViewTemplate = $itemTemplate[$pdata->getBibtype()];
+            $listViewTemplate = $itemTemplate[$pub->getBibtype()];
             if (0 === strlen($listViewTemplate)) {
                 $listViewTemplate = '';
 
-                $itemTemplate[$pdata->getBibtype()] = $listViewTemplate;
+                $itemTemplate[$pub->getBibtype()] = $listViewTemplate;
             }
 
             // Initialize the translator
@@ -335,10 +328,10 @@ class ListView extends View
             $manip_all = [];
             $subst_sub = '';
             if ($editMode) {
-                if ($this->checkFEauthorRestriction($pub['uid'])) {
+                if ($this->checkFEauthorRestriction($pub->getUid())) {
                     $subst_sub = ['', ''];
-                 //   $manip_all[] = $this->getEditManipulator($pub);
-                   // $manip_all[] = $this->getHideManipulator($pub);
+                    //   $manip_all[] = $this->getEditManipulator($pub);
+                    // $manip_all[] = $this->getHideManipulator($pub);
                     $manip_all = \Ipf\Bib\Utility\Utility::html_layout_table([$manip_all]);
 
                     $translator['###MANIPULATORS###'] = $contentObjectRenderer->stdWrap(
@@ -382,15 +375,15 @@ class ListView extends View
             $listViewTemplate = $translator;
 
             // Pass to item processor
-            $items[] = $itemTransformer->getItemHtml($pdata, implode('', $listViewTemplate));
+            $items[] = $itemTransformer->getItemHtml($pub, implode('', $listViewTemplate));
 
             // Update counters
             $i_page += $i_page_delta;
             ++$i_subpage;
             ++$i_bibtype;
 
-            $prevBibType = $pub['bibtype'];
-            $prevYear = $pub['year'];
+            $prevBibType = $pub->getBibtype();
+            $prevYear = $pub->getYear();
         }
 
         // clean up
@@ -482,7 +475,6 @@ class ListView extends View
         return $imageTag;
     }
 
-
     /**
      * This method checks if the current FE user is allowed to edit
      * this publication.
@@ -516,7 +508,6 @@ class ListView extends View
 
         // Is FE-user editing only for own records enabled? (set via TS)
         if (isset($this->conf['FE_edit_own_records']) && 0 !== (int) $this->conf['FE_edit_own_records']) {
-
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::AUTHOR_TABLE);
             $results = $queryBuilder->select('fe_user_id')
                 ->from(ReferenceReader::AUTHOR_TABLE, 'a')
@@ -541,18 +532,18 @@ class ListView extends View
     }
 
     /**
-      * Returns the edit button.
-      *
-      * @param array $publication
-      *
-      * @return string
-      */
-     protected function getEditManipulator($publication)
-     {
-         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+     * Returns the edit button.
+     *
+     * @param array $publication
+     *
+     * @return string
+     */
+    protected function getEditManipulator($publication)
+    {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
-         $label = $this->pi_getLL('manipulators_edit', 'Edit', true);
-         $res = $this->get_link(
+        $label = $this->pi_getLL('manipulators_edit', 'Edit', true);
+        $res = $this->get_link(
              '',
              [
                  'action' => [
@@ -567,10 +558,10 @@ class ListView extends View
              ]
          );
 
-         $res = $contentObjectRenderer->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['edit.']);
+        $res = $contentObjectRenderer->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['edit.']);
 
-         return $res;
-     }
+        return $res;
+    }
 
     /**
      * Returns the hide button.
@@ -606,5 +597,4 @@ class ListView extends View
 
         return $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['hide.']);
     }
-
 }

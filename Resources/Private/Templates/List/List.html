@@ -8,8 +8,8 @@
     </f:if>
 
 {newEntry}
-    <!-- ###HAS_SEARCH_NAVI### begin -->###SEARCH_NAVI_TOP###<!-- ###HAS_SEARCH_NAVI### end -->
-<f:if condition="{configuration.show_nav_search}">
+
+    <f:if condition="{configuration.show_nav_search}">
     {configuration.search_navi.obj.translator}
 </f:if>
 {yearNavigation -> f:format.raw()}
@@ -24,7 +24,7 @@
 <table cellspacing="0" cellpadding="0" border="0" class="tx_bib-list">
 <tbody>
 <f:for each="{items}" as="item">
-    {item.title}
+    {item -> f:format.raw()}
 </f:for>
 </tbody>
 </table>

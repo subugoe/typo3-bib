@@ -74,7 +74,7 @@ class PreferenceNavigation extends Navigation
     /**
      * Returns the preference navigation bar.
      */
-    protected function get(): string
+    public function get(): string
     {
         $this->view
             ->assign('label', $this->getPreferenceNavigationLabel())
