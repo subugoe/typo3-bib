@@ -113,7 +113,7 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function filter_pub_html_display(string $content, bool $htmlSpecialChars = false, string $charset = 'UTF-8'): string
+    public static function filter_pub_html_display(string $content, bool $htmlSpecialChars = false): string
     {
         $rand = strval(rand()).strval(rand());
         $content = str_replace(['<prt>', '</prt>'], '', $content);
@@ -144,7 +144,7 @@ class Utility
             $content = self::fix_html_ampersand($content);
         }
 
-        $content = self::filter_pub_html($content, $htmlSpecialChars, $charset);
+        $content = self::filter_pub_html($content, $htmlSpecialChars);
 
         return $content;
     }
@@ -181,10 +181,10 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function filter_pub_html(string $content = '', $htmlSpecialChars = false, string $charset = '')
+    public static function filter_pub_html(string $content = '', $htmlSpecialChars = false)
     {
         if ($htmlSpecialChars) {
-            $content = htmlspecialchars($content, ENT_QUOTES, $charset);
+            $content = htmlspecialchars($content, ENT_QUOTES);
         }
 
         return $content;

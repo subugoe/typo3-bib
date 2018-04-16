@@ -1,25 +1,38 @@
 <div class="tx_bib-navi_search">
-	{formStart -> f:format.raw()}
-	<div class="tx_bib-navi_main_label">{label}<span class="tx_bib-navi_current">&nbsp;</span></div>
-	{searchBar -> f:format.raw()}
-	{extraButton -> f:format.raw()}
-	<div class="tx_bib-float_clear"></div>
+    <f:form name="tx_bib_pi1-search_form" method="post" action="{f:page.uri(additionalParams: {tx_bib_pi1: {search: ''}})}">
 
-	<f:if condition="{advancedSearch}">
-		<div class="tx_bib-navi_extra_row">
-			<div class="tx_bib-navi_search_details">
-				{separatorSelection -> f:format.raw()}
-				{ruleSelection -> f:format.raw()}
-			</div>
-			<div class="tx_bib-float_clear"></div>
-		</div>
-		<div class="tx_bib-navi_extra_row">
-			<div class="tx_bib-navi_search_details">
-				{abstractsButton -> f:format.raw()}
-				{fullTextButton -> f:format.raw()}
-			</div>
-			<div class="tx_bib-float_clear"></div>
-		</div>
-	</f:if>
-	{formEnd -> f:format.raw()}
+    <div class="tx_bib-navi_main_label"><f:translate key="searchNav_label" extensionName="bib"/><span class="tx_bib-navi_current">&nbsp;</span></div>
+    {searchBar -> f:format.raw()}
+
+
+<f:form.button> <f:translate key="searchNav_extra" extensionName="bib" /></f:form.button>
+    <f:form.checkbox onchange="this.form.submit()" name="tx_bib_pi1[search][extra]" value="1" checked="{configuration.search_navi.extra}"/>
+
+    <div class="tx_bib-float_clear"></div>
+
+    <f:if condition="{advancedSearch}">
+        <div class="tx_bib-navi_extra_row">
+            <div class="tx_bib-navi_search_details">
+                {separatorSelection -> f:format.raw()}
+                {ruleSelection -> f:format.raw()}
+            </div>
+            <div class="tx_bib-float_clear"></div>
+        </div>
+        <div class="tx_bib-navi_extra_row">
+            <div class="tx_bib-navi_search_details">
+                {abstractsButton -> f:format.raw()}
+                {fullTextButton -> f:format.raw()}
+            </div>
+            <div class="tx_bib-float_clear"></div>
+        </div>
+    </f:if>
+
+        <f:form.hidden name="tx_bib_pi1[search]" value="1" />
+        <f:if condition="{configuration.search_navi.extra']">
+            <f:form.hidden value="{configuration.search_navi.rule}" name="rule"/>
+            <f:form.hidden value="{configuration.search_navi.abstracts}" name="abstracts"/>
+            <f:form.hidden value="{configuration.search_navi.full_text}" name="full_text"/>
+        </f:if>
+
+    </f:form>
 </div>

@@ -86,17 +86,10 @@ class SingleView extends View
 
     /**
      * Initializes this class.
-     *
-     * @param \tx_bib_pi1
      */
     public function initialize(array $configuration): string
     {
         $this->view->setTemplatePathAndFilename('typo3conf/ext/bib/Resources/Private/Templates/Single/Index.html');
-        $this->pi1 = $pi1;
-        $this->conf = $pi1->conf['single_view.'];
-        $this->referenceReader = &$pi1->referenceReader;
-        // Load editor language data
-        $this->pi1->extend_ll('EXT:bib/Resources/Private/Language/locallang.xml', $configuration);
 
         return $this->singleView($configuration);
     }

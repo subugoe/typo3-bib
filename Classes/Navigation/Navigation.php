@@ -50,13 +50,6 @@ abstract class Navigation
     public $template;
 
     /**
-     * A prefix string.
-     *
-     * @var string
-     */
-    public $prefix;
-
-    /**
      * @var array
      */
     protected $conf = [];
@@ -72,17 +65,20 @@ abstract class Navigation
     protected $view;
 
     /**
+     * @var array
+     */
+    protected $configuration;
+
+    /**
      * @var LanguageService
      */
     protected $languageService;
 
-    public function __construct()
+    public function __construct(array $configuration)
     {
         $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
-    }
+        $this->configuration = $configuration;
 
-    public function initialize(array $configuration)
-    {
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename($this->getTemplateFileFromCallingClass());

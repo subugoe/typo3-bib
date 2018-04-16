@@ -2,10 +2,12 @@
 
 namespace Ipf\Bib\View;
 
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Modes\Display;
 use Ipf\Bib\Modes\Enumeration;
 use Ipf\Bib\Modes\Sort;
 use Ipf\Bib\Navigation\PageNavigation;
+use Ipf\Bib\Navigation\SearchNavigation;
 use Ipf\Bib\Navigation\StatisticsNavigation;
 use Ipf\Bib\Navigation\YearNavigation;
 use Ipf\Bib\Service\ItemTransformerService;
@@ -37,6 +39,7 @@ class ListView extends View
         $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
 
         $this->view->assign('configuration', $configuration);
+        $this->view->assign('searchNavigation', $this->setupSearchNavigation());
         $this->view->assign('yearNavigation', $this->setupYearNavigation());
         $this->view->assign('authorNavigation', $this->setupAuthorNavigation());
         $this->view->assign('preferenceNavigation', $this->setupPreferenceNavigation());
@@ -46,6 +49,13 @@ class ListView extends View
         $this->view->assign('items', $this->setupItems());
 
         return $this->view->render();
+    }
+
+    private function setupSearchNavigation()
+    {
+        $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->extConf);
+        $searchNavigation->hook_init();
+        $searchNavigation->get();
     }
 
     /**
@@ -240,21 +250,21 @@ class ListView extends View
         $enumerationWrap = $this->conf['enum.'][$enumerationIdentifier.'.'];
 
         // Warning cfg
-        $warningConfiguration = $this->conf['editor.']['list.']['warn_box.'];
         $editMode = $this->extConf['edit_mode'];
 
-        if (Display::D_Y_SPLIT == $this->extConf['d_mode']) {
+        if (Display::D_Y_SPLIT === (int) $this->extConf['d_mode']) {
             $this->extConf['split_years'] = true;
         }
 
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->extConf);
 
         // Database reading initialization
-        $referenceReader->initializeReferenceFetching();
+        $references = $referenceReader->getAllReferences();
 
+        return $references;
         // Determine publication numbers
         $publicationsBefore = 0;
-        if ((Display::D_Y_NAV == $this->extConf['d_mode']) && is_numeric($this->extConf['year'])) {
+        if ((Display::D_Y_NAV === (int) $this->extConf['d_mode']) && is_numeric($this->extConf['year'])) {
             foreach ($this->stat['year_hist'] as $y => $n) {
                 if ($y === $this->extConf['year']) {
                     break;
@@ -267,7 +277,7 @@ class ListView extends View
         $prevYear = -1;
 
         // Initialize counters
-        $limit_start = intval($this->extConf['filters']['br_page']['limit']['start']);
+        $limit_start = (int) $this->extConf['filters']['br_page']['limit']['start'];
         $i_page = $this->stat['num_page'] - $limit_start;
         $i_page_delta = -1;
         if (Sort::SORT_ASC == $this->extConf['date_sorting']) {
@@ -278,9 +288,8 @@ class ListView extends View
         $i_subpage = 1;
         $i_bibtype = 1;
 
-        // Start the fetch loop
-        while ($pub = $referenceReader->getReference()) {
-            // Get prepared publication data
+        /** @var Reference $pub */
+        foreach ($references as $pub) {
             $warnings = [];
 
             // All publications counter
@@ -296,14 +305,6 @@ class ListView extends View
                 $evenOdd = $i_subpage % 2;
             }
 
-            // Setup the item template
-            $listViewTemplate = $itemTemplate[$pub->getBibtype()];
-            if (0 === strlen($listViewTemplate)) {
-                $listViewTemplate = '';
-
-                $itemTemplate[$pub->getBibtype()] = $listViewTemplate;
-            }
-
             // Initialize the translator
             $translator = [];
 
@@ -311,7 +312,7 @@ class ListView extends View
             $enum = str_replace('###I_ALL###', (string) $i_all, $enum);
             $enum = str_replace('###I_PAGE###', (string) $i_page, $enum);
             if (!(false === strpos($enum, '###FILE_URL_ICON###'))) {
-                $repl = $this->getFileUrlIcon($pub, $pdata);
+                $repl = $this->getFileUrlIcon();
                 $enum = str_replace('###FILE_URL_ICON###', $repl, $enum);
             }
             $translator['###ENUM_NUMBER###'] = $contentObjectRenderer->stdWrap($enum, $enumerationWrap);
@@ -340,8 +341,6 @@ class ListView extends View
                     );
                 }
             }
-
-            $listViewTemplate = $subst_sub;
 
             // Year separator label
             $years = [];
@@ -377,6 +376,8 @@ class ListView extends View
             // Pass to item processor
             $items[] = $itemTransformer->getItemHtml($pub, implode('', $listViewTemplate));
 
+            $references[] = $pub;
+
             // Update counters
             $i_page += $i_page_delta;
             ++$i_subpage;
@@ -385,9 +386,6 @@ class ListView extends View
             $prevBibType = $pub->getBibtype();
             $prevYear = $pub->getYear();
         }
-
-        // clean up
-        $referenceReader->finalizeReferenceFetching();
 
         return $items;
     }
@@ -417,12 +415,9 @@ class ListView extends View
     /**
      * Returns the file url icon.
      *
-     * @param array $unprocessedDatabaseData The unprocessed db data
-     * @param array $processedDatabaseData   The processed db data
-     *
      * @return string The html icon img tag
      */
-    private function getFileUrlIcon($unprocessedDatabaseData, $processedDatabaseData)
+    private function getFileUrlIcon()
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $fileSources = $this->icon_src['files'];
@@ -432,9 +427,7 @@ class ListView extends View
 
         // Acquire file type
         $url = '';
-        if (!$processedDatabaseData['_file_nexist']) {
-            $url = $unprocessedDatabaseData['file_url'];
-        }
+
         if (strlen($url) > 0) {
             $src = $fileSources['.default'];
 

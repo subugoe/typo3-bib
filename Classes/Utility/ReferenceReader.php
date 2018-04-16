@@ -254,7 +254,7 @@ class ReferenceReader
         $this->set_searchFields($configuration['search_fields']);
         $this->set_editorStopWords($configuration['editor_stop_words']);
         $this->set_titleStopWords($configuration['title_stop_words']);
-        $this->set_filters($configuration['filters']);
+        $this->set_filters($configuration['filters'] ?? []);
 
         $this->t_ref_default['table'] = self::REFERENCE_TABLE;
         $this->t_as_default['table'] = self::AUTHORSHIP_TABLE;
@@ -600,7 +600,7 @@ class ReferenceReader
      *
      * @param array $filters
      */
-    public function set_filters($filters)
+    public function set_filters(array $filters)
     {
         $this->filters = [];
         foreach ($filters as $filter) {
@@ -639,7 +639,7 @@ class ReferenceReader
      *
      * @return string|array The search object (string or array)
      */
-    public function getSearchTerm($word, $wrap = ['%', '%'])
+    public static function getSearchTerm($word, $wrap = ['%', '%'])
     {
         $spec = htmlentities($word, ENT_QUOTES, 'UTF-8');
         $words = [$word];
@@ -670,7 +670,7 @@ class ReferenceReader
      */
     public function citeIdExists($citeId, $uid = -1)
     {
-        if (0 == strlen($citeId)) {
+        if (0 === strlen($citeId)) {
             return false;
         }
 
@@ -1181,7 +1181,7 @@ class ReferenceReader
      *
      * @return array An array containing the authors
      */
-    protected function searchAuthorAuthorships($words, $pids, $fields = ['forename', 'surname'])
+    protected function searchAuthorAuthorships(array $words, array $pids, array $fields = ['forename', 'surname']): array
     {
         $authorships = [];
         $authors = $this->searchByAuthor($words, $pids, $fields);
@@ -1217,12 +1217,14 @@ class ReferenceReader
      *
      * @return array An array containing the authors
      */
-    protected function searchByAuthor($words, $pids, $fields = ['forename', 'surname'])
+    protected function searchByAuthor(array $words, array $pids, array $fields = ['forename', 'surname'])
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHOR_TABLE);
+        $query = $queryBuilder->select('*')
+            ->from(self::AUTHOR_TABLE);
+
         $all_fields = ['forename', 'surname', 'url'];
         $authors = [];
-        $whereClause = [];
-        $wca = [];
         foreach ($words as $word) {
             $word = trim(strval($word));
             if (strlen($word) > 0) {
@@ -1230,35 +1232,24 @@ class ReferenceReader
                 foreach ($all_fields as $field) {
                     if (in_array($field, $fields)) {
                         if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
-                            $wca[] = $field.' LIKE '.$word;
+                            $query->orWhere($queryBuilder->expr()->like($field, $queryBuilder->expr()->literal(sprintf('%%s%', $word))));
                         } else {
-                            $wca[] = $field.'='.$word;
+                            $query->orWhere($queryBuilder->expr()->eq($field, $word));
                         }
                     }
                 }
             }
         }
-        $whereClause[] = '('.implode(' OR ', $wca).')';
         if (is_array($pids)) {
-            $csv = Utility::implode_intval(',', $pids);
-            $whereClause[] = 'pid IN ('.$csv.')';
+            $query->andWhere($queryBuilder->expr()->in('pid', $pids));
         } else {
-            $whereClause[] = 'pid='.intval($pids);
+            $query->andWhere($queryBuilder->expr()->eq('pid', (int) $pids));
         }
 
-        $whereClause = implode(' AND ', $whereClause);
-        $whereClause .= $this->enable_fields($this->getAuthorTable());
+        $results = $query->execute()->fetchAll();
 
-        $field_csv = implode(',', $this->getAuthorAllFields());
-
-        $res = $this->getDatabaseConnection()->exec_SELECTquery(
-            $field_csv,
-            $this->getAuthorTable(),
-            $whereClause
-        );
-
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-            $authors[] = $row;
+        foreach ($results as $result) {
+            $authors[] = $result;
         }
 
         return $authors;
@@ -1452,13 +1443,13 @@ class ReferenceReader
      * This function returns a SQL JOIN string for the requested
      * table if it has not yet been joined with the requested alias.
      *
-     * @param string $table
-     * @param array  $join
-     * @param array  $aliases
+     * @param array $table
+     * @param array $join
+     * @param array $aliases
      *
      * @return string The WHERE clause string
      */
-    protected function getSqlJoinPart($table, $join, &$aliases)
+    protected function getSqlJoinPart(array $table, $join, &$aliases)
     {
         $joinStatement = '';
 
@@ -1602,9 +1593,9 @@ class ReferenceReader
      *
      * @param int $uid
      *
-     * @return array The publication data from the database
+     * @return Reference The publication data from the database
      */
-    public function getPublicationDetails(int $uid)
+    public function getPublicationDetails(int $uid): Reference
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(static::REFERENCE_TABLE);
 
@@ -1624,8 +1615,9 @@ class ReferenceReader
         $results = $queryBuilder->execute()->fetchAll();
         $publication = $results[0];
         if (is_array($results)) {
-            $publication['authors'] = $this->getAuthorByPublication($publication['uid']);
-            $publication['mod_key'] = $this->getModificationKey($publication);
+            $publication = GeneralUtility::makeInstance(ItemTransformerService::class)->transformPublication($publication);
+            $publication->setAuthors($this->getAuthorByPublication($publication['uid']));
+            $publication->setModificationKey($this->getModificationKey($publication));
         }
 
         return $publication;
@@ -1638,31 +1630,30 @@ class ReferenceReader
      *
      * @return array An array containing author array
      */
-    protected function getAuthorByPublication(Reference $publication)
+    protected function getAuthorByPublication(Reference $publication): array
     {
         $authors = [];
 
-        $whereClause = '';
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHOR_TABLE);
+        $query = $queryBuilder
+            ->select('*')
+            ->from(self::AUTHOR_TABLE, 'a')
+            ->leftJoin('a', self::AUTHORSHIP_TABLE, 'aus', 'aus.author_id = a.uid')
+            ->where($queryBuilder->expr()->eq('aus.pub_id', $publication->getUid()))
+            ->orderBy('aus.sorting', 'ASC')
+            ->execute()
+            ->fetchAll();
 
-        $whereClause .= self::AUTHORSHIP_TABLE.'.pub_id='.$publication->getUid();
+        foreach ($query as $authorData) {
+            $author = new Author();
+            $author
+                ->setSurName($authorData['surname'])
+                ->setForeName($authorData['forename'])
+                ->setUrl($authorData['url'])
+                ->setFrontEndUserId($authorData['fe_user_id'])
+                ->setUid($authorData['uid']);
 
-        $orderClause = self::AUTHORSHIP_TABLE.'.sorting ASC';
-
-        $field_csv = $this->getAuthorTable().'.'.implode(
-            ','.$this->getAuthorTable().'.',
-                $this->getAuthorAllFields()
-        );
-        $query = $this->select_clause_start(
-            [$field_csv, $this->getAuthorshipTable().'.sorting'],
-            [$this->t_au_default, $this->t_as_default]
-        );
-        $query .= ' WHERE '.$whereClause;
-        $query .= ' ORDER BY '.$orderClause;
-        $query .= ';';
-
-        $res = $this->getDatabaseConnection()->sql_query($query);
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-            $authors[] = $row;
+            $authors[] = $author;
         }
 
         return $authors;
@@ -1671,20 +1662,21 @@ class ReferenceReader
     /**
      * This returns the modification key for a publication.
      *
-     * @param array $publication
+     * @param Reference $publication
      *
      * @return string The mod_key string
      */
-    protected function getModificationKey($publication)
+    private function getModificationKey(Reference $publication)
     {
         $modificationKey = '';
-        foreach ($publication['authors'] as $author) {
-            $modificationKey .= $author['surname'];
-            $modificationKey .= $author['forename'];
+        /** @var Author $author */
+        foreach ($publication->getAuthors() as $author) {
+            $modificationKey .= $author->getSurName();
+            $modificationKey .= $author->getForeName();
         }
-        $modificationKey .= $publication['title'];
-        $modificationKey .= strval($publication['crdate']);
-        $modificationKey .= strval($publication['tstamp']);
+        $modificationKey .= $publication->getTitle();
+        $modificationKey .= (string) $publication->getCrdate();
+        $modificationKey .= (string) $publication->getTstamp();
         $hashedModificationKey = sha1($modificationKey);
 
         return $hashedModificationKey;
@@ -1694,23 +1686,26 @@ class ReferenceReader
      * This initializes the reference fetching.
      * Executes a select query.
      */
-    public function initializeReferenceFetching()
+    public function getAllReferences(): array
     {
-        $field_csv = self::REFERENCE_TABLE.'.'.implode(
-            ','.self::REFERENCE_TABLE.'.',
-                $this->refAllFields
-        );
-        $field_csv1 = self::AUTHOR_TABLE.'.'.implode(
-            ','.self::REFERENCE_TABLE.'.',
-                $this->sortExtraFields
-        );
-        $field_csv = $field_csv.','.$field_csv1;
-        $field_csv = explode(',', $field_csv);
-        $query = $this->getReferenceSelectClause($field_csv);
+        $references = [];
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::REFERENCE_TABLE);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
+        $query = $queryBuilder->select('*')
+            ->from(self::REFERENCE_TABLE)
+            ->execute()
+            ->fetchAll();
 
-        $this->databaseResource = $this->getDatabaseConnection()->sql_query($query);
+        foreach ($query as $referenceData) {
+            $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration);
+            $reference = $itemTransformer->transformPublication($referenceData);
+            $reference->setAuthors($this->getAuthorByPublication($reference));
+            $reference->setModificationKey($this->getModificationKey($reference));
+
+            $references[] = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration)->transformPublication($referenceData);
+        }
+
+        return $references;
     }
 
     /**
@@ -1734,22 +1729,14 @@ class ReferenceReader
         $row = $this->getDatabaseConnection()->sql_fetch_assoc($this->databaseResource);
 
         if ($row) {
-            $reference = $itemTransformer->preparePublicationData($row);
+            $reference = $itemTransformer->transformPublication($row);
             $reference->setAuthors($this->getAuthorByPublication($reference));
-            $row['mod_key'] = $this->getModificationKey($row);
+            $reference->setModificationKey($this->getModificationKey($reference));
 
             return $reference;
         }
 
-        return $row;
-    }
-
-    /**
-     * Finish reference fetching (clean up).
-     */
-    public function finalizeReferenceFetching()
-    {
-        $this->getDatabaseConnection()->sql_free_result($this->databaseResource);
+        return new Reference();
     }
 
     /**

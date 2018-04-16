@@ -33,9 +33,24 @@ namespace Ipf\Bib\Domain\Model;
 class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
     /**
+     * @var string
+     */
+    private $modificationKey;
+
+    /**
      * @var int
      */
-    protected $bibtype;
+    private $crdate;
+
+    /**
+     * @var int
+     */
+    private $tstamp;
+
+    /**
+     * @var int
+     */
+    protected $bibtype = 0;
 
     /**
      * @var string
@@ -1450,5 +1465,70 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->uid = $uid;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCrdate(): int
+    {
+        return $this->crdate;
+    }
+
+    /**
+     * @param int $crdate
+     *
+     * @return Reference
+     */
+    public function setCrdate(int $crdate): Reference
+    {
+        $this->crdate = $crdate;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTstamp(): int
+    {
+        return $this->tstamp;
+    }
+
+    /**
+     * @param int $tstamp
+     *
+     * @return Reference
+     */
+    public function setTstamp(int $tstamp): Reference
+    {
+        $this->tstamp = $tstamp;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModificationKey(): string
+    {
+        return $this->modificationKey;
+    }
+
+    /**
+     * @param string $modificationKey
+     *
+     * @return Reference
+     */
+    public function setModificationKey(string $modificationKey): Reference
+    {
+        $this->modificationKey = $modificationKey;
+
+        return $this;
+    }
+
+    public function addAuthor(Author $author)
+    {
+        $this->authors[] = $author;
     }
 }

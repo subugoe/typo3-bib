@@ -27,24 +27,22 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+
 /**
  * Class PageNavigation.
  */
 class PageNavigation extends Navigation
 {
-    /**
-     * Initialize.
-     *
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
+
+    public function initialize(array $configuration)
     {
-        parent::initialize($pi1);
+        $this->configuration = $configuration;
+        parent::initialize($configuration);
         if (is_array($pi1->conf['pageNav.'])) {
             $this->conf = &$pi1->conf['pageNav.'];
         }
-
-        $this->prefix = 'PAGE_NAVI';
 
         $this->sel_link_title = $this->languageService->getLL('pageNav_pageLinkTitle', '%p');
     }
@@ -87,14 +85,16 @@ class PageNavigation extends Navigation
      */
     public function get(): string
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+
         $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
         $navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : [];
 
         // The data
-        $subPage = &$this->pi1->extConf['sub_page'];
+        $subPage = $this->configuration['sub_page'];
 
         // The label
-        $label = $this->pi1->cObj->stdWrap(
+        $label = $contentObjectRenderer->stdWrap(
             $this->languageService->getLL('pageNav_label'),
             $this->conf['label.']
         );
@@ -116,10 +116,10 @@ class PageNavigation extends Navigation
             );
         }
 
-        $nav_next = $this->languageService->getLL('pageNav_next', 'next');
+        $nav_next = $this->languageService->getLL('pageNav_next');
         if ($subPage['current'] < $subPage['max']) {
             $page = min($subPage['current'] + 1, $subPage['max']);
-            $title = $this->languageService->getLL('pageNav_nextLinkTitle', 'next');
+            $title = $this->languageService->getLL('pageNav_nextLinkTitle';
             $nav_next = $this->pi1->get_link(
                 $nav_next,
                 [
@@ -133,15 +133,15 @@ class PageNavigation extends Navigation
         }
 
         // Wrap
-        $nav_prev = $this->pi1->cObj->stdWrap($nav_prev, $navigationConfiguration['previous.']);
-        $nav_next = $this->pi1->cObj->stdWrap($nav_next, $navigationConfiguration['next.']);
+        $nav_prev = $contentObjectRenderer->stdWrap($nav_prev, $navigationConfiguration['previous.']);
+        $nav_next = $contentObjectRenderer->stdWrap($nav_next, $navigationConfiguration['next.']);
 
         $navigationSeparator = '&nbsp;';
         if (array_key_exists('separator', $navigationConfiguration)) {
             $navigationSeparator = $navigationConfiguration['separator'];
         }
         if (is_array($navigationConfiguration['separator.'])) {
-            $navigationSeparator = $this->pi1->cObj->stdWrap(
+            $navigationSeparator = $contentObjectRenderer->stdWrap(
                 $navigationSeparator,
                 $navigationConfiguration['separator.']
             );

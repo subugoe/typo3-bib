@@ -29,6 +29,7 @@ namespace Ipf\Bib\Navigation;
 
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class PreferenceNavigation.
@@ -45,18 +46,12 @@ class PreferenceNavigation extends Navigation
      *
      * @param \tx_bib_pi1 $pi1
      */
-    public function initialize($pi1)
+    public function initialize(array $configuration)
     {
-        parent::initialize($pi1);
+        parent::initialize($configuration);
         if (is_array($pi1->conf['prefNav.'])) {
             $this->conf = &$pi1->conf['prefNav.'];
         }
-
-        if (is_array($pi1->extConf['pref_navi'])) {
-            $this->extConf = &$pi1->extConf['pref_navi'];
-        }
-
-        $this->prefix = 'PREF_NAVI';
     }
 
     /*
@@ -91,7 +86,7 @@ class PreferenceNavigation extends Navigation
     {
         // Show keywords
         $show = false;
-        if (0 != $this->pi1->piVars['show_keywords']) {
+        if (0 !== (int) $this->pi1->piVars['show_keywords']) {
             $show = true;
         }
 
@@ -148,23 +143,24 @@ class PreferenceNavigation extends Navigation
      */
     protected function getItemsPerPageSelection()
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $label = $this->languageService->getLL('prefNav_ipp_sel');
-        $label = $this->pi1->cObj->stdWrap($label, $this->conf['ipp.']['label.']);
+        $label = $contentObjectRenderer->stdWrap($label, $this->conf['ipp.']['label.']);
         $pairs = [];
-        foreach ($this->extConf['pref_ipps'] as $ii) {
+        foreach ($this->configuration['pref_navi']['pref_ipps'] as $ii) {
             $pairs[$ii] = '&nbsp;'.strval($ii).'&nbsp;';
         }
         $attributes = [
-            'name' => $this->pi1->prefix_pi1.'[items_per_page]',
+            'name' => 'tx_bib_pi1[items_per_page]',
             'onchange' => 'this.form.submit()',
         ];
         if (strlen($this->conf['ipp.']['select_class']) > 0) {
             $attributes['class'] = $this->conf['ipp.']['select_class'];
         }
-        $button = Utility::html_select_input($pairs, $this->pi1->extConf['sub_page']['ipp'], $attributes);
-        $button = $this->pi1->cObj->stdWrap($button, $this->conf['ipp.']['select.']);
+        $button = Utility::html_select_input($pairs, $this->configuration['sub_page']['ipp'], $attributes);
+        $button = $contentObjectRenderer->stdWrap($button, $this->conf['ipp.']['select.']);
 
-        return $this->pi1->cObj->stdWrap($label.$button, $this->conf['ipp.']['widget.']);
+        return $$contentObjectRenderer->stdWrap($label.$button, $this->conf['ipp.']['widget.']);
     }
 
     /**
@@ -174,23 +170,25 @@ class PreferenceNavigation extends Navigation
      */
     protected function getAbstractSelection()
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+
         $attributes = ['onchange' => 'this.form.submit()'];
         if (strlen($this->conf['abstract.']['btn_class']) > 0) {
             $attributes['class'] = $this->conf['abstract.']['btn_class'];
         }
 
         $label = $this->languageService->getLL('prefNav_show_abstracts');
-        $label = $this->pi1->cObj->stdWrap($label, $this->conf['abstract.']['label.']);
-        $check = $this->pi1->extConf['hide_fields']['abstract'] ? false : true;
+        $label = $contentObjectRenderer->stdWrap($label, $this->conf['abstract.']['label.']);
+        $check = $this->configuration['hide_fields']['abstract'] ? false : true;
         $button = Utility::html_check_input(
-            $this->pi1->prefix_pi1.'[show_abstracts]',
+            'tx_bib_pi1[show_abstracts]',
             '1',
             $check,
             $attributes
         );
-        $button = $this->pi1->cObj->stdWrap($button, $this->conf['abstract.']['btn.']);
+        $button = $contentObjectRenderer->stdWrap($button, $this->conf['abstract.']['btn.']);
 
-        return $this->pi1->cObj->stdWrap($label.$button, $this->conf['abstract.']['widget.']);
+        return $contentObjectRenderer->stdWrap($label.$button, $this->conf['abstract.']['widget.']);
     }
 
     /**

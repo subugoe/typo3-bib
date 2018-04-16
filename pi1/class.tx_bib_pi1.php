@@ -542,8 +542,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function getAndInitializeNavigationInstance(string $type, array $configuration): \Ipf\Bib\Navigation\Navigation
     {
         /** @var \Ipf\Bib\Navigation\Navigation $navigationInstance */
-        $navigationInstance = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\'.$type);
-        $navigationInstance->initialize($configuration);
+        $navigationInstance = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\'.$type, $configuration);
 
         return $navigationInstance;
     }
@@ -1210,15 +1209,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 switch ($actionName) {
                     case 'new':
                         $configuration['view_mode'] = View::VIEW_EDITOR;
-                        $configuration['editor_mode'] = EditorView::EDIT_NEW;
+                        $configuration['editor_mode'] = \Ipf\Bib\Modes\Editor::EDIT_NEW;
                         break;
                     case 'edit':
                         $configuration['view_mode'] = View::VIEW_EDITOR;
-                        $configuration['editor_mode'] = EditorView::EDIT_EDIT;
+                        $configuration['editor_mode'] = \Ipf\Bib\Modes\Editor::EDIT_EDIT;
                         break;
                     case 'confirm_save':
                         $configuration['view_mode'] = View::VIEW_EDITOR;
-                        $configuration['editor_mode'] = EditorView::EDIT_CONFIRM_SAVE;
+                        $configuration['editor_mode'] = \Ipf\Bib\Modes\Editor::EDIT_CONFIRM_SAVE;
                         break;
                     case 'save':
                         $configuration['view_mode'] = View::VIEW_DIALOG;
@@ -1226,7 +1225,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                         break;
                     case 'confirm_delete':
                         $configuration['view_mode'] = View::VIEW_EDITOR;
-                        $configuration['editor_mode'] = EditorView::EDIT_CONFIRM_DELETE;
+                        $configuration['editor_mode'] = \Ipf\Bib\Modes\Editor::EDIT_CONFIRM_DELETE;
                         break;
                     case 'delete':
                         $configuration['view_mode'] = View::VIEW_DIALOG;
@@ -1234,7 +1233,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                         break;
                     case 'confirm_erase':
                         $configuration['view_mode'] = View::VIEW_EDITOR;
-                        $configuration['editor_mode'] = EditorView::EDIT_CONFIRM_ERASE;
+                        $configuration['editor_mode'] = \Ipf\Bib\Modes\Editor::EDIT_CONFIRM_ERASE;
                         break;
                     case 'erase':
                         $configuration['view_mode'] = View::VIEW_DIALOG;
@@ -1716,6 +1715,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     public function get_link_url($linkVariables = [], $autoCache = true, $currentRecord = true)
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
+
         if ($this->extConf['edit_mode']) {
             $autoCache = false;
         }
@@ -1725,11 +1726,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         $record = '';
         if ($this->extConf['ce_links'] && $currentRecord) {
-            $record = '#c'.strval($this->cObj->data['uid']);
+            $record = '#c'.strval($contentObjectRenderer->data['uid']);
         }
 
         $this->pi_linkTP('x', $linkVariables, $autoCache);
-        $url = $this->cObj->lastTypoLinkUrl.$record;
+        $url = $contentObjectRenderer->lastTypoLinkUrl.$record;
 
         $url = preg_replace('/&([^;]{8})/', '&amp;\\1', $url);
 

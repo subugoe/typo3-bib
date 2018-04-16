@@ -53,66 +53,94 @@ class Author extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $frontEndUserId;
 
     /**
+     * @param int $uid
+     *
+     * @return Author
+     */
+    public function setUid(int $uid): Author
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getForeName()
+    public function getForeName(): string
     {
         return $this->foreName;
     }
 
     /**
      * @param string $foreName
+     *
+     * @return Author
      */
-    public function setForeName($foreName)
+    public function setForeName(string $foreName): Author
     {
         $this->foreName = $foreName;
-    }
 
-    /**
-     * @return int
-     */
-    public function getFrontEndUserId()
-    {
-        return $this->frontEndUserId;
-    }
-
-    /**
-     * @param int $frontEndUserId
-     */
-    public function setFrontEndUserId($frontEndUserId)
-    {
-        $this->frontEndUserId = $frontEndUserId;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getSurName()
+    public function getSurName(): string
     {
         return $this->surName;
     }
 
     /**
      * @param string $surName
+     *
+     * @return Author
      */
-    public function setSurName($surName)
+    public function setSurName(string $surName): Author
     {
         $this->surName = $surName;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
 
     /**
      * @param string $url
+     *
+     * @return Author
      */
-    public function setUrl($url)
+    public function setUrl(string $url): Author
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrontEndUserId(): int
+    {
+        return $this->frontEndUserId;
+    }
+
+    /**
+     * @param int $frontEndUserId
+     *
+     * @return Author
+     */
+    public function setFrontEndUserId(int $frontEndUserId): Author
+    {
+        $this->frontEndUserId = $frontEndUserId;
+
+        return $this;
     }
 }

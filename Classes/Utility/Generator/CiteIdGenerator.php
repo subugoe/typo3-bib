@@ -36,28 +36,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CiteIdGenerator
 {
     /**
-     * @var \tx_bib_pi1
-     */
-    public $pi1;
-
-    /**
      * @var \Ipf\Bib\Utility\ReferenceReader
      */
     public $referenceReader;
-
-    /**
-     * @var string
-     */
-    public $charset;
-
-    /**
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
-    {
-        $this->referenceReader = &$pi1->referenceReader;
-        $this->charset = $pi1->extConf['charset']['upper'];
-    }
 
     /**
      * Generates a cite id for the publication in piVars['DATA'].
@@ -127,7 +108,7 @@ class CiteIdGenerator
                     }
                 }
                 if (strlen($a_str) > 0) {
-                    $id .= mb_substr($this->simplifiedString($a_str), 0, 1, $this->charset);
+                    $id .= mb_substr($this->simplifiedString($a_str), 0, 1);
                 }
             }
         }
@@ -153,15 +134,15 @@ class CiteIdGenerator
     protected function simplifiedString($id)
     {
         // Replace some special characters with ASCII characters
-        $id = htmlentities($id, ENT_QUOTES, $this->charset);
+        $id = htmlentities($id, ENT_QUOTES);
         $id = str_replace('&amp;', '&', $id);
         $id = preg_replace('/&(\w)\w{1,7};/', '$1', $id);
 
         // Replace remaining special characters with ASCII characters
         $tmpId = '';
-        $idLength = mb_strlen($id, $this->charset);
+        $idLength = mb_strlen($id);
         for ($i = 0; $i < $idLength; ++$i) {
-            $c = mb_substr($id, $i, 1, $this->charset);
+            $c = mb_substr($id, $i, 1);
             if (ctype_alnum($c) || ('_' === $c)) {
                 $tmpId .= $c;
             }

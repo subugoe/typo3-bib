@@ -140,7 +140,7 @@ abstract class Exporter
         if ($this->isResourceReady()) {
             // Initialize db access
             $this->getReferenceReader()->set_filters($this->getFilters());
-            $this->getReferenceReader()->initializeReferenceFetching();
+            $references = $this->getReferenceReader()->getAllReferences();
 
             // Setup info array
             $infoArr = [];
@@ -152,7 +152,7 @@ abstract class Exporter
             $this->writeToResource($data);
 
             // Write publications
-            while ($pub = $this->getReferenceReader()->getReference()) {
+            foreach ($references as $pub) {
                 ++$infoArr['index'];
                 $data = $this->formatPublicationForExport($pub, $infoArr);
                 $this->writeToResource($data);
@@ -161,9 +161,6 @@ abstract class Exporter
             // Write post data
             $data = $this->fileOutro($infoArr);
             $this->writeToResource($data);
-
-            // Clean up db access
-            $this->getReferenceReader()->finalizeReferenceFetching();
 
             $this->info = $infoArr;
         }

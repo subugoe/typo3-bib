@@ -77,7 +77,7 @@ class ItemTransformerService
      *
      * @return Reference The processed publication object
      */
-    public function preparePublicationData(array $publication): Reference
+    public function transformPublication(array $publication): Reference
     {
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
@@ -85,6 +85,8 @@ class ItemTransformerService
         $reference = GeneralUtility::makeInstance(Reference::class);
         $reference
             ->setUid($publication['uid'])
+            ->setTstamp($publication['tstamp'])
+            ->setCrdate($publication['crdate'])
             ->setBibtype((int) $publication['bibtype'])
             ->setCiteid($publication['citeid'])
             ->setTitle($publication['title'])
@@ -102,10 +104,10 @@ class ItemTransformerService
             ->setAnnotation($publication['annotation'])
             ->setKeywords($publication['keywords'])
             ->setTags($publication['tags'])
-            ->setFileUrl($publication['file_url'])
-            ->setWebUrl($publication['web_url'])
+            ->setFileUrl(Utility::fix_html_ampersand($publication['file_url']))
+            ->setWebUrl(Utility::fix_html_ampersand($publication['web_url']))
             ->setWebUrlDate($publication['web_url_date'])
-            ->setWebUrl2($publication['web_url'])
+            ->setWebUrl2(Utility::fix_html_ampersand($publication['web_url']))
             ->setWebUrl2Date($publication['web_url_date'])
             ->setMisc($publication['misc'])
             ->setMisc2($publication['misc2'])
@@ -129,7 +131,7 @@ class ItemTransformerService
             ->setLanguage($publication['language'])
             ->setISBN($publication['ISBN'])
             ->setISSN($publication['ISSN'])
-            ->setDOI($publication['DOI'])
+            ->setDOI(sprintf('http://dx.doi.org/%s', $publication['DOI']))
             ->setExtern((bool) $publication['extern'])
             ->setReviewed((bool) $publication['reviewed'])
             ->setInLibrary((bool) $publication['in_library'])
@@ -158,40 +160,6 @@ class ItemTransformerService
         $url_max = 40;
         if (is_numeric($this->conf['max_url_string_length'])) {
             $url_max = (int) $this->conf['max_url_string_length'];
-        }
-
-        // Iterate through reference fields
-        foreach ($referenceReader->getReferenceFields() as $referenceField) {
-            // Trim string
-            $val = trim(strval($publicationData[$referenceField]));
-
-            if (0 === strlen($val)) {
-                $publicationData[$referenceField] = $val;
-                continue;
-            }
-
-            // Check restrictions
-            if ($this->checkFieldRestriction('ref', $referenceField, $val)) {
-                $publicationData[$referenceField] = '';
-                continue;
-            }
-
-            // Treat some fields
-            switch ($referenceField) {
-                case 'file_url':
-                case 'web_url':
-                case 'web_url2':
-                    $publicationData[$referenceField] = Utility::fix_html_ampersand($val);
-                    $val = Utility::crop_middle((string) $val, $url_max);
-                    $publicationData[$referenceField.'_short'] = Utility::fix_html_ampersand($val);
-                    break;
-                case 'DOI':
-                    $publicationData[$referenceField] = $val;
-                    $reference->setDOIUrl(sprintf('http://dx.doi.org/%s', $val));
-                    break;
-                default:
-                    $publicationData[$referenceField] = $val;
-            }
         }
 
         // Multi fields
@@ -289,19 +257,17 @@ class ItemTransformerService
 
         // Check Field restrictions
         if (is_array($restrictions[$field])) {
-            $restrictionConfiguration = &$restrictions[$field];
-
             // Show by default
             $show = true;
 
             // Hide on 'hide all'
-            if ($restrictionConfiguration['hide_all']) {
+            if ($restrictions[$field]['hide_all']) {
                 $show = false;
             }
 
             // Hide if any extensions matches
-            if ($show && is_array($restrictionConfiguration['hide_ext'])) {
-                foreach ($restrictionConfiguration['hide_ext'] as $ext) {
+            if ($show && is_array($restrictions[$field]['hide_ext'])) {
+                foreach ($restrictions[$field]['hide_ext'] as $ext) {
                     // Sanitize input
                     $len = strlen($ext);
                     if (($len > 0) && (strlen($value) >= $len)) {
@@ -316,8 +282,8 @@ class ItemTransformerService
             }
 
             // Enable if usergroup matches
-            if (!$show && isset($restrictionConfiguration['fe_groups'])) {
-                $groups = $restrictionConfiguration['fe_groups'];
+            if (!$show && isset($restrictions[$field]['fe_groups'])) {
+                $groups = $restrictions[$field]['fe_groups'];
                 if (\Ipf\Bib\Utility\Utility::check_fe_user_groups($groups)) {
                     $show = true;
                 }
@@ -563,7 +529,7 @@ class ItemTransformerService
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
-        $all_base = 'rnd'.strval(rand()).'rnd';
+        $all_base = 'rnd'.(string) rand().'rnd';
         $all_wrap = $all_base;
 
         // Prepare the translator
@@ -582,8 +548,6 @@ class ItemTransformerService
         if ((true === $publicationData->isHidden()) && is_array($this->conf['editor.']['list.']['hidden.'])) {
             $all_wrap = $contentObjectRenderer->stdWrap($all_wrap, $this->conf['editor.']['list.']['hidden.']);
         }
-
-        $all_wrap = explode($all_base, $all_wrap);
 
         // remove empty divs
         $template = preg_replace("/<div[^>]*>[\s\r\n]*<\/div>/", PHP_EOL, $template);

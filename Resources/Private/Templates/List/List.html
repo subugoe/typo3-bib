@@ -4,27 +4,23 @@
 <div class="tx_bib-top_navigation">
     <f:if condition="{configuration.edit_mode}">
         <f:translate key="manipulators_new" extensionName="bib"/>
-        <f:link.page class="new-record" additionalParams="{action : {new:1}}" title="{f:translate(key:'manipulators_new')}"><f:translate key="manipulators_new" extensionName="bib"/></f:link.page>
+        <f:link.page class="new-record" additionalParams="{tx_bib_pi1: {action : {new:1}}}" title="{f:translate(key:'manipulators_new')}"><f:translate key="manipulators_new" extensionName="bib"/></f:link.page>
     </f:if>
 
-{newEntry}
-
-    <f:if condition="{configuration.show_nav_search}">
-    {configuration.search_navi.obj.translator}
-</f:if>
+{searchNavigation -> f:format.raw()}
 {yearNavigation -> f:format.raw()}
 {authorNavigation -> f:format.raw()}
 {preferenceNavigation -> f:format.raw()}
 {statisticsNavigation -> f:format.raw()}
 </div>
 {pageNavigation}
-<div class="tx_bib-navi_main_label">###LABEL_REFERENCES###</div>
+<div class="tx_bib-navi_main_label"><f:translate key="label_references" extensionName="bib"/></div>
 <div class="tx_bib-list_container">
 <!-- ###HAS_ITEMS### begin -->
 <table cellspacing="0" cellpadding="0" border="0" class="tx_bib-list">
 <tbody>
 <f:for each="{items}" as="item">
-    {item -> f:format.raw()}
+    <f:render partial="List/Items" arguments="{item: item}" />
 </f:for>
 </tbody>
 </table>

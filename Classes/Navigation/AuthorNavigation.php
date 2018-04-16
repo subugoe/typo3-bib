@@ -59,7 +59,6 @@ class AuthorNavigation extends Navigation
             $this->extConf = $configuration['author_navi'];
         }
 
-        $this->prefix = 'AUTHOR_NAVI';
         $this->sel_link_title = $this->languageService->getLL('authorNav_authorLinkTitle');
     }
 
@@ -329,8 +328,7 @@ class AuthorNavigation extends Navigation
      */
     public function get(): string
     {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
+        $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Navigation/Author.html');
         // find the index of the selected name
         $this->extConf['sel_name_idx'] = $this->string_index(
             $this->extConf['sel_author'],
@@ -338,82 +336,45 @@ class AuthorNavigation extends Navigation
             '0'
         );
 
-        // The label
-        $navigationLabel = $contentObjectRenderer->stdWrap(
-            LocalizationUtility::translate('authorNav_label', 'bib'),
-            $this->conf['label.']
-        );
-
         $this->view
-            ->assign('label', $navigationLabel)
             ->assign('letterSelection', $this->getLetterSelection())
             ->assign('selection', $this->getAuthorSelection())
-            ->assign('surnameSelection', $this->getHtmlSelectFormField());
+            ->assign('surnameSelection', $this->getHtmlSelectFormField())
+        ;
 
         return $this->view->render();
     }
 
     /**
      * Returns the author surname letter selection.
-     *
-     * @return string
      */
-    protected function getLetterSelection()
+    protected function getLetterSelection(): array
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $letterConfiguration = is_array($this->conf['letters.']) ? $this->conf['letters.'] : [];
 
         if (0 === count($this->extConf['letters'])) {
-            return '';
+            return [];
         }
+
+        return $this->extConf['letters'];
 
         // Create list
-        // The letter separator
-        $letterSeparator = ', ';
-        if (isset($letterConfiguration['separator'])) {
-            $letterSeparator = $letterConfiguration['separator'];
-        }
-        $letterSeparator = $contentObjectRenderer->stdWrap($letterSeparator, $letterConfiguration['separator.']);
-
         $titleTemplate = LocalizationUtility::translate('authorNav_LetterLinkTitle', 'bib');
         // Iterate through letters
         $letterSelection = [];
         foreach ($this->extConf['letters'] as $letter) {
-            $txt = htmlspecialchars($letter, ENT_QUOTES);
-            if ($letter == $this->extConf['sel_letter']) {
+            if ($letter === $this->extConf['sel_letter']) {
                 $txt = $contentObjectRenderer->stdWrap($txt, $letterConfiguration['current.']);
-            } else {
-                $title = str_replace('%l', $txt, $titleTemplate);
-                $txt = $this->pi1->get_link(
-                    $txt,
-                    [
-                        'author_letter' => $letter,
-                        'author' => '',
-                    ],
-                    true,
-                    [
-                        'title' => $title,
-                    ]
-                );
             }
             $letterSelection[] = $txt;
-        }
-        $lst = implode($letterSeparator, $letterSelection);
-
-        // All link
-
-        $txt = $this->pi1->pi_getLL('authorNav_all_letters', 'All', true);
-        if (0 === strlen($this->extConf['sel_letter'])) {
-            $txt = $contentObjectRenderer->stdWrap($txt, $letterConfiguration['current.']);
-        } else {
-            $txt = $this->pi1->get_link($txt, ['author_letter' => '', 'author' => '']);
         }
 
         // Compose
         $txt = $txt.'-'.$lst;
         $txt = $contentObjectRenderer->stdWrap($txt, $letterConfiguration['all_wrap.']);
 
-        return $txt;
+        return $letterSelection;
     }
 
     /**
@@ -424,6 +385,7 @@ class AuthorNavigation extends Navigation
     protected function getAuthorSelection()
     {
         $configurationSelection = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
+        $contenObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
         // Selection
         $cur = $this->extConf['sel_name_idx'];
@@ -443,11 +405,11 @@ class AuthorNavigation extends Navigation
         if (isset($configurationSelection['all_sep'])) {
             $sep = $configurationSelection['all_sep'];
         }
-        $sep = $this->pi1->cObj->stdWrap($sep, $configurationSelection['all_sep.']);
+        $sep = $contenObjectRenderer->stdWrap($sep, $configurationSelection['all_sep.']);
 
-        $txt = $this->pi1->pi_getLL('authorNav_all_authors', 'All', true);
+        $txt = LocalizationUtility::translate('authorNav_all_authors', 'bib');
         if ($cur < 0) {
-            $txt = $this->pi1->cObj->stdWrap($txt, $configurationSelection['current.']);
+            $txt = $contenObjectRenderer->stdWrap($txt, $configurationSelection['current.']);
         } else {
             $txt = $this->pi1->get_link($txt, ['author' => '0']);
         }
@@ -459,7 +421,7 @@ class AuthorNavigation extends Navigation
             $all = '&nbsp;';
         }
 
-        $all = $this->pi1->cObj->stdWrap($all, $configurationSelection['all_wrap.']);
+        $all = $contenObjectRenderer->stdWrap($all, $configurationSelection['all_wrap.']);
 
         return $all;
     }
@@ -471,8 +433,9 @@ class AuthorNavigation extends Navigation
      */
     protected function getHtmlSelectFormField()
     {
-        $content = '<form name="'.$this->pi1->prefix_pi1.'-author_select_form" ';
-        $content .= 'action="'.$this->pi1->get_link_url(['author' => ''], false).'"';
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $content = '<form name="tx_bib_pi1-author_select_form" ';
+        //$content .= 'action="'.$this->pi1->get_link_url(['author' => ''], false).'"';
         $content .= ' method="post"';
         $content .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
         $content .= '>';
@@ -483,21 +446,21 @@ class AuthorNavigation extends Navigation
         $sel_idx = $this->extConf['sel_name_idx'];
         if ($sel_idx >= 0) {
             $sel_name = $names[$sel_idx];
-            $sel_name = htmlspecialchars($sel_name, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
+            $sel_name = htmlspecialchars($sel_name, ENT_QUOTES);
         }
 
         // The 'All with %l' select option
-        $all = $this->pi1->pi_getLL('authorNav_select_all', 'All authors', true);
+        $all = LocalizationUtility::translate('authorNav_select_all', 'bib');
         $rep = '?';
         if (strlen($this->extConf['sel_letter']) > 0) {
-            $rep = htmlspecialchars($this->extConf['sel_letter'], ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
+            $rep = htmlspecialchars($this->extConf['sel_letter'], ENT_QUOTES);
         }
         $all = str_replace('%l', $rep, $all);
 
         // The processed data pairs
         $pairs = ['' => $all];
         foreach ($names as $name) {
-            $name = htmlspecialchars($name, ENT_QUOTES, $this->pi1->extConf['charset']['upper']);
+            $name = htmlspecialchars($name, ENT_QUOTES);
             $pairs[$name] = $name;
         }
         $attributes = [
@@ -509,7 +472,7 @@ class AuthorNavigation extends Navigation
         }
         $button = Utility::html_select_input($pairs, $sel_name, $attributes);
 
-        $button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
+        $button = $contentObjectRenderer->stdWrap($button, $this->conf['select.']);
         $content .= $button;
 
         // Go button
@@ -519,21 +482,21 @@ class AuthorNavigation extends Navigation
         }
         $button = Utility::html_submit_input(
             $this->pi1->prefix_pi1.'[action][select_author]',
-            $this->pi1->pi_getLL('button_go'),
+            LocalizationUtility::translate('button_go', 'bib'),
             $attributes
         );
-        $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
+        $button = $contentObjectRenderer->stdWrap($button, $this->conf['go_btn.']);
         $content .= $button;
 
         // End of form
         $content .= '</form>';
 
         // Finalize
-        if (1 == count($pairs)) {
+        if (1 === count($pairs)) {
             $content = '&nbsp;';
         }
 
-        $content = $this->pi1->cObj->stdWrap($content, $this->conf['form.']);
+        $content = $contentObjectRenderer->stdWrap($content, $this->conf['form.']);
 
         return $content;
     }
