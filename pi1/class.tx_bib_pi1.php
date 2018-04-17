@@ -80,7 +80,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      *
      * @var array
      */
-    public $stat = [];
+    private $stat = [];
 
     /**
      * @var array
@@ -1529,11 +1529,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function disableNavigationOnDemand(array $configuration): array
     {
-        if (0 === (int) $this->stat['num_all']) {
+        if (array_key_exists('num_all', $this->stat) && 0 === (int) $this->stat['num_all']) {
             $configuration['show_nav_export'] = false;
         }
 
-        if (0 === (int) $this->stat['num_page']) {
+        if (array_key_exists('num_page', $this->stat) && 0 === (int) $this->stat['num_page']) {
             $configuration['show_nav_stat'] = false;
         }
 

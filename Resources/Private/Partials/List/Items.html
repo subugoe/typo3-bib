@@ -1,67 +1,66 @@
-<!-- ###ITEM_BLOCK### -->
 <tr>
-<!-- ###HAS_ENUM### begin -->
-<td class="###ROW_CLASS### ###NUMBER_CLASS###">
-###ENUM_NUMBER###
+
+<td class="tx_bib-item">
+&bull;
 </td>
-<!-- ###HAS_ENUM### end -->
+
 <td class="###ROW_CLASS###">
 
 <!-- ###HAS_MANIPULATORS### begin -->###MANIPULATORS###<!-- ###HAS_MANIPULATORS### end -->
-
-<f:if condition="{item.authors -> f:count() > 0}">
-<div class="tx_bib-authors"><f:for each="{item.authors}" as="author">
-    {author.surName}, {author.firstName}
-</f:for></div>
+    <f:if condition="{item.authors -> f:count() > 0}">
+        <div class="tx_bib-authors">
+            <f:for each="{item.authors}" as="author">
+                {author.surName}, {author.foreName};
+            </f:for>
+        </div>
     </f:if>
-<f:if condition="{item.title}">
-    <div class="tx_bib-title">{item.title}</div>
-</f:if>
 
-<f:if condition="{item.DOI}">
-    <div class="tx_bib-block"><f:translate key="label_doi" extensionName="bib"/>: {item.DOI}</div>
-</f:if>
+    <f:if condition="{item.title}">
+        <div class="tx_bib-title">{item.title}</div>
+    </f:if>
 
-<f:if condition="{item.ISBN}">
-    <div class="tx_bib-block"><f:translate key="label_doi" extensionName="bib"/>: {item.ISBN}</div>
-</f:if>
+    <f:if condition="{item.DOI}">
+        <div class="tx_bib-block"><f:translate key="label_doi" extensionName="bib"/>: http://dx.doi.org/{item.DOI}</div>
+    </f:if>
 
-<f:if condition="{item.state}">
-    <span class="tx_bib-state">{item.state}</span>
-</f:if>
+    <f:if condition="{item.ISBN}">
+        <div class="tx_bib-block"><f:translate key="label_doi" extensionName="bib"/>: {item.ISBN}</div>
+    </f:if>
 
-<!-- ###HAS_WEB_URL### begin -->
-<div class="tx_bib-url_block">###WEB_URL_SHORT###</div>
-<!-- ###HAS_WEB_URL### end -->
+    <f:if condition="{item.state}">
+        <span class="tx_bib-state">{item.state}</span>
+    </f:if>
 
-<!-- ###HAS_WEB_URL2### begin -->
-<div class="tx_bib-url_block">###WEB_URL2_SHORT###</div>
-<!-- ###HAS_WEB_URL2### end -->
+    <f:if condition="{item.webUrl}">
+        <div class="tx_bib-url_block">{item.webUrl</div>
+    </f:if>
 
-<!-- ###HAS_KEYWORDS### begin -->
-<p class="tx_bib-keywords_block">###LABEL_KEYWORDS### ###KEYWORDS###</p>
-<!-- ###HAS_KEYWORDS### end -->
+    <f:if condition="{item.webUrl2}">
+        <div class="tx_bib-url_block">{item.webUrl2}</div>
+    </f:if>
 
-<!-- ###HAS_TAGS### begin -->
-<p class="tx_bib-tags_block">###LABEL_TAGS### ###TAGS###</p>
-<!-- ###HAS_TAGS### end -->
+    <f:if condition="{item.keywords}">
+        <p class="tx_bib-keywords_block"><f:translate key="label_keywords" extensionName="bib"/> {item.keywords}</p>
+    </f:if>
 
-<!-- ###HAS_ABSTRACT### begin -->
-<p class="tx_bib-abstract_block">###LABEL_ABSTRACT### ###ABSTRACT###</p>
-<!-- ###HAS_ABSTRACT### end -->
+    <f:if condition="{item.tags}">
+        <p class="tx_bib-tags_block"><f:translate key="label_tags" extensionName="bib"/> {item.tags}</p>
+    </f:if>
 
-<!-- ###HAS_ANNOTATION### begin -->
-<p class="tx_bib-annotation_block">###LABEL_ANNOTATION### ###ANNOTATION###</p>
-<!-- ###HAS_ANNOTATION### end -->
+    <f:if condition="{item.abstract}">
+        <p class="tx_bib-abstract_block"><f:translate key="label_abstract" extensionName="bib"/> {item.abstract}</p>
+    </f:if>
 
-<!-- ###HAS_NOTE### begin -->
-<p class="tx_bib-note_block">###LABEL_NOTE### ###NOTE###</p>
-<!-- ###HAS_NOTE### end -->
+    <f:if condition="{item.anotation}">
+        <p class="tx_bib-annotation_block"><f:translate key="label_annotation" extensionName="bib"/> {item.anotation}</p>
+    </f:if>
 
+    <f:if condition="{item.note}">
+        <p class="tx_bib-note_block"><f:translate key="label_annotation" extensionName="bib"/> {item.note}</p>
+    </f:if>
 
 </td>
 </tr>
-
 
 
 <f:if condition="1 == 2">

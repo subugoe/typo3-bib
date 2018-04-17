@@ -27,6 +27,9 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
+use Ipf\Bib\Utility\ReferenceReader;
+
 /**
  * Class XmlExporter.
  */
@@ -60,40 +63,35 @@ class XmlExporter extends Exporter
     }
 
     /**
-     * @param $publication
-     * @param array $infoArr
+     * @param Reference $publication
+     * @param array     $infoArr
      *
      * @return string
      */
-    protected function formatPublicationForExport($publication, $infoArr = [])
+    protected function formatPublicationForExport(Reference $publication, $infoArr = [])
     {
-        $charset = $this->pi1->extConf['charset']['lower'];
-
-        if ('utf-8' != $charset) {
-            $publication = $this->getReferenceReader()->change_pub_charset($publication, $charset, 'utf-8');
-        }
-
         $content = '<reference>'.PHP_EOL;
-
-        foreach ($this->getReferenceReader()->getPublicationFields() as $key) {
+        $reflectionObject = new \ReflectionObject($publication);
+        foreach ($reflectionObject->getProperties() as $prop) {
+            $prop->setAccessible(true);
             $append = true;
 
-            switch ($key) {
+            switch ($prop->getName()) {
                 case 'authors':
-                    $value = $publication['authors'];
-                    if (0 == count($value)) {
+                    $value = $publication->getAuthors();
+                    if (0 === count($value)) {
                         $append = false;
                     }
                     break;
                 default:
-                    $value = trim($publication[$key]);
-                    if ((0 == strlen($value)) || ('0' == $value)) {
+                    $value = $prop->getValue($publication);
+                    if ((0 === strlen($value)) || ('0' === $value)) {
                         $append = false;
                     }
             }
 
             if ($append) {
-                $content .= $this->xmlFormatField($key, $value);
+                $content .= $this->xmlFormatField($prop->getName(), $value);
             }
         }
 
@@ -118,8 +116,8 @@ class XmlExporter extends Exporter
                 $aXML = [];
                 foreach ($authors as $author) {
                     $a_str = '';
-                    $foreName = $this->xmlFormatString($author['forename']);
-                    $surName = $this->xmlFormatString($author['surname']);
+                    $foreName = $this->xmlFormatString($author->getForeName());
+                    $surName = $this->xmlFormatString($author->getSurName());
                     if (strlen($foreName)) {
                         $a_str .= '<fn>'.$foreName.'</fn>';
                     }
@@ -138,11 +136,11 @@ class XmlExporter extends Exporter
                 }
                 break;
             case 'bibtype':
-                $value = $this->getReferenceReader()->allBibTypes[$value];
+                $value = ReferenceReader::$allBibTypes[$value];
                 $value = $this->xmlFormatString($value);
                 break;
             case 'state':
-                $value = $this->getReferenceReader()->allStates[$value];
+                $value = ReferenceReader::$allStates[$value];
                 $value = $this->xmlFormatString($value);
                 break;
             default:

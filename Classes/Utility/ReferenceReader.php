@@ -1616,7 +1616,7 @@ class ReferenceReader
         $publication = $results[0];
         if (is_array($results)) {
             $publication = GeneralUtility::makeInstance(ItemTransformerService::class)->transformPublication($publication);
-            $publication->setAuthors($this->getAuthorByPublication($publication['uid']));
+            $publication->setAuthors($this->getAuthorByPublication($publication));
             $publication->setModificationKey($this->getModificationKey($publication));
         }
 
@@ -1693,6 +1693,7 @@ class ReferenceReader
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
         $query = $queryBuilder->select('*')
             ->from(self::REFERENCE_TABLE)
+            ->setMaxResults(30)
             ->execute()
             ->fetchAll();
 
@@ -1702,7 +1703,7 @@ class ReferenceReader
             $reference->setAuthors($this->getAuthorByPublication($reference));
             $reference->setModificationKey($this->getModificationKey($reference));
 
-            $references[] = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration)->transformPublication($referenceData);
+            $references[] = $reference;
         }
 
         return $references;

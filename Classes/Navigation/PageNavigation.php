@@ -35,7 +35,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 class PageNavigation extends Navigation
 {
-
     public function initialize(array $configuration)
     {
         $this->configuration = $configuration;
@@ -119,7 +118,7 @@ class PageNavigation extends Navigation
         $nav_next = $this->languageService->getLL('pageNav_next');
         if ($subPage['current'] < $subPage['max']) {
             $page = min($subPage['current'] + 1, $subPage['max']);
-            $title = $this->languageService->getLL('pageNav_nextLinkTitle';
+            $title = $this->languageService->getLL('pageNav_nextLinkTitle');
             $nav_next = $this->pi1->get_link(
                 $nav_next,
                 [

@@ -27,6 +27,7 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
 use TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException;
 
 /**
@@ -113,7 +114,7 @@ abstract class Exporter
         unset($this->filters['br_page']);
 
         // The filter key is used for the filename
-        $this->filterKey = 'export'.strval($GLOBALS['TSFE']->id);
+        $this->filterKey = 'export'.(string) $GLOBALS['TSFE']->id;
     }
 
     protected function setupExportFile()
@@ -124,7 +125,7 @@ abstract class Exporter
             $this->filePath = 'uploads/tx_bib';
         }
 
-        $this->setFileName($this->pi1->extKey.'_'.$this->filterKey.'.dat');
+        $this->setFileName('bib_'.$this->filterKey.'.dat');
         $this->setIsNewFile(false);
     }
 
@@ -175,9 +176,9 @@ abstract class Exporter
      *
      * @throws FileOperationErrorException
      *
-     * @return int
+     * @return bool
      */
-    protected function isResourceReady()
+    protected function isResourceReady(): bool
     {
         if ($this->dynamic) {
             $this->setData('');
@@ -195,7 +196,7 @@ abstract class Exporter
                 $this->setIsNewFile(true);
             } else {
                 throw new FileOperationErrorException(
-                    $this->pi1->extKey.' error: Could not open file '.$file_abs.' for writing.',
+                    sprintf('Bib error: Could not open file %s for writing.', $file_abs),
                     1379067524
                 );
             }
@@ -303,12 +304,12 @@ abstract class Exporter
     /**
      * Formats one publication for the export.
      *
-     * @param array $publication
-     * @param array $infoArr
+     * @param Reference $publication
+     * @param array     $infoArr
      *
      * @return string The export string
      */
-    abstract protected function formatPublicationForExport($publication, $infoArr = []);
+    abstract protected function formatPublicationForExport(Reference $publication, $infoArr = []);
 
     /**
      * Returns the file outtro.
@@ -421,7 +422,7 @@ abstract class Exporter
         $num = intval($infoArr['pubNum']);
 
         $content = 'This file was created by the TYPO3 extension'.PHP_EOL;
-        $content .= $this->pi1->extKey;
+        $content .= 'bib';
         if (is_array($this->extensionManagerConfiguration)) {
             $content .= ' version '.$this->extensionManagerConfiguration['version'].PHP_EOL;
         }

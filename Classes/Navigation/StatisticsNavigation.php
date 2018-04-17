@@ -29,6 +29,8 @@ namespace Ipf\Bib\Navigation;
 
 use Ipf\Bib\Modes\Display;
 use Ipf\Bib\Modes\Statistics;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class StatisticsNavigation.
@@ -73,29 +75,31 @@ class StatisticsNavigation extends Navigation
      */
     public function get(): string
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+
         $label = '';
         $stat_str = '';
 
         // Setup mode
-        $d_mode = $this->pi1->extConf['d_mode'];
-        $mode = intval($this->pi1->extConf['stat_mode']);
-        if (Display::D_Y_NAV != $d_mode) {
+        $d_mode = $this->configuration['d_mode'];
+        $mode = (int) $this->configuration['stat_mode'];
+        if (Display::D_Y_NAV !== $d_mode) {
             if (Statistics::STAT_YEAR_TOTAL == $mode) {
                 $mode = Statistics::STAT_TOTAL;
             }
         } else {
-            if (!is_numeric($this->pi1->extConf['year'])) {
+            if (!is_numeric($this->configuration['year'])) {
                 $mode = Statistics::STAT_TOTAL;
             }
         }
 
         // Setup values
-        $year = intval($this->pi1->extConf['year']);
+        $year = intval($this->configuration['year']);
 
         $total_str = strval(intval($this->pi1->stat['num_all']));
-        $total_str = $this->pi1->cObj->stdWrap($total_str, $this->conf['value_total.']);
+        $total_str = $contentObjectRenderer->cObj->stdWrap($total_str, $this->conf['value_total.']);
         $year_str = strval(intval($this->pi1->stat['year_hist'][$year]));
-        $year_str = $this->pi1->cObj->stdWrap($year_str, $this->conf['value_year.']);
+        $year_str = $contentObjectRenderer->cObj->stdWrap($year_str, $this->conf['value_year.']);
 
         // Setup strings
         switch ($mode) {
@@ -108,8 +112,8 @@ class StatisticsNavigation extends Navigation
                 $stat_str = $year_str.' / '.$total_str;
                 break;
         }
-        $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
-        $stat_str = $this->pi1->cObj->stdWrap($stat_str, $this->conf['values.']);
+        $label = $contentObjectRenderer->stdWrap($label, $this->conf['label.']);
+        $stat_str = $contentObjectRenderer->stdWrap($stat_str, $this->conf['values.']);
 
         // Setup translator
         $this->view
@@ -118,8 +122,4 @@ class StatisticsNavigation extends Navigation
 
         return $this->view->render();
     }
-}
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php']) {
-    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/StatisticsNavigation.php'];
 }

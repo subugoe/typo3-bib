@@ -44,7 +44,7 @@ class FlexFormUtility
      */
     public function __construct()
     {
-        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, []);
     }
 
     /**
@@ -106,7 +106,7 @@ class FlexFormUtility
     public function addSortFieldsToFlexForm(&$configuration)
     {
         /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
         $optionList = [];
 
         foreach ($referenceReader->getSortFields() as $sortField) {

@@ -27,7 +27,9 @@ namespace Ipf\Bib\Utility\Exporter;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Utility\PRegExpTranslator;
+use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -47,7 +49,7 @@ class BibTexExporter extends Exporter
     {
         parent::initialize($pi1);
 
-        $this->setFileName($this->pi1->extKey.'_'.$this->filterKey.'.bib');
+        $this->setFileName('bib_'.$this->filterKey.'.bib');
 
         /** @var \Ipf\Bib\Utility\PRegExpTranslator $bibTexTranslator */
         $bibTexTranslator = GeneralUtility::makeInstance(PRegExpTranslator::class);
@@ -190,54 +192,58 @@ class BibTexExporter extends Exporter
     }
 
     /**
-     * @param array $publication
-     * @param array $infoArr
+     * @param Reference $publication
+     * @param array     $infoArr
      *
      * @return string
      */
-    protected function formatPublicationForExport($publication, $infoArr = [])
+    protected function formatPublicationForExport(Reference $publication, $infoArr = [])
     {
-        $bibliographyType = ucfirst($this->getReferenceReader()->allBibTypes[$publication['bibtype']]);
+        $bibliographyType = ucfirst(ReferenceReader::$allBibTypes[$publication->getBibtype()]);
 
         $content = '@';
         $content .= $bibliographyType.' { ';
-        $content .= trim($publication['citeid']).",\n";
+        $content .= $publication->getCiteid().'.'.PHP_EOL;
+
+        $reflectionObject = new \ReflectionObject($publication);
 
         $entries = [];
-        foreach ($this->getReferenceReader()->getPublicationFields() as $publicationField) {
+        foreach ($reflectionObject->getProperties() as $prop) {
+            $prop->setAccessible(true);
+
             $append = true;
-            switch ($publicationField) {
+            switch ($prop->getName()) {
                 case 'bibtype':
                 case 'citeid':
                     $append = false;
-                    $publication['citeid'] = $this->formatCiteKey($publication['citeid']);
+                    $publication->setCiteid($this->formatCiteKey($publication->getCiteid()));
                     break;
                 case 'authors':
-                    $value = $publication['authors'];
-                    if (0 == count($value)) {
+                    $value = $publication->getAuthors();
+                    if (0 === count($value)) {
                         $append = false;
                     }
                     break;
                 default:
-                    $value = trim($publication[$publicationField]);
-                    if ((0 == strlen($value)) || ('0' == $value)) {
+                    $value = $prop->getValue($publication);
+                    if ((0 === strlen($value)) || ('0' === $value)) {
                         $append = false;
                     }
             }
 
             if ($append) {
                 $astr = '   ';
-                switch ($publicationField) {
+                switch ($prop->getName()) {
                     case 'authors':
-                        $astr .= 'author'.' = {';
+                        $astr .= 'author = {';
                         break;
                     case 'file_url':
-                        $astr .= 'url'.' = {';
+                        $astr .= 'url = {';
                         break;
                     default:
-                        $astr .= $publicationField.' = {';
+                        $astr .= $prop->getValue($publication).' = {';
                 }
-                $astr .= $this->bibTexFormatField($publicationField, $value);
+                $astr .= $this->bibTexFormatField($prop->getName(), $prop->getValue($publication));
                 $astr .= '}';
                 $entries[] = $astr;
             }
@@ -258,7 +264,7 @@ class BibTexExporter extends Exporter
      *
      * @return string
      */
-    protected function formatCiteKey($publicationCiteId)
+    protected function formatCiteKey(string $publicationCiteId): string
     {
         $matchPattern = '/^[A-Za-z0-9_-]+$/';
         $matcher = preg_match($matchPattern, $publicationCiteId);
@@ -290,8 +296,8 @@ class BibTexExporter extends Exporter
                     } else {
                         $value .= ' and ';
                     }
-                    $forename = $this->bibTexFormatString($a['forename']);
-                    $surname = $this->bibTexFormatString($a['surname']);
+                    $forename = $this->bibTexFormatString($a->getForeName());
+                    $surname = $this->bibTexFormatString($a->getSurName());
                     if (strlen($surname) && strlen($forename)) {
                         $value .= $surname.', '.$forename;
                     } else {
@@ -300,7 +306,7 @@ class BibTexExporter extends Exporter
                 }
                 break;
             case 'state':
-                $value = $this->getReferenceReader()->allStates[$value];
+                $value = ReferenceReader::$allStates[$value];
                 $value = $this->bibTexFormatString($value);
                 break;
             default:
@@ -315,14 +321,12 @@ class BibTexExporter extends Exporter
      *
      * @return mixed|string
      */
-    protected function bibTexFormatString($content)
+    protected function bibTexFormatString(string $content)
     {
-        // Convert characters to html sequences
-        $charset = $this->pi1->extConf['charset']['upper'];
         // Replace illegal html ampersands with &amp;
         $content = \Ipf\Bib\Utility\Utility::fix_html_ampersand($content);
         // Replaces &amp; with &amp;amp;
-        $content = htmlentities($content, ENT_QUOTES, $charset);
+        $content = htmlentities($content, ENT_QUOTES);
         // Replaces &amp;amp; with &amp;
         $content = str_replace('&amp;', '&', $content);
         $content = $this->bibTexTranslator->translate($content);

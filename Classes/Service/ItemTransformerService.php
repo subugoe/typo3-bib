@@ -131,7 +131,7 @@ class ItemTransformerService
             ->setLanguage($publication['language'])
             ->setISBN($publication['ISBN'])
             ->setISSN($publication['ISSN'])
-            ->setDOI(sprintf('http://dx.doi.org/%s', $publication['DOI']))
+            ->setDOI($publication['DOI'])
             ->setExtern((bool) $publication['extern'])
             ->setReviewed((bool) $publication['reviewed'])
             ->setInLibrary((bool) $publication['in_library'])
@@ -317,7 +317,7 @@ class ItemTransformerService
         } else {
             $name_separator = ' '.LocalizationUtility::translate('label_and', 'bib');
         }
-        $max_authors = abs(intval($this->configuration['max_authors']));
+        $max_authors = abs((int) $this->configuration['max_authors']);
         $lastAuthor = count($authors) - 1;
         $cutAuthors = false;
         if (($max_authors > 0) && (count($authors) > $max_authors)) {

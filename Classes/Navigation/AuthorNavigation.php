@@ -91,7 +91,6 @@ class AuthorNavigation extends Navigation
     public function hook_filter(array $configuration): array
     {
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
-        $charset = $configuration['charset']['upper'];
 
         // Init statistics
         $this->pi1->stat['authors'] = [];
@@ -140,7 +139,7 @@ class AuthorNavigation extends Navigation
                     $spec = true;
                 }
                 // check if first letter matches
-                $ll = mb_substr($author->getSurName(), 0, 1, $charset);
+                $ll = mb_substr($author->getSurName(), 0, 1);
                 if (($ll !== $sel_up) && ($ll !== $sel_low)) {
                     continue;
                 }
@@ -206,7 +205,7 @@ class AuthorNavigation extends Navigation
 
         // Acquire selected letter
         $selectedLetter = strval($extConf['sel_letter']);
-        $idx = $this->string_index($selectedLetter, $letters, '', 'UTF-8');
+        $idx = $this->string_index($selectedLetter, $letters, '');
         if ($idx < 0) {
             $selectedLetter = '';
         } else {
@@ -263,11 +262,11 @@ class AuthorNavigation extends Navigation
      *
      * @return int|mixed
      */
-    protected function string_index($string, $list, $null, string $charset = 'UTF-8')
+    protected function string_index(string $string, array $list, $null)
     {
         $sel1 = $string;
-        $sel2 = htmlentities($sel1, ENT_QUOTES, $charset);
-        $sel3 = html_entity_decode($sel1, ENT_QUOTES, $charset);
+        $sel2 = htmlentities($sel1, ENT_QUOTES);
+        $sel3 = html_entity_decode($sel1, ENT_QUOTES);
 
         $index = -1;
         if ($sel1 != $null) {
@@ -328,11 +327,13 @@ class AuthorNavigation extends Navigation
      */
     public function get(): string
     {
+        $selectedSurnames = []; // $this->pi1->stat['authors']['sel_surnames']
+
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Navigation/Author.html');
         // find the index of the selected name
         $this->extConf['sel_name_idx'] = $this->string_index(
-            $this->extConf['sel_author'],
-            $this->pi1->stat['authors']['sel_surnames'],
+            (string) $this->extConf['sel_author'],
+            $selectedSurnames,
             '0'
         );
 

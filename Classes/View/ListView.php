@@ -6,6 +6,7 @@ use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Modes\Display;
 use Ipf\Bib\Modes\Enumeration;
 use Ipf\Bib\Modes\Sort;
+use Ipf\Bib\Navigation\AuthorNavigation;
 use Ipf\Bib\Navigation\PageNavigation;
 use Ipf\Bib\Navigation\SearchNavigation;
 use Ipf\Bib\Navigation\StatisticsNavigation;
@@ -55,7 +56,8 @@ class ListView extends View
     {
         $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->extConf);
         $searchNavigation->hook_init();
-        $searchNavigation->get();
+
+        return $searchNavigation->get();
     }
 
     /**
@@ -134,7 +136,6 @@ class ListView extends View
 
             // Export label
             $label = LocalizationUtility::translate($cfg['label'], 'bib');
-            $label = $contentObjectRenderer->stdWrap($label, $cfg['label.']);
 
             $exportModes = ['bibtex', 'xml'];
 
@@ -258,10 +259,8 @@ class ListView extends View
 
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->extConf);
 
-        // Database reading initialization
-        $references = $referenceReader->getAllReferences();
+        return $referenceReader->getAllReferences();
 
-        return $references;
         // Determine publication numbers
         $publicationsBefore = 0;
         if ((Display::D_Y_NAV === (int) $this->extConf['d_mode']) && is_numeric($this->extConf['year'])) {
@@ -329,7 +328,7 @@ class ListView extends View
             $manip_all = [];
             $subst_sub = '';
             if ($editMode) {
-                if ($this->checkFEauthorRestriction($pub->getUid())) {
+                if ($this->checkFEauthorRestriction($pub)) {
                     $subst_sub = ['', ''];
                     //   $manip_all[] = $this->getEditManipulator($pub);
                     // $manip_all[] = $this->getHideManipulator($pub);
@@ -388,28 +387,6 @@ class ListView extends View
         }
 
         return $items;
-    }
-
-    /**
-     * Removes the enumeration condition block
-     * or just the block markers.
-     *
-     * @param string $template
-     *
-     * @return string
-     */
-    private function setupEnumerationConditionBlock($template)
-    {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
-        $sub = $this->extConf['has_enum'] ? [] : '';
-        $template = $contentObjectRenderer->substituteSubpart(
-            $template,
-            '###HAS_ENUM###',
-            $sub
-        );
-
-        return $template;
     }
 
     /**
@@ -480,11 +457,11 @@ class ListView extends View
      * @todo put conf['FE_edit_own_records'] check in extConf[], so it is not checked every time
      * @todo make TS also a FlexForm value
      *
-     * @param int $publicationId
+     * @param Reference $publication
      *
      * @return bool TRUE (allowed) FALSE (restricted)
      */
-    protected function checkFEauthorRestriction($publicationId)
+    protected function checkFEauthorRestriction(Reference $publication)
     {
         /** @var \TYPO3\CMS\Backend\FrontendBackendUserAuthentication $beUser */
         $beUser = $GLOBALS['BE_USER'];
@@ -494,7 +471,7 @@ class ListView extends View
             if ($beUser->isAdmin()) {
                 return true;
             }
-            if ($beUser->check('tables_modify', \Ipf\Bib\Utility\ReferenceReader::REFERENCE_TABLE)) {
+            if ($beUser->check('tables_modify', ReferenceReader::REFERENCE_TABLE)) {
                 return true;
             }
         }
@@ -506,7 +483,7 @@ class ListView extends View
                 ->from(ReferenceReader::AUTHOR_TABLE, 'a')
                 ->from(ReferenceReader::AUTHORSHIP_TABLE, 'm')
                 ->where($queryBuilder->expr()->eq('a.uid', 'm.author_id'))
-                ->andWhere($queryBuilder->expr()->eq('m.pub_id', $publicationId))
+                ->andWhere($queryBuilder->expr()->eq('m.pub_id', $publication->getUid()))
                 ->execute()
                 ->fetchAll();
 

@@ -31,7 +31,6 @@ use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class SearchNavigation.
@@ -224,89 +223,13 @@ class SearchNavigation extends Navigation
     {
         $this->view
             ->assign('configuration', $this->configuration)
-            ->assign('searchBar', $this->getSearchBar());
-
+;
         if ($this->extConf['search_navi']['extra']) {
             $this->view->assign('advancedSearch', true);
             $this->getAdvancedSearch();
         }
 
         return $this->view->render();
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSearchBar()
-    {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
-        $size = (int) $this->conf['search.']['input_size'];
-        $length = (int) $this->conf['search.']['input_maxlength'];
-
-        if (0 === $size) {
-            $size = 24;
-        }
-
-        if (0 === $length) {
-            $size = 512;
-        }
-
-        $attributes = [
-            'size' => $size,
-            'maxlength' => $length,
-        ];
-
-        $value = '';
-
-        if (strlen($this->extConf['search_navi']['string']) > 0) {
-            $value = htmlspecialchars($this->extConf['search_navi']['string'], ENT_QUOTES);
-        }
-
-        $button = Utility::html_text_input(
-            'tx_bib_pi1[search][text]',
-            $value,
-            $attributes
-        );
-        $button = $contentObjectRenderer->stdWrap($button, $this->conf['search.']['input.']);
-        $sea = $button;
-
-        // The search button
-        $txt = LocalizationUtility::translate('searchNav_search', 'bib');
-
-        $attributes = [];
-
-        if (strlen($this->conf['search.']['search_btn_class']) > 0) {
-            $attributes['class'] = $this->conf['search.']['search_btn_class'];
-        }
-
-        $button = Utility::html_submit_input(
-            'tx_bib_pi1[action][search]',
-            $txt,
-            $attributes
-        );
-        $button = $contentObjectRenderer->stdWrap($button, $this->conf['search.']['search_btn.']);
-        $sea .= $button;
-
-        // The clear button
-        $txt = LocalizationUtility::translate('searchNav_clear', 'bib');
-
-        $attributes = [];
-
-        if (strlen($this->conf['search.']['clear_btn_class']) > 0) {
-            $attributes['class'] = $this->conf['search.']['clear_btn_class'];
-        }
-
-        $button = Utility::html_submit_input(
-            'tx_bib_pi1[action][clear_search]',
-            $txt,
-            $attributes
-        );
-        $button = $contentObjectRenderer->stdWrap($button, $this->conf['search.']['clear_btn.']);
-        $sea .= $button;
-
-        // Search widget wrap
-        return $contentObjectRenderer->stdWrap($sea, $this->conf['search.']['widget.']);
     }
 
     protected function getAdvancedSearch()
