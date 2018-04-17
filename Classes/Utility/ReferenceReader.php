@@ -499,7 +499,7 @@ class ReferenceReader
                     $uidSize = count($uids);
                     for ($i = 0; $i < $uidSize; ++$i) {
                         $uid = $uids[$i];
-                        if (0 == $i) {
+                        if (0 === $i) {
                             $a['uid'] = $uid['uid'];
                             $a['pid'] = $uid['pid'];
                         } else {
@@ -527,7 +527,7 @@ class ReferenceReader
      *
      * @return array Not defined
      */
-    public function fetch_author_uids($author, $pids)
+    public function fetch_author_uids($author, $pids): array
     {
         $uids = [];
         $all_fields = ['forename', 'surname', 'url'];
@@ -706,19 +706,15 @@ class ReferenceReader
      *
      * @return int The number of publications
      */
-    public function getNumberOfPublications()
+    public static function getNumberOfPublications(): int
     {
-        $select = $this->getReferenceSelectClause([$this->getReferenceTable().'.uid'], null);
-        $select = preg_replace('/;\s*$/', '', $select);
-        $query = 'SELECT count(pubs.uid) FROM ('.$select.') pubs;';
-        $res = $this->getDatabaseConnection()->sql_query($query);
-        $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
 
-        if (is_array($row)) {
-            return intval($row['count(pubs.uid)']);
-        }
-
-        return 0;
+        return $queryBuilder
+            ->select('*')
+            ->from(self::REFERENCE_TABLE)
+            ->execute()
+            ->rowCount();
     }
 
     /**
@@ -1177,30 +1173,29 @@ class ReferenceReader
      *
      * @param array $words
      * @param array $pids
-     * @param array $fields
      *
      * @return array An array containing the authors
      */
-    protected function searchAuthorAuthorships(array $words, array $pids, array $fields = ['forename', 'surname']): array
+    protected function searchAuthorAuthorships(array $words, array $pids): array
     {
         $authorships = [];
-        $authors = $this->searchByAuthor($words, $pids, $fields);
+        $authors = $this->searchByAuthor($words, $pids);
         if (count($authors) > 0) {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHORSHIP_TABLE);
+
             $uids = [];
             foreach ($authors as $author) {
                 $uids[] = intval($author['uid']);
             }
-            $whereClause = 'author_id IN ('.implode(',', $uids).')';
-            $whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
-            $res = $this->getDatabaseConnection()->exec_SELECTquery(
-                '*',
-                $this->getAuthorshipTable(),
-                $whereClause
-            );
+            $results = $queryBuilder->select('*')
+                            ->from(self::AUTHORSHIP_TABLE)
+                ->where($queryBuilder->expr()->in('author_id', $uids))
+                ->execute()
+                ->fetchAll();
 
-            while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-                $authorships[] = $row;
+            foreach ($results as $result) {
+                $authorships[] = $result;
             }
         }
 
@@ -1516,6 +1511,7 @@ class ReferenceReader
             null
         );
         $res = $this->getDatabaseConnection()->sql_query($query);
+
         $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
 
         if (is_array($row)) {
@@ -1534,21 +1530,21 @@ class ReferenceReader
      *
      * @return array A histogram
      */
-    public function getHistogram($field = 'year')
+    public function getHistogram(string $field = 'year'): array
     {
         $histogram = [];
-
-        $query = $this->getReferenceSelectClause(
-            [$this->getReferenceTable().'.'.$field],
-            $this->getReferenceTable().'.'.$field.' ASC'
-        );
-        $res = $this->getDatabaseConnection()->sql_query($query);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
+        $results = $queryBuilder->select($field)
+            ->from(self::REFERENCE_TABLE)
+            ->orderBy($field, 'ASC')
+            ->execute()
+            ->fetchAll();
 
         $cVal = null;
-        $cNum = null;
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-            $val = $row[$field];
-            if ($cVal == $val) {
+        $cNum = 0;
+        foreach ($results as $result) {
+            $val = $result[$field];
+            if ($cVal === $val) {
                 ++$cNum;
             } else {
                 $cVal = $val;
@@ -1556,7 +1552,6 @@ class ReferenceReader
                 $cNum = &$histogram[$val];
             }
         }
-        $this->getDatabaseConnection()->sql_free_result($res);
 
         return $histogram;
     }
@@ -1785,33 +1780,26 @@ class ReferenceReader
      *
      * @return int
      */
-    public function getUidFromCitationId($citationId)
+    public function getUidFromCitationId(string $citationId): int
     {
         $citationId = filter_var($citationId, FILTER_SANITIZE_STRING);
-
-        $whereClause = [];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
+        $query = $queryBuilder
+            ->select('uid')
+            ->from(self::REFERENCE_TABLE)
+            ->where($queryBuilder->expr()->eq('citeid', $citationId));
 
         if (count($this->pid_list) > 0) {
-            $csv = Utility::implode_intval(',', $this->pid_list);
-            $whereClause[] = 'pid IN ('.$csv.')';
+            $query->andWhere($queryBuilder->expr()->in('pid', $this->pid_list));
         }
 
-        $whereClause[] = 'citeid = "'.$citationId.'"';
+        $results = $query
+            ->setMaxResults(1)
+            ->execute()
+            ->fetchAll();
 
-        $whereClause = implode(' AND ', $whereClause);
-        $whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
-
-        $query = $this->getDatabaseConnection()->exec_SELECTQuery(
-            'uid',
-            $this->getReferenceTable(),
-            $whereClause,
-            '',
-            '',
-            1
-        );
-
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($query)) {
-            $result = $row['uid'];
+        foreach ($results as $result) {
+            $result = $result['uid'];
         }
 
         return $result;

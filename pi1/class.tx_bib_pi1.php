@@ -25,7 +25,6 @@
  ***************************************************************/
 
 use Ipf\Bib\Utility\Utility;
-use Ipf\Bib\View\EditorView;
 use Ipf\Bib\View\View;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
@@ -139,7 +138,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         $configuration = $this->getExtensionConfiguration($configuration);
         $configuration = $this->getTypoScriptConfiguration($configuration);
-        $configuration = $this->getCharacterSet($configuration);
         $configuration = $this->getFrontendEditorConfiguration($configuration);
         $configuration = $this->getPidList($storagePid, $configuration);
         $configuration = $this->makeAdjustments($configuration);
@@ -149,10 +147,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $validFrontendUser = $this->isValidFrontendUser($this->isValidBackendUser());
 
         $configuration['edit_mode'] = (($this->isValidBackendUser() || $validFrontendUser) && $configuration['editor']['enabled']);
-        $configuration = $this->setEnumerationMode($configuration);
         $configuration = $this->initializeRestrictions($configuration);
-        $this->icon_src = $this->initializeListViewIcons($conf);
-
         $configuration = $this->initializeFilters($configuration);
         $configuration = $this->showHiddenEntries($configuration);
         $configuration = $this->editAction($configuration);
@@ -170,13 +165,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $this->determineNumberOfPublications();
 
         $this->extConf = $configuration;
-
-        // Initialize the html templates
-        try {
-            $this->initializeHtmlTemplate();
-        } catch (\Exception $e) {
-            return $this->finalize($e->getTraceAsString(), $configuration);
-        }
 
         // Switch to requested view mode
         try {
@@ -339,20 +327,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         if ((int) $configuration['max_authors'] < 0) {
             $configuration['max_authors'] = (int) $this->conf['max_authors'];
-        }
-
-        return $configuration;
-    }
-
-    /**
-     * Get the character set and write it to the configuration.
-     */
-    protected function getCharacterSet(array $configuration): array
-    {
-        $configuration['charset'] = ['upper' => 'UTF-8', 'lower' => 'utf-8'];
-        if (strlen($this->conf['charset']) > 0) {
-            $configuration['charset']['upper'] = strtoupper($this->conf['charset']);
-            $configuration['charset']['lower'] = strtolower($this->conf['charset']);
         }
 
         return $configuration;
@@ -633,14 +607,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     }
 
     /**
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
-    }
-
-    /**
      * Determine whether a valid backend user with write access to the reference table is logged in.
      *
      * @return bool
@@ -680,19 +646,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
 
         return $validFrontendUser;
-    }
-
-    /**
-     * Set the enumeration mode.
-     */
-    protected function setEnumerationMode(array $configuration): array
-    {
-        $configuration['has_enum'] = true;
-        if ((\Ipf\Bib\Modes\Enumeration::ENUM_EMPTY === (int) $configuration['enum_style'])) {
-            $configuration['has_enum'] = false;
-        }
-
-        return $configuration;
     }
 
     /**
@@ -777,28 +730,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
 
         return $configuration;
-    }
-
-    /**
-     * Initialize the list view icons.
-     */
-    protected function initializeListViewIcons(array $configuration): array
-    {
-        $list = [
-            'default' => '/typo3/sysext/frontend/Resources/Public/Icons/FileIcons/default.gif',
-        ];
-        $more = $configuration['file_icons.'];
-        if (is_array($more)) {
-            $list = array_merge($list, $more);
-        }
-        $iconSource = [];
-        $iconSource['files'] = [];
-
-        foreach ($list as $key => $val) {
-            $iconSource['files']['.'.$key] = $GLOBALS['TSFE']->tmpl->getFileName($val);
-        }
-
-        return $iconSource;
     }
 
     /**
@@ -1419,7 +1350,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function determineNumberOfPublications()
     {
         if (!is_numeric($this->stat['num_all'])) {
-            $this->stat['num_all'] = $this->referenceReader->getNumberOfPublications();
+            $this->stat['num_all'] = \Ipf\Bib\Utility\ReferenceReader::getNumberOfPublications();
             $this->stat['num_page'] = $this->stat['num_all'];
         }
     }
@@ -1541,105 +1472,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     }
 
     /**
-     * Initializes an array which contains subparts of the
-     * html templates.
-     *
-     * @throws \Exception
-     *
-     * @return array
-     */
-    protected function initializeHtmlTemplate()
-    {
-        $error = [];
-
-        // Already initialized?
-        if (isset($this->template['LIST_VIEW'])) {
-            return $error;
-        }
-
-        $this->template = [];
-        $this->itemTemplate = [];
-
-        // List blocks
-        $list_blocks = [
-            'YEAR_BLOCK',
-            'BIBTYPE_BLOCK',
-            'SPACER_BLOCK',
-        ];
-
-        // Bibtype data blocks
-        $bib_types = [];
-        foreach (\Ipf\Bib\Utility\ReferenceReader::$allBibTypes as $val) {
-            $bib_types[] = strtoupper($val).'_DATA';
-        }
-        $bib_types[] = 'DEFAULT_DATA';
-        $bib_types[] = 'ITEM_BLOCK';
-
-        // Misc navigation blocks
-        $navi_blocks = [
-            'EXPORT_NAVI_BLOCK',
-            'IMPORT_NAVI_BLOCK',
-            'NEW_ENTRY_NAVI_BLOCK',
-        ];
-
-        // Fetch the template file list
-        $templateList = &$this->conf['templates.'];
-        if (!is_array($templateList)) {
-            throw new \Exception('HTML templates are not set in TypoScript', 1378817757);
-        }
-
-        $info = [
-            'main' => [
-                'file' => $templateList['main'],
-                'parts' => ['LIST_VIEW'],
-            ],
-            'list_blocks' => [
-                'file' => $templateList['list_blocks'],
-                'parts' => $list_blocks,
-            ],
-            'list_items' => [
-                'file' => $templateList['list_items'],
-                'parts' => $bib_types,
-                'no_warn' => true,
-            ],
-            'navi_misc' => [
-                'file' => $templateList['navi_misc'],
-                'parts' => $navi_blocks,
-            ],
-        ];
-
-        foreach ($info as $key => $val) {
-            if (0 === strlen($val['file'])) {
-                throw new \Exception('HTML template file for \''.$key.'\' is not set', 1378817806);
-            }
-            $tmpl = $this->cObj->fileResource($val['file']);
-            if (0 === strlen($tmpl)) {
-                throw new \Exception(
-                    'The HTML template file \''.$val['file'].'\' for \''.$key.'\' is not readable or empty',
-                    1378817895
-                );
-            }
-            foreach ($val['parts'] as $part) {
-                $ptag = '###'.$part.'###';
-                $pstr = $this->cObj->getSubpart($tmpl, $ptag);
-                // Error message
-                if ((0 === strlen($pstr)) && !$val['no_warn']) {
-                    throw new \Exception(
-                        'The subpart \''.$ptag.'\' in the HTML template file \''.$val['file'].'\' is empty',
-                        1378817933
-                    );
-                }
-                $this->template[$part] = $pstr;
-            }
-        }
-
-        return $error;
-    }
-
-    /**
      * This is the last function called before ouptput.
      */
-    protected function finalize($pluginContent, array $configuration)
+    protected function finalize(string $pluginContent, array $configuration): string
     {
         if ($configuration['debug']) {
             $pluginContent .= \TYPO3\CMS\Core\Utility\DebugUtility::viewArray(
@@ -1664,7 +1499,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      *
      * @return string
      */
-    protected function switchToRequestedViewMode(array $configuration)
+    protected function switchToRequestedViewMode(array $configuration): string
     {
         switch ($configuration['view_mode']) {
             case View::VIEW_LIST:
@@ -1673,13 +1508,19 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 return $listView->initialize($configuration, $this->conf);
                 break;
             case View::VIEW_SINGLE:
-                return $this->singleView($configuration);
+                $singleView = GeneralUtility::makeInstance(\Ipf\Bib\View\SingleView::class);
+
+                return $singleView->initialize($configuration);
                 break;
             case View::VIEW_EDITOR:
-                return $this->editorView($configuration);
-                break;
+                $editorView = GeneralUtility::makeInstance(\Ipf\Bib\View\EditorView::class);
+
+                return $editorView->initialize($configuration);
+               break;
             case View::VIEW_DIALOG:
-                return $this->dialogView($configuration);
+                $dialogView = GeneralUtility::makeInstance(\Ipf\Bib\View\DialogView::class);
+
+                return $dialogView->initialize($configuration);
                 break;
             default:
                 throw new \Exception('An illegal view mode occurred', 1379064350);
@@ -1757,175 +1598,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $linkString .= '>'.$content.'</a>';
 
         return $linkString;
-    }
-
-    /**
-     * This loads the single view.
-     *
-     * @return string The single view
-     */
-    private function singleView(array $configuration)
-    {
-        /** @var \Ipf\Bib\View\SingleView $singleView */
-        $singleView = GeneralUtility::makeInstance(\Ipf\Bib\View\SingleView::class);
-
-        return $singleView->initialize($configuration);
-    }
-
-    /**
-     * This loads the editor view.
-     *
-     * @return string The editor view
-     */
-    private function editorView(array $configuration): string
-    {
-        /** @var \Ipf\Bib\View\EditorView $editorView */
-        $editorView = GeneralUtility::makeInstance(\Ipf\Bib\View\EditorView::class);
-
-        return $editorView->initialize($configuration);
-    }
-
-    private function dialogView(array $configuration): string
-    {
-        /** @var FlashMessageQueue $flashMessageQueue */
-        $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
-
-        $content = '';
-        switch ($configuration['dialog_mode']) {
-            case \Ipf\Bib\Modes\Dialog::DIALOG_EXPORT:
-                $content .= $this->exportDialog($configuration);
-                break;
-            case \Ipf\Bib\Modes\Dialog::DIALOG_IMPORT:
-                $importView = GeneralUtility::makeInstance(\Ipf\Bib\View\ImportView::class);
-
-                $content .= $importView->get((int) $this->piVars['import']);
-                break;
-            default:
-                /** @var \Ipf\Bib\View\EditorView $editorView */
-                $editorView = GeneralUtility::makeInstance(\Ipf\Bib\View\EditorView::class);
-                $editorView->initialize($configuration);
-                $content .= $editorView->dialogView();
-        }
-        $content .= $flashMessageQueue->renderFlashMessages();
-        $content .= '<p>';
-        $content .= $this->get_link($this->pi_getLL('link_back_to_list'));
-        $content .= '</p>';
-
-        return $content;
-    }
-
-    /**
-     * The export dialog.
-     */
-    protected function exportDialog(array $configuration): string
-    {
-        /** @var FlashMessageQueue $flashMessageQueue */
-        $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
-
-        $mode = $configuration['export_navi']['do'];
-        $content = '<h2>'.$this->pi_getLL('export_title').'</h2>';
-
-        $label = '';
-        switch ($mode) {
-            case 'bibtex':
-                $exporterClass = \Ipf\Bib\Utility\Exporter\BibTexExporter::class;
-                $label = 'export_bibtex';
-                break;
-            case 'xml':
-                $exporterClass = \Ipf\Bib\Utility\Exporter\XmlExporter::class;
-                $label = 'export_xml';
-                break;
-            default:
-                /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
-                $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
-                    'Unknown export mode',
-                    '',
-                    FlashMessage::ERROR
-                );
-                $flashMessageQueue->addMessage($message);
-        }
-
-        /** @var \Ipf\Bib\Utility\Exporter\Exporter $exporter */
-        $exporter = GeneralUtility::makeInstance($exporterClass);
-        $label = $this->pi_getLL($label, $label, true);
-
-        if ($exporter instanceof \Ipf\Bib\Utility\Exporter\Exporter) {
-            try {
-                $exporter->initialize($this);
-            } catch (\Exception $e) {
-                $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
-                    $e->getMessage(),
-                    $label,
-                    FlashMessage::ERROR
-                );
-                $flashMessageQueue->addMessage($message);
-            }
-
-            $dynamic = $this->conf['export.']['dynamic'] ? true : false;
-
-            if ($configuration['dynamic']) {
-                $dynamic = true;
-            }
-
-            $exporter->setDynamic($dynamic);
-
-            try {
-                $exporter->export();
-                if ($dynamic) {
-                    $this->dumpExportDataAndExit($exporter);
-                } else {
-                    $content .= $this->createLinkToExportFile($exporter);
-                }
-            } catch (\TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException $e) {
-                $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
-                    $e->getMessage(),
-                    '',
-                    FlashMessage::ERROR
-                );
-                $flashMessageQueue->addMessage($message);
-            }
-        }
-
-        return $content;
-    }
-
-    /**
-     * @param \Ipf\Bib\Utility\Exporter\Exporter $exporter
-     */
-    protected function dumpExportDataAndExit($exporter)
-    {
-        // Dump the export data and exit
-        $exporterFileName = $exporter->getFileName();
-        header('Content-Type: text/plain');
-        header('Content-Disposition: attachment; filename="'.$exporterFileName.'"');
-        header('Cache-Control: no-cache, must-revalidate');
-        echo $exporter->getData();
-        exit();
-    }
-
-    /**
-     * @param \Ipf\Bib\Utility\Exporter\Exporter $exporter
-     *
-     * @return string
-     */
-    protected function createLinkToExportFile($exporter)
-    {
-        $link = $this->cObj->getTypoLink(
-            $exporter->getFileName(),
-            $exporter->getRelativeFilePath()
-        );
-        $content = '<ul><li><div>';
-        $content .= $link;
-        if ($exporter->getIsNewFile()) {
-            $content .= ' ('.$this->pi_getLL('export_file_new').')';
-        }
-        $content .= '</div></li>';
-        $content .= '</ul>';
-
-        return $content;
     }
 
     /**
