@@ -732,16 +732,6 @@ class ReferenceReader
         $columns = [];
         $whereClause = $this->getReferenceWhereClause($columns);
 
-        $groupClause = '';
-        if (is_string($group)) {
-            $groupClause = strlen($group) ? $group : $this->getReferenceTable().'.uid';
-        }
-
-        $orderClause = '';
-        if (is_string($order)) {
-            $orderClause = strlen($order) ? $order : $this->getOrderClause();
-        }
-
         $limitClause = $this->getLimitClause();
 
         // Find the tables that should be included
@@ -768,12 +758,6 @@ class ReferenceReader
         $q = $this->select_clause_start($fields, $tables);
         if (strlen($whereClause)) {
             $q .= ' WHERE '.$whereClause;
-        }
-        if (strlen($groupClause)) {
-            $q .= ' GROUP BY '.$groupClause;
-        }
-        if (strlen($orderClause)) {
-            $q .= ' ORDER BY '.$orderClause;
         }
         if (strlen($limitClause)) {
             $q .= ' LIMIT '.$limitClause;
@@ -1112,8 +1096,10 @@ class ReferenceReader
      *
      * @return string The WHERE clause string
      */
-    protected function getFilterSearchFieldsClause($words, $fields)
+    protected function getFilterSearchFieldsClause(array $words, array $fields)
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
+
         $res = '';
         $wca = [];
 
@@ -1156,7 +1142,7 @@ class ReferenceReader
                 foreach ($a_ships as $as) {
                     $uids[] = intval($as['pub_id']);
                 }
-                $wca[] = $this->getReferenceTable().'.uid IN ('.implode(',', $uids).')';
+                $wca[] = self::REFERENCE_TABLE.'.uid IN ('.implode(',', $uids).')';
             }
         }
 
@@ -1500,22 +1486,22 @@ class ReferenceReader
      *
      * @return int The publication data from the database
      */
-    public function getLatestTimestamp()
+    public static function getLatestTimestamp(): int
     {
-        $maximalValueFromReferenceTable = 'max('.$this->getReferenceTable().'.tstamp)';
-        $maximumValueFromAuthorTable = 'max('.$this->getReferenceTable().'.tstamp)';
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
 
-        $query = $this->getReferenceSelectClause(
-            [$maximalValueFromReferenceTable, $maximumValueFromAuthorTable],
-            null,
-            null
-        );
-        $res = $this->getDatabaseConnection()->sql_query($query);
+        $results = $queryBuilder
+            ->select(
+                $queryBuilder->expr()->max(self::REFERENCE_TABLE.'.tstamp'),
+                $queryBuilder->expr()->max(self::AUTHOR_TABLE.'.tstamp')
+            )
+            ->from(self::REFERENCE_TABLE)
+            ->from(self::AUTHOR_TABLE)
+            ->execute()
+            ->fetchAll();
 
-        $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
-
-        if (is_array($row)) {
-            return max($row);
+        if (is_array($results)) {
+            return max($results);
         }
 
         return 0;
@@ -1715,59 +1701,36 @@ class ReferenceReader
     }
 
     /**
-     * Fetches a reference.
-     *
-     * @return Reference
-     */
-    public function getReference(): Reference
-    {
-        $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration);
-        $row = $this->getDatabaseConnection()->sql_fetch_assoc($this->databaseResource);
-
-        if ($row) {
-            $reference = $itemTransformer->transformPublication($row);
-            $reference->setAuthors($this->getAuthorByPublication($reference));
-            $reference->setModificationKey($this->getModificationKey($reference));
-
-            return $reference;
-        }
-
-        return new Reference();
-    }
-
-    /**
      * Fetches an authorship.
      *
      * @param array $authorship
      *
      * @return null|array The matching authorship row or NULL
      */
-    public function getAuthorships($authorship)
+    public function getAuthorships($authorship): array
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHORSHIP_TABLE);
+        $query = $queryBuilder
+            ->select('*')
+            ->from(self::AUTHORSHIP_TABLE);
+
         $ret = [];
         if (is_array($authorship)) {
             if (isset($authorship['pub_id']) || isset($authorship['author_id']) || isset($authorship['pid'])) {
-                $whereClause = [];
                 if (isset($authorship['pub_id'])) {
-                    $whereClause[] = 'pub_id='.intval($authorship['pub_id']);
+                    $query->andWhere($queryBuilder->expr()->eq('pub_id', (int) $authorship['pub_id']));
                 }
                 if (isset($authorship['author_id'])) {
-                    $whereClause[] = 'author_id='.intval($authorship['author_id']);
+                    $query->andWhere($queryBuilder->expr()->eq('author_id', (int) $authorship['author_id']));
                 }
                 if (isset($authorship['pid'])) {
-                    $whereClause[] = 'pid='.intval($authorship['pid']);
+                    $query->andWhere($queryBuilder->expr()->eq('pid', (int) $authorship['pid']));
                 }
-                $whereClause = implode(' AND ', $whereClause);
-                $whereClause .= $this->enable_fields($this->getAuthorshipTable());
 
-                $res = $this->getDatabaseConnection()->exec_SELECTquery(
-                    '*',
-                    $this->getAuthorshipTable(),
-                    $whereClause
-                );
+                $results = $query->execute()->fetchAll();
 
-                while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-                    $ret[] = $row;
+                foreach ($results as $result) {
+                    $ret[] = $result;
                 }
             }
         }

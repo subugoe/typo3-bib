@@ -28,6 +28,7 @@ namespace Ipf\Bib\Utility\Exporter;
  * ************************************************************* */
 
 use Ipf\Bib\Domain\Model\Reference;
+use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException;
 
 /**
@@ -236,7 +237,7 @@ abstract class Exporter
      */
     protected function isFileMoreUpToDate($file)
     {
-        $databaseTimestamp = $this->getReferenceReader()->getLatestTimestamp();
+        $databaseTimestamp = ReferenceReader::getLatestTimestamp();
 
         if (file_exists($file)) {
             $fileModificationTIme = filemtime($file);
