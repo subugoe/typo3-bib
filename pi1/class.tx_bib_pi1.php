@@ -1796,7 +1796,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 $content .= $this->exportDialog($configuration);
                 break;
             case \Ipf\Bib\Modes\Dialog::DIALOG_IMPORT:
-                $content .= $this->importDialog();
+                $importView = GeneralUtility::makeInstance(\Ipf\Bib\View\ImportView::class);
+
+                $content .= $importView->get((int) $this->piVars['import']);
                 break;
             default:
                 /** @var \Ipf\Bib\View\EditorView $editorView */
@@ -1922,56 +1924,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
         $content .= '</div></li>';
         $content .= '</ul>';
-
-        return $content;
-    }
-
-    protected function importDialog(): string
-    {
-        /** @var FlashMessageQueue $flashMessageQueue */
-        $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
-
-        $content = '<h2>'.$this->pi_getLL('import_title').'</h2>';
-        $mode = (int) $this->piVars['import'];
-
-        if ((\Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX === $mode) || (\Ipf\Bib\Utility\Importer\Importer::IMP_XML === $mode)) {
-            /** @var \Ipf\Bib\Utility\Importer\Importer $importer */
-            $importer = false;
-
-            switch ($mode) {
-                case \Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX:
-                    /** @var \Ipf\Bib\Utility\Importer\Importer $importer */
-                    $importer = GeneralUtility::makeInstance(\Ipf\Bib\Utility\Importer\BibTexImporter::class);
-                    break;
-                case \Ipf\Bib\Utility\Importer\Importer::IMP_XML:
-                    /** @var \Ipf\Bib\Utility\Importer\Importer $importer */
-                    $importer = GeneralUtility::makeInstance(\Ipf\Bib\Utility\Importer\XmlImporter::class);
-                    break;
-            }
-
-            $importer->initialize($this);
-            try {
-                $content .= $importer->import();
-            } catch (\Exception $e) {
-                /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
-                $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
-                    $e->getMessage(),
-                    '',
-                    FlashMessage::ERROR
-                );
-                $flashMessageQueue->addMessage($message);
-            }
-        } else {
-            /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
-            $message = GeneralUtility::makeInstance(
-                \TYPO3\CMS\Core\Messaging\FlashMessage::class,
-                'Unknown import mode',
-                '',
-                FlashMessage::ERROR
-            );
-            $flashMessageQueue->addMessage($message);
-        }
 
         return $content;
     }

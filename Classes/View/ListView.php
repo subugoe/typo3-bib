@@ -45,7 +45,6 @@ class ListView extends View
         $this->view->assign('authorNavigation', $this->setupAuthorNavigation());
         $this->view->assign('preferenceNavigation', $this->setupPreferenceNavigation());
         $this->view->assign('pageNavigation', $this->setupPageNavigation());
-        $this->view->assign('exportNavigation', $this->setupExportNavigation());
         $this->view->assign('statisticsNavigation', $this->setupStatisticsNavigation());
         $this->view->assign('items', $this->setupItems());
 
@@ -116,61 +115,6 @@ class ListView extends View
         }
 
         return $trans;
-    }
-
-    /**
-     * Setup the export-link element.
-     */
-    private function setupExportNavigation(): string
-    {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $block = '';
-
-        if ($this->extConf['show_nav_export']) {
-            $cfg = [];
-            if (is_array($this->conf['export.'])) {
-                $cfg = &$this->conf['export.'];
-            }
-
-            $exports = [];
-
-            // Export label
-            $label = LocalizationUtility::translate($cfg['label'], 'bib');
-
-            $exportModes = ['bibtex', 'xml'];
-
-            foreach ($exportModes as $mode) {
-                if (in_array($mode, $this->extConf['export_navi']['modes'])) {
-                    $title = $this->pi_getLL('export_'.$mode.'LinkTitle', $mode, true);
-                    $txt = $this->pi_getLL('export_'.$mode);
-                    $link = $this->get_link(
-                        $txt,
-                        ['export' => $mode],
-                        false,
-                        ['title' => $title]
-                    );
-                    $link = $contentObjectRenderer->stdWrap($link, $cfg[$mode.'.']);
-                    $exports[] = $link;
-                }
-            }
-
-            $sep = '&nbsp;';
-            if (array_key_exists('separator', $cfg)) {
-                $sep = $contentObjectRenderer->stdWrap($cfg['separator'], $cfg['separator.']);
-            }
-
-            // Export string
-            $exports = implode($sep, $exports);
-
-            // The translator
-            $trans = [];
-            $trans['###LABEL###'] = $label;
-            $trans['###EXPORTS###'] = $exports;
-
-            $block = $contentObjectRenderer->substituteMarkerArrayCached($block, $trans, []);
-        }
-
-        return $block;
     }
 
     /**

@@ -36,6 +36,7 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * Class Importer.
@@ -95,11 +96,6 @@ abstract class Importer
      */
     protected $view;
 
-    /**
-     * @var \TYPO3\CMS\Dbal\Database\DatabaseConnection
-     */
-    protected $db;
-
     // Import modes
     const IMP_BIBTEX = 1;
     const IMP_XML = 2;
@@ -109,12 +105,9 @@ abstract class Importer
      *
      * @param \tx_bib_pi1
      */
-    public function initialize($pi1)
+    public function initialize()
     {
-        $this->pi1 = $pi1;
         $this->referenceReader = $this->pi1->referenceReader;
-
-        $this->db = $GLOBALS['TYPO3_DB'];
 
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
 
@@ -128,7 +121,6 @@ abstract class Importer
         /** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
         $databaseUtility = GeneralUtility::makeInstance(DbUtility::class);
         $databaseUtility->initialize($this->referenceReader);
-        $databaseUtility->charset = $pi1->extConf['charset']['upper'];
         $databaseUtility->readFullTextGenerationConfiguration($pi1->conf['editor.']['full_text.']);
 
         $this->databaseUtility = $databaseUtility;
@@ -153,22 +145,12 @@ abstract class Importer
      *
      * @return string
      */
-    protected function getPageTitle($uid)
+    protected function getPageTitle(int $uid): string
     {
-        $title = false;
-        $res = $this->db->exec_SELECTquery(
-            'title',
-            'pages',
-            'uid='.intval($uid)
-        );
-        $page = $this->db->sql_fetch_assoc($res);
-        $charset = $this->pi1->extConf['charset']['upper'];
-        if (is_array($page)) {
-            $title = htmlspecialchars($page['title'], ENT_NOQUOTES, $charset);
-            $title .= ' ('.strval($uid).')';
-        }
+        $pageRepository = GeneralUtility::makeInstance(PageRepository::class);
+        $page = $pageRepository->getPage($uid);
 
-        return $title;
+        return sprintf('%s (%d)', $page['title'], $uid);
     }
 
     /**

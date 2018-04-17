@@ -118,7 +118,7 @@ class BibTexImporter extends Importer
     /**
      * @param \tx_bib_pi1 $pi1
      */
-    public function initialize($pi1)
+    public function initialize()
     {
         parent::initialize($pi1);
 
@@ -319,7 +319,6 @@ class BibTexImporter extends Importer
      */
     protected function importStateTwo()
     {
-        $action = $this->pi1->get_link_url(['import_state' => 2]);
         $buff_size = 1024;
 
         $this->statistics['file_name'] = $_FILES['ImportFile']['name'];

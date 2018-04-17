@@ -41,11 +41,6 @@ class DbUtility
     public $referenceReader;
 
     /**
-     * @var string
-     */
-    public $charset = 'UTF-8';
-
-    /**
      * @var int
      */
     public $ft_max_num = 100;
@@ -217,7 +212,7 @@ class DbUtility
      */
     protected function update_full_text($uid, $force = false)
     {
-        $whereClause = 'uid='.intval($uid);
+        $whereClause = 'uid='.(int) $uid;
         $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
             'file_url,full_text_tstamp,full_text_file_url',
             $this->referenceReader->getReferenceTable(),
@@ -299,14 +294,11 @@ class DbUtility
             }
 
             // Compose and execute command
-            $charset = strtoupper($this->charset);
             $file_shell = escapeshellarg($file);
             $target_shell = escapeshellarg($target);
 
             $cmd = strval($this->pdftotext_bin);
-            if (strlen($charset) > 0) {
-                $cmd .= ' -enc '.$charset;
-            }
+
             $cmd .= ' '.$file_shell;
             $cmd .= ' '.$target_shell;
 
@@ -357,7 +349,11 @@ class DbUtility
      */
     public function deleteAllFromPid(int $pid)
     {
-        $tables = [$this->referenceReader->getAuthorshipTable(), $this->referenceReader->getAuthorTable(), $this->referenceReader->getReferenceTable()];
+        $tables = [
+            ReferenceReader::AUTHORSHIP_TABLE,
+            ReferenceReader::AUTHOR_TABLE,
+            ReferenceReader::REFERENCE_TABLE,
+        ];
 
         $delete = function ($table) use ($pid) {
             $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -372,8 +368,4 @@ class DbUtility
 
         array_map($delete, $tables);
     }
-}
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php']) {
-    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Utility/DbUtility.php'];
 }
