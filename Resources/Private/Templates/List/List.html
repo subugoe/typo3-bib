@@ -1,47 +1,21 @@
 {namespace b=Ipf\Bib\ViewHelpers}
 
-<!-- ###LIST_VIEW### begin -->
-<div class="tx_bib-top_navigation">
-    <f:if condition="{configuration.edit_mode}">
-        <f:translate key="manipulators_new" extensionName="bib"/>
-        <f:link.page class="new-record" additionalParams="{tx_bib_pi1: {action : {new:1}}}" title="{f:translate(key:'manipulators_new')}"><f:translate key="manipulators_new" extensionName="bib"/></f:link.page>
-    </f:if>
+<f:render partial="List/TopNavigation" arguments="{_all}" />
 
-{searchNavigation -> f:format.raw()}
-{yearNavigation -> f:format.raw()}
-{authorNavigation -> f:format.raw()}
-{preferenceNavigation -> f:format.raw()}
-{statisticsNavigation -> f:format.raw()}
-</div>
 {pageNavigation}
+
 <div class="tx_bib-navi_main_label"><f:translate key="label_references" extensionName="bib"/></div>
+
 <div class="tx_bib-list_container">
-<!-- ###HAS_ITEMS### begin -->
-<table cellspacing="0" cellpadding="0" border="0" class="tx_bib-list">
-    <tbody>
-    <f:for each="{items}" as="item">
-        <f:render partial="List/Items" arguments="{item: item}" />
-    </f:for>
-    </tbody>
-</table>
 
-<div class="tx_bib-bottom_navigation">
-    {pageNavigation}
-    {statisticsNavigation}
-    <f:if condition="{configuration.edit_mode}">
-        <div class="tx_bib-navi_import">
-        <div class="tx_bib-navi_main_label"><span class="tx_bib-import_label"><f:translate key="import_label" extensionName="bib" />:</span></div>
-            <f:link.page title="{f:translate(key:'import_bibtexLinkTitle')}" additionalParams="{tx_bib_pi1: {import:1}}"><f:translate key="import_bibtex" extensionName="bib" /></f:link.page>,
-            <f:link.page title="{f:translate(key:'import_xmlLinkTitle')}" additionalParams="{tx_bib_pi1: {import:2}}"><f:translate key="import_xml" extensionName="bib" /></f:link.page>
-        </div>
-    </f:if>
+    <table cellspacing="0" cellpadding="0" border="0" class="tx_bib-list">
+        <tbody>
+        <f:for each="{items}" as="item">
+            <tr>
+                <f:render partial="List/Items" arguments="{item: item, editmode: configuration.edit_mode}" />
+            </tr>
+        </f:for>
+        </tbody>
+    </table>
 
-    <f:if condition="{configuration.show_nav_export}">
-        <div class="tx_bib-navi_export">
-            <div class="tx_bib-navi_main_label"><span class="tx_bib-export_label"><f:translate key="export_label" extensionName="bib" />:</span></div>
-        <f:link.page title="{f:translate(key:'export_bibtexLinkTitle')}" additionalParams="{tx_bib_pi1: {export: 'bibtex'}}"><f:translate key="export_bibtex" extensionName="bib" /></f:link.page>,
-        <f:link.page title="{f:translate(key:'export_xmlLinkTitle')}" additionalParams="{tx_bib_pi1: {export: 'xml'}}"><f:translate key="export_xml" extensionName="bib" /></f:link.page>
-        </div>
-    </f:if>
-
-</div>
+<f:render partial="List/BottomNavigation" arguments="{_all}" />

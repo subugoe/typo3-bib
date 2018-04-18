@@ -8,12 +8,12 @@
 
 <h2>{title}</h2>
 
-<f:form name="{formName}" method="post" action="{f:uri.page}">
+<form name="tx_bib_pi1-ref_data_form" method="post" action="{f:uri.page(addQueryString: true)}">
     <script type="text/javascript">
     function click_update_button() {
-      var btn = document.getElementsByName('{prefix_pi1}[action][update_form]')[0];
+      var btn = document.getElementsByName('tx_bib_pi1[action][update_form]')[0];
       btn.click();
-      return;
+      return false;
     }
 
     </script>
@@ -25,6 +25,6 @@
         <f:render partial="Editor/Buttons" arguments="{_all}" />
 
     </div>
-</f:form>
+</form>
 
 

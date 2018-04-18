@@ -1,0 +1,20 @@
+<div class="tx_bib-bottom_navigation">
+    {pageNavigation}
+    {statisticsNavigation}
+    <f:if condition="{configuration.edit_mode}">
+        <div class="tx_bib-navi_import">
+        <div class="tx_bib-navi_main_label"><span class="tx_bib-import_label"><f:translate key="import_label" extensionName="bib" />:</span></div>
+            <f:link.page title="{f:translate(key:'import_bibtexLinkTitle')}" additionalParams="{tx_bib_pi1: {import:1}}"><f:translate key="import_bibtex" extensionName="bib" /></f:link.page>,
+            <f:link.page title="{f:translate(key:'import_xmlLinkTitle')}" additionalParams="{tx_bib_pi1: {import:2}}"><f:translate key="import_xml" extensionName="bib" /></f:link.page>
+        </div>
+    </f:if>
+
+    <f:if condition="{configuration.show_nav_export}">
+        <div class="tx_bib-navi_export">
+            <div class="tx_bib-navi_main_label"><span class="tx_bib-export_label"><f:translate key="export_label" extensionName="bib" />:</span></div>
+        <f:link.page title="{f:translate(key:'export_bibtexLinkTitle')}" additionalParams="{tx_bib_pi1: {export: 'bibtex'}}"><f:translate key="export_bibtex" extensionName="bib" /></f:link.page>,
+        <f:link.page title="{f:translate(key:'export_xmlLinkTitle')}" additionalParams="{tx_bib_pi1: {export: 'xml'}}"><f:translate key="export_xml" extensionName="bib" /></f:link.page>
+        </div>
+    </f:if>
+
+</div>

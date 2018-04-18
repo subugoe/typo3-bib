@@ -22,55 +22,6 @@ class ItemTransformerService
     }
 
     /**
-     * Setup items in the html-template.
-     */
-    public function prepareItemSetup()
-    {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        // The author name template
-        $this->configuration['author_tmpl'] = '###FORENAME### ###SURNAME###';
-        if (isset($this->conf['authors.']['template'])) {
-            $this->configuration['author_tmpl'] = $contentObjectRenderer->stdWrap(
-                $this->conf['authors.']['template'],
-                $this->conf['authors.']['template.']
-            );
-        }
-        $this->configuration['author_sep'] = ', ';
-        if (isset($this->conf['authors.']['separator'])) {
-            $this->configuration['author_sep'] = $contentObjectRenderer->stdWrap(
-                $this->conf['authors.']['separator'],
-                $this->conf['authors.']['separator.']
-            );
-        }
-        $this->configuration['author_lfields'] = 'url';
-        if (isset($this->conf['authors.']['url_icon_fields'])) {
-            $this->configuration['author_lfields'] = GeneralUtility::trimExplode(
-                ',',
-                $this->conf['authors.']['url_icon_fields'],
-                true
-            );
-        }
-
-        // Acquire author url icon
-        $authorsUrlIconFile = trim($this->conf['authors.']['url_icon_file']);
-        $imageTag = '';
-        if (strlen($authorsUrlIconFile) > 0) {
-            $authorsUrlIconFile = $GLOBALS['TSFE']->tmpl->getFileName($authorsUrlIconFile);
-            $authorsUrlIconFile = htmlspecialchars($authorsUrlIconFile, ENT_QUOTES);
-            $alt = LocalizationUtility::translate('img_alt_person', 'bib');
-
-            $imageTag = '<img';
-            $imageTag .= ' src="'.$authorsUrlIconFile.'"';
-            $imageTag .= ' alt="'.$alt.'"';
-            if (is_string($this->conf['authors.']['url_icon_class'])) {
-                $imageTag .= ' class="'.$this->conf['authors.']['url_icon_class'].'"';
-            }
-            $imageTag .= '/>';
-        }
-        $this->configuration['author_icon_img'] = $imageTag;
-    }
-
-    /**
      * Prepares database publication data for displaying.
      *
      * @param array $publication
@@ -84,60 +35,60 @@ class ItemTransformerService
 
         $reference = GeneralUtility::makeInstance(Reference::class);
         $reference
-            ->setUid($publication['uid'])
-            ->setTstamp($publication['tstamp'])
-            ->setCrdate($publication['crdate'])
+            ->setUid((int) $publication['uid'])
+            ->setTstamp((int) $publication['tstamp'])
+            ->setCrdate((int) $publication['crdate'])
             ->setBibtype((int) $publication['bibtype'])
-            ->setCiteid($publication['citeid'])
-            ->setTitle($publication['title'])
-            ->setJournal($publication['journal'])
+            ->setCiteid($publication['citeid'] ?? '')
+            ->setTitle($publication['title'] ?? '')
+            ->setJournal($publication['journal'] ?? '')
             ->setYear((int) $publication['year'])
             ->setMonth((int) $publication['month'])
             ->setDay((int) $publication['day'])
-            ->setVolume($publication['volume'])
-            ->setNumber($publication['number'])
-            ->setNumber2($publication['number2'])
-            ->setPages($publication['pages'])
-            ->setAbstract($publication['abstract'])
-            ->setAffiliation($publication['affiliation'])
-            ->setNote($publication['note'])
-            ->setAnnotation($publication['annotation'])
-            ->setKeywords($publication['keywords'])
-            ->setTags($publication['tags'])
-            ->setFileUrl(Utility::fix_html_ampersand($publication['file_url']))
-            ->setWebUrl(Utility::fix_html_ampersand($publication['web_url']))
-            ->setWebUrlDate($publication['web_url_date'])
-            ->setWebUrl2(Utility::fix_html_ampersand($publication['web_url']))
-            ->setWebUrl2Date($publication['web_url_date'])
-            ->setMisc($publication['misc'])
-            ->setMisc2($publication['misc2'])
-            ->setEditor($publication['editor'])
-            ->setPublisher($publication['publisher'])
-            ->setAddress($publication['address'])
-            ->setHowpublished($publication['howpublished'])
-            ->setSeries($publication['series'])
-            ->setEdition($publication['edition'])
-            ->setChapter($publication['chapter'])
-            ->setBooktitle($publication['booktitle'])
-            ->setSchool($publication['school'])
-            ->setInstitute($publication['institute'])
-            ->setOrganization($publication['organization'])
-            ->setInstitution($publication['institution'])
-            ->setEventPlace($publication['event_place'])
-            ->setEventName($publication['event_name'])
-            ->setEventDate($publication['event_date'])
+            ->setVolume($publication['volume'] ?? '')
+            ->setNumber($publication['number'] ?? '')
+            ->setNumber2($publication['number2'] ?? '')
+            ->setPages($publication['pages'] ?? '')
+            ->setAbstract($publication['abstract'] ?? '')
+            ->setAffiliation($publication['affiliation'] ?? '')
+            ->setNote((string) $publication['note'])
+            ->setAnnotation((string) $publication['annotation'])
+            ->setKeywords((string) $publication['keywords'])
+            ->setTags((string) $publication['tags'])
+            ->setFileUrl(Utility::fix_html_ampersand((string) $publication['file_url']))
+            ->setWebUrl(Utility::fix_html_ampersand((string) $publication['web_url']))
+            ->setWebUrlDate((string) $publication['web_url_date'])
+            ->setWebUrl2(Utility::fix_html_ampersand((string) $publication['web_url']))
+            ->setWebUrl2Date((string) $publication['web_url_date'])
+            ->setMisc((string) $publication['misc'])
+            ->setMisc2((string) $publication['misc2'])
+            ->setEditor((string) $publication['editor'])
+            ->setPublisher((string) $publication['publisher'])
+            ->setAddress((string) $publication['address'])
+            ->setHowpublished((string) $publication['howpublished'])
+            ->setSeries((string) $publication['series'])
+            ->setEdition((string) $publication['edition'])
+            ->setChapter((string) $publication['chapter'])
+            ->setBooktitle((string) $publication['booktitle'])
+            ->setSchool((string) $publication['school'])
+            ->setInstitute((string) $publication['institute'])
+            ->setOrganization((string) $publication['organization'])
+            ->setInstitution((string) $publication['institution'])
+            ->setEventPlace((string) $publication['event_place'])
+            ->setEventName((string) $publication['event_name'])
+            ->setEventDate((string) $publication['event_date'])
             ->setState((int) $publication['state'])
-            ->setType($publication['type'])
-            ->setLanguage($publication['language'])
-            ->setISBN($publication['ISBN'])
-            ->setISSN($publication['ISSN'])
-            ->setDOI($publication['DOI'])
+            ->setType((string) $publication['type'])
+            ->setLanguage((string) $publication['language'])
+            ->setISBN((string) $publication['ISBN'])
+            ->setISSN((string) $publication['ISSN'])
+            ->setDOI((string) $publication['DOI'])
             ->setExtern((bool) $publication['extern'])
             ->setReviewed((bool) $publication['reviewed'])
             ->setInLibrary((bool) $publication['in_library'])
             ->setDOIUrl('')
             ->setHidden((bool) $publication['hidden'])
-            ->setBorrowedBy($publication['borrowed_by']);
+            ->setBorrowedBy((string) $publication['borrowed_by']);
 
         // Bibtype
         $publicationData['bibtype_short'] = $referenceReader->allBibTypes[$reference->getBibtype()];
@@ -164,7 +115,7 @@ class ItemTransformerService
 
         // Multi fields
         $multi = [
-            'authors' => $referenceReader->getAuthorFields(),
+            'authors' => ReferenceReader::$authorFields,
         ];
         foreach ($multi as $table => $fields) {
             $elements = &$publicationData[$table];

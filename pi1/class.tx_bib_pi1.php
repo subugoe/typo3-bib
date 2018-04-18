@@ -126,7 +126,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $this->extConf = [];
         $this->pi_setPiVarDefaults();
         $this->pi_loadLL();
-        $configuration = $this->extend_ll('EXT:bib/Resources/Private/Language/locallang_db.xml', []);
         $this->pi_initPIflexForm();
 
         $this->flexFormData = $this->cObj->data['pi_flexform'];
@@ -136,7 +135,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         $storagePid = $this->getStoragePid($conf);
 
-        $configuration = $this->getExtensionConfiguration($configuration);
+        $configuration = $this->getExtensionConfiguration();
         $configuration = $this->getTypoScriptConfiguration($configuration);
         $configuration = $this->getFrontendEditorConfiguration($configuration);
         $configuration = $this->getPidList($storagePid, $configuration);
@@ -175,41 +174,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     }
 
     /**
-     * Extend the $this->LOCAL_LANG label with another language set.
-     */
-    public function extend_ll(string $file, array $configuration): array
-    {
-        if (!is_array($configuration['LL_ext'])) {
-            $configuration['LL_ext'] = [];
-        }
-        if (!in_array($file, $configuration['LL_ext'])) {
-            $languageFactory = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Localization\LocalizationFactory::class);
-            $tmpLang = $languageFactory->getParsedData($file, $this->LLkey);
-
-            foreach ($this->LOCAL_LANG as $lang => $list) {
-                foreach ($list as $key => $word) {
-                    $tmpLang[$lang][$key] = $word;
-                }
-            }
-            $this->LOCAL_LANG = $tmpLang;
-
-            if ($this->altLLkey) {
-                $tmpLang = $languageFactory->getParsedData($file, $this->LLkey);
-                foreach ($this->LOCAL_LANG as $lang => $list) {
-                    foreach ($list as $key => $word) {
-                        $tmpLang[$lang][$key] = $word;
-                    }
-                }
-                $this->LOCAL_LANG = $tmpLang;
-            }
-
-            $configuration['LL_ext'][] = $file;
-        }
-
-        return $configuration;
-    }
-
-    /**
      * @return \tx_bib_pi1
      */
     protected function includeCss()
@@ -237,8 +201,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     /**
      * Retrieve and optimize Extension configuration.
      */
-    protected function getExtensionConfiguration(array $configuration): array
+    protected function getExtensionConfiguration(): array
     {
+        $configuration = [];
+
         // Initialize current configuration
         $configuration['link_vars'] = [];
         $configuration['sub_page'] = [];
@@ -250,7 +216,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         // Retrieve general FlexForm values
         $fSheet = 'sDEF';
         $configuration['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
-        $configuration['enum_style'] = $this->pi_getFFvalue($this->flexFormData, 'enum_style', $fSheet);
         $configuration['show_nav_search'] = $this->pi_getFFvalue($this->flexFormData, 'show_search', $fSheet);
         $configuration['show_nav_author'] = $this->pi_getFFvalue($this->flexFormData, 'show_authors', $fSheet);
         $configuration['show_nav_pref'] = $this->pi_getFFvalue($this->flexFormData, 'show_pref', $fSheet);
@@ -307,10 +272,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         if ((int) $configuration['d_mode'] < 0) {
             $configuration['d_mode'] = (int) $this->conf['display_mode'];
-        }
-
-        if ((int) $configuration['enum_style'] < 0) {
-            $configuration['enum_style'] = (int) $this->conf['enum_style'];
         }
 
         if ((int) $configuration['date_sorting'] < 0) {
@@ -423,16 +384,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 break;
             default:
                 $configuration['d_mode'] = \Ipf\Bib\Modes\Display::D_SIMPLE;
-        }
-        switch ($configuration['enum_style']) {
-            case \Ipf\Bib\Modes\Enumeration::ENUM_PAGE:
-            case \Ipf\Bib\Modes\Enumeration::ENUM_ALL:
-            case \Ipf\Bib\Modes\Enumeration::ENUM_BULLET:
-            case \Ipf\Bib\Modes\Enumeration::ENUM_EMPTY:
-            case \Ipf\Bib\Modes\Enumeration::ENUM_FILE_ICON:
-                break;
-            default:
-                $configuration['enum_style'] = \Ipf\Bib\Modes\Enumeration::ENUM_ALL;
         }
         switch ($configuration['date_sorting']) {
             case \Ipf\Bib\Modes\Sort::SORT_DESC:
@@ -1130,9 +1081,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             // Disable caching in edit mode
             $GLOBALS['TSFE']->set_no_cache();
 
-            // Load edit labels
-            $configuration = $this->extend_ll('EXT:bib/Resources/Private/Language/locallang.xml', $configuration);
-
             // Do an action type evaluation
             if (is_array($this->piVars['action'])) {
                 $actionName = implode('', array_keys($this->piVars['action']));
@@ -1218,7 +1166,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         /** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
         $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class);
         $referenceWriter->initialize($this->referenceReader);
-        $referenceWriter->hidePublication($this->piVars['uid'], $hide);
+        $referenceWriter->hidePublication((int) $this->piVars['uid'], $hide);
     }
 
     /**

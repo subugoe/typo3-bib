@@ -27,29 +27,17 @@ namespace Ipf\Bib\Utility\Importer;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Utility\ReferenceReader;
+
 /**
  * Class XmlImporter.
  */
 class XmlImporter extends Importer
 {
-    /**
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
+    public function initialize()
     {
-        parent::initialize($pi1);
+        parent::initialize();
         $this->import_type = Importer::IMP_XML;
-    }
-
-    /**
-     * @return string
-     */
-    protected function displayInformationBeforeImport()
-    {
-        $val = $this->pi1->get_ll('import_xml_title', 'import_xml_title', true);
-        $content = '<p>'.$val.'</p>';
-
-        return $content;
     }
 
     /**
@@ -95,12 +83,12 @@ class XmlImporter extends Importer
         $parse_ret = xml_parse_into_struct($parser, $xmlPublications, $tags);
         xml_parser_free($parser);
 
-        if (0 == $parse_ret) {
+        if (0 === $parse_ret) {
             return 'File is not valid XML';
         }
 
         $referenceFields = [];
-        foreach ($this->referenceReader->getReferenceFields() as $field) {
+        foreach (ReferenceReader::$referenceFields as $field) {
             $referenceFields[] = strtolower($field);
         }
 
@@ -114,7 +102,7 @@ class XmlImporter extends Importer
         foreach ($tags as $cTag) {
             $lowerCaseTag = strtolower($cTag['tag']);
             $upperCaseTag = strtoupper($cTag['tag']);
-            $value = $this->importUnicodeString($cTag['value']);
+            $value = $cTag['value'];
 
             if (!$in_bib) {
                 if (('bib' == $cTag['tag']) && ('open' == $cTag['type'])) {
@@ -144,7 +132,7 @@ class XmlImporter extends Importer
                                 if ('complete' == $cTag['type']) {
                                     switch ($lowerCaseTag) {
                                         case 'bibtype':
-                                            foreach ($this->referenceReader->allBibTypes as $ii => $bib) {
+                                            foreach (ReferenceReader::$allBibTypes as $ii => $bib) {
                                                 if (strtolower($value) == $bib) {
                                                     $value = $ii;
                                                     break;
@@ -152,7 +140,7 @@ class XmlImporter extends Importer
                                             }
                                             break;
                                         case 'state':
-                                            foreach ($this->referenceReader->allStates as $ii => $state) {
+                                            foreach (ReferenceReader::$allStates as $ii => $state) {
                                                 if (strtolower($value) == $state) {
                                                     $value = $ii;
                                                     break;
@@ -162,10 +150,10 @@ class XmlImporter extends Importer
                                         default:
                                     }
                                     // Apply value
-                                    if (in_array($lowerCaseTag, $this->referenceReader->getReferenceFields())) {
+                                    if (in_array($lowerCaseTag, ReferenceReader::$referenceFields)) {
                                         $publication[$lowerCaseTag] = $value;
                                     } else {
-                                        if (in_array($upperCaseTag, $this->referenceReader->getReferenceFields())) {
+                                        if (in_array($upperCaseTag, ReferenceReader::$referenceFields)) {
                                             $publication[$upperCaseTag] = $value;
                                         } else {
                                             $publication[$cTag['tag']] = $value;

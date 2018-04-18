@@ -29,7 +29,6 @@ namespace Ipf\Bib\Utility\Importer;
 
 use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\DbUtility;
-use Ipf\Bib\Utility\Generator\AuthorsCiteIdGenerator;
 use Ipf\Bib\Utility\Generator\CiteIdGenerator;
 use Ipf\Bib\Utility\ReferenceWriter;
 use Ipf\Bib\Utility\Utility;
@@ -101,15 +100,24 @@ abstract class Importer
     const IMP_XML = 2;
 
     /**
+     * @var array
+     */
+    protected $configuration;
+
+    public function __construct(array $configuration)
+    {
+        $this->configuration = $configuration;
+    }
+
+    /**
      * Initializes the import. The argument must be the plugin class.
      *
      * @param \tx_bib_pi1
      */
     public function initialize()
     {
-        $this->referenceReader = $this->pi1->referenceReader;
-
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
+        $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
 
         $this->referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class);
         $this->referenceWriter->initialize($this->referenceReader);
@@ -119,23 +127,13 @@ abstract class Importer
 
         // setup database utility
         /** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
-        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class);
-        $databaseUtility->initialize($this->referenceReader);
+        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $this->configuration);
+        $databaseUtility->initialize();
         $databaseUtility->readFullTextGenerationConfiguration($pi1->conf['editor.']['full_text.']);
 
         $this->databaseUtility = $databaseUtility;
 
-        // Create an instance of the citeid generator
-        if (isset($this->pi1->conf['citeid_generator_file'])) {
-            $ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->pi1->conf['citeid_generator_file']);
-            if (file_exists($ext_file)) {
-                require_once $ext_file;
-                $this->idGenerator = GeneralUtility::makeInstance(AuthorsCiteIdGenerator::class);
-            }
-        } else {
-            $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class);
-        }
-        $this->idGenerator->initialize($pi1);
+        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class);
     }
 
     /**
@@ -158,48 +156,18 @@ abstract class Importer
      *
      * @return int The parent id pid
      */
-    protected function getDefaultPid()
+    protected function getDefaultPid(): int
     {
         $pid = 0;
         if (is_numeric($this->pi1->conf['editor.']['default_pid'])) {
-            $pid = intval($this->pi1->conf['editor.']['default_pid']);
+            $pid = (int) $this->pi1->conf['editor.']['default_pid'];
         }
-        if (!in_array($pid, $this->referenceReader->pid_list)) {
-            $pid = intval($this->referenceReader->pid_list[0]);
+
+        if (!in_array($pid, $this->configuration['pid_list'])) {
+            $pid = (int) $this->configuration['pid_list'][0];
         }
 
         return $pid;
-    }
-
-    /**
-     * Returns the storage selector if there is more
-     * than one storage folder selected.
-     *
-     * @return string the storage selector string
-     */
-    protected function getStorageSelector()
-    {
-        $content = '';
-
-        $pids = $this->pi1->extConf['pid_list'];
-        $default_pid = $this->getDefaultPid();
-
-        if (count($pids) > 1) {
-            // Fetch page titles
-            $pages = Utility::get_page_titles($pids);
-
-            $val = $this->pi1->get_ll('import_storage_info', 'import_storage_info', true);
-            $content .= '<p>'.$val.'</p>';
-
-            $val = Utility::html_select_input(
-                $pages,
-                $default_pid,
-                ['name' => $this->pi1->prefixId.'[import_pid]']
-            );
-            $content .= '<p>'.$val.'</p>';
-        }
-
-        return $content;
     }
 
     /**
@@ -207,8 +175,10 @@ abstract class Importer
      */
     protected function acquireStoragePid()
     {
-        $this->storage_pid = intval($this->pi1->piVars['import_pid']);
-        if (!in_array($this->storage_pid, $this->pi1->extConf['pid_list'])) {
+        $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
+
+        $this->storage_pid = (int) $getPostVariables['import_pid'];
+        if (!in_array($this->storage_pid, $this->configuration['pid_list'])) {
             $this->storage_pid = $this->getDefaultPid();
         }
     }
@@ -269,35 +239,32 @@ abstract class Importer
     public function import()
     {
         $this->state = 1;
-        if (intval($_FILES['ImportFile']['size']) > 0) {
+        if ((int) $_FILES['ImportFile']['size'] > 0) {
             $this->state = 2;
         }
 
+        $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
+
         switch ($this->state) {
             case 1:
-                $content = $this->importFileSelectionState();
+                return $this->importFileSelectionState();
                 break;
             case 2:
                 $this->acquireStoragePid();
-                if (GeneralUtility::_GP('import_clear_all')) {
+                if (1 === (int) $getPostVariables['import_clear_all']) {
                     $this->clearAllDatasetsBeforeImport();
                 }
 
                 $content = $this->importStateTwo();
                 $this->postImport();
                 $content .= $this->getImportStatistics();
+
+                return $content;
                 break;
             default:
-                throw new \Exception('Bad import state '.$this->state, 1378910596);
+                throw new \Exception(sprintf('Bad import state %s', $this->state), 1378910596);
         }
-
-        return $content;
     }
-
-    /**
-     * @return string
-     */
-    abstract protected function displayInformationBeforeImport();
 
     /**
      * file selection state.
@@ -306,13 +273,10 @@ abstract class Importer
      */
     protected function importFileSelectionState()
     {
-        $this->view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib').'Resources/Private/Templates/Importer/Import.html');
+        $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/Import.html');
 
-        // Pre import information
-        $this->view->assign('content', $this->displayInformationBeforeImport());
-        $formAction = $this->pi1->get_link_url(['import' => $this->import_type]);
-        $this->view->assign('formAction', $formAction);
-        $this->view->assign('storageSelector', $this->getStorageSelector());
+        $this->view->assign('importType', $this->import_type);
+        $this->view->assign('storageSelector', Utility::get_page_titles($this->configuration['pid_list']));
 
         return $this->view->render();
     }
@@ -405,8 +369,7 @@ abstract class Importer
      */
     protected function getMessageOccurrenceCounter($message, $count)
     {
-        $charset = $this->pi1->extConf['charset']['upper'];
-        $content = htmlspecialchars($message, ENT_QUOTES, $charset);
+        $content = htmlspecialchars($message, ENT_QUOTES);
         if ($count > 1) {
             $content .= ' ('.strval($count);
             $content .= ' times)';
@@ -443,31 +406,10 @@ abstract class Importer
     }
 
     /**
-     * Takes an utf-8 string and changes the character set on demand.
-     *
-     * @param string $content
-     * @param string $charset
-     *
-     * @return string
-     */
-    protected function importUnicodeString($content, $charset = null)
-    {
-        if (!is_string($charset)) {
-            $charset = $this->pi1->extConf['charset']['lower'];
-        }
-
-        if ('utf-8' != $charset) {
-            $content = $GLOBALS['TSFE']->csConvObj->utf8_decode($content, $charset, true);
-        }
-
-        return $content;
-    }
-
-    /**
      * Removes all datasets from the storage on importing data.
      */
     protected function clearAllDatasetsBeforeImport()
     {
-        $this->databaseUtility->deleteAllFromPid($this->storage_pid);
+        DbUtility::deleteAllFromPid($this->storage_pid);
     }
 }

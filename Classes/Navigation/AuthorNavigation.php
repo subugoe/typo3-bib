@@ -49,7 +49,6 @@ class AuthorNavigation extends Navigation
      */
     public function initialize(array $configuration)
     {
-        parent::initialize($configuration);
         if (is_array($pi1->conf['authorNav.'])) {
             $this->conf = &$pi1->conf['authorNav.'];
         }
@@ -68,14 +67,14 @@ class AuthorNavigation extends Navigation
     public function hook_init(array $configuration): array
     {
         $configuration['link_vars']['author_letter'] = '';
-        $pvar = $this->pi1->piVars['author_letter'];
+        $pvar = GeneralUtility::_GP('tx_bib_pi1')['author_letter'];
         if (strlen($pvar) > 0) {
             $configuration['author_navi']['sel_letter'] = $pvar;
             $configuration['link_vars']['author_letter'] = $pvar;
         }
 
         $configuration['link_vars']['author'] = '';
-        $pvar = $this->pi1->piVars['author'];
+        $pvar = GeneralUtility::_GP('tx_bib_pi1')['author'];
         $configuration['author_navi']['sel_author'] = '0';
         if (strlen($pvar) > 0) {
             $configuration['author_navi']['sel_author'] = $pvar;

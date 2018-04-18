@@ -30,9 +30,8 @@ namespace Ipf\Bib\Utility\Importer;
 use Ipf\Bib\Exception\ParserException;
 use Ipf\Bib\Exception\TranslatorException;
 use Ipf\Bib\Utility\PRegExpTranslator;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * This parser follows the bibtex format described here
@@ -120,7 +119,9 @@ class BibTexImporter extends Importer
      */
     public function initialize()
     {
-        parent::initialize($pi1);
+        parent::initialize();
+
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
 
         $this->import_type = Importer::IMP_BIBTEX;
 
@@ -286,7 +287,7 @@ class BibTexImporter extends Importer
             ->push('/\s+$/', '');
 
         // Setup publication fields
-        foreach ($this->referenceReader->getPublicationFields() as $field) {
+        foreach ($referenceReader->getPublicationFields() as $field) {
             $lfield = strtolower($field);
             switch ($lfield) {
                 case 'bibtype':
@@ -302,22 +303,7 @@ class BibTexImporter extends Importer
         $this->pRegExpTranslator = $pRegExpTranslator;
     }
 
-    /**
-     * @return string $content
-     */
-    protected function displayInformationBeforeImport()
-    {
-        /** @var StandaloneView $view */
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib').'Resources/Private/Templates/Importer/BibTexInformation.html');
-
-        return $view->render();
-    }
-
-    /**
-     * @return string
-     */
-    protected function importStateTwo()
+    protected function importStateTwo(): string
     {
         $buff_size = 1024;
 
@@ -721,7 +707,6 @@ class BibTexImporter extends Importer
     {
         $res = $this->pRegExpTranslator->translate($raw);
         $res = $this->codeToUnicode($res);
-        $res = $this->importUnicodeString($res);
 
         return $res;
     }

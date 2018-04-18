@@ -1,0 +1,12 @@
+<div class="tx_bib-top_navigation">
+    <f:if condition="{configuration.edit_mode}">
+        <f:translate key="manipulators_new" extensionName="bib"/>
+        <f:link.page class="new-record" additionalParams="{tx_bib_pi1: {action : {new:1}}}" title="{f:translate(key:'manipulators_new')}"><f:translate key="manipulators_new" extensionName="bib"/></f:link.page>
+    </f:if>
+
+    {searchNavigation -> f:format.raw()}
+    {yearNavigation -> f:format.raw()}
+    {authorNavigation -> f:format.raw()}
+    {preferenceNavigation -> f:format.raw()}
+    {statisticsNavigation -> f:format.raw()}
+</div>

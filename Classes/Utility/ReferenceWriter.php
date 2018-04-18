@@ -27,7 +27,9 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 use Ipf\Bib\Exception\DataException;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -72,39 +74,6 @@ class ReferenceWriter
     public function initialize($referenceReader)
     {
         $this->referenceReader = &$referenceReader;
-    }
-
-    /**
-     * Returns the error message and resets it.
-     * The returned message is either a string or FALSE.
-     *
-     * @deprecated Use TYPO3 FlashMessage service
-     *
-     * @return string The last error message
-     */
-    public function error_message()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $err = $this->error;
-        $this->error = false;
-
-        return $err;
-    }
-
-    /**
-     * Same as error_message() but returns a html version.
-     *
-     * @deprecated use TYPO3 FlashMessage service
-     *
-     * @return string The last error message
-     */
-    public function html_error_message()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $err = $this->error_message();
-        $err = nl2br($err);
-
-        return $err;
     }
 
     /**
@@ -162,14 +131,12 @@ class ReferenceWriter
         $new = false;
         $uid = -1;
 
-        $referenceTable = $this->referenceReader->getReferenceTable();
-
         // Fetch reference from DB
         $pub_db = null;
         if (is_numeric($publication['uid'])) {
-            $pub_db = $this->referenceReader->getPublicationDetails(intval($publication['uid']));
+            $pub_db = $this->referenceReader->getPublicationDetails((int) $publication['uid']);
             if (is_array($pub_db)) {
-                $uid = intval($pub_db['uid']);
+                $uid = $pub_db->getUid();
             } else {
                 throw new DataException(sprintf(
                     'The publication reference with uid %s could not be updated'.
@@ -182,7 +149,7 @@ class ReferenceWriter
         // Acquire the storage folder pid if it is not given
         if (!is_numeric($publication['pid'])) {
             if (is_array($pub_db)) {
-                $publication['pid'] = intval($pub_db['pid']);
+                $publication['pid'] = (int) $pub_db['pid'];
             } else {
                 $publication['pid'] = $this->referenceReader->pid_list[0];
             }
@@ -199,7 +166,7 @@ class ReferenceWriter
 
         $referenceRow = [];
         // Copy reference fields
-        foreach ($this->referenceReader->getReferenceFields() as $field) {
+        foreach (ReferenceReader::$referenceFields as $field) {
             switch ($field) {
                 default:
                     if (array_key_exists($field, $publication)) {
@@ -214,11 +181,11 @@ class ReferenceWriter
         $referenceRow['hidden'] = intval($publication['hidden']);
 
         if ($uid >= 0) {
-            if ($publication['mod_key'] == $pub_db['mod_key']) {
+            if ($publication['mod_key'] === $pub_db['mod_key']) {
                 $whereClause = 'uid='.intval($uid);
 
                 $ret = $this->db->exec_UPDATEquery(
-                    $referenceTable,
+                    ReferenceReader::REFERENCE_TABLE,
                     $whereClause,
                     $referenceRow
                 );
@@ -250,7 +217,7 @@ class ReferenceWriter
             $referenceRow['crdate'] = $referenceRow['tstamp'];
             $referenceRow['cruser_id'] = $cruser_id;
             $this->db->exec_INSERTquery(
-                $referenceTable,
+                ReferenceReader::REFERENCE_TABLE,
                 $referenceRow
             );
 
@@ -272,9 +239,9 @@ class ReferenceWriter
         }
 
         if ($new) {
-            $this->referenceLog('A new publication reference was inserted (pid='.$publication['pid'].')', $uid);
+            $this->log('A new publication reference was inserted (pid='.$publication['pid'].')', $uid);
         } else {
-            $this->referenceLog('A publication reference was modified', $uid);
+            $this->log('A publication reference was modified', $uid);
         }
 
         $this->clear_page_cache();
@@ -330,7 +297,7 @@ class ReferenceWriter
             // This deletes the first authorships
             $as_new = abs($as_new);
             for ($ii = 0; $ii < $as_new; ++$ii) {
-                $as_delete[] = $db_aships[$ii]['uid'];
+                $as_delete[] = (int) $db_aships[$ii]['uid'];
             }
 
             $this->deleteAuthorships($as_delete);
@@ -420,43 +387,19 @@ class ReferenceWriter
     }
 
     /**
-     * Deletes an authorship.
-     *
-     * @deprecated since 1.2.0 will be removed in 1.5.0
-     *
-     * @param int $uid ;
-     */
-    public function delete_authorship($uid)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $this->db->exec_UPDATEquery(
-            $this->referenceReader->getAuthorshipTable(),
-            'uid='.intval($uid).' AND deleted=0',
-            ['deleted' => 1]
-        );
-    }
-
-    /**
      * Deletes some authorships.
      *
      * @param array $uids
      */
-    protected function deleteAuthorships($uids)
+    protected function deleteAuthorships(array $uids)
     {
-        $uid_list = '';
-        $uidSize = count($uids);
-        for ($ii = 0; $ii < $uidSize; ++$ii) {
-            if ($ii > 0) {
-                $uid_list .= ',';
-            }
-            $uid_list .= intval($uids[$ii]);
-        }
-
-        $this->db->exec_UPDATEquery(
-            $this->referenceReader->getAuthorshipTable(),
-            'uid IN ('.$uid_list.') AND deleted=0',
-            ['deleted' => 1]
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::AUTHORSHIP_TABLE);
+        $queryBuilder
+            ->update(ReferenceReader::AUTHORSHIP_TABLE)
+            ->where($queryBuilder->expr()->in('uid', $uids))
+            ->andWhere($queryBuilder->expr()->eq('deleted', 0))
+            ->set('deleted', 1)
+            ->execute();
     }
 
     /**
@@ -465,20 +408,17 @@ class ReferenceWriter
      * @param int  $uid
      * @param bool $hidden
      */
-    public function hidePublication($uid, $hidden = true)
+    public function hidePublication(int $uid, bool $hidden = true)
     {
-        $uid = intval($uid);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
+        $queryBuilder
+            ->update(ReferenceReader::REFERENCE_TABLE)
+            ->where($queryBuilder->expr()->eq('uid', $uid))
+            ->set('hidden', ($hidden ? 1 : 0))
+            ->set('tstamp', time())
+            ->execute();
 
-        $this->db->exec_UPDATEquery(
-            $this->referenceReader->getReferenceTable(),
-            'uid='.strval($uid),
-            [
-                'hidden' => ($hidden ? '1' : '0'),
-                'tstamp' => time(),
-            ]
-        );
-
-        $this->referenceLog('A publication reference was '.($hidden ? 'hidden' : 'revealed'), $uid);
+        $this->log('A publication reference was '.($hidden ? 'hidden' : 'revealed'), $uid);
         $this->clear_page_cache();
     }
 
@@ -493,34 +433,33 @@ class ReferenceWriter
      * @param int    $uid
      * @param string $mod_key
      */
-    public function deletePublication($uid, $mod_key)
+    public function deletePublication(int $uid, string $mod_key)
     {
         $deleted = 1;
 
-        $uid = intval($uid);
         $db_pub = $this->referenceReader->getPublicationDetails($uid);
-        if (is_array($db_pub)) {
-            if ($db_pub['mod_key'] == $mod_key) {
-                // Delete authorships
-                $this->db->exec_UPDATEquery(
-                    $this->referenceReader->getAuthorshipTable(),
-                    'pub_id='.intval($uid).' AND deleted=0',
-                    ['deleted' => $deleted]
-                );
+        if (!empty($db_pub->getModificationKey())) {
+            if ($db_pub->getModificationKey() === $mod_key) {
+                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::AUTHORSHIP_TABLE);
+                $queryBuilder
+                    ->update(ReferenceReader::AUTHORSHIP_TABLE)
+                    ->where($queryBuilder->expr()->eq('pub_id', $uid))
+                    ->andWhere($queryBuilder->expr()->eq('deleted', 0))
+                    ->set('deleted', $deleted)
+                    ->execute();
 
-                // Delete reference
-                $this->db->exec_UPDATEquery(
-                    $this->referenceReader->getReferenceTable(),
-                    'uid='.intval($uid).' AND deleted=0',
-                    [
-                        'deleted' => $deleted,
-                        'tstamp' => time(),
-                    ]
-                );
+                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
+                $queryBuilder
+                    ->update(ReferenceReader::REFERENCE_TABLE)
+                    ->where($queryBuilder->expr()->eq('uid', $uid))
+                    ->andWhere($queryBuilder->expr()->eq('deleted', 0))
+                    ->set('deleted', 0)
+                    ->set('tstamp', time())
+                    ->execute();
 
                 $this->clear_page_cache();
 
-                $this->referenceLog('A publication reference was deleted', $uid);
+                $this->log('A publication reference was deleted', $uid);
             } else {
                 throw new DataException(
                     'The publication reference could not be deleted'.
@@ -540,29 +479,15 @@ class ReferenceWriter
 
     /**
      * Writes a log entry.
-     *
-     * @param string $message
-     * @param int    $error
      */
-    protected function log($message, $error = 0)
+    private function log(string $message, int $uid)
     {
-        /** @var \TYPO3\CMS\Core\Authentication\BackendUserAuthentication $be_user */
-        $be_user = $GLOBALS['BE_USER'];
-        if (is_object($be_user)) {
-            $be_user->simplelog($message, 'bib', $error);
-        }
-    }
-
-    /**
-     * Writes a log entry for the reference log.
-     *
-     * @param string $message
-     * @param int    $uid
-     * @param mixed  $error
-     */
-    protected function referenceLog($message, $uid, $error = 0)
-    {
-        $message = $message.' ('.$this->referenceReader->getReferenceTable().':'.intval($uid).')';
-        $this->log($message, $error);
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger('bib');
+        $logger->info($message,
+            [
+                'uid' => $uid,
+                'table' => ReferenceReader::REFERENCE_TABLE,
+            ]
+        );
     }
 }

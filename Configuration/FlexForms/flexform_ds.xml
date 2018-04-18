@@ -60,59 +60,6 @@
                         </TCEforms>
                     </display_mode>
 
-                    <!-- Enumeration style -->
-                    <enum_style>
-                        <TCEforms>
-                            <label>
-                                LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum_style
-                            </label>
-                            <config>
-                                <type>select</type>
-                                <items type="array">
-                                    <numIndex index="0" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.TS
-                                        </numIndex>
-                                        <numIndex index="1">-1</numIndex>
-                                    </numIndex>
-                                    <numIndex index="1" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.count_page
-                                        </numIndex>
-                                        <numIndex index="1">1</numIndex>
-                                    </numIndex>
-                                    <numIndex index="2" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.count_all
-                                        </numIndex>
-                                        <numIndex index="1">2</numIndex>
-                                    </numIndex>
-                                    <numIndex index="3" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.bullets
-                                        </numIndex>
-                                        <numIndex index="1">3</numIndex>
-                                    </numIndex>
-                                    <numIndex index="4" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.empty
-                                        </numIndex>
-                                        <numIndex index="1">4</numIndex>
-                                    </numIndex>
-                                    <numIndex index="5" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:bib/Resources/Private/Language/locallang_flex.xml:tt_content.pi_flexform.enum.file_icon
-                                        </numIndex>
-                                        <numIndex index="1">5</numIndex>
-                                    </numIndex>
-                                </items>
-                                <maxitems>1</maxitems>
-                                <size>1</size>
-                                <default>-1</default>
-                            </config>
-                        </TCEforms>
-                    </enum_style>
-
                     <!-- Show search bar -->
                     <show_search>
                         <TCEforms>

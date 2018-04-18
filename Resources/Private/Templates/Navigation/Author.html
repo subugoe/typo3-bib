@@ -6,14 +6,9 @@
             <f:link.page additionalParams="{tx_bib_pi1: {author_letter: letter}}">{letter}</f:link.page>,
         </f:for>
         <span class="tx_bib-navi_current">&nbsp;</span></div>
-    <div class="tx_bib-float_clear"></div>
 </div>
 
 <div class="tx_bib-navi_extra_row">
-    <div class="tx_bib-navi_author_selection">{selection -> f:format.raw()}<span
-            class="tx_bib-navi_current">&nbsp;</span></div>
-    <div class="tx_bib-navi_author_select">{surnameSelection -> f:format.raw()}
-        <div class="tx_bib-float_clear"></div>
-    </div>
-    <div class="tx_bib-float_clear"></div>
+    <div class="tx_bib-navi_author_selection">{selection -> f:format.raw()}<span class="tx_bib-navi_current">&nbsp;</span></div>
+    <div class="tx_bib-navi_author_select">{surnameSelection -> f:format.raw()}</div>
 </div>

@@ -18,9 +18,6 @@ plugin.tx_bib_pi1 {
     # Date sorting (descending)
     date_sorting = 0
 
-    # Enumeration style (Count all)
-    enum_style = 0
-
     # Maximal number references per page (0=all)
     items_per_page = 12
 

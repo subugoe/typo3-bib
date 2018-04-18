@@ -26,6 +26,8 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Exception\DataException;
+use Ipf\Bib\Exception\FileException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -60,23 +62,22 @@ class DbUtility
      */
     public $tmp_dir = '/tmp';
 
-    private function getDatabaseConnection()
+    /**
+     * @var array
+     */
+    private $configuration;
+
+    public function __construct(array $configuration)
     {
-        return $GLOBALS['TYPO3_DB'];
+        $this->configuration = $configuration;
     }
 
     /**
-     * Initializes the import. The argument must be the plugin class.
-     *
-     * @param bool|\Ipf\Bib\Utility\ReferenceReader $referenceReader
+     * Initializes the import.
      */
-    public function initialize($referenceReader = false)
+    public function initialize()
     {
-        if (is_object($referenceReader)) {
-            $this->referenceReader = &$referenceReader;
-        } else {
-            $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class);
-        }
+        $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class, $this->configuration);
     }
 
     /**
@@ -86,32 +87,29 @@ class DbUtility
      */
     public function deleteAuthorsWithoutPublications()
     {
-        $selectQuery = 'SELECT t_au.uid';
-        $selectQuery .= ' FROM '.$this->referenceReader->getAuthorTable().' AS t_au';
-        $selectQuery .= ' LEFT OUTER JOIN '.$this->referenceReader->getAuthorshipTable().' AS t_as ';
-        $selectQuery .= ' ON t_as.author_id = t_au.uid AND t_as.deleted = 0 ';
-        $selectQuery .= ' WHERE t_au.deleted = 0 ';
-        $selectQuery .= ' GROUP BY t_au.uid ';
-        $selectQuery .= ' HAVING count(t_as.uid) = 0;';
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::AUTHOR_TABLE);
 
-        $uids = [];
-        $res = $this->getDatabaseConnection()->sql_query($selectQuery);
+        $authors = $queryBuilder->select('t_au.uid')
+            ->from(ReferenceReader::AUTHOR_TABLE, 't_au')
+            ->leftJoin('t_au', ReferenceReader::AUTHORSHIP_TABLE, 't_as', 't_as.author_id = t_au.uid AND t_as.deleted = 0')
+            ->where($queryBuilder->expr()->eq('t_au.deleted', 0))
+            ->groupBy('t_au.uid')
+            ->having($queryBuilder->expr()->count('t_as.uid'), 0)
+            ->execute()
+            ->fetchAll();
 
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-            $uids[] = $row['uid'];
+        foreach ($authors as $author) {
+            $uids[] = (int) $author['uid'];
         }
 
         $count = count($uids);
         if ($count > 0) {
-            $csv = Utility::implode_intval(',', $uids);
-
-            $this->getDatabaseConnection()->exec_UPDATEquery(
-                $this->referenceReader->getAuthorTable(),
-                'uid IN ( '.$csv.')',
-                [
-                    'deleted' => '1',
-                ]
-            );
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
+            $queryBuilder
+                ->update(ReferenceReader::REFERENCE_TABLE)
+                ->where($queryBuilder->expr()->in('uid', $uids))
+                ->set('deleted', 1)
+                ->execute();
         }
 
         return $count;
@@ -143,12 +141,16 @@ class DbUtility
     /**
      * Updates the full_text field for all references if neccessary.
      *
-     * @param bool $force
-     *
      * @return array An array with some statistical data
      */
-    public function update_full_text_all($force = false)
+    public function update_full_text_all(): array
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
+
+        $query = $queryBuilder
+            ->select('uid')
+            ->from(ReferenceReader::REFERENCE_TABLE);
+
         $stat = [];
         $stat['updated'] = [];
         $stat['errors'] = [];
@@ -156,31 +158,32 @@ class DbUtility
         $stat['limit_time'] = 0;
         $uids = [];
 
-        $whereClause = [];
-
         if (count($this->referenceReader->pid_list) > 0) {
-            $csv = Utility::implode_intval(',', $this->referenceReader->pid_list);
-            $whereClause[] = 'pid IN ('.$csv.')';
+            $query->andWhere($queryBuilder->expr()->in('pid', $this->referenceReader->pid_list));
         }
-        $whereClause[] = '( LENGTH(file_url) > 0 OR LENGTH(full_text_file_url) > 0 )';
 
-        $whereClause = implode(' AND ', $whereClause);
-        $whereClause .= $this->referenceReader->enable_fields($this->referenceReader->getReferenceTable());
-        $res = $this->getDatabaseConnection()->exec_SELECTquery(
-            'uid',
-            $this->referenceReader->getReferenceTable(),
-            $whereClause
+        $queryBuilder->andWhere(
+            $queryBuilder->orWhere(
+                $queryBuilder->expr()->gt($queryBuilder->expr()->length('file_url'), 0)
+            ),
+            $queryBuilder->orWhere(
+                $queryBuilder->expr()->gt($queryBuilder->expr()->length('full_text_file_url'), 0)
+            )
         );
 
-        while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-            $uids[] = intval($row['uid']);
+        $results = $query
+            ->execute()
+            ->fetchAll();
+
+        foreach ($results as $result) {
+            $uids[] = (int) $result['uid'];
         }
 
         $time_start = time();
         foreach ($uids as $uid) {
-            $err = $this->update_full_text($uid, $force);
-            if (is_array($err)) {
-                $stat['errors'][] = [$uid, $err];
+            $err = $this->update_full_text($uid);
+            if ($err) {
+                $stat['errors'][] = [$uid, []];
             } else {
                 if ($err) {
                     $stat['updated'][] = $uid;
@@ -204,24 +207,21 @@ class DbUtility
 
     /**
      * Updates the full_text for the reference with the given uid.
-     *
-     * @param int  $uid
-     * @param bool $force
-     *
-     * @return string|bool
      */
-    protected function update_full_text($uid, $force = false)
+    protected function update_full_text(int $uid): bool
     {
-        $whereClause = 'uid='.(int) $uid;
-        $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
-            'file_url,full_text_tstamp,full_text_file_url',
-            $this->referenceReader->getReferenceTable(),
-            $whereClause
-        );
-        if (1 !== count($rows)) {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
+        $results = $queryBuilder
+                    ->select(['file_url', 'full_text_tstamp', 'full_text_file_url'])
+                    ->from(ReferenceReader::REFERENCE_TABLE)
+                    ->where($queryBuilder->expr()->eq('uid', $uid))
+                    ->execute()
+                    ->fetchAll();
+
+        if (1 !== count($results)) {
             return false;
         }
-        $pub = $rows[0];
+        $pub = $results[0];
 
         // Determine File time
         $file = $pub['file_url'];
@@ -246,9 +246,6 @@ class DbUtility
         }
 
         $db_update = false;
-        $db_data['full_text'] = '';
-        $db_data['full_text_tstamp'] = time();
-        $db_data['full_text_file_url'] = '';
 
         if (!$file_exists) {
             $clear = false;
@@ -271,26 +268,18 @@ class DbUtility
         // Actually update
         if ($file_exists && (
                 ($file_mt > $pub['full_text_tstamp']) ||
-                ($pub['file_url'] != $pub['full_text_file_url']) ||
-                $force
+                ($pub['file_url'] != $pub['full_text_file_url'])
         )
         ) {
             // Check if pdftotext is executable
             if (!is_executable($this->pdftotext_bin)) {
-                $err = [];
-                $err['msg'] = 'The pdftotext binary \''.strval($this->pdftotext_bin).
-                    '\' is no executable';
-
-                return $err;
+                throw new FileException(sprintf('The pdftotext binary %s is not executable.', $this->pdftotext_bin), 1524121120);
             }
 
             // Determine temporary text file
             $target = tempnam($this->tmp_dir, 'bib_pdftotext');
             if (false === $target) {
-                $err = [];
-                $err['msg'] = 'Could not create temporary file in '.strval($this->tmp_dir);
-
-                return $err;
+                throw new FileException(sprintf('Could not create temporary file in %s', $this->tmp_dir), 1524120985);
             }
 
             // Compose and execute command
@@ -305,11 +294,8 @@ class DbUtility
             $cmd_txt = [];
             $retval = false;
             exec($cmd, $cmd_txt, $retval);
-            if (0 != $retval) {
-                $err = [];
-                $err['msg'] = 'pdftotext failed on '.strval($pub['file_url']).': '.implode('', $cmd_txt);
-
-                return $err;
+            if (0 !== $retval) {
+                throw new FileException(sprintf('pdftotext failed on %s: %s', $pub['file_url'], implode('', $cmd_txt)), 1524121209);
             }
 
             // Read text file
@@ -319,23 +305,19 @@ class DbUtility
 
             // Delete temporary text file
             unlink($target);
-
-            $db_update = true;
-            $db_data['full_text'] = $full_text;
-            $db_data['full_text_file_url'] = $pub['file_url'];
         }
 
         if ($db_update) {
-            $ret = $this->getDatabaseConnection()->exec_UPDATEquery(
-                $this->referenceReader->getReferenceTable(),
-                $whereClause,
-                $db_data
-            );
-            if (false === $ret) {
-                $err = [];
-                $err['msg'] = 'Full text update failed: '.$this->getDatabaseConnection()->sql_error();
+            $ret = $queryBuilder
+                ->update(ReferenceReader::REFERENCE_TABLE)
+                ->where($queryBuilder->expr()->eq('uid', $uid))
+                ->set('full_text', $full_text ?? '')
+                ->set('full_text_file_url', $pub['file_url'] ?? '')
+                ->set('full_text_tstamp', time())
+                ->execute();
 
-                return $err;
+            if (false === $ret) {
+                throw new DataException('Full text update failed: %s', $ret, 1524121640);
             }
 
             return true;
@@ -347,7 +329,7 @@ class DbUtility
     /**
      * @param int $pid
      */
-    public function deleteAllFromPid(int $pid)
+    public static function deleteAllFromPid(int $pid)
     {
         $tables = [
             ReferenceReader::AUTHORSHIP_TABLE,

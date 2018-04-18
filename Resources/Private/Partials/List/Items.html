@@ -1,12 +1,38 @@
-<tr>
-
 <td class="tx_bib-item">
-&bull;
+    &bull;
 </td>
 
-<td class="###ROW_CLASS###">
+<td class="tx_bib-item_even">
 
-<!-- ###HAS_MANIPULATORS### begin -->###MANIPULATORS###<!-- ###HAS_MANIPULATORS### end -->
+    <f:if condition="{editmode}">
+        <table class="tx_bib-layout">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="tx_bib-manip">
+                            <f:link.page class="edit-record" title="{f:translate(key:'manipulators_edit')}"
+                                         additionalParams="{tx_bib_pi1: {action: {edit: 1}}, uid: item.uid}"> </f:link.page>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="tx_bib-manip">
+                            <f:if condition="{item.hidden}">
+                                <f:link.page class="reveal-record" title="{f:translate(key:'manipulators_reveal')}"
+                                             additionalParams="{tx_bib_pi1: {action: {reveal: 1}, uid: item.uid}}"> </f:link.page>
+                                <f:else>
+                                    <f:link.page class="hide-record" title="{f:translate(key:'manipulators_hide')}"
+                                                 additionalParams="{tx_bib_pi1: {action: {hide: 1}, uid: item.uid}}"> </f:link.page>
+
+                                </f:else>
+                            </f:if>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </f:if>
     <f:if condition="{item.authors -> f:count() > 0}">
         <div class="tx_bib-authors">
             <f:for each="{item.authors}" as="author">
@@ -16,15 +42,23 @@
     </f:if>
 
     <f:if condition="{item.title}">
-        <div class="tx_bib-title">{item.title}</div>
+        <div class="tx_bib-title">
+            <f:link.page additionalParams="{tx_bib_pi1: {show_uid: item.uid}}">{item.title}</f:link.page>
+        </div>
     </f:if>
 
     <f:if condition="{item.DOI}">
-        <div class="tx_bib-block"><f:translate key="label_doi" extensionName="bib"/>: http://dx.doi.org/{item.DOI}</div>
+        <div class="tx_bib-block">
+            <f:translate key="label_doi" extensionName="bib"/>
+            : http://dx.doi.org/{item.DOI}
+        </div>
     </f:if>
 
     <f:if condition="{item.ISBN}">
-        <div class="tx_bib-block"><f:translate key="label_doi" extensionName="bib"/>: {item.ISBN}</div>
+        <div class="tx_bib-block">
+            <f:translate key="label_doi" extensionName="bib"/>
+            : {item.ISBN}
+        </div>
     </f:if>
 
     <f:if condition="{item.state}">
@@ -40,50 +74,63 @@
     </f:if>
 
     <f:if condition="{item.keywords}">
-        <p class="tx_bib-keywords_block"><f:translate key="label_keywords" extensionName="bib"/> {item.keywords}</p>
+        <p class="tx_bib-keywords_block">
+            <f:translate key="label_keywords" extensionName="bib"/>
+            {item.keywords}
+        </p>
     </f:if>
 
     <f:if condition="{item.tags}">
-        <p class="tx_bib-tags_block"><f:translate key="label_tags" extensionName="bib"/> {item.tags}</p>
+        <p class="tx_bib-tags_block">
+            <f:translate key="label_tags" extensionName="bib"/>
+            {item.tags}
+        </p>
     </f:if>
 
     <f:if condition="{item.abstract}">
-        <p class="tx_bib-abstract_block"><f:translate key="label_abstract" extensionName="bib"/> {item.abstract}</p>
+        <p class="tx_bib-abstract_block">
+            <f:translate key="label_abstract" extensionName="bib"/>
+            {item.abstract}
+        </p>
     </f:if>
 
     <f:if condition="{item.anotation}">
-        <p class="tx_bib-annotation_block"><f:translate key="label_annotation" extensionName="bib"/> {item.anotation}</p>
+        <p class="tx_bib-annotation_block">
+            <f:translate key="label_annotation" extensionName="bib"/>
+            {item.anotation}
+        </p>
     </f:if>
 
     <f:if condition="{item.note}">
-        <p class="tx_bib-note_block"><f:translate key="label_annotation" extensionName="bib"/> {item.note}</p>
+        <p class="tx_bib-note_block">
+            <f:translate key="label_annotation" extensionName="bib"/>
+            {item.note}
+        </p>
     </f:if>
 
 </td>
-</tr>
-
 
 <f:if condition="1 == 2">
 
-    <f:render partial="Type/Default" />
-    <f:render partial="Type/Article" />
-    <f:render partial="Type/Book" />
-    <f:render partial="Type/Inbook" />
-    <f:render partial="Type/Booklet" />
-    <f:render partial="Type/Conference" />
-    <f:render partial="Type/Incollection" />
-    <f:render partial="Type/Proceeding" />
-    <f:render partial="Type/Inproceeding" />
-    <f:render partial="Type/Manual" />
-    <f:render partial="Type/Masterthesis" />
-    <f:render partial="Type/Phdthesis" />
-    <f:render partial="Type/Techreport" />
-    <f:render partial="Type/Unpublished" />
-    <f:render partial="Type/Miscellaneous" />
-    <f:render partial="Type/String" />
-    <f:render partial="Type/Poster" />
-    <f:render partial="Type/Thesis" />
-    <f:render partial="Type/Report" />
-    <f:render partial="Type/Manuscript" />
+    <f:render partial="Type/Default"/>
+    <f:render partial="Type/Article"/>
+    <f:render partial="Type/Book"/>
+    <f:render partial="Type/Inbook"/>
+    <f:render partial="Type/Booklet"/>
+    <f:render partial="Type/Conference"/>
+    <f:render partial="Type/Incollection"/>
+    <f:render partial="Type/Proceeding"/>
+    <f:render partial="Type/Inproceeding"/>
+    <f:render partial="Type/Manual"/>
+    <f:render partial="Type/Masterthesis"/>
+    <f:render partial="Type/Phdthesis"/>
+    <f:render partial="Type/Techreport"/>
+    <f:render partial="Type/Unpublished"/>
+    <f:render partial="Type/Miscellaneous"/>
+    <f:render partial="Type/String"/>
+    <f:render partial="Type/Poster"/>
+    <f:render partial="Type/Thesis"/>
+    <f:render partial="Type/Report"/>
+    <f:render partial="Type/Manuscript"/>
 
 </f:if>

@@ -8,37 +8,33 @@ use Ipf\Bib\Utility\Importer\XmlImporter;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class ImportView extends View
 {
-    public function get(int $mode): string
+    public function get(int $mode, array $configuration): string
     {
         /** @var FlashMessageQueue $flashMessageQueue */
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
 
-        $content = '<h2>'.LocalizationUtility::translate('import_title', 'bib').'</h2>';
-
         if ((Importer::IMP_BIBTEX === $mode) || (Importer::IMP_XML === $mode)) {
-            /** @var \Ipf\Bib\Utility\Importer\Importer $importer */
-            $importer = false;
-
             switch ($mode) {
-                    case \Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX:
-                        $importer = GeneralUtility::makeInstance(BibTexImporter::class);
-                        break;
-                    case \Ipf\Bib\Utility\Importer\Importer::IMP_XML:
-                        $importer = GeneralUtility::makeInstance(XmlImporter::class);
-                        break;
-                }
+                case Importer::IMP_BIBTEX:
+                    $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/BibTexImport.html');
+                    $importer = GeneralUtility::makeInstance(BibTexImporter::class, $configuration);
+                    break;
+                case Importer::IMP_XML:
+                    $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/XmlImport.html');
+                    $importer = GeneralUtility::makeInstance(XmlImporter::class, $configuration);
+                    break;
+            }
 
-            $importer->initialize();
             try {
-                $content .= $importer->import();
+                $importer->initialize();
+                $content = $importer->import();
             } catch (\Exception $e) {
                 /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
                 $message = GeneralUtility::makeInstance(
-                        \TYPO3\CMS\Core\Messaging\FlashMessage::class,
+                        FlashMessage::class,
                         $e->getMessage(),
                         '',
                         FlashMessage::ERROR
@@ -48,7 +44,7 @@ class ImportView extends View
         } else {
             /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
             $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
+                    FlashMessage::class,
                     'Unknown import mode',
                     '',
                     FlashMessage::ERROR
@@ -56,6 +52,8 @@ class ImportView extends View
             $flashMessageQueue->addMessage($message);
         }
 
-        return $content;
+        $this->view->assign('content', $content ?? '');
+
+        return $this->view->render();
     }
 }

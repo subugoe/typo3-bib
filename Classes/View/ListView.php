@@ -4,14 +4,12 @@ namespace Ipf\Bib\View;
 
 use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Modes\Display;
-use Ipf\Bib\Modes\Enumeration;
 use Ipf\Bib\Modes\Sort;
 use Ipf\Bib\Navigation\AuthorNavigation;
 use Ipf\Bib\Navigation\PageNavigation;
 use Ipf\Bib\Navigation\SearchNavigation;
 use Ipf\Bib\Navigation\StatisticsNavigation;
 use Ipf\Bib\Navigation\YearNavigation;
-use Ipf\Bib\Service\ItemTransformerService;
 use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -137,10 +135,6 @@ class ListView extends View
     private function setupItems(): array
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, [$this->extConf]);
-        $items = [];
-
-        $itemTransformer->prepareItemSetup();
 
         // Initialize the label translator
         $labelTranslator = [];
@@ -171,28 +165,6 @@ class ListView extends View
             $labelValue = $contentObjectRenderer->stdWrap($labelValue, $this->conf['label.'][$label.'.']);
             $labelTranslator[$upperCaseLabel] = $labelValue;
         }
-
-        // block templates
-        $itemTemplate = [];
-
-        // Initialize the enumeration template
-        $enumerationIdentifier = 'page';
-        switch (intval($this->extConf['enum_style'])) {
-            case Enumeration::ENUM_ALL:
-                $enumerationIdentifier = 'all';
-                break;
-            case Enumeration::ENUM_BULLET:
-                $enumerationIdentifier = 'bullet';
-                break;
-            case Enumeration::ENUM_EMPTY:
-                $enumerationIdentifier = 'empty';
-                break;
-            case Enumeration::ENUM_FILE_ICON:
-                $enumerationIdentifier = 'file_icon';
-                break;
-        }
-        $enumerationBase = strval($this->conf['enum.'][$enumerationIdentifier]);
-        $enumerationWrap = $this->conf['enum.'][$enumerationIdentifier.'.'];
 
         // Warning cfg
         $editMode = $this->extConf['edit_mode'];
@@ -243,9 +215,6 @@ class ListView extends View
                 if ($pub->getBibtype() !== $prevBibType) {
                     $i_bibtype = 1;
                 }
-                $evenOdd = $i_bibtype % 2;
-            } else {
-                $evenOdd = $i_subpage % 2;
             }
 
             // Initialize the translator
@@ -258,30 +227,13 @@ class ListView extends View
                 $repl = $this->getFileUrlIcon();
                 $enum = str_replace('###FILE_URL_ICON###', $repl, $enum);
             }
-            $translator['###ENUM_NUMBER###'] = $contentObjectRenderer->stdWrap($enum, $enumerationWrap);
-
-            // Row classes
-            $eo = $evenOdd ? 'even' : 'odd';
-
-            $translator['###ROW_CLASS###'] = $this->conf['classes.'][$eo];
-
-            $translator['###NUMBER_CLASS###'] = 'tx_bib-enum';
 
             // Manipulators
-            $translator['###MANIPULATORS###'] = '';
             $manip_all = [];
             $subst_sub = '';
             if ($editMode) {
                 if ($this->checkFEauthorRestriction($pub)) {
                     $subst_sub = ['', ''];
-                    //   $manip_all[] = $this->getEditManipulator($pub);
-                    // $manip_all[] = $this->getHideManipulator($pub);
-                    $manip_all = \Ipf\Bib\Utility\Utility::html_layout_table([$manip_all]);
-
-                    $translator['###MANIPULATORS###'] = $contentObjectRenderer->stdWrap(
-                        $manip_all,
-                        $this->conf['editor.']['list.']['manipulators.']['all.']
-                    );
                 }
             }
 
@@ -443,72 +395,5 @@ class ListView extends View
 
         // default behavior, FE user can edit all records
         return true;
-    }
-
-    /**
-     * Returns the edit button.
-     *
-     * @param array $publication
-     *
-     * @return string
-     */
-    protected function getEditManipulator($publication)
-    {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
-        $label = $this->pi_getLL('manipulators_edit', 'Edit', true);
-        $res = $this->get_link(
-             '',
-             [
-                 'action' => [
-                     'edit' => 1,
-                 ],
-                 'uid' => $publication['uid'],
-             ],
-             true,
-             [
-                 'title' => $label,
-                 'class' => 'edit-record',
-             ]
-         );
-
-        $res = $contentObjectRenderer->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['edit.']);
-
-        return $res;
-    }
-
-    /**
-     * Returns the hide button.
-     *
-     * @param array $publication
-     *
-     * @return string
-     */
-    protected function getHideManipulator($publication)
-    {
-        if (0 === (int) $publication['hidden']) {
-            $label = $this->pi_getLL('manipulators_hide', 'Hide', true);
-            $class = 'hide';
-        } else {
-            $label = $this->pi_getLL('manipulators_reveal', 'Reveal', true);
-            $class = 'reveal';
-        }
-
-        $action = [$class => 1];
-
-        $res = $this->get_link(
-            '',
-            [
-                'action' => $action,
-                'uid' => $publication['uid'],
-            ],
-            true,
-            [
-                'title' => $label,
-                'class' => $class.'-record',
-            ]
-        );
-
-        return $this->cObj->stdWrap($res, $this->conf['editor.']['list.']['manipulators.']['hide.']);
     }
 }

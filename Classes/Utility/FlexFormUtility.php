@@ -56,10 +56,10 @@ class FlexFormUtility
     {
         $optionList = [];
 
-        foreach ($this->referenceReader->getReferenceFields() as $key => $referenceField) {
+        foreach (ReferenceReader::$referenceFields as $key => $referenceField) {
             $optionList[] = [
                 0 => LocalizationUtility::translate(
-                    $this->referenceReader->getReferenceTable().'_'.$referenceField,
+                    ReferenceReader::REFERENCE_TABLE.'_'.$referenceField,
                     'bib'
                 ),
                 1 => $referenceField,
