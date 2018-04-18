@@ -1509,8 +1509,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 break;
             case View::VIEW_SINGLE:
                 $singleView = GeneralUtility::makeInstance(\Ipf\Bib\View\SingleView::class);
+                $uid = (int) GeneralUtility::_GET('tx_bib_pi1')['show_uid'];
 
-                return $singleView->initialize($configuration);
+                return $singleView->get($uid, $configuration);
                 break;
             case View::VIEW_EDITOR:
                 $editorView = GeneralUtility::makeInstance(\Ipf\Bib\View\EditorView::class);

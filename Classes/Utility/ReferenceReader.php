@@ -29,6 +29,7 @@ namespace Ipf\Bib\Utility;
 
 use Ipf\Bib\Domain\Model\Author;
 use Ipf\Bib\Domain\Model\Reference;
+use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Service\ItemTransformerService;
 use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -248,10 +249,10 @@ class ReferenceReader
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
-        $this->setPidList($configuration['pid_list']);
-        $this->setClearCache($configuration['editor']['clear_page_cache']);
-        $this->setShowHidden($configuration['show_hidden']);
-        $this->set_searchFields($configuration['search_fields']);
+        $this->pid_list = $configuration['pid_list'];
+        $this->clearCache = $configuration['editor']['clear_page_cache'];
+        $this->show_hidden = $configuration['show_hidden'];
+        $this->search_fields = $configuration['search_fields'];
         $this->set_editorStopWords($configuration['editor_stop_words']);
         $this->set_titleStopWords($configuration['title_stop_words']);
         $this->set_filters($configuration['filters'] ?? []);
@@ -529,39 +530,44 @@ class ReferenceReader
      */
     public function fetch_author_uids($author, $pids): array
     {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHOR_TABLE);
+
+        $query = $queryBuilder->select(['uid', 'pid'])
+            ->from(self::AUTHOR_TABLE);
+
         $uids = [];
         $all_fields = ['forename', 'surname', 'url'];
 
-        $whereClause = [];
+        $whereClause = false;
 
         foreach ($all_fields as $field) {
             if (array_key_exists($field, $author)) {
-                $chk = ' = ';
                 $word = $author[$field];
                 if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
-                    $chk = ' LIKE ';
+                    $query->andWhere($queryBuilder->expr()->like($field, '%'.$queryBuilder->quote($word).'%'));
+                } else {
+                    $query->andWhere($queryBuilder->expr()->eq($field, $queryBuilder->quote($word)));
                 }
-                $whereClause[] = $field.$chk.$this->getDatabaseConnection()->fullQuoteStr($word, $this->getAuthorTable());
+                $whereClause = true;
             }
         }
 
-        if (count($whereClause) > 0) {
+        if ($whereClause) {
             if (is_array($pids)) {
-                $whereClause[] = 'pid IN ('.implode(',', $pids).')';
+                $query->andWhere($queryBuilder->expr()->in('pid', $pids));
             } else {
-                $whereClause[] = 'pid='.(int) $pids;
+                $query->andWhere($queryBuilder->expr()->eq('pid', (int) $pids));
             }
-            $whereClause = implode(' AND ', $whereClause);
-            $whereClause .= $this->enable_fields($this->getAuthorTable());
 
-            $res = $this->getDatabaseConnection()->exec_SELECTquery(
-                'uid,pid',
-                $this->getAuthorTable(),
-                $whereClause
-            );
+            $results = $query
+                ->execute()
+                ->fetchAll();
 
-            while ($row = $this->getDatabaseConnection()->sql_fetch_assoc($res)) {
-                $uids[] = ['uid' => $row['uid'], 'pid' => $row['pid']];
+            foreach ($results as $result) {
+                $uids[] = [
+                    'uid' => $result['uid'],
+                    'pid' => $result['pid'],
+                ];
             }
         }
 
@@ -641,7 +647,7 @@ class ReferenceReader
      */
     public static function getSearchTerm($word, $wrap = ['%', '%'])
     {
-        $spec = htmlentities($word, ENT_QUOTES, 'UTF-8');
+        $spec = htmlentities($word, ENT_QUOTES);
         $words = [$word];
         if ($spec != $word) {
             $words[] = $spec;
@@ -664,37 +670,35 @@ class ReferenceReader
      * to the current storage folders ($filter['pid']).
      *
      * @param string $citeId
-     * @param int    $uid    ;
+     * @param int    $uid
      *
      * @return bool TRUE on existence FALSE otherwise
      */
-    public function citeIdExists($citeId, $uid = -1)
+    public function citeIdExists(string $citeId, int $uid = -1): bool
     {
         if (0 === strlen($citeId)) {
             return false;
         }
 
-        $num = 0;
-        $whereClause = [];
-        $whereClause[] = 'citeid='.$this->getDatabaseConnection()->fullQuoteStr($citeId, $this->getReferenceTable());
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
+        $query = $queryBuilder->count('uid')
+            ->from(self::REFERENCE_TABLE)
+            ->where($queryBuilder->expr()->eq('citedid', $queryBuilder->quote($citeId)));
 
-        if (is_numeric($uid) && ($uid >= 0)) {
-            $whereClause[] = 'uid!='."'".intval($uid)."'";
+        $num = 0;
+
+        if ($uid >= 0) {
+            $query->andWhere($queryBuilder->expr()->neq('uid', $uid));
         }
 
         if (count($this->pid_list) > 0) {
-            $csv = Utility::implode_intval(',', $this->pid_list);
-            $whereClause[] = 'pid IN ('.$csv.')';
+            $query->andWhere($queryBuilder->expr()->in('pid', $this->pid_list));
         }
 
-        $whereClause = implode(' AND ', $whereClause);
-        $whereClause .= $this->enable_fields($this->getReferenceTable(), '', $this->show_hidden);
+        $results = $query->execute()->fetchAll()[0];
 
-        $res = $this->getDatabaseConnection()->exec_SELECTquery('count(uid)', $this->getReferenceTable(), $whereClause);
-        $row = $this->getDatabaseConnection()->sql_fetch_assoc($res);
-
-        if (is_array($row)) {
-            $num = intval($row['count(uid)']);
+        if (is_array($results)) {
+            $num = (int) $results['count(uid)'];
         }
 
         return $num > 0;
@@ -727,7 +731,7 @@ class ReferenceReader
      *
      * @return string The LIMIT clause string
      */
-    protected function getReferenceSelectClause(array $fields, $order = '', $group = '')
+    protected function getReferenceSelectClause(array $fields)
     {
         $columns = [];
         $whereClause = $this->getReferenceWhereClause($columns);
@@ -1571,10 +1575,6 @@ class ReferenceReader
 
     /**
      * This retrieves the publication data from the database.
-     *
-     * @param int $uid
-     *
-     * @return Reference The publication data from the database
      */
     public function getPublicationDetails(int $uid): Reference
     {
@@ -1594,11 +1594,13 @@ class ReferenceReader
         }
 
         $results = $queryBuilder->execute()->fetchAll();
-        $publication = $results[0];
-        if (is_array($results)) {
-            $publication = GeneralUtility::makeInstance(ItemTransformerService::class)->transformPublication($publication);
+        $reference = $results[0];
+        if (is_array($reference)) {
+            $publication = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration)->transformPublication($reference);
             $publication->setAuthors($this->getAuthorByPublication($publication));
             $publication->setModificationKey($this->getModificationKey($publication));
+        } else {
+            throw new DataException(sprintf('Publication with id %d does not exist', $uid), 1524036407);
         }
 
         return $publication;
@@ -1673,12 +1675,22 @@ class ReferenceReader
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
         $query = $queryBuilder->select('*')
-            ->from(self::REFERENCE_TABLE)
-            ->setMaxResults(30)
+            ->from(self::REFERENCE_TABLE);
+
+        foreach ($this->filters as $filter) {
+            if (is_array($filter['limit'])) {
+                if (isset($filter['limit']['start']) && isset($filter['limit']['num'])) {
+                    $query->setFirstResult((int) $filter['limit']['start']);
+                    $query->setMaxResults((int) $filter['limit']['num']);
+                }
+            }
+        }
+
+        $results = $query
             ->execute()
             ->fetchAll();
 
-        foreach ($query as $referenceData) {
+        foreach ($results as $referenceData) {
             $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration);
             $reference = $itemTransformer->transformPublication($referenceData);
             $reference->setAuthors($this->getAuthorByPublication($reference));

@@ -26,7 +26,9 @@
 
 namespace Ipf\Bib\ViewHelpers;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Ipf\Bib\Domain\Model\Author;
+use Ipf\Bib\Domain\Model\Reference;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
 /**
@@ -35,28 +37,13 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 class CoinsViewHelper extends AbstractTagBasedViewHelper
 {
     /**
-     * assignment from delivered values to the coins identifier.
-     *
-     * @var array
-     */
-    protected $fieldAssignment = [
-        'title' => 'title',
-        'isbn' => 'ISBN',
-        'date' => 'year',
-        'place' => 'address',
-        'pub' => 'publisher',
-        'genre' => 'bibtype',
-        'series' => 'series',
-    ];
-
-    /**
      * @var string
      */
     protected $tagName = 'span';
 
     public function initializeArguments()
     {
-        $this->registerArgument('data', 'array', 'The email address to resolve the gravatar for', true);
+        $this->registerArgument('data', Reference::class, 'The email address to resolve the gravatar for', true);
     }
 
     /**
@@ -64,20 +51,47 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
      */
     public function render()
     {
+        /** @var Reference $reference */
+        $reference = $this->arguments['data'];
+
         $coinsData = [];
 
         $coinsData[] = 'ctx_ver=Z39.88-2004';
         $coinsData[] = 'rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook';
 
-        foreach ($this->fieldAssignment as $coinsTitle => $bibTitle) {
-            if ($this->arguments['data'][$bibTitle]) {
-                $coinsData[] = 'rft.'.$coinsTitle.'='.$this->formatEntity($this->arguments['data'][$bibTitle]);
-            }
+        if (!empty($reference->getTitle())) {
+            $coinsData[] = sprintf('rft.title=%s', $this->formatEntity($reference->getTitle()));
         }
-        if ($this->arguments['data']['authors']) {
-            $author = $this->formatAuthor($this->arguments['data']['authors']);
-            $coinsData[] = 'rft.aulast='.$this->formatEntity($author[0]);
-            $coinsData[] = 'rft.aufirst='.$this->formatEntity($author[1]);
+
+        if (!empty($reference->getISBN())) {
+            $coinsData[] = sprintf('rft.isbn=%s', $this->formatEntity($reference->getISBN()));
+        }
+
+        if (!empty($reference->getYear())) {
+            $coinsData[] = sprintf('rft.date=%s', $this->formatEntity($reference->getYear()));
+        }
+
+        if (!empty($reference->getAddress())) {
+            $coinsData[] = sprintf('rft.place=%s', $this->formatEntity($reference->getAddress()));
+        }
+
+        if (!empty($reference->getPublisher())) {
+            $coinsData[] = sprintf('rft.pub=%s', $this->formatEntity($reference->getPublisher()));
+        }
+
+        if ($reference->getBibtype()) {
+            $coinsData[] = sprintf('rft.genre=%s', $this->formatEntity(LocalizationUtility::translate(sprintf('tx_bib_domain_model_reference_bibtype_I_%d', $reference->getBibtype()), 'bib')));
+        }
+
+        if (!empty($reference->getSeries())) {
+            $coinsData[] = sprintf('rft.series=%s', $this->formatEntity($reference->getSeries()));
+        }
+
+        if (count($reference->getAuthors()) > 0) {
+            /** @var Author $author */
+            $author = $reference->getAuthors()[0];
+            $coinsData[] = 'rft.aulast='.$this->formatEntity($author->getSurName());
+            $coinsData[] = 'rft.aufirst='.$this->formatEntity($author->getForeName());
         }
 
         $this->tag->addAttribute('class', 'Z3988');
@@ -96,20 +110,5 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
         $string = strip_tags($string);
 
         return urlencode($string);
-    }
-
-    /**
-     * @param string $authors
-     *
-     * @return array
-     */
-    protected function formatAuthor($authors)
-    {
-        if (strpos($authors, ';')) {
-            $authors = GeneralUtility::trimExplode(';', $authors);
-        }
-        $author = GeneralUtility::trimExplode(',', $authors);
-
-        return $author;
     }
 }
