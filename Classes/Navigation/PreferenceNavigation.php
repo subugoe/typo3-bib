@@ -36,8 +36,7 @@ class PreferenceNavigation extends Navigation
 {
     public function __construct(array $configuration, array $localConfiguration)
     {
-        parent::__construct($configuration);
-        $this->conf = $localConfiguration['prefNav.'];
+        parent::__construct($configuration, $localConfiguration);
         $this->configuration = $this->getItemsPerPageConfiguration($this->configuration);
         $this->configuration = $this->getAbstractConfiguration($this->configuration);
         $this->configuration = $this->getKeywordConfiguration($this->configuration);
@@ -85,11 +84,11 @@ class PreferenceNavigation extends Navigation
         $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
 
         // Available ipp values
-        $configuration['pref_ipps'] = GeneralUtility::intExplode(',', $this->conf['ipp_values']);
+        $configuration['pref_ipps'] = GeneralUtility::intExplode(',', $this->conf['prefNav.']['ipp_values']);
 
         // Default ipp value
-        if (is_numeric($this->conf['ipp_default'])) {
-            $configuration['sub_page']['ipp'] = (int) $this->conf['ipp_default'];
+        if (is_numeric($this->conf['prefNav.']['ipp_default'])) {
+            $configuration['sub_page']['ipp'] = (int) $this->conf['prefNav.']['ipp_default'];
             $configuration['pref_ipp'] = $configuration['sub_page']['ipp'];
         }
 

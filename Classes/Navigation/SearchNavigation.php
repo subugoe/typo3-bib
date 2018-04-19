@@ -168,17 +168,17 @@ class SearchNavigation extends Navigation
         return $this->extConf;
     }
 
-    public function hook_filter(array $configuration): array
+    public function hook_filter()
     {
         $strings = [];
-        if (strlen($configuration['search_navi']['string']) > 0) {
-            $delimiter = $configuration['search_navi']['sep'];
+        if (strlen($this->configuration['search_navi']['string']) > 0) {
+            $delimiter = $this->configuration['search_navi']['sep'];
             if ('none' == $delimiter) {
-                $strings[] = $configuration['search_navi']['string'];
+                $strings[] = $this->configuration['search_navi']['string'];
             } else {
                 // Explode search string
-                $delimiter = $configuration['search_navi']['all_sep'][$delimiter];
-                $strings = GeneralUtility::trimExplode($delimiter, $configuration['search_navi']['string'], true);
+                $delimiter = $this->configuration['search_navi']['all_sep'][$delimiter];
+                $strings = GeneralUtility::trimExplode($delimiter, $this->configuration['search_navi']['string'], true);
             }
         }
         $filter = [];
@@ -190,30 +190,28 @@ class SearchNavigation extends Navigation
             }
 
             $exclude = [];
-            if (!$configuration['search_navi']['abstracts']) {
+            if (!$this->configuration['search_navi']['abstracts']) {
                 $exclude[] = 'abstract';
             }
-            if (!$configuration['search_navi']['full_text']) {
+            if (!$this->configuration['search_navi']['full_text']) {
                 $exclude[] = 'full_text';
             }
 
             $all = [];
             $all['words'] = $words;
-            $all['rule'] = $configuration['search_navi']['rule'] == 'AND' ? 1 : 0;
+            $all['rule'] = $this->configuration['search_navi']['rule'] == 'AND' ? 1 : 0;
             $all['exclude'] = $exclude;
             $filter['all'] = $all;
         } else {
-            $configuration['post_items'] = LocalizationUtility::translate('searchNav_insert_request', 'bib');
+            $this->configuration['post_items'] = LocalizationUtility::translate('searchNav_insert_request', 'bib');
             if ($this->conf['clear_start']) {
                 $filter['FALSE'] = true;
             }
         }
 
         if (count($filter) > 0) {
-            $configuration['filters']['search'] = $filter;
+            $this->configuration['filters']['search'] = $filter;
         }
-
-        return $configuration;
     }
 
     /**

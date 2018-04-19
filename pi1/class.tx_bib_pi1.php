@@ -139,7 +139,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration = $this->editAction($configuration);
         $configuration = $this->exportAction($configuration);
         $configuration = $this->detailAction($configuration);
-        $configuration = $this->callAuthorNavigationHook($configuration);
         $configuration = $this->getYearNavigation($configuration);
         $configuration = $this->getPageNavigation($configuration);
         $configuration = $this->getSortFilter($configuration);
@@ -409,11 +408,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $configuration = $this->enableYearNavigation($configuration);
         }
 
-        // Author Navigation
-        if ($configuration['show_nav_author']) {
-            $configuration = $this->initializeAuthorNavigation($configuration);
-        }
-
         // Statistic Navigation
         if (\Ipf\Bib\Modes\Statistics::STAT_NONE !== (int) $configuration['stat_mode']) {
             $configuration = $this->enableStatisticsNavigation($configuration);
@@ -441,16 +435,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function enableYearNavigation(array $configuration): array
     {
         $configuration['show_nav_year'] = true;
-
-        return $configuration;
-    }
-
-    protected function initializeAuthorNavigation(array $configuration): array
-    {
-        $configuration['dynamic'] = true;
-        $configuration['author_navi'] = [];
-        $configuration['author_navi']['obj'] = $this->getAndInitializeNavigationInstance('AuthorNavigation', $configuration);
-        $configuration['author_navi']['obj']->hook_init($configuration);
 
         return $configuration;
     }
@@ -1166,18 +1150,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $configuration['single_view']['uid'] = (int) $this->piVars['show_uid'];
             unset($this->piVars['editor_mode']);
             unset($this->piVars['dialog_mode']);
-        }
-
-        return $configuration;
-    }
-
-    /**
-     * Calls the hook_filter in the author navigation instance.
-     */
-    protected function callAuthorNavigationHook(array $configuration): array
-    {
-        if ($configuration['show_nav_author']) {
-            $configuration['author_navi']['obj']->hook_filter($configuration);
         }
 
         return $configuration;

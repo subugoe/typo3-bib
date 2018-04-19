@@ -63,10 +63,11 @@ abstract class Navigation
      */
     protected $languageService;
 
-    public function __construct(array $configuration)
+    public function __construct(array $configuration, array $localConfiguration)
     {
         $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
         $this->configuration = $configuration;
+        $this->conf = $localConfiguration;
 
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(StandaloneView::class);

@@ -204,7 +204,7 @@
             <label index="authorNav_all_letters">All</label>
             <label index="authorNav_all_authors">All</label>
             <label index="authorNav_authorLinkTitle">Publications from %a</label>
-            <label index="authorNav_LetterLinkTitle">Authors with %l</label>
+            <label index="authorNav_LetterLinkTitle">Authors with %1</label>
             <label index="bibtype_plural_0">Unknown</label>
             <label index="bibtype_plural_1">Articles</label>
             <label index="bibtype_plural_10">Master theses</label>

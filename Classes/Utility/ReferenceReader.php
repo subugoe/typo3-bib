@@ -27,6 +27,7 @@ namespace Ipf\Bib\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Ipf\Bib\Domain\Model\Author;
 use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\DataException;
@@ -1071,7 +1072,7 @@ class ReferenceReader
     protected function getFilterSearchFieldsClause(array $words, array $fields)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
-
+        $where = GeneralUtility::makeInstance(ExpressionBuilder::class);
         $res = '';
         $wca = [];
 
@@ -1100,8 +1101,7 @@ class ReferenceReader
         foreach ($fields as $field) {
             if (in_array($field, $refFields)) {
                 foreach ($proc_words as $word) {
-                    $word = $this->getDatabaseConnection()->fullQuoteStr($word, self::REFERENCE_TABLE);
-                    $wca[] = self::REFERENCE_TABLE.'.'.$field.' LIKE '.$word;
+                    $wca[] = $where->like(self::REFERENCE_TABLE.'.'.$field, $queryBuilder->createNamedParameter($word));
                 }
             }
         }
@@ -1527,6 +1527,7 @@ class ReferenceReader
 
         $results = $queryBuilder->select('surname')
             ->from(self::AUTHOR_TABLE)
+            ->where($queryBuilder->expr()->in('pid', $this->pid_list))
             ->groupBy('surname')
             ->orderBy('surname', 'ASC')
             ->execute()

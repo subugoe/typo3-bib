@@ -3,9 +3,19 @@
     <div class="tx_bib-navi_author_letters">
         <f:link.page additionalParams="{tx_bib_pi1: {author_letter: ''}}"><f:translate key="authorNav_all_letters" extensionName="bib" /></f:link.page> ::
         <f:for each="{letterSelection}" as="letter">
-            <f:link.page additionalParams="{tx_bib_pi1: {author_letter: letter}}">{letter}</f:link.page>,
+            <span class="tx_bib-navi_current"></span>
+            <f:link.page additionalParams="{tx_bib_pi1: {author_letter: letter}}" title="{f:translate(key: 'authorNav_LetterLinkTitle', extensionName: 'bib', arguments: {1: letter})}">
+                <f:if condition="{0: letter} == {0: currentLetter}">
+                    <f:then>
+                        <span class="tx_bib-navi_current">{letter}</span>
+                    </f:then>
+                    <f:else>
+                        {letter}
+                    </f:else>
+                </f:if>
+            </f:link.page>,
         </f:for>
-        <span class="tx_bib-navi_current">&nbsp;</span></div>
+    </div>
 </div>
 
 <div class="tx_bib-navi_extra_row">
