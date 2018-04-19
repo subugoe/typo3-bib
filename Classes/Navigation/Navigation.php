@@ -30,6 +30,7 @@ namespace Ipf\Bib\Navigation;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Lang\LanguageService;
 
 /**
@@ -37,18 +38,6 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 abstract class Navigation
 {
-    /**
-     * @var \tx_bib_pi1
-     */
-    public $pi1;
-
-    /**
-     * The template string.
-     *
-     * @var string
-     */
-    public $template;
-
     /**
      * @var array
      */
@@ -106,7 +95,7 @@ abstract class Navigation
      *
      * @return mixed
      */
-    abstract protected function sel_get_link($text, $index);
+    abstract protected function sel_get_link(string $text, $index);
 
     /**
      * Returns a selection translator.
@@ -119,7 +108,7 @@ abstract class Navigation
      */
     protected function selection(array $cfgSel, array $indices, int $numSel): string
     {
-        $cObj = $this->pi1->cObj;
+        $cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
         $sel = [
             'prev' => [],
@@ -139,9 +128,8 @@ abstract class Navigation
         }
 
         // Number of items to display in the selection - must be odd
-        $numSel = intval($numSel);
         $numSel = ($numSel % 2) ? $numSel : ($numSel + 1);
-        $numLR = intval(($numSel - 1) / 2);
+        $numLR = (int) ($numSel - 1) / 2;
 
         $idxMin = $idxMin + 1;
 
@@ -243,8 +231,4 @@ abstract class Navigation
 
         return $res;
     }
-}
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php']) {
-    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/Navigation.php'];
 }

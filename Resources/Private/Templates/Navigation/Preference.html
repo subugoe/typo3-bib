@@ -1,13 +1,32 @@
-
-<!-- ###PREF_NAVI_BLOCK### begin -->
 <div class="tx_bib-navi_pref">
-	{formStart -> f:format.raw()}
-		<div class="tx_bib-navi_main_label">{label}<span class="tx_bib-navi_current">&nbsp;</span></div>
-		{itemsPerPageSelection -> f:format.raw()}
-		{showKeywords -> f:format.raw()}
-		{showAbstracts -> f:format.raw()}
-		{goButton -> f:format.raw()}
-		<div class="tx_bib-float_clear"></div>
-	</form>
+    <form name="tx_bib_pi1-preferences_form"
+          action="{f:uri.page(additionalParams: {tx_bib_pi1: {items_per_page: '', show_abstracts: '', show_keywords: ''}})}"
+          method="post" class="tx_bib-navi_pref_form">
+        <div class="tx_bib-navi_pref_top">
+            <div class="tx_bib-navi_main_label">
+                <f:translate key="prefNav_label" extensionName="bib"/>
+                <span class="tx_bib-navi_current">&nbsp;</span>
+            </div>
+        </div>        <div class="tx_bib-navi_pref_bottom">
+
+            <span class="tx_bib-navi_widget">
+                <span class="tx_bib-navi_label"><label for=""><f:translate key="prefNav_ipp_sel" extensionName="bib" /></label>:</span>
+                <f:form.select class="tx_bib-select" name="tx_bib_pi1[items_per_page]" options="{5: 5,10: 10,20: 20,30: 30,40: 40,50: 50}" value="10" additionalAttributes="{onchange: 'this.form.submit()'}"/>
+            </span>
+
+            <span class="tx_bib-navi_widget">
+                <label class="tx_bib-navi_label" for="show_keywords"><f:translate key="prefNav_show_keywords" extensionName="bib"/></label>
+                <f:form.checkbox class="tx_bib-check" checked="{hideFields.keywords == false}" id="show_keywords" name="tx_bib_pi1[show_keywords]" value="1" additionalAttributes="{onchange: 'this.form.submit()'}"/>
+            </span>
+
+
+            <span class="tx_bib-navi_widget">
+                <label class="tx_bib-navi_label" for="show_abstracts"><f:translate key="prefNav_show_abstracts" extensionName="bib"/></label>
+                <f:form.checkbox class="tx_bib-check" checked="{hideFields.abstract == false}" id="show_abstracts" name="tx_bib_pi1[show_abstracts]" value="1" additionalAttributes="{onchange: 'this.form.submit()'}"/>
+            </span>
+            <f:form.submit class="tx_bib-button" name="tx_bib_pi1[action][eval_pref]" value="{f:translate(key:'button_go', extensionName:'bib')}" />
+        </div>
+        <div class="tx_bib-float_clear"></div>
+    </div>
+    </form>
 </div>
-<!-- ###PREF_NAVI_BLOCK### end -->

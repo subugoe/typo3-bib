@@ -28,6 +28,9 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 use Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class YearNavigation.
@@ -41,7 +44,6 @@ class YearNavigation extends Navigation
      */
     public function initialize($pi1)
     {
-        parent::initialize($pi1);
         if (is_array($pi1->conf['yearNav.'])) {
             $this->conf = &$pi1->conf['yearNav.'];
         }
@@ -89,9 +91,11 @@ class YearNavigation extends Navigation
      */
     public function get(): string
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+
         // The label
-        $label = $this->languageService->getLL('yearNav_label');
-        $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
+        $label = LocalizationUtility::translate('yearNav_label', 'bib');
+        $label = $contentObjectRenderer->stdWrap($label, $this->conf['label.']);
 
         $this->view
             ->assign('label', $label)
@@ -116,8 +120,8 @@ class YearNavigation extends Navigation
             }
             $delimiter = $this->pi1->cObj->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
 
-            $txt = $this->languageService->getLL('yearNav_all_years', 'All');
-            if (is_numeric($this->pi1->extConf['year'])) {
+            $txt = LocalizationUtility::translate('yearNav_all_years', 'bib');
+            if (is_numeric($this->configuration['year'])) {
                 $txt = $this->pi1->get_link($txt, ['year' => 'all']);
             } else {
                 $txt = $this->pi1->cObj->stdWrap($txt, $selectionConfiguration['current.']);

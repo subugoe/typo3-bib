@@ -7,6 +7,7 @@ use Ipf\Bib\Modes\Display;
 use Ipf\Bib\Modes\Sort;
 use Ipf\Bib\Navigation\AuthorNavigation;
 use Ipf\Bib\Navigation\PageNavigation;
+use Ipf\Bib\Navigation\PreferenceNavigation;
 use Ipf\Bib\Navigation\SearchNavigation;
 use Ipf\Bib\Navigation\StatisticsNavigation;
 use Ipf\Bib\Navigation\YearNavigation;
@@ -41,7 +42,7 @@ class ListView extends View
         $this->view->assign('searchNavigation', $this->setupSearchNavigation());
         $this->view->assign('yearNavigation', $this->setupYearNavigation());
         $this->view->assign('authorNavigation', $this->setupAuthorNavigation());
-        $this->view->assign('preferenceNavigation', $this->setupPreferenceNavigation());
+        $this->view->assign('preferenceNavigation', $this->setupPreferenceNavigation($localConfiguration));
         $this->view->assign('pageNavigation', $this->setupPageNavigation());
         $this->view->assign('statisticsNavigation', $this->setupStatisticsNavigation());
         $this->view->assign('items', $this->setupItems());
@@ -52,6 +53,7 @@ class ListView extends View
     private function setupSearchNavigation()
     {
         $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->extConf);
+        $searchNavigation->hook_filter($this->extConf);
         $searchNavigation->hook_init();
 
         return $searchNavigation->get();
@@ -90,12 +92,14 @@ class ListView extends View
     /**
      * Sets up the preferences navigation bar.
      */
-    private function setupPreferenceNavigation()
+    private function setupPreferenceNavigation(array $localConfiguration)
     {
         $trans = '';
 
         if ($this->extConf['show_nav_pref']) {
-            return $this->extConf['pref_navi']['obj']->translator();
+            $preferenceNavigation = GeneralUtility::makeInstance(PreferenceNavigation::class, $this->extConf, $localConfiguration);
+
+            return $preferenceNavigation->get();
         }
 
         return $trans;

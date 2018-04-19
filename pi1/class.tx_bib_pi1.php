@@ -152,7 +152,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration = $this->editAction($configuration);
         $configuration = $this->exportAction($configuration);
         $configuration = $this->detailAction($configuration);
-        $configuration = $this->callSearchNavigationHook($configuration);
         $configuration = $this->callAuthorNavigationHook($configuration);
         $configuration = $this->getYearNavigation($configuration);
         $configuration = $this->getPageNavigation($configuration);
@@ -418,11 +417,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function setupNavigations(array $configuration): array
     {
-        // Search Navigation
-        if ($configuration['show_nav_search']) {
-            $configuration = $this->initializeSearchNavigation($configuration);
-        }
-
         // Year Navigation
         if (\Ipf\Bib\Modes\Display::D_Y_NAV === (int) $configuration['d_mode']) {
             $configuration = $this->enableYearNavigation($configuration);
@@ -431,11 +425,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         // Author Navigation
         if ($configuration['show_nav_author']) {
             $configuration = $this->initializeAuthorNavigation($configuration);
-        }
-
-        // Preference Navigation
-        if ($configuration['show_nav_pref']) {
-            $configuration = $this->initializePreferenceNavigation($configuration);
         }
 
         // Statistic Navigation
@@ -447,16 +436,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         if ($configuration['show_nav_export']) {
             $configuration = $this->getExportNavigation($configuration);
         }
-
-        return $configuration;
-    }
-
-    protected function initializeSearchNavigation(array $configuration): array
-    {
-        $configuration['dynamic'] = true;
-        $configuration['search_navi'] = [];
-        $configuration['search_navi']['obj'] = $this->getAndInitializeNavigationInstance('SearchNavigation', $configuration);
-        $configuration['search_navi']['obj']->hook_init($configuration);
 
         return $configuration;
     }
@@ -485,15 +464,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration['author_navi'] = [];
         $configuration['author_navi']['obj'] = $this->getAndInitializeNavigationInstance('AuthorNavigation', $configuration);
         $configuration['author_navi']['obj']->hook_init($configuration);
-
-        return $configuration;
-    }
-
-    protected function initializePreferenceNavigation(array $configuration): array
-    {
-        $configuration['pref_navi'] = [];
-        $configuration['pref_navi']['obj'] = $this->getAndInitializeNavigationInstance('PreferenceNavigation', $configuration);
-        $configuration['pref_navi']['obj']->hook_init($configuration);
 
         return $configuration;
     }
@@ -1209,18 +1179,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $configuration['single_view']['uid'] = (int) $this->piVars['show_uid'];
             unset($this->piVars['editor_mode']);
             unset($this->piVars['dialog_mode']);
-        }
-
-        return $configuration;
-    }
-
-    /**
-     * Calls the hook_filter in the search navigation instance.
-     */
-    protected function callSearchNavigationHook(array $configuration): array
-    {
-        if ($configuration['show_nav_search']) {
-            $configuration['search_navi']['obj']->hook_filter($configuration);
         }
 
         return $configuration;

@@ -376,47 +376,7 @@ plugin.tx_bib_pi1 {
 
     # Preferences Navigation
     prefNav {
-        template = EXT:bib/Resources/Private/Templates/Navigation/Preference.html
-
-        # Page label and wrap
-        label.wrap = |:
-
-        ipp {
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            label.wrap = <span class="tx_bib-navi_label">|:</span>
-            select_class = tx_bib-select
-            #select.wrap = |
-        }
-
-        abstract {
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            label.wrap = <span class="tx_bib-navi_label">|</span>
-            btn_class = tx_bib-check
-            #btn.wrap = |
-        }
-
-        keywords {
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            label.wrap = <span class="tx_bib-navi_label">|</span>
-            btn_class = tx_bib-check
-            #btn.wrap = |
-        }
-
-        # Classes or the ipp selection form
-        form_class = tx_bib-navi_pref_form
-        go_btn_class = tx_bib-button
-
-        #go_btn.wrap = |
-
-        # Item per page values
-        ipp_values = 5,10,20,30,40,50
         ipp_default = 10
-
-        top_disable = 0
-        bottom_disable = 1
-
-        top.wrap = <div class="tx_bib-navi_pref_top">|</div>
-        bottom.wrap = <div class="tx_bib-navi_pref_bottom">|</div>
     }
 
     # Page naviagation
