@@ -15,6 +15,7 @@ class ImportView extends View
     {
         /** @var FlashMessageQueue $flashMessageQueue */
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
+        $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/GeneralImport.html');
 
         if ((Importer::IMP_BIBTEX === $mode) || (Importer::IMP_XML === $mode)) {
             switch ($mode) {

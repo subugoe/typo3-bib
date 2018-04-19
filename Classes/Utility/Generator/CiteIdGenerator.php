@@ -27,8 +27,11 @@ namespace Ipf\Bib\Utility\Generator;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
+use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
  * Class CiteIdGenerator.
@@ -40,21 +43,22 @@ class CiteIdGenerator
      */
     public $referenceReader;
 
+    public function __construct(array $configuration)
+    {
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
+    }
+
     /**
-     * Generates a cite id for the publication in piVars['DATA'].
-     *
-     * @param array $row
-     *
-     * @return string The generated id
+     * Generates a cite id for the publication].
      */
-    public function generateId($row)
+    public function generateId(Reference $row): string
     {
         $id = $this->generateBasicId($row);
         $tmpId = $id;
 
         $uid = -1;
-        if (array_key_exists('uid', $row) && ($row['uid'] >= 0)) {
-            $uid = intval($row['uid']);
+        if ($row->getUid() >= 0) {
+            $uid = $row->getUid();
         }
 
         $num = 1;
@@ -62,19 +66,28 @@ class CiteIdGenerator
             ++$num;
             $tmpId = $id.'_'.$num;
         }
+        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
+        $signalSlotDispatcher->dispatch(
+            __CLASS__,
+            'beforeCiteIdGeneration',
+            [
+                'bib',
+                $this,
+            ]
+        );
 
         return $tmpId;
     }
 
     /**
-     * @param array $row
+     * @param Reference $row
      *
      * @return string
      */
-    protected function generateBasicId($row)
+    private function generateBasicId(Reference $row): string
     {
-        $authors = $row['authors'];
-        $editors = Utility::explodeAuthorString($row['editor']);
+        $authors = $row->getAuthors();
+        $editors = Utility::explodeAuthorString($row->getEditor());
 
         $persons = [$authors, $editors];
 
@@ -116,8 +129,8 @@ class CiteIdGenerator
         if (0 === strlen($id)) {
             $id = GeneralUtility::shortMD5(serialize($row));
         }
-        if ($row['year'] > 0) {
-            $id .= $row['year'];
+        if ($row->getYear() > 0) {
+            $id .= $row->getYear();
         }
 
         return $this->simplifiedString($id);
@@ -131,7 +144,7 @@ class CiteIdGenerator
      *
      * @return string The simplified string
      */
-    protected function simplifiedString($id)
+    protected function simplifiedString(string $id): string
     {
         // Replace some special characters with ASCII characters
         $id = htmlentities($id, ENT_QUOTES);

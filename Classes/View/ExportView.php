@@ -2,6 +2,8 @@
 
 namespace Ipf\Bib\View;
 
+use Ipf\Bib\Utility\Exporter\BibTexExporter;
+use Ipf\Bib\Utility\Exporter\XmlExporter;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -14,23 +16,23 @@ class ExportView extends View
         /** @var FlashMessageQueue $flashMessageQueue */
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
 
+        $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Exporter/Exporter.html');
+
         $mode = $configuration['export_navi']['do'];
-        $content = '<h2>'.$this->pi_getLL('export_title').'</h2>';
 
         $label = '';
         switch ($mode) {
             case 'bibtex':
-                $exporterClass = \Ipf\Bib\Utility\Exporter\BibTexExporter::class;
+                $exporter = GeneralUtility::makeInstance(BibTexExporter::class, $configuration);
                 $label = 'export_bibtex';
                 break;
             case 'xml':
-                $exporterClass = \Ipf\Bib\Utility\Exporter\XmlExporter::class;
+                $exporter = GeneralUtility::makeInstance(XmlExporter::class, $configuration);
                 $label = 'export_xml';
                 break;
             default:
-                /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
                 $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
+                    FlashMessage::class,
                     'Unknown export mode',
                     '',
                     FlashMessage::ERROR
@@ -38,13 +40,11 @@ class ExportView extends View
                 $flashMessageQueue->addMessage($message);
         }
 
-        /** @var \Ipf\Bib\Utility\Exporter\Exporter $exporter */
-        $exporter = GeneralUtility::makeInstance($exporterClass);
-        $label = $this->pi_getLL($label, $label, true);
+        $this->view->assign('label', $label);
 
         if ($exporter instanceof \Ipf\Bib\Utility\Exporter\Exporter) {
             try {
-                $exporter->initialize($this);
+                $exporter->initialize($configuration);
             } catch (\Exception $e) {
                 $message = GeneralUtility::makeInstance(
                     \TYPO3\CMS\Core\Messaging\FlashMessage::class,
@@ -68,11 +68,11 @@ class ExportView extends View
                 if ($dynamic) {
                     $this->dumpExportDataAndExit($exporter);
                 } else {
-                    $content .= $this->createLinkToExportFile($exporter);
+                    $content = $this->createLinkToExportFile($exporter);
                 }
-            } catch (\TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException $e) {
+            } catch (\Exception $e) {
                 $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
+                    FlashMessage::class,
                     $e->getMessage(),
                     '',
                     FlashMessage::ERROR
@@ -81,7 +81,9 @@ class ExportView extends View
             }
         }
 
-        return $content;
+        $this->view->assign('content', $content);
+
+        return $this->view->render();
     }
 
     /**

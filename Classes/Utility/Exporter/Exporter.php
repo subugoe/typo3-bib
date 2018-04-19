@@ -30,6 +30,7 @@ namespace Ipf\Bib\Utility\Exporter;
 use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Resource\Exception\FileOperationErrorException;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Exporter.
@@ -94,24 +95,26 @@ abstract class Exporter
     /**
      * @var array
      */
-    protected $extensionManagerConfiguration;
+    protected $configuration;
+
+    public function __construct(array $configuration)
+    {
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
+        $this->configuration = $configuration;
+    }
 
     /**
-     * Initializes the export. The argument must be the plugin class.
-     *
-     * @param \tx_bib_pi1 $pi1
+     * Initializes the export.
      */
-    public function initialize($pi1)
+    public function initialize()
     {
-        $this->pi1 = &$pi1;
-        $this->setReferenceReader($pi1->referenceReader);
         $this->setupFilters();
         $this->setupExportFile();
     }
 
     protected function setupFilters()
     {
-        $this->setFilters($this->pi1->extConf['filters']);
+        $this->setFilters($this->configuration['filters']);
         unset($this->filters['br_page']);
 
         // The filter key is used for the filename
@@ -141,7 +144,7 @@ abstract class Exporter
         // Initialize sink
         if ($this->isResourceReady()) {
             // Initialize db access
-            $this->getReferenceReader()->set_filters($this->getFilters());
+            $this->referenceReader->set_filters($this->getFilters());
             $references = $this->getReferenceReader()->getAllReferences();
 
             // Setup info array
@@ -414,27 +417,20 @@ abstract class Exporter
     /**
      * Returns a general information text for the exported dataset.
      *
-     * @param array
-     *
      * @return string A filter information string
      */
-    protected function getGeneralInformationText($infoArr = [])
+    protected function getGeneralInformationText()
     {
-        $num = intval($infoArr['pubNum']);
+        $num = ReferenceReader::getNumberOfPublications();
 
-        $content = 'This file was created by the TYPO3 extension'.PHP_EOL;
-        $content .= 'bib';
-        if (is_array($this->extensionManagerConfiguration)) {
-            $content .= ' version '.$this->extensionManagerConfiguration['version'].PHP_EOL;
-        }
+        $content = 'This file was created by the TYPO3 extension bib';
         $content .= PHP_EOL;
         $content .= '--- Timezone: '.date('T').PHP_EOL;
         $content .= 'Creation date: '.date('Y-m-d').PHP_EOL;
         $content .= 'Creation time: '.date('H-i-s').PHP_EOL;
 
         if ($num >= 0) {
-            $content .= '--- Number of references'.PHP_EOL;
-            $content .= ''.$num.PHP_EOL;
+            $content .= '--- Number of references: '.$num.PHP_EOL;
             $content .= ''.PHP_EOL;
         }
 

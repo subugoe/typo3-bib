@@ -37,7 +37,6 @@ use Ipf\Bib\Modes\Dialog;
 use Ipf\Bib\Modes\Editor;
 use Ipf\Bib\Service\ItemTransformerService;
 use Ipf\Bib\Utility\DbUtility;
-use Ipf\Bib\Utility\Generator\AuthorsCiteIdGenerator;
 use Ipf\Bib\Utility\Generator\CiteIdGenerator;
 use Ipf\Bib\Utility\ReferenceReader;
 use Ipf\Bib\Utility\ReferenceWriter;
@@ -144,22 +143,12 @@ class EditorView extends View
 
         // setup db_utility
         /** @var \Ipf\Bib\Utility\DbUtility $databaseUtility */
-        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class);
-        $databaseUtility->initialize($this->referenceReader);
+        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $configuration);
         $databaseUtility->readFullTextGenerationConfiguration($this->conf['full_text.']);
 
         $this->databaseUtility = $databaseUtility;
 
-        // Create an instance of the citeid generator
-        if (isset($this->conf['citeid_generator_file'])) {
-            $ext_file = $GLOBALS['TSFE']->tmpl->getFileName($this->conf['citeid_generator_file']);
-            if (file_exists($ext_file)) {
-                require_once $ext_file;
-                $this->idGenerator = GeneralUtility::makeInstance(AuthorsCiteIdGenerator::class);
-            }
-        } else {
-            $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class);
-        }
+        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $configuration);
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Editor/Index.html');
         $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
@@ -218,9 +207,7 @@ class EditorView extends View
 
                 // Load publication data from database
                 $pub_db = $this->referenceReader->getPublicationDetails($uid);
-                if ($pub_db) {
-                    $publicationData = array_merge($publicationData, $pub_db);
-                } else {
+                if (!$pub_db) {
                     throw new DataException(sprintf('No publication with uid %d exists.', $uid), 1524043201);
                 }
             }
@@ -247,9 +234,9 @@ class EditorView extends View
             }
         }
 
-        $publicationData = $this->generateCiteIdOnDemand($generateCiteIdRequest, $publicationData);
+        $pub_http->setCiteid($this->generateCiteIdOnDemand($generateCiteIdRequest, $pub_http));
 
-        $authorCounter = $publicationData['authors'] ?? 0;
+        $authorCounter = count($pub_http->getAuthors());
 
         // Determine the number of authors
         $getPostVariables['editor']['numAuthors'] = max(
@@ -445,8 +432,8 @@ class EditorView extends View
         $deleteButton = '';
 
         if (!$this->isNew) {
-            if ((Editor::EDIT_SHOW !== (int) $this->configuration['editor_mode']) && (Editor::EDIT_CONFIRM_SAVE !== (int) $this->configuration['editor_mode'])
-            ) {
+            if ((Editor::EDIT_SHOW !== (int) $this->configuration['editor_mode'])
+                && (Editor::EDIT_CONFIRM_SAVE !== (int) $this->configuration['editor_mode'])) {
                 $deleteButton = 'confirm_delete';
             }
             if (Editor::EDIT_CONFIRM_DELETE === (int) $this->configuration['editor_mode']) {
@@ -1223,7 +1210,7 @@ class EditorView extends View
         return $content;
     }
 
-    private function generateCiteIdOnDemand(bool $generateCiteIdRequest, array $publicationData): array
+    private function generateCiteIdOnDemand(bool $generateCiteIdRequest, Reference $publicationData): string
     {
         if ($this->isNew) {
             // Generate cite id for new entries
@@ -1243,16 +1230,16 @@ class EditorView extends View
             // Generate cite id for already existing (old) entries
             $auto_id = $this->configuration['editor']['citeid_gen_old'];
             if (($generateCiteIdRequest && (AutoId::AUTOID_HALF === $auto_id))
-                || (0 === strlen($publicationData['citeid']))
+                || (0 === strlen($publicationData->getCiteid()))
             ) {
                 $generateCiteId = true;
             }
         }
         if ($generateCiteId) {
-            $publicationData['citeid'] = $this->idGenerator->generateId($publicationData);
+            return $this->idGenerator->generateId($publicationData);
         }
 
-        return $publicationData;
+        return '';
     }
 
     private function determineWidgetMode(): void
@@ -1385,23 +1372,24 @@ class EditorView extends View
             $rows_silent = '';
             $rows_hidden = '';
 
-            $reflection = new \ReflectionObject($publicationData);
+            $reflectionObject = new \ReflectionObject($publicationData);
 
-            foreach ($fields[$fieldGroup] as $ff) {
+            foreach ($reflectionObject->getProperties() as $ff) {
+                $ff->setAccessible(true);
                 // Field label
-                $label = $this->fieldLabel($ff, $bib_str);
+                $label = $this->fieldLabel($ff->getName(), $bib_str);
 
                 // Adjust the widget mode on demand
-                $wm = $this->getWidgetMode($ff, $this->widgetMode);
+                $wm = $this->getWidgetMode($ff->getName(), $this->widgetMode);
 
                 // Field value widget
                 $widget = '';
-                switch ($ff) {
+                switch ($ff->getName()) {
                     case 'citeid':
                         if (AutoId::AUTOID_FULL === (int) $this->configuration['editor']['citeid_gen_new']) {
-                            $widget .= $this->getWidget($ff, $publicationData->getCiteid(), $wm);
+                            $widget .= $this->getWidget($ff->getName(), $publicationData->getCiteid(), $wm);
                         } else {
-                            $widget .= $this->getWidget($ff, $publicationData->getCiteid(), $wm);
+                            $widget .= $this->getWidget($ff->getName(), $publicationData->getCiteid(), $wm);
                         }
                         // Add the id generation button
                         if ($this->isNew) {
@@ -1425,9 +1413,9 @@ class EditorView extends View
                     case 'day':
                         break;
                     default:
-                        $widget .= $this->getWidget($ff, $publicationData[$ff], $wm);
+                        $widget .= $this->getWidget($ff->getName(), $ff->getValue($publicationData), $wm);
                 }
-                if ('bibtype' === $ff) {
+                if ('bibtype' === $ff->getName()) {
                     $widget .= $this->getUpdateButton();
                 }
 

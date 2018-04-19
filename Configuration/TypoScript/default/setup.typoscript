@@ -167,35 +167,9 @@ plugin.tx_bib_pi1 {
         }
     }
 
-    # CSS classes
-    classes {
-        even = tx_bib-item_even
-        odd = tx_bib-item_odd
-    }
-
     # Search navigation
     searchNav {
-        template = EXT:bib/Resources/Private/Templates/Navigation/Search.html
-
-        # Year label wrap
-        label.wrap = |:
-
-        # Classes or the year selection form
-        form_class = tx_bib-search_form
-
-        #form.wrap = |
-        search {
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            input.wrap = |&nbsp;
-            input_size = 42
-            input_maxlength = 2048
-            search_btn_class = tx_bib-button
-            #search_btn.wrap = |
-            clear_btn_class = tx_bib-button
-            #clear_btn.wrap = |
-        }
-
-        # Show details default
+          # Show details default
         extra {
             def = 0
             widget.wrap = <span class="tx_bib-navi_widget">|</span>
@@ -253,8 +227,6 @@ plugin.tx_bib_pi1 {
 
     # Year navigation
     yearNav {
-        template = EXT:bib/Resources/Private/Templates/Navigation/Year.html
-
         # Year label wrap
         label.wrap = |:
 
@@ -318,20 +290,8 @@ plugin.tx_bib_pi1 {
         select_class = tx_bib-select
         go_btn_class = tx_bib-button
 
-        #form.wrap = |
-        #go_btn.wrap = |
-        #select.wrap = |
-
         # Letter selection
         letters {
-            # Letter separator
-            separator = ,
-            separator.noTrimWrap = || |
-
-            # Separator between ALL and list
-            all_sep = ::
-            all_sep.noTrimWrap = | | |
-
             # Wraps for the current letter and the pages below and above
             current.wrap = <span class="tx_bib-navi_current">|</span>
 
@@ -505,8 +465,6 @@ plugin.tx_bib_pi1 {
     # Single View
     single_view {
         title.wrap = <h2 style="display: none;">|</h2>
-
-        template = EXT:bib/Resources/Private/Templates/single_view.html
         dont_show = pid,uid,reviewed,in_library,borrowed_by,citeid
 
         all_labels.wrap = |:
@@ -534,25 +492,12 @@ plugin.tx_bib_pi1 {
 
         # Warnings during list view
         list {
-            # Manipulator configuration
-            manipulators {
-                all.wrap = <div class="tx_bib-manipulator_block">|</div>
-                hide.wrap = <div class="tx_bib-manip">|</div>
-                edit.wrap = <div class="tx_bib-manip">|</div>
-                new.wrap = <div class="tx_bib-manip">|</div>
-            }
-
             # Wrap hidden references that are displayed anyway
             hidden.wrap = <div class="tx_bib-editor_hidden">|</div>
 
             # Data checks
             warnings {
                 file_nexist = 1
-            }
-
-            warn_box {
-                msg.wrap = <p>|</p>
-                all_wrap.wrap = <div class="tx_bib-warning_box">|</div>
             }
         }
 

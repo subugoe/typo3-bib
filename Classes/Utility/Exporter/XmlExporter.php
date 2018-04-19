@@ -45,12 +45,9 @@ class XmlExporter extends Exporter
      */
     protected $replacement = [];
 
-    /**
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
+    public function initialize()
     {
-        parent::initialize($pi1);
+        parent::initialize();
 
         $this->pattern[] = '/&/';
         $this->replacement[] = '&amp;';
@@ -59,7 +56,7 @@ class XmlExporter extends Exporter
         $this->pattern[] = '/>/';
         $this->replacement[] = '&gt;';
 
-        $this->setFileName($this->pi1->extKey.'_'.$this->filterKey.'.xml');
+        $this->setFileName('bib_'.$this->filterKey.'.xml');
     }
 
     /**

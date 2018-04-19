@@ -42,19 +42,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     public $extKey = 'bib';
     public $pi_checkCHash = false;
 
-    // Sorting modes
-    public $prefixShort = 'tx_bib';
-    public $prefix_pi1 = 'tx_bib_pi1';
-    /**
-     * @var string
-     */
-    public $template;
-
-    /**
-     * @var string
-     */
-    public $itemTemplate;
-
     /**
      * These are derived/extra configuration values.
      *
@@ -936,7 +923,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     true
                 );
                 foreach ($words as $word) {
-                    $word = $this->referenceReader->getSearchTerm($word);
+                    $word = \Ipf\Bib\Utility\ReferenceReader::getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
                 $this->extConf['filters']['flexform']['tags'] = $flexFormFilter;
@@ -960,7 +947,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
                 foreach ($words as &$word) {
-                    $word = $this->referenceReader->getSearchTerm($word);
+                    $word = \Ipf\Bib\Utility\ReferenceReader::getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
                 $configuration['filters']['flexform']['keywords'] = $flexFormFilter;
@@ -984,7 +971,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
                 foreach ($words as &$word) {
-                    $word = $this->referenceReader->getSearchTerm($word);
+                    $word = \Ipf\Bib\Utility\ReferenceReader::getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
                 $configuration['filters']['flexform']['all'] = $flexFormFilter;
@@ -1432,100 +1419,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             default:
                 throw new \Exception('An illegal view mode occurred', 1379064350);
         }
-    }
-
-    /**
-     * Wraps the content into a link to the current page with
-     * extra link arguments given in the array $linkVariables.
-     *
-     * @param string $content
-     * @param array  $linkVariables
-     * @param bool   $autoCache
-     * @param array  $attributes
-     *
-     * @return string The link to the current page
-     */
-    public function get_link($content, $linkVariables = [], $autoCache = true, $attributes = null)
-    {
-        $url = $this->get_link_url($linkVariables, $autoCache);
-
-        return $this->composeLink($url, $content, $attributes);
-    }
-
-    /**
-     * Same as get_link but returns just the URL.
-     *
-     * @param array $linkVariables
-     * @param bool  $autoCache
-     * @param bool  $currentRecord
-     *
-     * @return string The url
-     */
-    public function get_link_url($linkVariables = [], $autoCache = true, $currentRecord = true)
-    {
-        $contentObjectRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
-
-        if ($this->extConf['edit_mode']) {
-            $autoCache = false;
-        }
-
-        $linkVariables = array_merge($this->extConf['link_vars'], $linkVariables);
-        $linkVariables = [$this->prefix_pi1 => $linkVariables];
-
-        $record = '';
-        if ($this->extConf['ce_links'] && $currentRecord) {
-            $record = '#c'.strval($contentObjectRenderer->data['uid']);
-        }
-
-        $this->pi_linkTP('x', $linkVariables, $autoCache);
-        $url = $contentObjectRenderer->lastTypoLinkUrl.$record;
-
-        $url = preg_replace('/&([^;]{8})/', '&amp;\\1', $url);
-
-        return $url;
-    }
-
-    /**
-     * Composes a link of an url an some attributes.
-     *
-     * @param string $url
-     * @param string $content
-     * @param array  $attributes
-     *
-     * @return string The link (HTML <a> element)
-     */
-    protected function composeLink($url, $content, $attributes = null)
-    {
-        $linkString = '<a href="'.$url.'"';
-        if (is_array($attributes)) {
-            foreach ($attributes as $k => $v) {
-                $linkString .= ' '.$k.'="'.$v.'"';
-            }
-        }
-        $linkString .= '>'.$content.'</a>';
-
-        return $linkString;
-    }
-
-    /**
-     * Same as get_link_url() but for edit mode urls.
-     *
-     * @param array $linkVariables
-     * @param bool  $autoCache
-     * @param bool  $currentRecord
-     *
-     * @return string The url
-     */
-    public function get_edit_link_url($linkVariables = [], $autoCache = true, $currentRecord = true)
-    {
-        $parametersToBeKept = ['uid', 'editor_mode', 'editor'];
-        foreach ($parametersToBeKept as $parameter) {
-            if (is_string($this->piVars[$parameter]) || is_array($this->piVars[$parameter]) || is_numeric($this->piVars[$parameter])) {
-                $linkVariables[$parameter] = $this->piVars[$parameter];
-            }
-        }
-
-        return $this->get_link_url($linkVariables, $autoCache, $currentRecord);
     }
 }
 

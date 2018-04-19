@@ -1,5 +1,5 @@
 <div class="tx_bib-navi_search">
-    <f:form name="tx_bib_pi1-search_form" method="post"
+    <form name="tx_bib_pi1-search_form" method="post" class="tx_bib-search_form"
             action="{f:uri.page(additionalParams: {tx_bib_pi1: {search: ''}})}">
 
         <div class="tx_bib-navi_main_label">
@@ -44,5 +44,5 @@
             <f:form.hidden value="{configuration.search_navi.full_text}" name="full_text"/>
         </f:if>
 
-    </f:form>
+    </form>
 </div>

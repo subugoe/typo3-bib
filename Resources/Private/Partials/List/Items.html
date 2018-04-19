@@ -3,36 +3,6 @@
 </td>
 
 <td class="tx_bib-item_even">
-
-    <f:if condition="{editmode}">
-        <table class="tx_bib-layout">
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="tx_bib-manip">
-                            <f:link.page class="edit-record" title="{f:translate(key:'manipulators_edit')}"
-                                         additionalParams="{tx_bib_pi1: {action: {edit: 1}}, uid: item.uid}"> </f:link.page>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="tx_bib-manip">
-                            <f:if condition="{item.hidden}">
-                                <f:link.page class="reveal-record" title="{f:translate(key:'manipulators_reveal')}"
-                                             additionalParams="{tx_bib_pi1: {action: {reveal: 1}, uid: item.uid}}"> </f:link.page>
-                                <f:else>
-                                    <f:link.page class="hide-record" title="{f:translate(key:'manipulators_hide')}"
-                                                 additionalParams="{tx_bib_pi1: {action: {hide: 1}, uid: item.uid}}"> </f:link.page>
-
-                                </f:else>
-                            </f:if>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </f:if>
     <f:if condition="{item.authors -> f:count() > 0}">
         <div class="tx_bib-authors">
             <f:for each="{item.authors}" as="author">
@@ -133,4 +103,37 @@
     <f:render partial="Type/Report"/>
     <f:render partial="Type/Manuscript"/>
 
+</f:if>
+<f:if condition="{editmode}">
+    <td>
+        <table class="tx_bib-layout">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="tx_bib-manip">
+                            <f:link.page class="edit-record" title="{f:translate(key:'manipulators_edit')}"
+                                         additionalParams="{tx_bib_pi1: {action: {edit: 1}, uid: item.uid}}"> </f:link.page>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="tx_bib-manipulator_block">
+                        <div class="tx_bib-manip">
+                            <f:if condition="{item.hidden}">
+                                <f:link.page class="reveal-record" title="{f:translate(key:'manipulators_reveal')}"
+                                             additionalParams="{tx_bib_pi1: {action: {reveal: 1}, uid: item.uid}}"> </f:link.page>
+                                <f:else>
+                                    <f:link.page class="hide-record" title="{f:translate(key:'manipulators_hide')}"
+                                                 additionalParams="{tx_bib_pi1: {action: {hide: 1}, uid: item.uid}}"> </f:link.page>
+
+                                </f:else>
+                            </f:if>
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
 </f:if>

@@ -119,8 +119,7 @@ abstract class Importer
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
 
-        $this->referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class);
-        $this->referenceWriter->initialize($this->referenceReader);
+        $this->referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class, $this->configuration);
 
         $this->statistics['warnings'] = [];
         $this->statistics['errors'] = [];
@@ -128,12 +127,11 @@ abstract class Importer
         // setup database utility
         /** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
         $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $this->configuration);
-        $databaseUtility->initialize();
         $databaseUtility->readFullTextGenerationConfiguration($pi1->conf['editor.']['full_text.']);
 
         $this->databaseUtility = $databaseUtility;
 
-        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class);
+        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $this->configuration);
     }
 
     /**

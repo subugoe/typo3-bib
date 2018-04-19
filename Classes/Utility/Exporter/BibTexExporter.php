@@ -40,14 +40,11 @@ class BibTexExporter extends Exporter
     /**
      * @var \Ipf\Bib\Utility\PRegExpTranslator
      */
-    protected $bibTexTranslator;
+    private $bibTexTranslator;
 
-    /**
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
+    public function initialize()
     {
-        parent::initialize($pi1);
+        parent::initialize();
 
         $this->setFileName('bib_'.$this->filterKey.'.bib');
 
@@ -264,7 +261,7 @@ class BibTexExporter extends Exporter
      *
      * @return string
      */
-    protected function formatCiteKey(string $publicationCiteId): string
+    private function formatCiteKey(string $publicationCiteId): string
     {
         $matchPattern = '/^[A-Za-z0-9_-]+$/';
         $matcher = preg_match($matchPattern, $publicationCiteId);
@@ -283,7 +280,7 @@ class BibTexExporter extends Exporter
      *
      * @return mixed|string
      */
-    protected function bibTexFormatField($key, $value)
+    private function bibTexFormatField($key, $value)
     {
         switch ($key) {
             case 'authors':
@@ -321,7 +318,7 @@ class BibTexExporter extends Exporter
      *
      * @return mixed|string
      */
-    protected function bibTexFormatString(string $content)
+    private function bibTexFormatString(string $content)
     {
         // Replace illegal html ampersands with &amp;
         $content = \Ipf\Bib\Utility\Utility::fix_html_ampersand($content);

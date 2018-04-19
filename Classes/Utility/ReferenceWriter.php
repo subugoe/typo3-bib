@@ -59,27 +59,24 @@ class ReferenceWriter
     protected $db;
 
     /**
-     * constructor.
+     * @var array
      */
-    public function __construct()
-    {
-        $this->db = $GLOBALS['TYPO3_DB'];
-    }
+    private $configuration;
 
     /**
-     * Initialize ReferenceWriter.
-     *
-     * @param \Ipf\Bib\Utility\ReferenceReader $referenceReader
+     * constructor.
      */
-    public function initialize($referenceReader)
+    public function __construct(array $configuration)
     {
-        $this->referenceReader = &$referenceReader;
+        $this->db = $GLOBALS['TYPO3_DB'];
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
+        $this->configuration = $configuration;
     }
 
     /**
      * Clears the page cache of all selected pages.
      */
-    protected function clear_page_cache()
+    private function clear_page_cache()
     {
         if ($this->clear_cache) {
             /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
@@ -176,25 +173,18 @@ class ReferenceWriter
         }
 
         // Add TYPO3 fields
-        $referenceRow['pid'] = intval($publication['pid']);
+        $referenceRow['pid'] = (int) $publication['pid'];
         $referenceRow['tstamp'] = time();
         $referenceRow['hidden'] = intval($publication['hidden']);
 
         if ($uid >= 0) {
             if ($publication['mod_key'] === $pub_db['mod_key']) {
-                $whereClause = 'uid='.intval($uid);
+                $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(ReferenceReader::REFERENCE_TABLE);
 
-                $ret = $this->db->exec_UPDATEquery(
-                    ReferenceReader::REFERENCE_TABLE,
-                    $whereClause,
-                    $referenceRow
-                );
+                $ret = $connection->update(ReferenceReader::REFERENCE_TABLE, $referenceRow, ['uid' => $uid]);
 
-                if (false == $ret) {
-                    throw new DataException(
-                        'A publication reference could not be updated uid='.strval($uid),
-                        1378973748
-                    );
+                if (0 === $ret) {
+                    throw new DataException(sprintf('A publication reference could not be updated. uid: %d', $uid), 1378973748);
                 }
             } else {
                 throw new DataException(
@@ -239,7 +229,7 @@ class ReferenceWriter
         }
 
         if ($new) {
-            $this->log('A new publication reference was inserted (pid='.$publication['pid'].')', $uid);
+            $this->log(sprintf('A new publication reference was inserted (pid=%d).', $publication['pid']), $uid);
         } else {
             $this->log('A publication reference was modified', $uid);
         }

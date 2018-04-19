@@ -70,13 +70,6 @@ class DbUtility
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
-    }
-
-    /**
-     * Initializes the import.
-     */
-    public function initialize()
-    {
         $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class, $this->configuration);
     }
 

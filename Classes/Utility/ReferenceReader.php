@@ -651,7 +651,7 @@ class ReferenceReader
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
         $query = $queryBuilder->count('uid')
             ->from(self::REFERENCE_TABLE)
-            ->where($queryBuilder->expr()->eq('citedid', $queryBuilder->quote($citeId)));
+            ->where($queryBuilder->expr()->eq('citeid', $queryBuilder->quote($citeId)));
 
         $num = 0;
 
