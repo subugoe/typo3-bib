@@ -27,6 +27,7 @@ namespace Ipf\Bib\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -45,27 +46,21 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      *
      * @return array
      */
-    public function findBibliographyByStoragePid($storagePid)
+    public function findBibliographyByStoragePid(int $storagePid)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_bib_domain_model_reference');
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
         $result = $queryBuilder
             ->select('r.*', 'au.forename', 'au.surname')
-            ->from('tx_bib_domain_model_reference', 'r')
-            ->leftJoin('r', 'tx_bib_domain_model_authorships', 'aus', 'r.uid = aus.pub_id')
-            ->leftJoin('r', 'tx_bib_domain_model_author', 'au', 'aus.author_id = au.uid')
+            ->from(ReferenceReader::REFERENCE_TABLE, 'r')
+            ->leftJoin('r', ReferenceReader::AUTHORSHIP_TABLE, 'aus', 'r.uid = aus.pub_id')
+            ->leftJoin('r', ReferenceReader::AUTHOR_TABLE, 'au', 'aus.author_id = au.uid')
             ->where($queryBuilder->expr()->eq('r.pid', (int) $storagePid))
             ->andWhere($queryBuilder->expr()->eq('r.deleted', 0))
             ->andWhere($queryBuilder->expr()->eq('r.hidden', 0))
-            ->groupBy(['r.uid'])
+            ->groupBy('r.uid')
             ->execute()
             ->fetchAll();
 
-        $references = [];
-
-        while ($row = $result) {
-            array_push($references, $row);
-        }
-
-        return $references;
+        return $result;
     }
 }

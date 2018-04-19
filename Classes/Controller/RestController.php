@@ -53,7 +53,7 @@ class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     public function listAction()
     {
         if ($this->request->hasArgument('pageUid')) {
-            $pageUid = intval($this->request->getArgument('pageUid'));
+            $pageUid = (int) $this->request->getArgument('pageUid');
         } else {
             throw new DataException('No parameter pageUid provided in request', 1405590895);
         }
