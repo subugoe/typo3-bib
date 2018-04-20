@@ -1,7 +1,8 @@
 <div class="tx_bib-navi_year">
     <div class="tx_bib-navi_main_label">
         <f:translate key="yearNav_label" extensionName="bib"/>
-        <span class="tx_bib-navi_current">&nbsp;</span></div>
+        <span class="tx_bib-navi_current">&nbsp;</span>
+    </div>
     <div class="tx_bib-navi_year_selection">
 
         <f:link.page additionalParams="{tx_bib_pi1: {year: 'all'}}"><f:translate key="yearNav_all_years" extensionName="bib"/></f:link.page>
@@ -43,7 +44,7 @@
     <div class="tx_bib-navi_year_select">
 
         <f:if condition="{stat}">
-            <form name="tx_bib_pi1-year_select_form" action="{f:link.page(additionalParams: {tx_bib_pi1: {year:''}})}" method="post" class="tx_bib-year_select_form">
+            <f:form pluginName="tx_bib_pi1" name="tx_bib_pi1-year_select_form" action="{f:link.page(additionalParams: {tx_bib_pi1: {year:''}})}" method="post" class="tx_bib-year_select_form">
 
                 <f:form.select
                         name="tx_bib_pi1[year]"
@@ -56,7 +57,7 @@
 
                 <f:form.submit name="tx_bib_pi1[action][select_year]" class="tx_bib-button" value="{f:translate(key:'button_go', extensionName:'bib')}"/>
 
-            </form>
+            </f:form>
         </f:if>
 
     </div>

@@ -49,11 +49,6 @@ class ReferenceWriter
     public $clear_cache = false;
 
     /**
-     * @var bool
-     */
-    protected $error = false;
-
-    /**
      * @var \TYPO3\CMS\Core\Database\DatabaseConnection
      */
     protected $db;
@@ -206,13 +201,14 @@ class ReferenceWriter
 
             $referenceRow['crdate'] = $referenceRow['tstamp'];
             $referenceRow['cruser_id'] = $cruser_id;
+
             $this->db->exec_INSERTquery(
                 ReferenceReader::REFERENCE_TABLE,
                 $referenceRow
             );
 
             $uid = $this->db->sql_insert_id();
-            if (!(intval($uid) > 0)) {
+            if (!($uid > 0)) {
                 throw new DataException(
                     'A publication reference could not be inserted into the database',
                     1378973908
@@ -229,9 +225,9 @@ class ReferenceWriter
         }
 
         if ($new) {
-            $this->log(sprintf('A new publication reference was inserted (pid=%d).', $publication['pid']), $uid);
+            self::log(sprintf('A new publication reference was inserted (pid=%d).', $publication['pid']), $uid);
         } else {
-            $this->log('A publication reference was modified', $uid);
+            self::log('A publication reference was modified', $uid);
         }
 
         $this->clear_page_cache();
@@ -350,13 +346,13 @@ class ReferenceWriter
      */
     protected function insertAuthor($author)
     {
-        $author['pid'] = intval($author['pid']);
+        $author['pid'] = (int) $author['pid'];
 
         // Creation user id if available
         $cruser_id = 0;
         $backendUser = $GLOBALS['BE_USER'];
         if (is_object($backendUser) && is_array($backendUser->user)) {
-            $cruser_id = intval($backendUser->user['uid']);
+            $cruser_id = (int) $backendUser->user['uid'];
         }
 
         // field not present in the database causes write fails
@@ -366,12 +362,13 @@ class ReferenceWriter
         $author['crdate'] = time();
         $author['cruser_id'] = $cruser_id;
 
-        $this->db->exec_INSERTquery(
-            $this->referenceReader->getAuthorTable(),
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(ReferenceReader::AUTHOR_TABLE);
+        $queryBuilder->insert(
+            ReferenceReader::AUTHOR_TABLE,
             $author
         );
 
-        $authorUid = $this->db->sql_insert_id();
+        $authorUid = $pageUid = (int) $queryBuilder->lastInsertId(ReferenceReader::AUTHOR_TABLE);
 
         return $authorUid;
     }
@@ -403,12 +400,12 @@ class ReferenceWriter
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
         $queryBuilder
             ->update(ReferenceReader::REFERENCE_TABLE)
-            ->where($queryBuilder->expr()->eq('uid', $uid))
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->quote($uid)))
             ->set('hidden', ($hidden ? 1 : 0))
             ->set('tstamp', time())
             ->execute();
 
-        $this->log('A publication reference was '.($hidden ? 'hidden' : 'revealed'), $uid);
+        self::log('A publication reference was '.($hidden ? 'hidden' : 'revealed'), $uid);
         $this->clear_page_cache();
     }
 
@@ -449,7 +446,7 @@ class ReferenceWriter
 
                 $this->clear_page_cache();
 
-                $this->log('A publication reference was deleted', $uid);
+                self::log('A publication reference was deleted', $uid);
             } else {
                 throw new DataException(
                     'The publication reference could not be deleted'.
@@ -470,7 +467,7 @@ class ReferenceWriter
     /**
      * Writes a log entry.
      */
-    private function log(string $message, int $uid)
+    private static function log(string $message, int $uid)
     {
         $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger('bib');
         $logger->info($message,

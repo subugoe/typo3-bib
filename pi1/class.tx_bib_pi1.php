@@ -1082,7 +1082,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function hidePublication($hide = true)
     {
         /** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
-        $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class);
+        $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class, $this->extConf);
         $referenceWriter->hidePublication((int) $this->piVars['uid'], $hide);
     }
 
