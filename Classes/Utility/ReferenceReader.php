@@ -501,7 +501,7 @@ class ReferenceReader
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::AUTHOR_TABLE);
 
-        $query = $queryBuilder->select(['uid', 'pid'])
+        $query = $queryBuilder->select('uid', 'pid')
             ->from(self::AUTHOR_TABLE);
 
         $uids = [];
@@ -513,7 +513,7 @@ class ReferenceReader
             if (array_key_exists($field, $author)) {
                 $word = $author[$field];
                 if (preg_match('/(^%|^_|[^\\\\]%|[^\\\\]_)/', $word)) {
-                    $query->andWhere($queryBuilder->expr()->like($field, '%'.$queryBuilder->quote($word).'%'));
+                    $query->andWhere($queryBuilder->expr()->like($field, $queryBuilder->quote($word)));
                 } else {
                     $query->andWhere($queryBuilder->expr()->eq($field, $queryBuilder->quote($word)));
                 }

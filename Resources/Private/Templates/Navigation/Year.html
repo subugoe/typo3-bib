@@ -1,6 +1,64 @@
 <div class="tx_bib-navi_year">
-	<div class="tx_bib-navi_main_label">{label -> f:format.raw()} <span class="tx_bib-navi_current">&nbsp;</span></div>
-	<div class="tx_bib-navi_year_selection">{selection -> f:format.raw()}</div>
-	<div class="tx_bib-navi_year_select">{selectForm -> f:format.raw()}</div>
-	<div class="tx_bib-float_clear"></div>
+    <div class="tx_bib-navi_main_label">
+        <f:translate key="yearNav_label" extensionName="bib"/>
+        <span class="tx_bib-navi_current">&nbsp;</span></div>
+    <div class="tx_bib-navi_year_selection">
+
+        <f:link.page additionalParams="{tx_bib_pi1: {year: 'all'}}"><f:translate key="yearNav_all_years" extensionName="bib"/></f:link.page>
+
+
+            $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
+
+                    // The all link
+                    $delimiter = ' - ';
+                    if (isset($selectionConfiguration['all_sep'])) {
+                        $delimiter = $selectionConfiguration['all_sep'];
+                    }
+                    $delimiter = $contentObjectRenderer->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
+
+                    $txt = LocalizationUtility::translate('yearNav_all_years', 'bib');
+                    if (is_numeric($this->configuration['year'])) {
+                        $contentObjectRenderer->getTypoLink($txt, '584', ['year' => 'all']);
+                    } else {
+                        $txt = $contentObjectRenderer->stdWrap($txt, $selectionConfiguration['current.']);
+                    }
+
+                    $cur = array_search($this->configuration['year'], $this->stat['years']);
+                    if (false === $cur) {
+                        $cur = -1;
+                    }
+                    $indices = [0, $cur, count($this->stat['years']) - 1];
+
+                    $numSel = 3;
+                    if (array_key_exists('years', $selectionConfiguration)) {
+                        $numSel = abs(intval($selectionConfiguration['years']));
+                    }
+
+                    $selection = $this->selection($selectionConfiguration, $indices, $numSel);
+
+                    return $contentObjectRenderer->stdWrap($txt.$delimiter.$selection, $selectionConfiguration['all_wrap.']);
+
+
+    </div>
+    <div class="tx_bib-navi_year_select">
+
+        <f:if condition="{stat}">
+            <form name="tx_bib_pi1-year_select_form" action="{f:link.page(additionalParams: {tx_bib_pi1: {year:''}})}" method="post" class="tx_bib-year_select_form">
+
+                <f:form.select
+                        name="tx_bib_pi1[year]"
+                        additionalAttributes="{onchange: 'this.form.submit()'}"
+                        class="tx_bib-select"
+                        prependOptionLabel="{f:translate(key:'yearNav_all_years', extensionName:'bib')}"
+                        prependOptionValue="all"
+                        options="{stat}"
+                />
+
+                <f:form.submit name="tx_bib_pi1[action][select_year]" class="tx_bib-button" value="{f:translate(key:'button_go', extensionName:'bib')}"/>
+
+            </form>
+        </f:if>
+
+    </div>
+    <div class="tx_bib-float_clear"></div>
 </div>

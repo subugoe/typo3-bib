@@ -1,0 +1,13 @@
+<span class="tx_bib-navi_widget">
+    <label for="search-separator" class="tx_bib-navi_label"><f:translate key="searchNav_separator" extensionName="bib"/>:</label>
+
+    <f:form.select
+            id="search-separator"
+            class="tx_bib-select"
+            name="tx_bib_pi1[search][sep]"
+            additionalAttributes="{onchange: 'this.form.submit()'}"
+            options="{none: ' ', space: '', semi: ';', pipe: '|'}"
+            value="{configuration.search_navi.sep}"
+    />
+
+</span>

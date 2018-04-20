@@ -14,24 +14,27 @@
         <label class="tx_bib-navi_label" for="search-extra">
             <f:translate key="searchNav_extra" extensionName="bib"/>
         </label>
-        <f:form.checkbox additionalAttributes="{onchange: 'this.form.submit()'}" id="search-extra"
-                         name="tx_bib_pi1[search][extra]" value="1" class="tx_bib-check"
+        <f:form.checkbox additionalAttributes="{onchange: 'this.form.submit()'}"
+                         id="search-extra"
+                         name="tx_bib_pi1[search][extra]"
+                         value="1"
+                         class="tx_bib-check"
                          checked="{configuration.search_navi.extra}"/>
 
         <div class="tx_bib-float_clear"></div>
 
-        <f:if condition="{advancedSearch}">
+        <f:if condition="{configuration.search_navi.extra}">
             <div class="tx_bib-navi_extra_row">
                 <div class="tx_bib-navi_search_details">
-                    {separatorSelection -> f:format.raw()}
-                    {ruleSelection -> f:format.raw()}
+                    <f:render partial="Search/Separator" arguments="{_all}" />
+                    <f:render partial="Search/Rule" arguments="{_all}" />
                 </div>
                 <div class="tx_bib-float_clear"></div>
             </div>
             <div class="tx_bib-navi_extra_row">
                 <div class="tx_bib-navi_search_details">
-                    {abstractsButton -> f:format.raw()}
-                    {fullTextButton -> f:format.raw()}
+                    <f:render partial="Search/Abstracts" arguments="{_all}" />
+                    <f:render partial="Search/Fulltext" arguments="{_all}" />
                 </div>
                 <div class="tx_bib-float_clear"></div>
             </div>

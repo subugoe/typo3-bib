@@ -50,13 +50,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     public $extConf;
 
     /**
-     * The reference database reader.
-     *
-     * @var \Ipf\Bib\Utility\ReferenceReader
-     */
-    public $referenceReader;
-
-    /**
      * @var array
      */
     public $icon_src = [];
@@ -67,21 +60,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      * @var array
      */
     private $stat = [];
-
-    /**
-     * @var array
-     */
-    public $labelTranslator = [];
-
-    /**
-     * @var array
-     */
-    protected $flexFormData;
-
-    /**
-     * @var array
-     */
-    protected $pidList;
 
     /**
      * @var array
@@ -115,7 +93,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $this->pi_loadLL();
         $this->pi_initPIflexForm();
 
-        $this->flexFormData = $this->cObj->data['pi_flexform'];
         $this
             ->initializeFluidTemplate()
             ->includeCss();
@@ -139,12 +116,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration = $this->editAction($configuration);
         $configuration = $this->exportAction($configuration);
         $configuration = $this->detailAction($configuration);
-        $configuration = $this->getYearNavigation($configuration);
         $configuration = $this->getPageNavigation($configuration);
         $configuration = $this->getSortFilter($configuration);
         $configuration = $this->disableNavigationOnDemand($configuration);
-
-        $this->referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class, $configuration);
 
         $this->determineNumberOfPublications();
 
@@ -188,6 +162,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function getExtensionConfiguration(): array
     {
+        $flexFormData = $this->cObj->data['pi_flexform'];
+
         $configuration = [];
 
         // Initialize current configuration
@@ -200,22 +176,22 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         // Retrieve general FlexForm values
         $fSheet = 'sDEF';
-        $configuration['d_mode'] = $this->pi_getFFvalue($this->flexFormData, 'display_mode', $fSheet);
-        $configuration['show_nav_search'] = $this->pi_getFFvalue($this->flexFormData, 'show_search', $fSheet);
-        $configuration['show_nav_author'] = $this->pi_getFFvalue($this->flexFormData, 'show_authors', $fSheet);
-        $configuration['show_nav_pref'] = $this->pi_getFFvalue($this->flexFormData, 'show_pref', $fSheet);
-        $configuration['sub_page']['ipp'] = $this->pi_getFFvalue($this->flexFormData, 'items_per_page', $fSheet);
-        $configuration['max_authors'] = $this->pi_getFFvalue($this->flexFormData, 'max_authors', $fSheet);
-        $configuration['split_bibtypes'] = $this->pi_getFFvalue($this->flexFormData, 'split_bibtypes', $fSheet);
-        $configuration['stat_mode'] = $this->pi_getFFvalue($this->flexFormData, 'stat_mode', $fSheet);
-        $configuration['show_nav_export'] = $this->pi_getFFvalue($this->flexFormData, 'export_mode', $fSheet);
-        $configuration['date_sorting'] = $this->pi_getFFvalue($this->flexFormData, 'date_sorting', $fSheet);
-        $configuration['sorting'] = $this->pi_getFFvalue($this->flexFormData, 'sorting', $fSheet);
-        $configuration['search_fields'] = $this->pi_getFFvalue($this->flexFormData, 'search_fields', $fSheet);
-        $configuration['separator'] = $this->pi_getFFvalue($this->flexFormData, 'separator', $fSheet);
-        $configuration['editor_stop_words'] = $this->pi_getFFvalue($this->flexFormData, 'editor_stop_words', $fSheet);
-        $configuration['title_stop_words'] = $this->pi_getFFvalue($this->flexFormData, 'title_stop_words', $fSheet);
-        $show_fields = $this->pi_getFFvalue($this->flexFormData, 'show_textfields', $fSheet);
+        $configuration['d_mode'] = $this->pi_getFFvalue($flexFormData, 'display_mode', $fSheet);
+        $configuration['show_nav_search'] = $this->pi_getFFvalue($flexFormData, 'show_search', $fSheet);
+        $configuration['show_nav_author'] = $this->pi_getFFvalue($flexFormData, 'show_authors', $fSheet);
+        $configuration['show_nav_pref'] = $this->pi_getFFvalue($flexFormData, 'show_pref', $fSheet);
+        $configuration['sub_page']['ipp'] = $this->pi_getFFvalue($flexFormData, 'items_per_page', $fSheet);
+        $configuration['max_authors'] = $this->pi_getFFvalue($flexFormData, 'max_authors', $fSheet);
+        $configuration['split_bibtypes'] = $this->pi_getFFvalue($flexFormData, 'split_bibtypes', $fSheet);
+        $configuration['stat_mode'] = $this->pi_getFFvalue($flexFormData, 'stat_mode', $fSheet);
+        $configuration['show_nav_export'] = $this->pi_getFFvalue($flexFormData, 'export_mode', $fSheet);
+        $configuration['date_sorting'] = $this->pi_getFFvalue($flexFormData, 'date_sorting', $fSheet);
+        $configuration['sorting'] = $this->pi_getFFvalue($flexFormData, 'sorting', $fSheet);
+        $configuration['search_fields'] = $this->pi_getFFvalue($flexFormData, 'search_fields', $fSheet);
+        $configuration['separator'] = $this->pi_getFFvalue($flexFormData, 'separator', $fSheet);
+        $configuration['editor_stop_words'] = $this->pi_getFFvalue($flexFormData, 'editor_stop_words', $fSheet);
+        $configuration['title_stop_words'] = $this->pi_getFFvalue($flexFormData, 'title_stop_words', $fSheet);
+        $show_fields = $this->pi_getFFvalue($flexFormData, 'show_textfields', $fSheet);
         $show_fields = explode(',', $show_fields);
 
         $configuration['hide_fields'] = [
@@ -283,23 +259,24 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function getFrontendEditorConfiguration(array $configuration): array
     {
+        $flexFormData = $this->cObj->data['pi_flexform'];
+
         $flexFormSheet = 's_fe_editor';
-        $configuration['editor']['enabled'] = $this->pi_getFFvalue($this->flexFormData, 'enable_editor', $flexFormSheet);
-        $configuration['editor']['citeid_gen_new'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_new', $flexFormSheet);
-        $configuration['editor']['citeid_gen_old'] = $this->pi_getFFvalue($this->flexFormData, 'citeid_gen_old', $flexFormSheet);
-        $configuration['editor']['clear_page_cache'] = $this->pi_getFFvalue($this->flexFormData, 'clear_cache', $flexFormSheet);
+        $configuration['editor']['enabled'] = $this->pi_getFFvalue($flexFormData, 'enable_editor', $flexFormSheet);
+        $configuration['editor']['citeid_gen_new'] = $this->pi_getFFvalue($flexFormData, 'citeid_gen_new', $flexFormSheet);
+        $configuration['editor']['citeid_gen_old'] = $this->pi_getFFvalue($flexFormData, 'citeid_gen_old', $flexFormSheet);
+        $configuration['editor']['clear_page_cache'] = $this->pi_getFFvalue($flexFormData, 'clear_cache', $flexFormSheet);
 
         // Overwrite editor configuration from TSsetup
         if (is_array($this->conf['editor.'])) {
-            $editorOverride = &$this->conf['editor.'];
-            if (array_key_exists('enabled', $editorOverride)) {
-                $configuration['editor']['enabled'] = $editorOverride['enabled'] ? true : false;
+            if (array_key_exists('enabled', $this->conf['editor.'])) {
+                $configuration['editor']['enabled'] = $this->conf['editor.']['enabled'] ? true : false;
             }
-            if (array_key_exists('citeid_gen_new', $editorOverride)) {
-                $configuration['editor']['citeid_gen_new'] = $editorOverride['citeid_gen_new'] ? true : false;
+            if (array_key_exists('citeid_gen_new', $this->conf['editor.'])) {
+                $configuration['editor']['citeid_gen_new'] = $this->conf['editor.']['citeid_gen_new'] ? true : false;
             }
-            if (array_key_exists('citeid_gen_old', $editorOverride)) {
-                $configuration['editor']['citeid_gen_old'] = $editorOverride['citeid_gen_old'] ? true : false;
+            if (array_key_exists('citeid_gen_old', $this->conf['editor.'])) {
+                $configuration['editor']['citeid_gen_old'] = $this->conf['editor.']['citeid_gen_old'] ? true : false;
             }
         }
 
@@ -635,7 +612,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         try {
             $this->initializeSelectionFilter();
         } catch (\Exception $e) {
-            $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class);
+            $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
             /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
             $message = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
                 \TYPO3\CMS\Core\Messaging\FlashMessage::class,
@@ -1106,7 +1083,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         /** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
         $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class);
-        $referenceWriter->initialize($this->referenceReader);
         $referenceWriter->hidePublication((int) $this->piVars['uid'], $hide);
     }
 
@@ -1150,60 +1126,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $configuration['single_view']['uid'] = (int) $this->piVars['show_uid'];
             unset($this->piVars['editor_mode']);
             unset($this->piVars['dialog_mode']);
-        }
-
-        return $configuration;
-    }
-
-    protected function getYearNavigation(array $configuration): array
-    {
-        if ($configuration['show_nav_year']) {
-            // Fetch a year histogram
-            $histogram = $this->referenceReader->getHistogram('year');
-            $this->stat['year_hist'] = $histogram;
-            $this->stat['years'] = array_keys($histogram);
-            sort($this->stat['years']);
-
-            $this->stat['num_all'] = array_sum($histogram);
-            $this->stat['num_page'] = $this->stat['num_all'];
-
-            // Determine the year to display
-            $configuration['year'] = (int) date('Y'); // System year
-
-            $exportPluginVariables = strtolower($this->piVars['year']);
-            if (is_numeric($exportPluginVariables)) {
-                $configuration['year'] = (int) $exportPluginVariables;
-            } else {
-                if ('all' === $exportPluginVariables) {
-                    $configuration['year'] = $exportPluginVariables;
-                }
-            }
-
-            if ('all' === $configuration['year']) {
-                if ($this->conf['yearNav.']['selection.']['all_year_split']) {
-                    $configuration['split_years'] = true;
-                }
-            }
-
-            // The selected year has no publications so select the closest year
-            if (($this->stat['num_all'] > 0) && is_numeric($configuration['year'])) {
-                $configuration['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
-                    $configuration['year'],
-                    $this->stat['years']
-                );
-            }
-            // Append default link variable
-            $configuration['link_vars']['year'] = $configuration['year'];
-
-            if (is_numeric($configuration['year'])) {
-                // Adjust num_page
-                $this->stat['num_page'] = $this->stat['year_hist'][$configuration['year']];
-
-                // Adjust year filter
-                $configuration['filters']['br_year'] = [];
-                $configuration['filters']['br_year']['year'] = [];
-                $configuration['filters']['br_year']['year']['years'] = [$configuration['year']];
-            }
         }
 
         return $configuration;

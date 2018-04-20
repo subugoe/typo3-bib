@@ -1,3 +1,5 @@
+{namespace bib=Ipf\Bib\ViewHelpers}
+
 <div class="tx_bib-navi_author">
     <div class="tx_bib-navi_main_label"><f:translate key="authorNav_label" extensionName="bib" /> <span class="tx_bib-navi_current">&nbsp;</span></div>
     <div class="tx_bib-navi_author_letters">
@@ -19,6 +21,11 @@
 </div>
 
 <div class="tx_bib-navi_extra_row">
-    <div class="tx_bib-navi_author_selection">{selection -> f:format.raw()}<span class="tx_bib-navi_current">&nbsp;</span></div>
+    <div class="tx_bib-navi_author_selection">
+        <f:widget.paginate objects="{names}" as="name">
+            {name}
+        </f:widget.paginate>
+
+        <span class="tx_bib-navi_current">&nbsp;</span></div>
     <div class="tx_bib-navi_author_select">{surnameSelection -> f:format.raw()}</div>
 </div>

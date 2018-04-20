@@ -1,0 +1,24 @@
+<span class="tx_bib-navi_widget">
+    <label for="search-rule" class="tx_bib-navi_label"><f:translate key="searchNav_rule" extensionName="bib" />:</label>
+    <span class="tx_bib-navi_label"><f:translate key="searchNav_OR" extensionName="bib"/>
+        <f:form.radio
+                class="tx_bib-check"
+                id="search-rule"
+                name="tx_bib_pi1[search][rule]"
+                value="OR"
+                additionalAttributes="{onchange: 'this.form.submit()'}"
+                checked="{configuration.search_navi.abstracts} == 'OR'"
+        />
+    </span>
+
+    <span class="tx_bib-navi_label"><f:translate key="searchNav_AND" extensionName="bib"/>
+        <f:form.radio
+                class="tx_bib-check"
+                id="search-rule"
+                name="tx_bib_pi1[search][rule]"
+                value="AND"
+                additionalAttributes="{onchange: 'this.form.submit()'}"
+                checked="{configuration.search_navi.abstracts} == 'AND'"
+        />
+    </span>
+</span>

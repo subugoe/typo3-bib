@@ -27,29 +27,66 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class YearNavigation.
  */
 class YearNavigation extends Navigation
 {
-    /**
-     * Intialize.
-     *
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
+    public function initialize()
     {
-        if (is_array($pi1->conf['yearNav.'])) {
-            $this->conf = &$pi1->conf['yearNav.'];
-        }
+        if ($this->configuration['show_nav_year']) {
+            $referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class,
+                $this->configuration);
 
-        $this->prefix = 'YEAR_NAVI';
-        $this->sel_link_title = $this->languageService->getLL('yearNav_yearLinkTitle', '%y');
+            // Fetch a year histogram
+            $histogram = $referenceReader->getHistogram('year');
+            $this->stat['year_hist'] = $histogram;
+            $this->stat['years'] = array_keys($histogram);
+            sort($this->stat['years']);
+
+            $this->stat['num_all'] = array_sum($histogram);
+            $this->stat['num_page'] = $this->stat['num_all'];
+
+            // Determine the year to display
+            $this->configuration['year'] = (int) date('Y'); // System year
+
+            $exportPluginVariables = strtolower($this->piVars['year']);
+            if (is_numeric($exportPluginVariables)) {
+                $this->configuration['year'] = (int) $exportPluginVariables;
+            } else {
+                if ('all' === $exportPluginVariables) {
+                    $this->configuration['year'] = $exportPluginVariables;
+                }
+            }
+
+            if ('all' === $this->configuration['year']) {
+                if ($this->conf['yearNav.']['selection.']['all_year_split']) {
+                    $this->configuration['split_years'] = true;
+                }
+            }
+
+            // The selected year has no publications so select the closest year
+            if (($this->stat['num_all'] > 0) && is_numeric($this->configuration['year'])) {
+                $this->configuration['year'] = \Ipf\Bib\Utility\Utility::find_nearest_int(
+                    $this->configuration['year'],
+                    $this->stat['years']
+                );
+            }
+            // Append default link variable
+            $this->configuration['link_vars']['year'] = $this->configuration['year'];
+
+            if (is_numeric($this->configuration['year'])) {
+                // Adjust num_page
+                $this->stat['num_page'] = $this->stat['year_hist'][$this->configuration['year']];
+
+                // Adjust year filter
+                $this->configuration['filters']['br_year'] = [];
+                $this->configuration['filters']['br_year']['year'] = [];
+                $this->configuration['filters']['br_year']['year']['years'] = [$this->configuration['year']];
+            }
+        }
     }
 
     /**
@@ -57,7 +94,7 @@ class YearNavigation extends Navigation
      */
     protected function sel_get_text(int $index): string
     {
-        return strval($this->pi1->stat['years'][$index]);
+        return (string) $this->stat['years'][$index];
     }
 
     /**
@@ -71,6 +108,9 @@ class YearNavigation extends Navigation
     protected function sel_get_link($text, $ii)
     {
         $title = str_replace('%y', $text, $this->sel_link_title);
+
+        return '<a href="#" title="'.$title.'">'.$text.'</a>';
+
         $lnk = $this->pi1->get_link(
             $text,
             [
@@ -91,121 +131,9 @@ class YearNavigation extends Navigation
      */
     public function get(): string
     {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
-        // The label
-        $label = LocalizationUtility::translate('yearNav_label', 'bib');
-        $label = $contentObjectRenderer->stdWrap($label, $this->conf['label.']);
-
         $this->view
-            ->assign('label', $label)
-            ->assign('selection', $this->getYearSelection())
-            ->assign('selectForm', $this->getYearSelectionForm());
+            ->assign('stat', $this->stat['years'] ?? []);
 
         return $this->view->render();
     }
-
-    /**
-     * @return string
-     */
-    protected function getYearSelection(): string
-    {
-        $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
-
-        if (count($this->pi1->stat['years']) > 0) {
-            // The all link
-            $delimiter = ' - ';
-            if (isset($selectionConfiguration['all_sep'])) {
-                $delimiter = $selectionConfiguration['all_sep'];
-            }
-            $delimiter = $this->pi1->cObj->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
-
-            $txt = LocalizationUtility::translate('yearNav_all_years', 'bib');
-            if (is_numeric($this->configuration['year'])) {
-                $txt = $this->pi1->get_link($txt, ['year' => 'all']);
-            } else {
-                $txt = $this->pi1->cObj->stdWrap($txt, $selectionConfiguration['current.']);
-            }
-
-            $cur = array_search($this->pi1->extConf['year'], $this->pi1->stat['years']);
-            if (false === $cur) {
-                $cur = -1;
-            }
-            $indices = [0, $cur, count($this->pi1->stat['years']) - 1];
-
-            $numSel = 3;
-            if (array_key_exists('years', $selectionConfiguration)) {
-                $numSel = abs(intval($selectionConfiguration['years']));
-            }
-
-            $selection = $this->selection($selectionConfiguration, $indices, $numSel);
-
-            return $this->pi1->cObj->stdWrap($txt.$delimiter.$selection, $selectionConfiguration['all_wrap.']);
-        }
-
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getYearSelectionForm()
-    {
-        $selectForm = '';
-        if (count($this->pi1->stat['years']) > 0) {
-            $name = $this->pi1->prefix_pi1.'-year_select_form';
-            $action = $this->pi1->get_link_url(['year' => ''], false);
-            $selectForm .= '<form name="'.$name.'" ';
-            $selectForm .= 'action="'.$action.'"';
-            $selectForm .= ' method="post"';
-            $selectForm .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
-            $selectForm .= '>';
-
-            $pairs = ['all' => $this->languageService->getLL('yearNav_all_years', 'All')];
-            if (count($this->pi1->stat['years']) > 0) {
-                foreach (array_reverse($this->pi1->stat['years']) as $y) {
-                    $pairs[$y] = $y;
-                }
-            } else {
-                $year = strval(intval(date('Y')));
-                $pairs = [$year => $year];
-            }
-
-            $attributes = [
-                'name' => $this->pi1->prefix_pi1.'[year]',
-                'onchange' => 'this.form.submit()',
-            ];
-            if (strlen($this->conf['select_class']) > 0) {
-                $attributes['class'] = $this->conf['select_class'];
-            }
-            $button = Utility::html_select_input(
-                $pairs,
-                $year,
-                $attributes
-            );
-            $button = $this->pi1->cObj->stdWrap($button, $this->conf['select.']);
-            $selectForm .= $button;
-
-            $attributes = [];
-            if (strlen($this->conf['go_btn_class']) > 0) {
-                $attributes['class'] = $this->conf['go_btn_class'];
-            }
-            $button = Utility::html_submit_input(
-                $this->pi1->prefix_pi1.'[action][select_year]',
-                $this->languageService->getLL('button_go'),
-                $attributes
-            );
-            $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);
-            $selectForm .= $button;
-
-            // End of form
-            $selectForm .= '</form>';
-        }
-
-        return $this->pi1->cObj->stdWrap($selectForm, $this->conf['form.']);
-    }
-}
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php']) {
-    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/YearNavigation.php'];
 }

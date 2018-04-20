@@ -39,29 +39,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 class AuthorNavigation extends Navigation
 {
-    /**
-     * @var array
-     */
-    private $extConf;
-
-    /**
-     * @var array
-     */
-    private $stat;
-
-    public function __construct(array $configuration, array $localConfiguration)
-    {
-        parent::__construct($configuration, $localConfiguration);
-        if (is_array($this->conf['authorNav.'])) {
-            $this->conf = $this->conf['authorNav.'];
-        }
-
-        $this->extConf = [];
-        if (is_array($configuration['author_navi'])) {
-            $this->extConf = $configuration['author_navi'];
-        }
-    }
-
     public function hook_init()
     {
         $this->configuration['link_vars']['author_letter'] = '';
@@ -101,10 +78,10 @@ class AuthorNavigation extends Navigation
 
         // Filter for selected author letter
         // with a temporary filter
-        if (strlen($this->extConf['sel_letter']) > 0) {
-            $filters = $this->extConf['filters'];
+        if (strlen($this->configuration['author_navi']['sel_letter']) > 0) {
+            $filters = $this->configuration['author_navi']['filters'];
 
-            $txt = $this->extConf['sel_letter'];
+            $txt = $this->configuration['author_navi']['sel_letter'];
             $spec = htmlentities($txt, ENT_QUOTES);
             $pats = [$txt.'%'];
             if ($spec != $txt) {
@@ -127,8 +104,8 @@ class AuthorNavigation extends Navigation
             // Remove ampersand strings from surname list
             $lst = [];
             $spec = false;
-            $sel_up = mb_strtoupper($this->extConf['sel_letter']);
-            $sel_low = mb_strtolower($this->extConf['sel_letter']);
+            $sel_up = mb_strtoupper($this->configuration['author_navi']['sel_letter']);
+            $sel_low = mb_strtolower($this->configuration['author_navi']['sel_letter']);
             /** @var Author $author */
             foreach ($this->stat['authors']['sel_surnames'] as $author) {
                 if (!(false === strpos($author->getSurName(), '&'))) {
@@ -150,19 +127,19 @@ class AuthorNavigation extends Navigation
             $this->stat['authors']['sel_surnames'] = $lst;
 
             // Restore filter
-            $referenceReader->set_filters($this->extConf['filters']);
+            $referenceReader->set_filters($this->configuration['author_navi']['filters'] ?? []);
         }
 
         // Setup filter for selected author
-        if ('0' != $this->extConf['sel_author']) {
-            $spec = htmlentities($this->extConf['sel_author'], ENT_QUOTES);
+        if ('0' != $this->configuration['author_navi']['sel_author']) {
+            $spec = htmlentities($this->configuration['author_navi']['sel_author'], ENT_QUOTES);
 
             // Check if the selected author is available
-            if (in_array($this->extConf['sel_author'], $this->stat['authors']['sel_surnames'])
+            if (in_array($this->configuration['author_navi']['sel_author'], $this->stat['authors']['sel_surnames'])
                 || in_array($spec, $this->stat['authors']['sel_surnames'])
             ) {
-                $pats = [$this->extConf['sel_author']];
-                if ($spec != $this->extConf['sel_author']) {
+                $pats = [$this->configuration['author_navi']['sel_author']];
+                if ($this->configuration['author_navi']['sel_author'] != $spec) {
                     $pats[] = $spec;
                 }
 
@@ -172,7 +149,7 @@ class AuthorNavigation extends Navigation
                     $filter[] = ['surname' => $pat];
                 }
             } else {
-                $this->extConf['sel_author'] = '0';
+                $this->configuration['author_navi']['sel_author'] = '0';
             }
         }
 
@@ -197,7 +174,7 @@ class AuthorNavigation extends Navigation
         $letters = $this->first_letters($names);
 
         // Acquire selected letter
-        $selectedLetter = (string) $this->extConf['sel_letter'];
+        $selectedLetter = (string) $this->configuration['author_navi']['sel_letter'];
         $idx = $this->string_index($selectedLetter, $letters, '');
         if ($idx < 0) {
             $selectedLetter = '';
@@ -205,8 +182,8 @@ class AuthorNavigation extends Navigation
             $selectedLetter = $letters[$idx];
         }
 
-        $this->extConf['letters'] = $letters;
-        $this->extConf['sel_letter'] = $selectedLetter;
+        $this->configuration['author_navi']['letters'] = $letters;
+        $this->configuration['author_navi']['sel_letter'] = $selectedLetter;
     }
 
     /**
@@ -313,20 +290,32 @@ class AuthorNavigation extends Navigation
      */
     public function get(): string
     {
-        $selectedSurnames = []; // $this->pi1->stat['authors']['sel_surnames']
+        $selectedSurnames = $this->stat['authors']['sel_surnames'];
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Navigation/Author.html');
         // find the index of the selected name
-        $this->extConf['sel_name_idx'] = $this->string_index(
-            (string) $this->extConf['sel_author'],
+        $this->configuration['author_navi']['sel_name_idx'] = $this->string_index(
+            (string) $this->configuration['author_navi']['sel_author'],
             $selectedSurnames,
             '0'
         );
 
+        $configurationSelection = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
+
+        $numSel = 3;
+        if (array_key_exists('authors', $configurationSelection)) {
+            $numSel = abs(intval($configurationSelection['authors']));
+        }
+
         $this->view
             ->assign('letterSelection', $this->getLetterSelection())
+            ->assign('names', $selectedSurnames)
             ->assign('currentLetter', $this->configuration['author_navi']['sel_letter'])
-            ->assign('selection', $this->getAuthorSelection())
+            ->assign('configurationSelection', $configurationSelection)
+            ->assign('max', count($this->stat['authors']['sel_surnames'] ?? []) - 1)
+            ->assign('current', $this->configuration['author_navi']['sel_name_idx'])
+            ->assign('numberOfItemsToBeDisplayed', $numSel)
+
             ->assign('surnameSelection', $this->getHtmlSelectFormField())
         ;
 
@@ -338,53 +327,11 @@ class AuthorNavigation extends Navigation
      */
     protected function getLetterSelection(): array
     {
-        if (0 === count($this->extConf['letters'])) {
+        if (0 === count($this->configuration['author_navi']['letters'])) {
             return [];
         }
 
-        return $this->extConf['letters'];
-    }
-
-    /**
-     * The author surname select.
-     *
-     * @return string
-     */
-    protected function getAuthorSelection()
-    {
-        $configurationSelection = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
-        $contenObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
-        // Selection
-        $cur = $this->extConf['sel_name_idx'];
-        $max = count($this->stat['authors']['sel_surnames']) - 1;
-
-        $indices = [0, $cur, $max];
-
-        $numSel = 3;
-        if (array_key_exists('authors', $configurationSelection)) {
-            $numSel = abs(intval($configurationSelection['authors']));
-        }
-
-        $sel = $this->selection($configurationSelection, $indices, $numSel);
-
-        $txt = LocalizationUtility::translate('authorNav_all_authors', 'bib');
-        if ($cur < 0) {
-            $txt = $contenObjectRenderer->stdWrap($txt, $configurationSelection['current.']);
-        } else {
-            $txt = $this->pi1->get_link($txt, ['author' => '0']);
-        }
-
-        // All together
-        if (count($this->stat['authors']['sel_surnames']) > 0) {
-            $all = $txt.$sel;
-        } else {
-            $all = '&nbsp;';
-        }
-
-        $all = $contenObjectRenderer->stdWrap($all, $configurationSelection['all_wrap.']);
-
-        return $all;
+        return $this->configuration['author_navi']['letters'];
     }
 
     /**
@@ -404,7 +351,7 @@ class AuthorNavigation extends Navigation
         // The raw data
         $names = $this->stat['authors']['sel_surnames'];
         $sel_name = '';
-        $sel_idx = $this->extConf['sel_name_idx'];
+        $sel_idx = $this->configuration['author_navi']['sel_name_idx'];
         if ($sel_idx >= 0) {
             $sel_name = $names[$sel_idx];
             $sel_name = htmlspecialchars($sel_name, ENT_QUOTES);
@@ -413,8 +360,8 @@ class AuthorNavigation extends Navigation
         // The 'All with %l' select option
         $all = LocalizationUtility::translate('authorNav_select_all', 'bib');
         $rep = '?';
-        if (strlen($this->extConf['sel_letter']) > 0) {
-            $rep = htmlspecialchars($this->extConf['sel_letter'], ENT_QUOTES);
+        if (strlen($this->configuration['author_navi']['sel_letter']) > 0) {
+            $rep = htmlspecialchars($this->configuration['author_navi']['sel_letter'], ENT_QUOTES);
         }
         $all = str_replace('%l', $rep, $all);
 

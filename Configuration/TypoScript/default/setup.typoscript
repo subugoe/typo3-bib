@@ -13,7 +13,7 @@ plugin.tx_bib_pi1 {
     max_url_string_length = 50
 
     # The list display mode (simple)
-    display_mode = 0
+    display_mode = 2
 
     # Date sorting (descending)
     date_sorting = 0
@@ -178,40 +178,18 @@ plugin.tx_bib_pi1 {
             btn.wrap = |
         }
 
-        # Search in abstracts
-        abstracts {
-            def = 0
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            label.wrap = <span class="tx_bib-navi_label">|</span>
-            btn_class = tx_bib-check
-            btn.wrap = |
-        }
-
         # Search in full_text
         full_text {
             def = 0
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
             label.wrap = <span class="tx_bib-navi_label">|</span>
             btn_class = tx_bib-check
             btn.wrap = |
-        }
-
-        # Separator selection
-        separator {
-            def = space
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            label.wrap = <span class="tx_bib-navi_label">|:</span>
-            select_class = tx_bib-select
-            select.wrap = |
         }
 
         # Rule selection
         rule {
             def = AND
-            widget.wrap = <span class="tx_bib-navi_widget">|</span>
-            label.wrap = <span class="tx_bib-navi_label">|:</span>
             btn_label.wrap = <span class="tx_bib-navi_label">|</span>
-            btn_class = tx_bib-check
             btn.wrap = |
         }
 
@@ -227,18 +205,6 @@ plugin.tx_bib_pi1 {
 
     # Year navigation
     yearNav {
-        # Year label wrap
-        label.wrap = |:
-
-        # Classes or the year selection form
-        form_class = tx_bib-year_select_form
-        go_btn_class = tx_bib-button
-        select_class = tx_bib-select
-
-        #form.wrap = |
-        #select.wrap = |
-        go_btn.wrap = |
-
         # Year selection
         selection {
             # The maximum number of years to show

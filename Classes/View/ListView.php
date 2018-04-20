@@ -54,7 +54,7 @@ class ListView extends View
     {
         $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->extConf, $this->conf);
         $searchNavigation->hook_filter();
-        $searchNavigation->hook_init();
+        $searchNavigation->initialize();
 
         return $searchNavigation->get();
     }
@@ -69,7 +69,10 @@ class ListView extends View
         $trans = '';
 
         if ($this->extConf['show_nav_year']) {
-            return GeneralUtility::makeInstance(YearNavigation::class)->translator();
+            $yearNavigation = GeneralUtility::makeInstance(YearNavigation::class, $this->extConf, $this->conf);
+            $yearNavigation->initialize();
+
+            return $yearNavigation->get();
         }
 
         return $trans;
