@@ -371,10 +371,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     /**
      * Setup and initialize Navigation types.
      *
-     * Search Navigation
      * Year Navigation
-     * Author Navigation
-     * Preference Navigation
      * Statistic Navigation
      * Export Navigation
      */

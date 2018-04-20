@@ -1553,7 +1553,7 @@ class ReferenceReader
             ->from(static::REFERENCE_TABLE)
             ->where($queryBuilder->expr()->eq('uid', $uid));
 
-        if (count($this->pid_list) > 0) {
+        if (count($this->configuration['pid_list']) > 0) {
             $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->pid_list));
         }
 

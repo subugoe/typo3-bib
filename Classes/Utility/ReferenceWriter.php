@@ -82,7 +82,7 @@ class ReferenceWriter
             if (is_object($be_user) || is_array($be_user->user)) {
                 $dataHandler->start([], [], $be_user);
                 // Find storage cache clear requests
-                foreach ($this->referenceReader->pid_list as $pid) {
+                foreach ($this->configuration['pid_list'] as $pid) {
                     $tsc = $dataHandler->getTCEMAIN_TSconfig($pid);
                     if (is_array($tsc) && isset($tsc['clearCacheCmd'])) {
                         $clear_cache[] = $tsc['clearCacheCmd'];
@@ -143,12 +143,12 @@ class ReferenceWriter
             if (is_array($pub_db)) {
                 $publication['pid'] = (int) $pub_db['pid'];
             } else {
-                $publication['pid'] = $this->referenceReader->pid_list[0];
+                $publication['pid'] = $this->configuration['pid_list'][0];
             }
         }
 
         // Check if the pid is in the allowed list
-        if (!in_array($publication['pid'], $this->referenceReader->pid_list)) {
+        if (!in_array($publication['pid'], $this->configuration['pid_list'])) {
             throw new DataException(
                 'The given storage folder (pid='.strval($publication['pid']).
                 ') is not in the list of allowed publication storage folders',
@@ -244,7 +244,7 @@ class ReferenceWriter
      * @param int   $pid
      * @param array $authors
      */
-    protected function savePublicationAuthors($pub_uid, $pid, $authors)
+    protected function savePublicationAuthors(int $pub_uid, int $pid, array $authors)
     {
         // Fetches missing author uids and
         // inserts new authors on demand
@@ -309,7 +309,7 @@ class ReferenceWriter
                     $as_uid = $db_aships[$ii]['uid'];
 
                     $ret = $this->db->exec_UPDATEquery(
-                        $this->referenceReader->getAuthorshipTable(),
+                        ReferenceReader::AUTHORSHIP_TABLE,
                         'uid='.intval($as_uid),
                         $as
                     );
@@ -323,7 +323,7 @@ class ReferenceWriter
                 } else {
                     // No more present authorships - Insert authorship
                     $as_uid = $this->db->exec_INSERTquery(
-                        $this->referenceReader->getAuthorshipTable(),
+                        ReferenceReader::AUTHORSHIP_TABLE,
                         $as
                     );
                     if (!(intval($as_uid) > 0)) {
