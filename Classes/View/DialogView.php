@@ -22,7 +22,7 @@ class DialogView extends View
                 break;
             default:
                 $editorView = GeneralUtility::makeInstance(EditorView::class, $this->configuration, $this->conf);
-                $editorView->initialize($configuration);
+                $editorView->initialize();
                 $content = $editorView->dialogView();
         }
 

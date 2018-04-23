@@ -315,20 +315,14 @@ class ItemTransformerService
             // The forename
             $authorForename = trim($author['forename']);
             if (strlen($authorForename) > 0) {
-                $authorForename = Utility::filter_pub_html_display(
-                    $authorForename,
-                    false
-                );
+                $authorForename = Utility::filter_pub_html_display($authorForename);
                 $authorForename = $contentObjectRenderer->stdWrap($authorForename, $this->conf['authors.']['forename.']);
             }
 
             // The surname
             $authorSurname = trim($author['surname']);
             if (strlen($authorSurname) > 0) {
-                $authorSurname = Utility::filter_pub_html_display(
-                    $authorSurname,
-                    false
-                );
+                $authorSurname = Utility::filter_pub_html_display($authorSurname);
                 $authorSurname = $contentObjectRenderer->stdWrap($authorSurname, $this->conf['authors.']['surname.']);
             }
 
@@ -353,32 +347,6 @@ class ItemTransformerService
                         $wrap['typolink.']['title'] = $title;
                     }
                     $authorIcon = $contentObjectRenderer->stdWrap($icon_img, $wrap);
-                }
-            }
-
-            // Compose names
-            $a_str = str_replace(
-                ['###SURNAME###', '###FORENAME###', '###URL_ICON###'],
-                [$authorSurname, $authorForename, $authorIcon],
-                $authorTemplate
-            );
-
-            // apply stdWrap
-            $stdWrap = $this->conf['field.']['author.'];
-            if (is_array($this->conf['field.'][$bib_str.'.']['author.'])) {
-                $stdWrap = $this->conf['field.'][$bib_str.'.']['author.'];
-            }
-            $a_str = $contentObjectRenderer->stdWrap($a_str, $stdWrap);
-
-            // Wrap the filtered authors with a highlighting class on demand
-            if ($highlightAuthors) {
-                foreach ($filter_authors as $fa) {
-                    if ($author['surname'] === $fa['surname']) {
-                        if (!$fa['forename'] || ($author['forename'] === $fa['forename'])) {
-                            $a_str = $contentObjectRenderer->stdWrap($a_str, $this->conf['authors.']['highlight.']);
-                            break;
-                        }
-                    }
                 }
             }
 

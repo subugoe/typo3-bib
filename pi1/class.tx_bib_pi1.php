@@ -43,11 +43,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     public $pi_checkCHash = false;
 
     /**
-     * @var array
-     */
-    public $icon_src = [];
-
-    /**
      * Statistics.
      *
      * @var array
@@ -67,7 +62,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     /**
      * @var string
      */
-    protected $flexFormFilterSheet;
+    const FLEXFORM_FILTER_SHEET = 's_filter';
 
     /**
      * The main function merges all configuration options and
@@ -113,8 +108,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration = $this->getSortFilter($configuration);
         $configuration = $this->disableNavigationOnDemand($configuration);
 
-        $this->determineNumberOfPublications();
-
         // Switch to requested view mode
         try {
             return $this->finalize($this->switchToRequestedViewMode($configuration), $configuration);
@@ -126,7 +119,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     /**
      * @return self
      */
-    protected function includeCss()
+    protected function includeCss(): self
     {
         /** @var \TYPO3\CMS\Core\Page\PageRenderer $pageRenderer */
         $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
@@ -135,9 +128,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         return $this;
     }
 
-    /**
-     * @return self
-     */
     protected function initializeFluidTemplate(): self
     {
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
@@ -601,7 +591,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         // Filtersheet and flexform data into variable
         $this->flexForm = $this->cObj->data['pi_flexform'];
-        $this->flexFormFilterSheet = 's_filter';
 
         $configuration = $this->initializePidFilter($configuration);
         $configuration = $this->initializeYearFilter($configuration);
@@ -629,11 +618,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeYearFilter(array $configuration): array
     {
-        if ($this->pi_getFFvalue($this->flexForm, 'enable_year', $this->flexFormFilterSheet) > 0) {
+        if ($this->pi_getFFvalue($this->flexForm, 'enable_year', self::FLEXFORM_FILTER_SHEET) > 0) {
             $flexFormFilter = [];
             $flexFormFilter['years'] = [];
             $flexFormFilter['ranges'] = [];
-            $ffStr = $this->pi_getFFvalue($this->flexForm, 'years', $this->flexFormFilterSheet);
+            $ffStr = $this->pi_getFFvalue($this->flexForm, 'years', self::FLEXFORM_FILTER_SHEET);
             $arr = Utility::multi_explode_trim(
                 [',', "\r", "\n"],
                 $ffStr,
@@ -672,16 +661,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration['highlight_authors'] = $this->pi_getFFvalue(
             $this->flexForm,
             'highlight_authors',
-            $this->flexFormFilterSheet
+            self::FLEXFORM_FILTER_SHEET
         );
 
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_author', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_author', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
             $flexFormFilter['authors'] = [];
-            $flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'author_rule', $this->flexFormFilterSheet);
+            $flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'author_rule', self::FLEXFORM_FILTER_SHEET);
             $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
 
-            $authors = $this->pi_getFFvalue($this->flexForm, 'authors', $this->flexFormFilterSheet);
+            $authors = $this->pi_getFFvalue($this->flexForm, 'authors', self::FLEXFORM_FILTER_SHEET);
             $authors = \Ipf\Bib\Utility\Utility::multi_explode_trim(
                 ["\r", "\n"],
                 $authors,
@@ -711,10 +700,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeStateFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_state', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_state', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
             $flexFormFilter['states'] = [];
-            $states = (int) $this->pi_getFFvalue($this->flexForm, 'states', $this->flexFormFilterSheet);
+            $states = (int) $this->pi_getFFvalue($this->flexForm, 'states', self::FLEXFORM_FILTER_SHEET);
 
             $j = 1;
             $referenceReaderStateSize = count(\Ipf\Bib\Utility\ReferenceReader::$allStates);
@@ -734,10 +723,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeBibliographyTypeFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_bibtype', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_bibtype', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
             $flexFormFilter['types'] = [];
-            $types = $this->pi_getFFvalue($this->flexForm, 'bibtypes', $this->flexFormFilterSheet);
+            $types = $this->pi_getFFvalue($this->flexForm, 'bibtypes', self::FLEXFORM_FILTER_SHEET);
             $types = explode(',', $types);
             foreach ($types as $type) {
                 $type = (int) $type;
@@ -755,9 +744,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeOriginFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_origin', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_origin', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
-            $flexFormFilter['origin'] = $this->pi_getFFvalue($this->flexForm, 'origins', $this->flexFormFilterSheet);
+            $flexFormFilter['origin'] = $this->pi_getFFvalue($this->flexForm, 'origins', self::FLEXFORM_FILTER_SHEET);
 
             if (1 === (int) $flexFormFilter['origin']) {
                 // Legacy value
@@ -777,9 +766,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeReviewFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_reviewes', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_reviewes', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
-            $flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'reviewes', $this->flexFormFilterSheet);
+            $flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'reviewes', self::FLEXFORM_FILTER_SHEET);
             $configuration['filters']['flexform']['reviewed'] = $flexFormFilter;
         }
 
@@ -788,9 +777,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeInLibraryFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_in_library', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_in_library', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
-            $flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'in_library', $this->flexFormFilterSheet);
+            $flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'in_library', self::FLEXFORM_FILTER_SHEET);
             $configuration['filters']['flexform']['in_library'] = $flexFormFilter;
         }
 
@@ -799,9 +788,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeBorrowedFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_borrowed', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_borrowed', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
-            $flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'borrowed', $this->flexFormFilterSheet);
+            $flexFormFilter['value'] = $this->pi_getFFvalue($this->flexForm, 'borrowed', self::FLEXFORM_FILTER_SHEET);
             $configuration['filters']['flexform']['borrowed'] = $flexFormFilter;
         }
 
@@ -810,9 +799,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeCiteIdFilter(array $configuration): array
     {
-        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_citeid', $this->flexFormFilterSheet)) {
+        if (0 !== (int) $this->pi_getFFvalue($this->flexForm, 'enable_citeid', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
-            $ids = $this->pi_getFFvalue($this->flexForm, 'citeids', $this->flexFormFilterSheet);
+            $ids = $this->pi_getFFvalue($this->flexForm, 'citeids', self::FLEXFORM_FILTER_SHEET);
             if (strlen($ids) > 0) {
                 $ids = \Ipf\Bib\Utility\Utility::multi_explode_trim(
                     [
@@ -833,11 +822,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeTagFilter(array $configuration): array
     {
-        if ($this->pi_getFFvalue($this->flexForm, 'enable_tags', $this->flexFormFilterSheet)) {
+        if ($this->pi_getFFvalue($this->flexForm, 'enable_tags', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
-            $flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'tags_rule', $this->flexFormFilterSheet);
+            $flexFormFilter['rule'] = $this->pi_getFFvalue($this->flexForm, 'tags_rule', self::FLEXFORM_FILTER_SHEET);
             $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
-            $kw = $this->pi_getFFvalue($this->flexForm, 'tags', $this->flexFormFilterSheet);
+            $kw = $this->pi_getFFvalue($this->flexForm, 'tags', self::FLEXFORM_FILTER_SHEET);
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim(
                     [
@@ -861,17 +850,17 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeKeywordsFilter(array $configuration): array
     {
-        if ($this->pi_getFFvalue($this->flexForm, 'enable_keywords', $this->flexFormFilterSheet)) {
+        if ($this->pi_getFFvalue($this->flexForm, 'enable_keywords', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
             $flexFormFilter['rule'] = $this->pi_getFFvalue(
                 $this->flexForm,
                 'keywords_rule',
-                $this->flexFormFilterSheet
+                self::FLEXFORM_FILTER_SHEET
             );
             $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
-            $kw = $this->pi_getFFvalue($this->flexForm, 'keywords', $this->flexFormFilterSheet);
-            if (strlen($kw) > 0) {
-                $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
+            $keywords = $this->pi_getFFvalue($this->flexForm, 'keywords', self::FLEXFORM_FILTER_SHEET);
+            if (strlen($keywords) > 0) {
+                $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $keywords, true);
                 foreach ($words as &$word) {
                     $word = \Ipf\Bib\Utility\ReferenceReader::getSearchTerm($word);
                 }
@@ -885,15 +874,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function initializeGeneralKeywordSearch(array $configuration): array
     {
-        if ($this->pi_getFFvalue($this->flexForm, 'enable_search_all', $this->flexFormFilterSheet)) {
+        if ($this->pi_getFFvalue($this->flexForm, 'enable_search_all', self::FLEXFORM_FILTER_SHEET)) {
             $flexFormFilter = [];
             $flexFormFilter['rule'] = $this->pi_getFFvalue(
                 $this->flexForm,
                 'search_all_rule',
-                $this->flexFormFilterSheet
+                self::FLEXFORM_FILTER_SHEET
             );
             $flexFormFilter['rule'] = (int) $flexFormFilter['rule'];
-            $kw = $this->pi_getFFvalue($this->flexForm, 'search_all', $this->flexFormFilterSheet);
+            $kw = $this->pi_getFFvalue($this->flexForm, 'search_all', self::FLEXFORM_FILTER_SHEET);
             if (strlen($kw) > 0) {
                 $words = \Ipf\Bib\Utility\Utility::multi_explode_trim([',', "\r", "\n"], $kw, true);
                 foreach ($words as &$word) {
@@ -1026,9 +1015,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 }
             }
 
-            // Initialize edit icons
-            $this->initializeEditIcons();
-
             // Switch to an import view on demand
             $allImport = (int) \Ipf\Bib\Importer\Importer::IMP_BIBTEX | \Ipf\Bib\Importer\Importer::IMP_XML;
             if (isset($this->piVars['import']) && ((int) $this->piVars['import'] & $allImport)) {
@@ -1050,23 +1036,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         /** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
         $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class, $configuration);
         $referenceWriter->hidePublication((int) $this->piVars['uid'], $hide);
-    }
-
-    /**
-     * Initialize the edit icons.
-     */
-    protected function initializeEditIcons()
-    {
-        $list = [];
-        $more = $this->conf['edit_icons.'];
-        if (is_array($more)) {
-            $list = array_merge($list, $more);
-        }
-
-        // @todo can't figure out $base
-        foreach ($list as $key => $val) {
-            $this->icon_src[$key] = $GLOBALS['TSFE']->tmpl->getFileName($val);
-        }
     }
 
     /**
@@ -1095,17 +1064,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
 
         return $configuration;
-    }
-
-    /**
-     * Determines the number of publications.
-     */
-    protected function determineNumberOfPublications()
-    {
-        if (!is_numeric($this->stat['num_all'])) {
-            $this->stat['num_all'] = \Ipf\Bib\Utility\ReferenceReader::getNumberOfPublications();
-            $this->stat['num_page'] = $this->stat['num_all'];
-        }
     }
 
     protected function getPageNavigation(array $configuration): array
@@ -1213,10 +1171,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function disableNavigationOnDemand(array $configuration): array
     {
-        if (array_key_exists('num_all', $this->stat) && 0 === (int) $this->stat['num_all']) {
-            $configuration['show_nav_export'] = false;
-        }
-
         if (array_key_exists('num_page', $this->stat) && 0 === (int) $this->stat['num_page']) {
             $configuration['show_nav_stat'] = false;
         }

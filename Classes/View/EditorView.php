@@ -56,11 +56,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 class EditorView extends View
 {
     /**
-     * @var array
-     */
-    public $conf;
-
-    /**
      * @var \Ipf\Bib\Utility\ReferenceReader
      */
     public $referenceReader;
@@ -93,11 +88,6 @@ class EditorView extends View
     protected $widgetMode;
 
     /**
-     * @var array
-     */
-    private $configuration;
-
-    /**
      * Initializes this class.
      */
     public function initialize(): string
@@ -125,9 +115,11 @@ class EditorView extends View
      *
      * @return string A publication editor
      */
-    public function editor_view(array $configuration): string
+    public function editor_view(): string
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
+
         $content = '';
 
         // check whether the BE user is authorized
@@ -148,17 +140,15 @@ class EditorView extends View
             $pub_http->setUid($uid);
         }
 
-        $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
-
-        $this->isFirstEdit = true;
+        $isFirstEdit = true;
         if (is_array($getPostVariables['DATA']['pub'])) {
-            $this->isFirstEdit = false;
+            $isFirstEdit = false;
         }
 
         $title = $this->getTitle();
 
         // Load default data
-        if ($this->isFirstEdit) {
+        if ($isFirstEdit) {
             if ($this->isNew) {
                 // Load defaults for a new publication
                 $publicationData = $this->getDefaultPublicationData();
@@ -574,7 +564,7 @@ class EditorView extends View
                 break;
             default:
                 if (Widget::WIDGET_EDIT === $mode) {
-                    $content .= $this->getDefaultEditWidget($field, (string) $value, $mode);
+                    $content .= $this->getDefaultEditWidget($field, (string) $value);
                 } else {
                     $content .= $this->getDefaultStaticWidget($field, (string) $value, $mode);
                 }
@@ -586,11 +576,10 @@ class EditorView extends View
     /**
      * @param string $field
      * @param string $value
-     * @param int    $mode
      *
      * @return string
      */
-    private function getDefaultEditWidget(string $field, string $value, int $mode): string
+    private function getDefaultEditWidget(string $field, string $value): string
     {
         $cfg = $GLOBALS['TCA'][ReferenceReader::REFERENCE_TABLE]['columns'][$field]['config'];
 
@@ -610,7 +599,7 @@ class EditorView extends View
         // Default widget
         $widgetType = $cfg['type'];
         $fieldAttr = 'tx_bib_pi1[DATA][pub]['.$field.']';
-        $htmlValue = Utility::filter_pub_html((string) $value, true);
+        $htmlValue = htmlspecialchars((string) $value, ENT_QUOTES);
 
         $attributes = [];
         $attributes['class'] = 'tx_bib-editor_input';
@@ -697,7 +686,7 @@ class EditorView extends View
         // Default widget
         $widgetType = $configuration['type'];
         $fieldAttributes = 'tx_bib_pi1[DATA][pub]['.$field.']';
-        $htmlValue = Utility::filter_pub_html((string) $value, true);
+        $htmlValue = htmlspecialchars((string) $value, ENT_QUOTES);
 
         $content = '';
         if (Widget::WIDGET_SHOW === $mode) {
@@ -761,64 +750,59 @@ class EditorView extends View
     {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Editor/AuthorsWidget.html');
-        $view->assign('mode', $mode);
-        $view->assign('authors', $value);
+
         $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
         $content = '';
 
-        $key_action = 'tx_bib_pi1[action]';
-        $key_data = 'tx_bib_pi1[DATA][pub][authors]';
-
         // Author widget
         $authors = is_array($value) ? $value : [];
-        $aNum = count($authors);
-        $edOpts = &$getPostVariables['editor'];
-        $edOpts['numAuthors'] = max(
-            (int) $edOpts['numAuthors'],
-            $aNum,
+        $numberOfAuthors = count($authors);
+        $getPostVariables['editor']['numAuthors'] = max(
+            (int) $getPostVariables['editor']['numAuthors'],
+            $numberOfAuthors,
             (int) $this->configuration['editor']['numAuthors'],
             1
         );
         if ((Widget::WIDGET_SHOW === $mode) || (Widget::WIDGET_EDIT === $mode)) {
             $au_con = [];
-            for ($i = 0; $i < $edOpts['numAuthors']; ++$i) {
-                if ($i > ($aNum - 1) && (Widget::WIDGET_EDIT !== $mode)) {
+            for ($i = 0; $i < $getPostVariables['editor']['numAuthors']; ++$i) {
+                if ($i > ($numberOfAuthors - 1) && (Widget::WIDGET_EDIT !== $mode)) {
                     break;
                 }
                 $row_con = [];
 
-                $foreName = Utility::filter_pub_html($authors[$i]['forename'] ?? '', true);
-                $surName = Utility::filter_pub_Html($authors[$i]['surname'] ?? '', true);
+                $foreName = htmlspecialchars($authors[$i]['forename'] ?? '', ENT_QUOTES);
+                $surName = htmlspecialchars($authors[$i]['surname'] ?? '', ENT_QUOTES);
 
                 $row_con[0] = strval($i + 1);
                 if (Widget::WIDGET_SHOW === $mode) {
                     $row_con[1] = Utility::html_hidden_input(
-                        $key_data.'['.$i.'][forename]',
+                        'tx_bib_pi1[DATA][pub][authors]['.$i.'][forename]',
                         $foreName
                     );
                     $row_con[1] .= $foreName;
 
                     $row_con[2] = Utility::html_hidden_input(
-                        $key_data.'['.$i.'][surname]',
+                        'tx_bib_pi1[DATA][pub][authors]['.$i.'][surname]',
                         $surName
                     );
                     $row_con[2] .= $surName;
                 } else {
                     if (Widget::WIDGET_EDIT === $mode) {
                         $lowerBtn = Utility::html_image_input(
-                            $key_action.'[lower_author]',
+                            'tx_bib_pi1[action][lower_author]',
                             (string) $i,
                             $this->pi1->icon_src['down']
                         );
 
                         $raiseBtn = Utility::html_image_input(
-                            $key_action.'[raise_author]',
+                            'tx_bib_pi1[action][raise_author]',
                             (string) $i,
                             $this->pi1->icon_src['up']
                         );
 
-                        $row_con[3] = ($i < ($aNum - 1)) ? $lowerBtn : '';
-                        $row_con[4] = (($i > 0) && ($i < ($aNum))) ? $raiseBtn : '';
+                        $row_con[3] = ($i < ($numberOfAuthors - 1)) ? $lowerBtn : '';
+                        $row_con[4] = (($i > 0) && ($i < ($numberOfAuthors))) ? $raiseBtn : '';
                     }
                 }
 
@@ -826,31 +810,25 @@ class EditorView extends View
             }
         } else {
             if (Widget::WIDGET_SILENT === $mode) {
-                $authorsSize = count($authors);
-                for ($i = 0; $i < $authorsSize; ++$i) {
-                    $foreName = Utility::filter_pub_html(
-                        $authors[$i]['forename'],
-                        true
-                    );
-                    $surName = Utility::filter_pub_Html(
-                        $authors[$i]['surname'],
-                        true
+                $i = 0;
+                foreach ($authors as $author) {
+                    $content .= Utility::html_hidden_input(
+                        'tx_bib_pi1[DATA][pub][authors]['.$i.'][forename]', htmlspecialchars($author['forename'], ENT_QUOTES)
                     );
 
                     $content .= Utility::html_hidden_input(
-                        $key_data.'['.$i.'][forename]',
-                        $foreName
+                        'tx_bib_pi1[DATA][pub][authors]['.$i.'][surname]', htmlspecialchars($author['surname'], ENT_QUOTES)
                     );
-
-                    $content .= Utility::html_hidden_input(
-                        $key_data.'['.$i.'][surname]',
-                        $surName
-                    );
+                    ++$i;
                 }
             }
         }
 
-        $view->assign('content', $content);
+        $view->assignMultiple([
+            'mode' => $mode,
+            'authors' => $value,
+            'content' => $content,
+        ]);
 
         return $view->render();
     }

@@ -28,8 +28,8 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 /**
@@ -46,43 +46,17 @@ class Utility
      */
     public static function get_page_titles($uids): array
     {
+        $pageRepository = GeneralUtility::makeInstance(PageRepository::class);
         $titles = [];
         foreach ($uids as $uid) {
             $uid = (int) $uid;
-            $title = self::get_page_title($uid);
-            if (!empty($title)) {
-                $titles[$uid] = $title;
+            $page = $pageRepository->getPage($uid);
+            if (!empty($page)) {
+                $titles[$uid] = sprintf('%s - %d', $page['title'], $page['uid']);
             }
         }
 
         return $titles;
-    }
-
-    /**
-     * Returns the processed title of a page.
-     *
-     * @param int $uid
-     *
-     * @return string The title string
-     */
-    private static function get_page_title(int $uid)
-    {
-        $title = '';
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
-
-        $result = $queryBuilder
-            ->select('title')
-            ->from('pages')
-            ->where($queryBuilder->expr()->eq('uid', $uid))
-            ->execute()
-            ->fetchAll();
-
-        if (is_array($result)) {
-            $title = htmlspecialchars($result[0]['title']);
-            $title .= ' ('.$uid.')';
-        }
-
-        return $title;
     }
 
     /**
@@ -94,14 +68,14 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function crop_middle(string $str, int $len, $charset = 'UTF-8')
+    public static function crop_middle(string $str, int $len)
     {
         $res = $str;
         if (strlen($str) > $len) {
             $le = (int) ceil($len / 2.0);
             $ls = $len - $le;
-            $res = mb_substr($str, 0, $ls, $charset).'...';
-            $res .= mb_substr($str, strlen($str) - $le, $le, $charset);
+            $res = mb_substr($str, 0, $ls).'...';
+            $res .= mb_substr($str, strlen($str) - $le, $le);
         }
 
         return $res;
@@ -113,7 +87,7 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function filter_pub_html_display(string $content, bool $htmlSpecialChars = false): string
+    public static function filter_pub_html_display(string $content): string
     {
         $rand = strval(rand()).strval(rand());
         $content = str_replace(['<prt>', '</prt>'], '', $content);
@@ -144,8 +118,6 @@ class Utility
             $content = self::fix_html_ampersand($content);
         }
 
-        $content = self::filter_pub_html($content, $htmlSpecialChars);
-
         return $content;
     }
 
@@ -170,24 +142,6 @@ class Utility
         $str = str_replace('&;', '&amp;;', $str);
 
         return $str;
-    }
-
-    /**
-     * This function prepares database content fot HTML output.
-     *
-     * @param string $content
-     * @param bool   $htmlSpecialChars
-     * @param string $charset
-     *
-     * @return string The string filtered for html output
-     */
-    public static function filter_pub_html(string $content = '', $htmlSpecialChars = false)
-    {
-        if ($htmlSpecialChars) {
-            $content = htmlspecialchars($content, ENT_QUOTES);
-        }
-
-        return $content;
     }
 
     /**
@@ -274,13 +228,6 @@ class Utility
     /**
      * Returns a html input element.
      *
-     * @param $type
-     * @param $name
-     * @param $value
-     * @param array $attributes
-     *
-     * @return string The input element
-     *
      * @deprecated
      */
     public static function html_input(string $type, string $name, string $value, array $attributes = []): string
@@ -296,50 +243,6 @@ class Utility
         $tagBuilder->addAttributes($attributes);
 
         return $tagBuilder->render();
-    }
-
-    /**
-     * Returns a checkbox input.
-     *
-     * @param $name
-     * @param $value
-     * @param $checked
-     * @param array $attributes
-     *
-     * @return string The checkbox input element
-     *
-     * @deprecated
-     */
-    public static function html_radio_input(string $name, string $value, bool $checked, array $attributes = [])
-    {
-        $tagBuilder = new TagBuilder('input');
-        $localAttributes = [
-            'type' => 'radio',
-            'name' => $name,
-            'value' => $value,
-            'checked' => $checked ? 'checked' : '',
-          ];
-
-        $attributes = array_merge($attributes, $localAttributes);
-        $tagBuilder->addAttributes($attributes);
-
-        return $tagBuilder->render();
-    }
-
-    /**
-     * Returns a submit input.
-     *
-     * @param $name
-     * @param $value
-     * @param array $attributes
-     *
-     * @return string The submit input element
-     *
-     * @deprecated Use FLUIDTEMPLATE when possible
-     */
-    public static function html_submit_input($name, $value, $attributes = [])
-    {
-        return self::html_input('submit', $name, $value, $attributes);
     }
 
     /**
@@ -434,32 +337,6 @@ class Utility
     }
 
     /**
-     * A layout table the contains all the strings in $rows.
-     *
-     * @param $rows
-     *
-     * @return string The html table code
-     */
-    public static function html_layout_table($rows)
-    {
-        $res = '<table class="tx_bib-layout"><tbody>';
-        foreach ($rows as $row) {
-            $res .= '<tr>';
-            if (is_array($row)) {
-                foreach ($row as $cell) {
-                    $res .= '<td>'.strval($cell).'</td>';
-                }
-            } else {
-                $res .= '<td>'.strval($row).'</td>';
-            }
-            $res .= '</tr>';
-        }
-        $res .= '</tbody></table>';
-
-        return $res;
-    }
-
-    /**
      * Counts strings in an array of strings.
      *
      * @param $messages
@@ -546,14 +423,14 @@ class Utility
      *
      * @return string The imploded array
      */
-    public static function implode_intval($sep, $list, $noEmpty = true)
+    public static function implode_intval(string $sep, array $list, bool $noEmpty = true): string
     {
         $res = [];
         if ($noEmpty) {
             foreach ($list as $val) {
                 $val = trim((string) $val);
                 if (strlen($val) > 0) {
-                    $res[] = strval(intval($val));
+                    $res[] = (string) (int) $val;
                 }
             }
         } else {
@@ -572,52 +449,14 @@ class Utility
      *
      * @return array The intvaled array
      */
-    public static function intval_array($arr)
+    private static function intval_array($arr)
     {
         $res = [];
         foreach ($arr as $val) {
-            $res[] = intval($val);
+            $res[] = (int) $val;
         }
 
         return $res;
-    }
-
-    /**
-     * Explodes a string and applies intval to each element.
-     *
-     * @deprecated since 1.2.0, will be removed in 1.5.0. Use GeneralUtility::intExplode()
-     * @static
-     *
-     * @param string $sep
-     * @param string $str
-     * @param bool   $noEmpty
-     *
-     * @return array The exploded string
-     */
-    public static function explode_intval($sep, $str, $noEmpty = true)
-    {
-        GeneralUtility::logDeprecatedFunction();
-
-        return GeneralUtility::intExplode($sep, $str, $noEmpty);
-    }
-
-    /**
-     * Returns and array with the exploded string and
-     * the values trimmed.
-     *
-     * @deprecated since 1.2.0 will be removed in 1.5.0. Use GeneralUtility::trimExplode()
-     *
-     * @param string $sep
-     * @param string $str
-     * @param bool   $noEmpty
-     *
-     * @return array The exploded string
-     */
-    public static function explode_trim($sep, $str, $noEmpty = false)
-    {
-        GeneralUtility::logDeprecatedFunction();
-
-        return GeneralUtility::trimExplode($sep, $str, $noEmpty);
     }
 
     /**
@@ -630,7 +469,7 @@ class Utility
      *
      * @return array The exploded string
      */
-    public static function explode_trim_lower($sep, $str, $noEmpty = false)
+    public static function explode_trim_lower(string $sep, string $str, bool $noEmpty = false): array
     {
         $res = [];
         $tmp = explode($sep, $str);
@@ -645,34 +484,6 @@ class Utility
     }
 
     /**
-     * Explodes a string by multiple separators.
-     *
-     * @deprecated Since 1.2.0, will be removed in 1.5.0. Does not seem to be used
-     * @static
-     *
-     * @param array  $delimiters
-     * @param string $str
-     *
-     * @return array The exploded string
-     */
-    public static function multi_explode($delimiters, $str)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        if (is_array($delimiters)) {
-            $sep = strval($delimiters[0]);
-            $delimiterSize = count($delimiters);
-            for ($ii = 1; $ii < $delimiterSize; ++$ii) {
-                $nsep = strval($sep[$ii]);
-                $str = str_replace($nsep, $sep, $str);
-            }
-        } else {
-            $sep = strval($delimiters);
-        }
-
-        return explode($sep, $str);
-    }
-
-    /**
      * Explodes a string by multiple separators and trims the results.
      *
      * @static
@@ -683,17 +494,17 @@ class Utility
      *
      * @return array The exploded string
      */
-    public static function multi_explode_trim($delimiters, $str, $noEmpty = false)
+    public static function multi_explode_trim(array $delimiters, string $str, bool $noEmpty = false): array
     {
         if (is_array($delimiters)) {
             $sep = strval($delimiters[0]);
             $delimiterSize = count($delimiters);
             for ($ii = 1; $ii < $delimiterSize; ++$ii) {
-                $nsep = strval($delimiters[$ii]);
+                $nsep = (string) $delimiters[$ii];
                 $str = str_replace($nsep, $sep, $str);
             }
         } else {
-            $sep = strval($delimiters);
+            $sep = (string) $delimiters;
         }
 
         return GeneralUtility::trimExplode($sep, $str, $noEmpty);

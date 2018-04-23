@@ -7,39 +7,6 @@
 
         <f:link.page additionalParams="{tx_bib_pi1: {year: 'all'}}"><f:translate key="yearNav_all_years" extensionName="bib"/></f:link.page>
 
-
-            $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
-
-                    // The all link
-                    $delimiter = ' - ';
-                    if (isset($selectionConfiguration['all_sep'])) {
-                        $delimiter = $selectionConfiguration['all_sep'];
-                    }
-                    $delimiter = $contentObjectRenderer->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
-
-                    $txt = LocalizationUtility::translate('yearNav_all_years', 'bib');
-                    if (is_numeric($this->configuration['year'])) {
-                        $contentObjectRenderer->getTypoLink($txt, '584', ['year' => 'all']);
-                    } else {
-                        $txt = $contentObjectRenderer->stdWrap($txt, $selectionConfiguration['current.']);
-                    }
-
-                    $cur = array_search($this->configuration['year'], $this->stat['years']);
-                    if (false === $cur) {
-                        $cur = -1;
-                    }
-                    $indices = [0, $cur, count($this->stat['years']) - 1];
-
-                    $numSel = 3;
-                    if (array_key_exists('years', $selectionConfiguration)) {
-                        $numSel = abs(intval($selectionConfiguration['years']));
-                    }
-
-                    $selection = $this->selection($selectionConfiguration, $indices, $numSel);
-
-                    return $contentObjectRenderer->stdWrap($txt.$delimiter.$selection, $selectionConfiguration['all_wrap.']);
-
-
     </div>
     <div class="tx_bib-navi_year_select">
 

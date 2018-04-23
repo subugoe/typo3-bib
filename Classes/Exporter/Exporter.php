@@ -323,7 +323,7 @@ abstract class Exporter
      *
      * @return string The file header string
      */
-    abstract protected function fileOutro($infoArr = []);
+    abstract protected function fileOutro(array $infoArr = []): string;
 
     protected function cleanUpResource()
     {

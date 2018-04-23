@@ -181,7 +181,7 @@ class XmlExporter extends Exporter
      *
      * @return string
      */
-    protected function fileOutro($infoArr = [])
+    protected function fileOutro(array $infoArr = []): string
     {
         $content = '</bib>'.PHP_EOL;
 

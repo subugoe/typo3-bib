@@ -194,7 +194,7 @@ class BibTexExporter extends Exporter
      *
      * @return string
      */
-    protected function formatPublicationForExport(Reference $publication, $infoArr = [])
+    protected function formatPublicationForExport(Reference $publication, array $infoArr = []): string
     {
         $bibliographyType = ucfirst(ReferenceReader::$allBibTypes[$publication->getBibtype()]);
 
@@ -280,7 +280,7 @@ class BibTexExporter extends Exporter
      *
      * @return mixed|string
      */
-    private function bibTexFormatField($key, $value)
+    private function bibTexFormatField(string $key, $value)
     {
         switch ($key) {
             case 'authors':
@@ -357,7 +357,7 @@ class BibTexExporter extends Exporter
      *
      * @return string
      */
-    protected function fileIntro(array $infoArr = [])
+    protected function fileIntro(array $infoArr = []): string
     {
         $str = PHP_EOL.$this->getGeneralInformationText();
         $str = preg_replace('/^/m', '% ', $str).PHP_EOL;
@@ -370,7 +370,7 @@ class BibTexExporter extends Exporter
      *
      * @return string
      */
-    protected function fileOutro($infoArr = [])
+    protected function fileOutro(array $infoArr = []): string
     {
         return '';
     }
