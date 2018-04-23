@@ -10,11 +10,13 @@
 
     <table cellspacing="0" cellpadding="0" border="0" class="tx_bib-list">
         <tbody>
-        <f:for each="{items}" as="item">
+        <f:widget.paginate objects="{items}" as="paginatedItem" configuration="{itemsPerPage: 20, addQueryStringMethod: 'POST,GET'}">
+            <f:for each="{paginatedItem}" as="item">
             <tr>
                 <f:render partial="List/Items" arguments="{item: item, editmode: configuration.edit_mode}" />
             </tr>
-        </f:for>
+            </f:for>
+        </f:widget.paginate>
         </tbody>
     </table>
 

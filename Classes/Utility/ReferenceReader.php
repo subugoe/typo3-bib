@@ -1143,11 +1143,11 @@ class ReferenceReader
 
             $uids = [];
             foreach ($authors as $author) {
-                $uids[] = intval($author['uid']);
+                $uids[] = (int) $author['uid'];
             }
 
             $results = $queryBuilder->select('*')
-                            ->from(self::AUTHORSHIP_TABLE)
+                ->from(self::AUTHORSHIP_TABLE)
                 ->where($queryBuilder->expr()->in('author_id', $uids))
                 ->execute()
                 ->fetchAll();
@@ -1464,11 +1464,11 @@ class ReferenceReader
 
         $results = $queryBuilder
             ->select(
-                $queryBuilder->expr()->max(self::REFERENCE_TABLE.'.tstamp'),
-                $queryBuilder->expr()->max(self::AUTHOR_TABLE.'.tstamp')
+                $queryBuilder->expr()->max('r.tstamp'),
+                $queryBuilder->expr()->max('a.tstamp')
             )
-            ->from(self::REFERENCE_TABLE)
-            ->from(self::AUTHOR_TABLE)
+            ->from(self::REFERENCE_TABLE, 'r')
+            ->from(self::AUTHOR_TABLE, 'a')
             ->execute()
             ->fetchAll();
 
@@ -1638,30 +1638,22 @@ class ReferenceReader
      * This initializes the reference fetching.
      * Executes a select query.
      */
-    public function getAllReferences(): array
+    public function getAllReferences(int $start = 0, int $limit = 0): array
     {
         $references = [];
-
+        $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration);
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::REFERENCE_TABLE);
         $query = $queryBuilder->select('*')
-            ->from(self::REFERENCE_TABLE);
+            ->from(self::REFERENCE_TABLE)
+            ->setFirstResult($start);
 
-        foreach ($this->filters as $filter) {
-            if (is_array($filter['limit'])) {
-                if (isset($filter['limit']['start']) && isset($filter['limit']['num'])) {
-                    $query->setFirstResult((int) $filter['limit']['start']);
-                    $query->setMaxResults((int) $filter['limit']['num']);
-                }
-            }
+        if ($limit > 0) {
+            $query->setMaxResults($limit);
         }
-        $query->setMaxResults(30);
 
-        $results = $query
-            ->execute()
-            ->fetchAll();
+        $results = $query->execute()->fetchAll();
 
         foreach ($results as $referenceData) {
-            $itemTransformer = GeneralUtility::makeInstance(ItemTransformerService::class, $this->configuration);
             $reference = $itemTransformer->transformPublication($referenceData);
             $reference->setAuthors($this->getAuthorByPublication($reference));
             $reference->setModificationKey($this->getModificationKey($reference));

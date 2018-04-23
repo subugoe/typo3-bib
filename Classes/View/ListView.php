@@ -15,36 +15,37 @@ use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ListView extends View
 {
-    /**
-     * @var array
-     */
-    private $extConf;
-
-    /**
-     * @var array
-     */
-    private $conf;
-
-    public function initialize(array $configuration, array $localConfiguration)
+    public function initialize()
     {
-        $this->extConf = $configuration;
-        $this->conf = $localConfiguration;
-        $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/List/List.html');
-        $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
 
-        $this->view->assign('configuration', $configuration);
+        $this->view->assign('configuration', $this->configuration);
         $this->view->assign('searchNavigation', $this->setupSearchNavigation());
-        $this->view->assign('yearNavigation', $this->setupYearNavigation());
-        $this->view->assign('authorNavigation', $this->setupAuthorNavigation());
-        $this->view->assign('preferenceNavigation', $this->setupPreferenceNavigation());
-        $this->view->assign('pageNavigation', $this->setupPageNavigation());
-        $this->view->assign('statisticsNavigation', $this->setupStatisticsNavigation());
+
+        if ($this->configuration['show_nav_year']) {
+            $this->view->assign('yearNavigation', $this->setupYearNavigation());
+        }
+
+        if ($this->configuration['show_nav_author']) {
+            $this->view->assign('authorNavigation', $this->setupAuthorNavigation());
+        }
+
+        if ($this->configuration['show_nav_pref']) {
+            $this->view->assign('preferenceNavigation', $this->setupPreferenceNavigation());
+        }
+
+        if ($this->configuration['show_nav_page']) {
+            $this->view->assign('pageNavigation', $this->setupPageNavigation());
+        }
+
+        if ($this->configuration['show_nav_stat']) {
+            $this->view->assign('statisticsNavigation', $this->setupStatisticsNavigation());
+        }
+
         $this->view->assign('items', $this->setupItems());
 
         return $this->view->render();
@@ -52,7 +53,7 @@ class ListView extends View
 
     private function setupSearchNavigation()
     {
-        $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->extConf, $this->conf);
+        $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->configuration, $this->conf);
         $searchNavigation->hook_filter();
         $searchNavigation->initialize();
 
@@ -66,16 +67,10 @@ class ListView extends View
      */
     private function setupYearNavigation(): string
     {
-        $trans = '';
+        $yearNavigation = GeneralUtility::makeInstance(YearNavigation::class, $this->configuration, $this->conf);
+        $yearNavigation->initialize();
 
-        if ($this->extConf['show_nav_year']) {
-            $yearNavigation = GeneralUtility::makeInstance(YearNavigation::class, $this->extConf, $this->conf);
-            $yearNavigation->initialize();
-
-            return $yearNavigation->get();
-        }
-
-        return $trans;
+        return $yearNavigation->get();
     }
 
     /**
@@ -83,18 +78,12 @@ class ListView extends View
      */
     private function setupAuthorNavigation(): string
     {
-        $trans = '';
+        $authorNavigation = GeneralUtility::makeInstance(AuthorNavigation::class, $this->configuration, $this->conf);
 
-        if ($this->extConf['show_nav_author']) {
-            $authorNavigation = GeneralUtility::makeInstance(AuthorNavigation::class, $this->extConf, $this->conf);
+        $authorNavigation->initialize();
+        $authorNavigation->hook_filter();
 
-            $authorNavigation->hook_init();
-            $authorNavigation->hook_filter();
-
-            return $authorNavigation->get();
-        }
-
-        return $trans;
+        return $authorNavigation->get();
     }
 
     /**
@@ -102,15 +91,9 @@ class ListView extends View
      */
     private function setupPreferenceNavigation()
     {
-        $trans = '';
+        $preferenceNavigation = GeneralUtility::makeInstance(PreferenceNavigation::class, $this->configuration, $this->conf);
 
-        if ($this->extConf['show_nav_pref']) {
-            $preferenceNavigation = GeneralUtility::makeInstance(PreferenceNavigation::class, $this->extConf, $this->conf);
-
-            return $preferenceNavigation->get();
-        }
-
-        return $trans;
+        return $preferenceNavigation->get();
     }
 
     /**
@@ -118,13 +101,7 @@ class ListView extends View
      */
     private function setupPageNavigation(): string
     {
-        $trans = '';
-
-        if ($this->extConf['show_nav_page']) {
-            return GeneralUtility::makeInstance(PageNavigation::class)->get();
-        }
-
-        return $trans;
+        return GeneralUtility::makeInstance(PageNavigation::class)->get();
     }
 
     /**
@@ -132,13 +109,7 @@ class ListView extends View
      */
     private function setupStatisticsNavigation(): string
     {
-        $trans = '';
-
-        if ($this->extConf['show_nav_stat']) {
-            return GeneralUtility::makeInstance(StatisticsNavigation::class, $this->extConf, $this->conf)->get();
-        }
-
-        return $trans;
+        return GeneralUtility::makeInstance(StatisticsNavigation::class, $this->configuration, $this->conf)->get();
     }
 
     /**
@@ -146,54 +117,31 @@ class ListView extends View
      */
     private function setupItems(): array
     {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
 
-        // Initialize the label translator
-        $labelTranslator = [];
-        $labels = [
-            'abstract',
-            'annotation',
-            'chapter',
-            'doc_number',
-            'doi',
-            'edition',
-            'editor',
-            'ISBN',
-            'ISSN',
-            'keywords',
-            'tags',
-            'note',
-            'of_series',
-            'page',
-            'publisher',
-            'references',
-            'report_number',
-            'volume',
-        ];
+        $offset = $getPostVariables['@widget_0']['currentPage'] ?? 0;
+        $limit = $this->configuration['sub_page']['ipp'];
 
-        foreach ($labels as $label) {
-            $upperCaseLabel = strtoupper($label);
-            $labelValue = LocalizationUtility::translate('label_'.$label, 'bib');
-            $labelValue = $contentObjectRenderer->stdWrap($labelValue, $this->conf['label.'][$label.'.']);
-            $labelTranslator[$upperCaseLabel] = $labelValue;
+        if ($offset > 0) {
+            $offset = $offset * $limit;
         }
 
         // Warning cfg
-        $editMode = $this->extConf['edit_mode'];
+        $editMode = $this->configuration['edit_mode'];
 
-        if (Display::D_Y_SPLIT === (int) $this->extConf['d_mode']) {
-            $this->extConf['split_years'] = true;
+        if (Display::D_Y_SPLIT === (int) $this->configuration['d_mode']) {
+            $this->configuration['split_years'] = true;
         }
 
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->extConf);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
 
-        return $referenceReader->getAllReferences();
+        return $referenceReader->getAllReferences($offset, $limit);
 
         // Determine publication numbers
         $publicationsBefore = 0;
-        if ((Display::D_Y_NAV === (int) $this->extConf['d_mode']) && is_numeric($this->extConf['year'])) {
+        if ((Display::D_Y_NAV === (int) $this->configuration['d_mode']) && is_numeric($this->configuration['year'])) {
             foreach ($this->stat['year_hist'] as $y => $n) {
-                if ($y === $this->extConf['year']) {
+                if ($y === $this->configuration['year']) {
                     break;
                 }
                 $publicationsBefore += $n;
@@ -204,10 +152,10 @@ class ListView extends View
         $prevYear = -1;
 
         // Initialize counters
-        $limit_start = (int) $this->extConf['filters']['br_page']['limit']['start'];
+        $limit_start = (int) $this->configuration['filters']['br_page']['limit']['start'];
         $i_page = $this->stat['num_page'] - $limit_start;
         $i_page_delta = -1;
-        if (Sort::SORT_ASC == $this->extConf['date_sorting']) {
+        if (Sort::SORT_ASC == $this->configuration['date_sorting']) {
             $i_page = $limit_start + 1;
             $i_page_delta = 1;
         }
@@ -223,21 +171,10 @@ class ListView extends View
             $i_all = $publicationsBefore + $i_page;
 
             // Determine evenOdd
-            if ($this->extConf['split_bibtypes']) {
+            if ($this->configuration['split_bibtypes']) {
                 if ($pub->getBibtype() !== $prevBibType) {
                     $i_bibtype = 1;
                 }
-            }
-
-            // Initialize the translator
-            $translator = [];
-
-            $enum = $enumerationBase;
-            $enum = str_replace('###I_ALL###', (string) $i_all, $enum);
-            $enum = str_replace('###I_PAGE###', (string) $i_page, $enum);
-            if (!(false === strpos($enum, '###FILE_URL_ICON###'))) {
-                $repl = $this->getFileUrlIcon();
-                $enum = str_replace('###FILE_URL_ICON###', $repl, $enum);
             }
 
             // Manipulators
@@ -251,31 +188,18 @@ class ListView extends View
 
             // Year separator label
             $years = [];
-            if ($this->extConf['split_years'] && ($pub['year'] !== $prevYear)) {
-                $years[] = $contentObjectRenderer->stdWrap(strval($pub['year']), $this->conf['label.']['year.']);
+            if ($this->configuration['split_years'] && ($pub['year'] !== $prevYear)) {
                 $prevBibType = -1;
             }
 
             // Bibtype separator label
-            if ($this->extConf['split_bibtypes'] && ($pub['bibtype'] !== $prevBibType)) {
+            if ($this->configuration['split_bibtypes'] && ($pub['bibtype'] !== $prevBibType)) {
                 $bibStr = $contentObjectRenderer->stdWrap(
                     LocalizationUtility::translate('bibtype_plural_'.$pub['bibtype'], 'bib'),
                     $this->conf['label.']['bibtype.']
                 );
                 $items['bibstr'] = $bibStr;
             }
-
-            // Append string for item data
-            $append = '';
-            if ((count($warnings) > 0) && $editMode) {
-                $charset = $this->extConf['charset']['upper'];
-                foreach ($warnings as $err) {
-                    $msg = htmlspecialchars($err['msg'], ENT_QUOTES, $charset);
-                    $append .= $contentObjectRenderer->stdWrap($msg, $warningConfiguration['msg.']);
-                }
-                $append = $contentObjectRenderer->stdWrap($append, $warningConfiguration['all_wrap.']);
-            }
-            $translator['###ITEM_APPEND###'] = $append;
 
             // Apply translator
             $listViewTemplate = $translator;

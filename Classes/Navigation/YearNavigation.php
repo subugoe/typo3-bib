@@ -37,6 +37,8 @@ class YearNavigation extends Navigation
     public function initialize()
     {
         if ($this->configuration['show_nav_year']) {
+            $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
+
             $referenceReader = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceReader::class,
                 $this->configuration);
 
@@ -52,7 +54,7 @@ class YearNavigation extends Navigation
             // Determine the year to display
             $this->configuration['year'] = (int) date('Y'); // System year
 
-            $exportPluginVariables = strtolower($this->piVars['year']);
+            $exportPluginVariables = strtolower($getPostVariables['year']);
             if (is_numeric($exportPluginVariables)) {
                 $this->configuration['year'] = (int) $exportPluginVariables;
             } else {
@@ -87,43 +89,6 @@ class YearNavigation extends Navigation
                 $this->configuration['filters']['br_year']['year']['years'] = [$this->configuration['year']];
             }
         }
-    }
-
-    /**
-     * Creates a text for a given index.
-     */
-    protected function sel_get_text(int $index): string
-    {
-        return (string) $this->stat['years'][$index];
-    }
-
-    /**
-     * Creates a link for the selection.
-     *
-     * @param string $text
-     * @param int    $ii
-     *
-     * @return string
-     */
-    protected function sel_get_link($text, $ii)
-    {
-        $title = str_replace('%y', $text, $this->sel_link_title);
-
-        return '<a href="#" title="'.$title.'">'.$text.'</a>';
-
-        $lnk = $this->pi1->get_link(
-            $text,
-            [
-                'year' => $text,
-                'page' => '',
-            ],
-            true,
-            [
-                'title' => $title,
-            ]
-        );
-
-        return $lnk;
     }
 
     /**

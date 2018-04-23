@@ -30,14 +30,11 @@ namespace Ipf\Bib\View;
 use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class SingleView.
- */
 class SingleView extends View
 {
-    public function get(int $uid, array $configuration): string
+    public function get(int $uid): string
     {
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Single/Index.html');
         $this->view->assign('item', $referenceReader->getPublicationDetails($uid));

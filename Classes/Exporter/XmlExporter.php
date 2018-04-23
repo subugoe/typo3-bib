@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipf\Bib\Utility\Exporter;
+namespace Ipf\Bib\Exporter;
 
 /* * *************************************************************
  *  Copyright notice
@@ -170,7 +170,7 @@ class XmlExporter extends Exporter
         $content = '<?xml version="1.0" encoding="utf-8"?>'.PHP_EOL;
         $content .= '<bib>'.PHP_EOL;
         $content .= '<comment>'.PHP_EOL;
-        $content .= $this->xmlFormatString($this->getGeneralInformationText($infoArr));
+        $content .= $this->xmlFormatString($this->getGeneralInformationText());
         $content .= '</comment>'.PHP_EOL;
 
         return $content;

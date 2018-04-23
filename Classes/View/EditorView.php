@@ -35,6 +35,7 @@ use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Modes\AutoId;
 use Ipf\Bib\Modes\Dialog;
 use Ipf\Bib\Modes\Editor;
+use Ipf\Bib\Modes\Widget;
 use Ipf\Bib\Service\ItemTransformerService;
 use Ipf\Bib\Utility\DbUtility;
 use Ipf\Bib\Utility\Generator\CiteIdGenerator;
@@ -55,11 +56,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 class EditorView extends View
 {
     /**
-     * @var \tx_bib_pi1
-     */
-    public $pi1;
-
-    /**
      * @var array
      */
     public $conf;
@@ -70,20 +66,11 @@ class EditorView extends View
     public $referenceReader;
 
     /**
-     * @var \Ipf\Bib\Utility\ReferenceWriter
-     */
-    public $referenceWriter;
-    /**
      * Database Utility.
      *
      * @var \Ipf\Bib\Utility\DbUtility
      */
     public $databaseUtility;
-
-    /**
-     * @var string
-     */
-    public $LLPrefix = 'editor_';
 
     /**
      * @var \Ipf\Bib\Utility\Generator\CiteIdGenerator|bool
@@ -106,26 +93,6 @@ class EditorView extends View
     protected $widgetMode;
 
     /**
-     * Show and pass value.
-     */
-    const WIDGET_SHOW = 0;
-
-    /**
-     * Edit and pass value.
-     */
-    const WIDGET_EDIT = 1;
-
-    /**
-     * Don't show but pass value.
-     */
-    const WIDGET_SILENT = 2;
-
-    /**
-     * Don't show and don't pass value.
-     */
-    const WIDGET_HIDDEN = 3;
-
-    /**
      * @var array
      */
     private $configuration;
@@ -133,27 +100,21 @@ class EditorView extends View
     /**
      * Initializes this class.
      */
-    public function initialize(array $configuration): string
+    public function initialize(): string
     {
-        $this->configuration = $configuration;
+        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
+        $this->referenceReader->setClearCache($this->configuration['editor']['clear_page_cache']);
 
-//        $this->conf = &$pi1->conf['editor.'];
-        $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
-        $this->referenceReader->setClearCache($configuration['editor']['clear_page_cache']);
-
-        // setup db_utility
-        /** @var \Ipf\Bib\Utility\DbUtility $databaseUtility */
-        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $configuration);
-        $databaseUtility->readFullTextGenerationConfiguration($this->conf['full_text.']);
+        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $this->configuration);
+        $databaseUtility->readFullTextGenerationConfiguration($this->conf['editor']['full_text.']);
 
         $this->databaseUtility = $databaseUtility;
 
-        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $configuration);
+        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $this->configuration);
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Editor/Index.html');
-        $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
 
-        return $this->editor_view($configuration);
+        return $this->editor_view();
     }
 
     /**
@@ -166,10 +127,11 @@ class EditorView extends View
      */
     public function editor_view(array $configuration): string
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $content = '';
 
         // check whether the BE user is authorized
-        if (!$configuration['edit_mode']) {
+        if (!$this->configuration['edit_mode']) {
             throw new \Exception('You are not authorized to edit the publication database.', 1379074809);
         }
 
@@ -241,7 +203,7 @@ class EditorView extends View
         // Determine the number of authors
         $getPostVariables['editor']['numAuthors'] = max(
             $getPostVariables['editor']['numAuthors'],
-            $this->conf['numAuthors'],
+            $this->conf['editor']['numAuthors'],
             $authorCounter,
             1
         );
@@ -252,12 +214,12 @@ class EditorView extends View
             $title = LocalizationUtility::translate('editor_title_confirm_save', 'bib');
 
             if (count($validationErrors) > 0) {
-                $cfg = $this->conf['warn_box.'];
+                $cfg = $this->conf['editor']['warn_box.'];
                 $txt = LocalizationUtility::translate('editor_error_title', 'bib');
-                $box = $this->pi1->cObj->stdWrap($txt, $cfg['title.']);
+                $box = $contentObjectRenderer->stdWrap($txt, $cfg['title.']);
                 $box .= $this->validationErrorMessage($validationErrors);
                 $box .= $this->getEditButton();
-                $box = $this->pi1->cObj->stdWrap($box, $cfg['all_wrap.']);
+                $box = $contentObjectRenderer->stdWrap($box, $cfg['all_wrap.']);
                 $preContent .= $box;
             }
         }
@@ -286,8 +248,8 @@ class EditorView extends View
     public function dialogView(): string
     {
         /** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
-        $referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class);
-        $referenceWriter->initialize($this->referenceReader);
+        $referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class, $this->configuration);
+
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
         $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
 
@@ -301,7 +263,7 @@ class EditorView extends View
                 $checkFields[] = 'hidden';
                 foreach ($checkFields as $ff) {
                     if ($publication[$ff]) {
-                        if ($this->conf['no_edit.'][$ff] || $this->conf['no_show.'][$ff]) {
+                        if ($this->conf['editor']['no_edit.'][$ff] || $this->conf['editor']['no_show.'][$ff]) {
                             unset($publication[$ff]);
                         }
                     }
@@ -362,8 +324,6 @@ class EditorView extends View
                 $flashMessageQueue->addMessage($message);
         }
 
-        $this->referenceWriter = $referenceWriter;
-
         return $flashMessageQueue->renderFlashMessages();
     }
 
@@ -386,7 +346,7 @@ class EditorView extends View
     private function getCiteIdGeneratorButton(): string
     {
         $citeIdeGeneratorButton = '';
-        if (self::WIDGET_EDIT === $this->widgetMode) {
+        if (Widget::WIDGET_EDIT === $this->widgetMode) {
             $citeIdeGeneratorButton = '<input type="submit" '.
                 'name="tx_bib_pi1[action][generate_id]" '.
                 'value="'.LocalizationUtility::translate('editor_btn_generate_id', 'bib').
@@ -399,7 +359,7 @@ class EditorView extends View
     private function getUpdateButton(): string
     {
         $updateButton = '';
-        if (self::WIDGET_EDIT === $this->widgetMode) {
+        if (Widget::WIDGET_EDIT === $this->widgetMode) {
             $updateButton = '<input type="submit"'.
                 ' name="tx_bib_pi1[action][update_form]"'.
                 ' value="'.LocalizationUtility::translate('editor_btn_update_form', 'bib').'"'.
@@ -412,7 +372,7 @@ class EditorView extends View
     private function getSaveButton(): string
     {
         $saveButton = '';
-        if (self::WIDGET_EDIT === $this->widgetMode) {
+        if (Widget::WIDGET_EDIT === $this->widgetMode) {
             $saveButton = 'confirm_save';
         }
         if (Editor::EDIT_CONFIRM_SAVE === (int) $this->configuration['editor_mode']) {
@@ -475,8 +435,8 @@ class EditorView extends View
         }
 
         $over = [
-            $this->conf['olabel.']['all.'][$field],
-            $this->conf['olabel.'][$bib_str.'.'][$field],
+            $this->conf['editor']['olabel.']['all.'][$field],
+            $this->conf['editor']['olabel.'][$bib_str.'.'][$field],
         ];
 
         foreach ($over as $lvar) {
@@ -513,7 +473,7 @@ class EditorView extends View
         $cfg_fields = [];
         foreach ($all_groups as $group) {
             $cfg_fields[$group] = [];
-            $cfg_arr = &$this->conf['groups.'][$group.'.'];
+            $cfg_arr = &$this->conf['editor']['groups.'][$group.'.'];
             if (is_array($cfg_arr)) {
                 foreach ($all_types as $type) {
                     $cfg_fields[$group][$type] = [];
@@ -564,27 +524,27 @@ class EditorView extends View
      */
     private function getWidgetMode(string $field, int $widgetMode): int
     {
-        if ((self::WIDGET_EDIT === $widgetMode) && $this->conf['no_edit.'][$field]) {
-            $widgetMode = self::WIDGET_SHOW;
+        if ((Widget::WIDGET_EDIT === $widgetMode) && $this->conf['editor']['no_edit.'][$field]) {
+            $widgetMode = Widget::WIDGET_SHOW;
         }
-        if ($this->conf['no_show.'][$field]) {
-            $widgetMode = self::WIDGET_HIDDEN;
+        if ($this->conf['editor']['no_show.'][$field]) {
+            $widgetMode = Widget::WIDGET_HIDDEN;
         }
 
         if ('uid' === $field) {
-            if (self::WIDGET_EDIT === $widgetMode) {
-                $widgetMode = self::WIDGET_SHOW;
+            if (Widget::WIDGET_EDIT === $widgetMode) {
+                $widgetMode = Widget::WIDGET_SHOW;
             } else {
-                if (self::WIDGET_HIDDEN === $widgetMode) {
+                if (Widget::WIDGET_HIDDEN === $widgetMode) {
                     // uid must be passed always
-                    $widgetMode = self::WIDGET_SILENT;
+                    $widgetMode = Widget::WIDGET_SILENT;
                 }
             }
         } else {
             if ('pid' === $field) {
                 // pid must be passed always
-                if (self::WIDGET_HIDDEN === $widgetMode) {
-                    $widgetMode = self::WIDGET_SILENT;
+                if (Widget::WIDGET_HIDDEN === $widgetMode) {
+                    $widgetMode = Widget::WIDGET_SILENT;
                 }
             }
         }
@@ -613,7 +573,7 @@ class EditorView extends View
                 $content .= $this->getPidWidget((int) $value, $mode);
                 break;
             default:
-                if (self::WIDGET_EDIT === $mode) {
+                if (Widget::WIDGET_EDIT === $mode) {
                     $content .= $this->getDefaultEditWidget($field, (string) $value, $mode);
                 } else {
                     $content .= $this->getDefaultStaticWidget($field, (string) $value, $mode);
@@ -638,8 +598,8 @@ class EditorView extends View
 
         $isize = 60;
         $all_size = [
-            $this->conf['input_size.']['default'],
-            $this->conf['input_size.'][$field],
+            $this->conf['editor']['input_size.']['default'],
+            $this->conf['editor']['input_size.'][$field],
         ];
         foreach ($all_size as $ivar) {
             if (is_numeric($ivar)) {
@@ -740,7 +700,7 @@ class EditorView extends View
         $htmlValue = Utility::filter_pub_html((string) $value, true);
 
         $content = '';
-        if (self::WIDGET_SHOW === $mode) {
+        if (Widget::WIDGET_SHOW === $mode) {
             $content .= Utility::html_hidden_input($fieldAttributes, $htmlValue);
 
             switch ($widgetType) {
@@ -763,7 +723,7 @@ class EditorView extends View
                     $content .= $htmlValue;
             }
         } else {
-            if (self::WIDGET_SILENT === $mode) {
+            if (Widget::WIDGET_SILENT === $mode) {
                 $content .= Utility::html_hidden_input(
                     $fieldAttributes,
                     $htmlValue
@@ -777,7 +737,7 @@ class EditorView extends View
     private function localFileDoesNotExist(array $pub, array $d_err): array
     {
         $type = 'file_nexist';
-        if ($this->conf['warnings.'][$type]) {
+        if ($this->conf['editor']['warnings.'][$type]) {
             $file = $pub['file_url'];
             if (Utility::check_file_nexist($file)) {
                 $message = LocalizationUtility::translate('editor_error_file_nexist', 'bib');
@@ -819,10 +779,10 @@ class EditorView extends View
             (int) $this->configuration['editor']['numAuthors'],
             1
         );
-        if ((self::WIDGET_SHOW === $mode) || (self::WIDGET_EDIT === $mode)) {
+        if ((Widget::WIDGET_SHOW === $mode) || (Widget::WIDGET_EDIT === $mode)) {
             $au_con = [];
             for ($i = 0; $i < $edOpts['numAuthors']; ++$i) {
-                if ($i > ($aNum - 1) && (self::WIDGET_EDIT !== $mode)) {
+                if ($i > ($aNum - 1) && (Widget::WIDGET_EDIT !== $mode)) {
                     break;
                 }
                 $row_con = [];
@@ -831,7 +791,7 @@ class EditorView extends View
                 $surName = Utility::filter_pub_Html($authors[$i]['surname'] ?? '', true);
 
                 $row_con[0] = strval($i + 1);
-                if (self::WIDGET_SHOW === $mode) {
+                if (Widget::WIDGET_SHOW === $mode) {
                     $row_con[1] = Utility::html_hidden_input(
                         $key_data.'['.$i.'][forename]',
                         $foreName
@@ -844,7 +804,7 @@ class EditorView extends View
                     );
                     $row_con[2] .= $surName;
                 } else {
-                    if (self::WIDGET_EDIT === $mode) {
+                    if (Widget::WIDGET_EDIT === $mode) {
                         $lowerBtn = Utility::html_image_input(
                             $key_action.'[lower_author]',
                             (string) $i,
@@ -865,7 +825,7 @@ class EditorView extends View
                 $au_con[] = $row_con;
             }
         } else {
-            if (self::WIDGET_SILENT === $mode) {
+            if (Widget::WIDGET_SILENT === $mode) {
                 $authorsSize = count($authors);
                 for ($i = 0; $i < $authorsSize; ++$i) {
                     $foreName = Utility::filter_pub_html(
@@ -918,14 +878,14 @@ class EditorView extends View
         // Fetch page titles
         $pages = Utility::get_page_titles($pids);
 
-        if (self::WIDGET_SHOW === $mode) {
+        if (Widget::WIDGET_SHOW === $mode) {
             $content .= Utility::html_hidden_input(
                 $fieldAttr,
                 (string) $value
             );
             $content .= strval($pages[$value]);
         } else {
-            if (self::WIDGET_EDIT === $mode) {
+            if (Widget::WIDGET_EDIT === $mode) {
                 $attributes['name'] = $fieldAttr;
                 $content .= Utility::html_select_input(
                     $pages,
@@ -933,7 +893,7 @@ class EditorView extends View
                     $attributes
                 );
             } else {
-                if (self::WIDGET_SILENT === $mode) {
+                if (Widget::WIDGET_SILENT === $mode) {
                     $content .= Utility::html_hidden_input(
                         $fieldAttr,
                         (string) $value
@@ -953,8 +913,8 @@ class EditorView extends View
     private function getDefaultPid(): int
     {
         $pid = 0;
-        if (is_numeric($this->conf['default_pid'])) {
-            $pid = intval($this->conf['default_pid']);
+        if (is_numeric($this->conf['editor']['default_pid'])) {
+            $pid = intval($this->conf['editor']['default_pid']);
         }
         if (!in_array($pid, $this->referenceReader->pid_list)) {
             $pid = intval($this->referenceReader->pid_list[0]);
@@ -972,10 +932,10 @@ class EditorView extends View
     {
         $publication = [];
 
-        if (is_array($this->conf['field_default.'])) {
+        if (is_array($this->conf['editor']['field_default.'])) {
             foreach (ReferenceReader::$referenceFields as $field) {
-                if (array_key_exists($field, $this->conf['field_default.'])) {
-                    $publication[$field] = strval($this->conf['field_default.'][$field]);
+                if (array_key_exists($field, $this->conf['editor']['field_default.'])) {
+                    $publication[$field] = strval($this->conf['editor']['field_default.'][$field]);
                 }
             }
         }
@@ -1061,7 +1021,7 @@ class EditorView extends View
     {
         $events = [];
         $errors = [];
-        if ($this->conf['delete_no_ref_authors']) {
+        if ($this->conf['editor']['delete_no_ref_authors']) {
             $count = $this->databaseUtility->deleteAuthorsWithoutPublications();
             if ($count > 0) {
                 $message = LocalizationUtility::translate('msg_deleted_authors', 'bib');
@@ -1069,7 +1029,7 @@ class EditorView extends View
                 $events[] = $message;
             }
         }
-        if ($this->conf['full_text.']['update']) {
+        if ($this->conf['editor']['full_text.']['update']) {
             $stat = $this->databaseUtility->update_full_text_all();
 
             $count = count($stat['updated']);
@@ -1180,19 +1140,19 @@ class EditorView extends View
      */
     private function validationErrorMessage(array $errors, int $level = 0): string
     {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+
         if (!is_array($errors) || (0 === count($errors))) {
             return '';
         }
 
-        $charset = $this->configuration['charset']['upper'];
-
         $content = '<ul>';
         foreach ($errors as $error) {
             $errorIterator = '<li>';
-            $msg = htmlspecialchars($error['msg'], ENT_QUOTES, $charset);
-            $errorIterator .= $this->pi1->cObj->stdWrap(
+            $msg = htmlspecialchars($error['msg'], ENT_QUOTES);
+            $errorIterator .= $contentObjectRenderer->stdWrap(
                 $msg,
-                $this->conf['warn_box.']['msg.']
+                $this->conf['editor']['warn_box.']['msg.']
             );
 
             $list = &$error['list'];
@@ -1246,22 +1206,22 @@ class EditorView extends View
     {
         switch ($this->configuration['editor_mode']) {
             case Editor::EDIT_SHOW:
-                $this->widgetMode = self::WIDGET_SHOW;
+                $this->widgetMode = Widget::WIDGET_SHOW;
 
                 return;
             case Editor::EDIT_EDIT:
             case Editor::EDIT_NEW:
-                $this->widgetMode = self::WIDGET_EDIT;
+                $this->widgetMode = Widget::WIDGET_EDIT;
 
                 return;
             case Editor::EDIT_CONFIRM_SAVE:
             case Editor::EDIT_CONFIRM_DELETE:
             case Editor::EDIT_CONFIRM_ERASE:
-                $this->widgetMode = self::WIDGET_SHOW;
+                $this->widgetMode = Widget::WIDGET_SHOW;
 
                 return;
             default:
-                $this->widgetMode = self::WIDGET_SHOW;
+                $this->widgetMode = Widget::WIDGET_SHOW;
         }
     }
 
@@ -1420,14 +1380,14 @@ class EditorView extends View
                 }
 
                 if (strlen($widget) > 0) {
-                    if (self::WIDGET_SILENT === $wm) {
+                    if (Widget::WIDGET_SILENT === $wm) {
                         $rows_silent .= $widget;
                     } else {
-                        if (self::WIDGET_HIDDEN === $wm) {
+                        if (Widget::WIDGET_HIDDEN === $wm) {
                             $rows_hidden .= $widget;
                         } else {
-                            $label = $contentObjectRenderer->stdWrap($label, $this->conf['field_labels.']);
-                            $widget = $contentObjectRenderer->stdWrap($widget, $this->conf['field_widgets.']);
+                            $label = $contentObjectRenderer->stdWrap($label, $this->conf['editor']['field_labels.']);
+                            $widget = $contentObjectRenderer->stdWrap($widget, $this->conf['editor']['field_widgets.']);
                             $rows_vis .= '<tr>';
                             $rows_vis .= '<th class="tx_bib-editor_'.$fieldGroup.'">'.$label.'</th>';
                             $rows_vis .= '<td class="tx_bib-editor_'.$fieldGroup.'">'.$widget.'</td>';
@@ -1456,7 +1416,7 @@ class EditorView extends View
      */
     private function getTitle(): string
     {
-        $title = $this->LLPrefix;
+        $title = 'editor_';
         switch ($this->configuration['editor_mode']) {
             case Editor::EDIT_SHOW:
                 $title .= 'title_view';
@@ -1491,7 +1451,7 @@ class EditorView extends View
     private function citeIdDoubles(array $pub, $d_err): array
     {
         $type = 'double_citeid';
-        if ($this->conf['warnings.'][$type] && !$this->conf['no_edit.']['citeid'] && !$this->conf['no_show.']['citeid']) {
+        if ($this->conf['editor']['warnings.'][$type] && !$this->conf['editor']['no_edit.']['citeid'] && !$this->conf['editor']['no_show.']['citeid']) {
             if ($this->referenceReader->citeIdExists($pub['citeid'], $pub['uid'])) {
                 $err = ['type' => $type];
                 $err['msg'] = LocalizationUtility::translate('editor_error_id_exists', 'bib');
@@ -1546,11 +1506,11 @@ class EditorView extends View
     private function findEmptyRequiredFields(array $pub, $fields, $cond, $d_err): array
     {
         $type = 'empty_fields';
-        if ($this->conf['warnings.'][$type]) {
+        if ($this->conf['editor']['warnings.'][$type]) {
             $empty = [];
             // Find empty fields
             foreach ($fields['required'] as $ff) {
-                if (!$this->conf['no_edit.'][$ff] && !$this->conf['no_show.'][$ff]) {
+                if (!$this->conf['editor']['no_edit.'][$ff] && !$this->conf['editor']['no_show.'][$ff]) {
                     switch ($ff) {
                         case 'authors':
                             if (!is_array($pub[$ff]) || (0 === count($pub[$ff]))) {
@@ -1598,7 +1558,7 @@ class EditorView extends View
     private function getConditions(string $bib_str): array
     {
         $cond = [];
-        $parts = GeneralUtility::trimExplode(',', $this->conf['groups.'][$bib_str.'.']['required']);
+        $parts = GeneralUtility::trimExplode(',', $this->conf['editor']['groups.'][$bib_str.'.']['required']);
         foreach ($parts as $part) {
             if (!(false === strpos($part, '|'))) {
                 $cond[] = GeneralUtility::trimExplode('|', $part);

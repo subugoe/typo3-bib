@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipf\Bib\Utility\Exporter;
+namespace Ipf\Bib\Exporter;
 
 /* * *************************************************************
  *  Copyright notice
@@ -37,11 +37,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class Exporter
 {
-    /**
-     * @var \tx_bib_pi1
-     */
-    protected $pi1;
-
     /**
      * @var \Ipf\Bib\Utility\ReferenceReader
      */
@@ -95,12 +90,18 @@ abstract class Exporter
     /**
      * @var array
      */
+    protected $conf;
+
+    /**
+     * @var array
+     */
     protected $configuration;
 
-    public function __construct(array $configuration)
+    public function __construct(array $configuration, array $localConfiguration)
     {
         $this->referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $configuration);
         $this->configuration = $configuration;
+        $this->conf = $localConfiguration;
     }
 
     /**
@@ -124,7 +125,7 @@ abstract class Exporter
     protected function setupExportFile()
     {
         // Setup export file path and name
-        $this->filePath = $this->pi1->conf['export.']['path'];
+        $this->filePath = $this->conf['export.']['path'];
         if (!strlen($this->filePath)) {
             $this->filePath = 'uploads/tx_bib';
         }
@@ -190,7 +191,7 @@ abstract class Exporter
             // Open file
             $file_abs = $this->getAbsoluteFilePath();
 
-            if ($this->isFileMoreUpToDate($file_abs) && !$this->pi1->extConf['debug']) {
+            if ($this->isFileMoreUpToDate($file_abs) && !$this->configuration['debug']) {
                 return false;
             }
 
@@ -238,7 +239,7 @@ abstract class Exporter
      * @return bool TRUE if file exists and is newer than the
      *              database content, FALSE otherwise
      */
-    protected function isFileMoreUpToDate($file)
+    protected function isFileMoreUpToDate(string $file): bool
     {
         $databaseTimestamp = ReferenceReader::getLatestTimestamp();
 
@@ -291,7 +292,7 @@ abstract class Exporter
      *
      * @return string The file header string
      */
-    abstract protected function fileIntro($infoArr = []);
+    abstract protected function fileIntro(array $infoArr = []);
 
     /**
      * @param $data

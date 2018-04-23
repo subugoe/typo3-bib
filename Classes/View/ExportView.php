@@ -2,32 +2,34 @@
 
 namespace Ipf\Bib\View;
 
-use Ipf\Bib\Utility\Exporter\BibTexExporter;
-use Ipf\Bib\Utility\Exporter\XmlExporter;
+use Ipf\Bib\Exporter\BibTexExporter;
+use Ipf\Bib\Exporter\Exporter;
+use Ipf\Bib\Exporter\XmlExporter;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ExportView extends View
 {
-    public function get(array $configuration): string
+    public function get(): string
     {
         /** @var FlashMessageQueue $flashMessageQueue */
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Exporter/Exporter.html');
 
-        $mode = $configuration['export_navi']['do'];
+        $mode = $this->configuration['export_navi']['do'];
 
         $label = '';
         switch ($mode) {
             case 'bibtex':
-                $exporter = GeneralUtility::makeInstance(BibTexExporter::class, $configuration);
+                $exporter = GeneralUtility::makeInstance(BibTexExporter::class, $this->configuration, $this->conf);
                 $label = 'export_bibtex';
                 break;
             case 'xml':
-                $exporter = GeneralUtility::makeInstance(XmlExporter::class, $configuration);
+                $exporter = GeneralUtility::makeInstance(XmlExporter::class, $this->configuration, $this->conf);
                 $label = 'export_xml';
                 break;
             default:
@@ -42,12 +44,12 @@ class ExportView extends View
 
         $this->view->assign('label', $label);
 
-        if ($exporter instanceof \Ipf\Bib\Utility\Exporter\Exporter) {
+        if ($exporter instanceof Exporter) {
             try {
-                $exporter->initialize($configuration);
+                $exporter->initialize($this->configuration);
             } catch (\Exception $e) {
                 $message = GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::class,
+                    FlashMessage::class,
                     $e->getMessage(),
                     $label,
                     FlashMessage::ERROR
@@ -57,7 +59,7 @@ class ExportView extends View
 
             $dynamic = $this->conf['export.']['dynamic'] ? true : false;
 
-            if ($configuration['dynamic']) {
+            if ($this->configuration['dynamic']) {
                 $dynamic = true;
             }
 
@@ -65,7 +67,7 @@ class ExportView extends View
 
             try {
                 $exporter->export();
-                if ($dynamic) {
+                if ($exporter->getDynamic()) {
                     $this->dumpExportDataAndExit($exporter);
                 } else {
                     $content = $this->createLinkToExportFile($exporter);
@@ -86,10 +88,7 @@ class ExportView extends View
         return $this->view->render();
     }
 
-    /**
-     * @param \Ipf\Bib\Utility\Exporter\Exporter $exporter
-     */
-    private function dumpExportDataAndExit($exporter)
+    private function dumpExportDataAndExit(Exporter $exporter)
     {
         // Dump the export data and exit
         $exporterFileName = $exporter->getFileName();
@@ -100,12 +99,7 @@ class ExportView extends View
         exit();
     }
 
-    /**
-     * @param \Ipf\Bib\Utility\Exporter\Exporter $exporter
-     *
-     * @return string
-     */
-    private function createLinkToExportFile($exporter)
+    private function createLinkToExportFile(Exporter $exporter): string
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $link = $contentObjectRenderer->getTypoLink(
@@ -115,7 +109,7 @@ class ExportView extends View
         $content = '<ul><li><div>';
         $content .= $link;
         if ($exporter->getIsNewFile()) {
-            $content .= ' ('.$this->pi_getLL('export_file_new').')';
+            $content .= ' ('.LocalizationUtility::translate('export_file_new', 'bib').')';
         }
         $content .= '</div></li>';
         $content .= '</ul>';

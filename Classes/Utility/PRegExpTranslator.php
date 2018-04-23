@@ -62,7 +62,7 @@ class PRegExpTranslator
      *
      * @return $this
      */
-    public function push($pattern, $replacement)
+    public function push(string $pattern, string $replacement)
     {
         $this->pattern[] = $pattern;
         $this->replacement[] = $replacement;

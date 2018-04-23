@@ -106,20 +106,4 @@ class PreferenceNavigation extends Navigation
 
         return $configuration;
     }
-
-    protected function sel_get_text(int $index): string
-    {
-        return '';
-    }
-
-    /**
-     * @param $text
-     * @param $index
-     *
-     * @return mixed
-     */
-    protected function sel_get_link(string $text, $index)
-    {
-        return '';
-    }
 }

@@ -29,7 +29,6 @@ namespace Ipf\Bib\View;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Class View.
@@ -42,18 +41,32 @@ abstract class View
     const VIEW_DIALOG = 3;
 
     /**
-     * @var LanguageService
-     */
-    protected $languageService;
-
-    /**
      * @var StandaloneView
      */
     protected $view;
 
-    public function __construct()
+    /**
+     * @var array
+     */
+    protected $configuration;
+
+    /**
+     * @var array
+     */
+    protected $conf;
+
+    public function __construct(array $configuration, array $localConfiguration)
     {
-        $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
+        $this->configuration = $configuration;
+        $this->conf = $localConfiguration;
+
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
+        $this->view->setPartialRootPaths(
+            [
+                10 => 'EXT:bib/Resources/Private/Partials/',
+            ]
+        );
+        $this->view->getRequest()->setControllerExtensionName('bib');
+        $this->view->getRequest()->setPluginName('pi1');
     }
 }

@@ -2,18 +2,17 @@
 
 namespace Ipf\Bib\View;
 
-use Ipf\Bib\Utility\Importer\BibTexImporter;
-use Ipf\Bib\Utility\Importer\Importer;
-use Ipf\Bib\Utility\Importer\XmlImporter;
+use Ipf\Bib\Importer\BibTexImporter;
+use Ipf\Bib\Importer\Importer;
+use Ipf\Bib\Importer\XmlImporter;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ImportView extends View
 {
-    public function get(int $mode, array $configuration): string
+    public function get(int $mode): string
     {
-        /** @var FlashMessageQueue $flashMessageQueue */
         $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/GeneralImport.html');
 
@@ -21,11 +20,11 @@ class ImportView extends View
             switch ($mode) {
                 case Importer::IMP_BIBTEX:
                     $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/BibTexImport.html');
-                    $importer = GeneralUtility::makeInstance(BibTexImporter::class, $configuration);
+                    $importer = GeneralUtility::makeInstance(BibTexImporter::class, $this->configuration);
                     break;
                 case Importer::IMP_XML:
                     $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/XmlImport.html');
-                    $importer = GeneralUtility::makeInstance(XmlImporter::class, $configuration);
+                    $importer = GeneralUtility::makeInstance(XmlImporter::class, $this->configuration);
                     break;
             }
 

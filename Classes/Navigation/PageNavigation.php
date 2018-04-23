@@ -28,57 +28,11 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-/**
- * Class PageNavigation.
- */
 class PageNavigation extends Navigation
 {
-    public function initialize(array $configuration)
-    {
-        $this->configuration = $configuration;
-        parent::initialize($configuration);
-        if (is_array($pi1->conf['pageNav.'])) {
-            $this->conf = &$pi1->conf['pageNav.'];
-        }
-
-        $this->sel_link_title = $this->languageService->getLL('pageNav_pageLinkTitle', '%p');
-    }
-
-    /**
-     * Creates a text for a given index.
-     */
-    protected function sel_get_text(int $index): string
-    {
-        return (string) ($index + 1);
-    }
-
-    /**
-     * Creates a link for the selection.
-     *
-     * @param string $text
-     * @param int    $index
-     *
-     * @return string
-     */
-    protected function sel_get_link($text, $index)
-    {
-        $title = str_replace('%p', $text, $this->sel_link_title);
-        $lnk = $this->pi1->get_link(
-            $text,
-            [
-                'page' => strval($index),
-            ],
-            true,
-            [
-                'title' => $title,
-            ]
-        );
-
-        return $lnk;
-    }
-
     /**
      * Returns content.
      */
@@ -86,23 +40,23 @@ class PageNavigation extends Navigation
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
-        $selectionConfiguration = is_array($this->conf['selection.']) ? $this->conf['selection.'] : [];
-        $navigationConfiguration = is_array($this->conf['navigation.']) ? $this->conf['navigation.'] : [];
+        $selectionConfiguration = is_array($this->conf['pageNav.']['selection.']) ? $this->conf['pageNav.']['selection.'] : [];
+        $navigationConfiguration = is_array($this->conf['pageNav.']['navigation.']) ? $this->conf['pageNav.']['navigation.'] : [];
 
         // The data
         $subPage = $this->configuration['sub_page'];
 
         // The label
         $label = $contentObjectRenderer->stdWrap(
-            $this->languageService->getLL('pageNav_label'),
-            $this->conf['label.']
+            LocalizationUtility::translate('pageNav_label', 'bib'),
+            $this->conf['pageNav.']['label.']
         );
 
         // The previous/next buttons
-        $nav_prev = $this->languageService->getLL('pageNav_previous', 'previous');
+        $nav_prev = LocalizationUtility::translate('pageNav_previous', 'bib');
         if ($subPage['current'] > 0) {
             $page = max($subPage['current'] - 1, 0);
-            $title = $this->languageService->getLL('pageNav_previousLinkTitle', 'previous');
+            $title = LocalizationUtility::translate('pageNav_previousLinkTitle', 'bib');
             $nav_prev = $this->pi1->get_link(
                 $nav_prev,
                 [
@@ -115,10 +69,10 @@ class PageNavigation extends Navigation
             );
         }
 
-        $nav_next = $this->languageService->getLL('pageNav_next');
+        $nav_next = LocalizationUtility::translate('pageNav_next', 'bib');
         if ($subPage['current'] < $subPage['max']) {
             $page = min($subPage['current'] + 1, $subPage['max']);
-            $title = $this->languageService->getLL('pageNav_nextLinkTitle');
+            $title = LocalizationUtility::translate('pageNav_nextLinkTitle', 'bib');
             $nav_next = $this->pi1->get_link(
                 $nav_next,
                 [
@@ -167,8 +121,4 @@ class PageNavigation extends Navigation
 
         return $this->view->render();
     }
-}
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php']) {
-    include_once $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/bib/Classes/Navigation/PageNavigation.php'];
 }

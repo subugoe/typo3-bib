@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipf\Bib\Utility\Importer;
+namespace Ipf\Bib\Importer;
 
 /* * *************************************************************
  *  Copyright notice

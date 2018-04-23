@@ -43,13 +43,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     public $pi_checkCHash = false;
 
     /**
-     * These are derived/extra configuration values.
-     *
-     * @var array
-     */
-    public $extConf;
-
-    /**
      * @var array
      */
     public $icon_src = [];
@@ -122,8 +115,6 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         $this->determineNumberOfPublications();
 
-        $this->extConf = $configuration;
-
         // Switch to requested view mode
         try {
             return $this->finalize($this->switchToRequestedViewMode($configuration), $configuration);
@@ -133,7 +124,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     }
 
     /**
-     * @return \tx_bib_pi1
+     * @return self
      */
     protected function includeCss()
     {
@@ -145,13 +136,15 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     }
 
     /**
-     * @return \tx_bib_pi1
+     * @return self
      */
-    protected function initializeFluidTemplate()
+    protected function initializeFluidTemplate(): self
     {
         /* @var \TYPO3\CMS\Fluid\View\StandaloneView $template */
         $view = GeneralUtility::makeInstance(\TYPO3\CMS\Fluid\View\StandaloneView::class);
         $view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/');
+        $view->getRequest()->setControllerExtensionName('bib');
+        $view->getRequest()->setPluginName('pi1');
         $this->view = $view;
 
         return $this;
@@ -379,43 +372,18 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         // Year Navigation
         if (\Ipf\Bib\Modes\Display::D_Y_NAV === (int) $configuration['d_mode']) {
-            $configuration = $this->enableYearNavigation($configuration);
+            $configuration['show_nav_year'] = true;
         }
 
         // Statistic Navigation
         if (\Ipf\Bib\Modes\Statistics::STAT_NONE !== (int) $configuration['stat_mode']) {
-            $configuration = $this->enableStatisticsNavigation($configuration);
+            $configuration['show_nav_stat'] = true;
         }
 
         // Export navigation
         if ($configuration['show_nav_export']) {
             $configuration = $this->getExportNavigation($configuration);
         }
-
-        return $configuration;
-    }
-
-    /**
-     * Returns an instance of a navigation bar class.
-     */
-    protected function getAndInitializeNavigationInstance(string $type, array $configuration): \Ipf\Bib\Navigation\Navigation
-    {
-        /** @var \Ipf\Bib\Navigation\Navigation $navigationInstance */
-        $navigationInstance = GeneralUtility::makeInstance('Ipf\\Bib\\Navigation\\'.$type, $configuration);
-
-        return $navigationInstance;
-    }
-
-    protected function enableYearNavigation(array $configuration): array
-    {
-        $configuration['show_nav_year'] = true;
-
-        return $configuration;
-    }
-
-    protected function enableStatisticsNavigation(array $configuration): array
-    {
-        $configuration['show_nav_stat'] = true;
 
         return $configuration;
     }
@@ -607,7 +575,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $configuration = $this->initializeFlexformFilter($configuration);
 
         try {
-            $this->initializeSelectionFilter();
+            $configuration = $this->initializeSelectionFilter($configuration);
         } catch (\Exception $e) {
             $flashMessageQueue = GeneralUtility::makeInstance(FlashMessageQueue::class, 'tx_bib');
             /** @var \TYPO3\CMS\Core\Messaging\FlashMessage $message */
@@ -884,7 +852,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     $word = \Ipf\Bib\Utility\ReferenceReader::getSearchTerm($word);
                 }
                 $flexFormFilter['words'] = $words;
-                $this->extConf['filters']['flexform']['tags'] = $flexFormFilter;
+                $configuration['filters']['flexform']['tags'] = $flexFormFilter;
             }
         }
 
@@ -944,10 +912,9 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      *
      * @throws \Exception
      */
-    protected function initializeSelectionFilter()
+    protected function initializeSelectionFilter(array $configuration): array
     {
-        $this->extConf['filters']['selection'] = [];
-        $filter = &$this->extConf['filters']['selection'];
+        $configuration['filters']['selection'] = [];
 
         // Publication ids
         if (is_string($this->piVars['search']['ref_ids'])) {
@@ -955,7 +922,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $ids = GeneralUtility::intExplode(',', $ids);
 
             if (count($ids) > 0) {
-                $filter['uid'] = $ids;
+                $configuration['filters']['selection']['uid'] = $ids;
             }
         }
 
@@ -964,17 +931,19 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $words = $this->piVars['search']['all'];
             $words = GeneralUtility::trimExplode(',', $words, true);
             if (count($words) > 0) {
-                $filter['all']['words'] = $words;
+                $configuration['filters']['selection']['all']['words'] = $words;
 
                 // AND
-                $filter['all']['rule'] = 1;
+                $configuration['filters']['selection']['all']['rule'] = 1;
                 $rule = strtoupper(trim($this->piVars['search']['all_rule']));
                 if (false === strpos($rule, 'AND')) {
                     // OR
-                    $filter['all']['rule'] = 0;
+                    $configuration['filters']['selection']['all']['rule'] = 0;
                 }
             }
         }
+
+        return $configuration;
     }
 
     /**
@@ -1034,10 +1003,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                         $configuration['dialog_mode'] = \Ipf\Bib\Modes\Dialog::DIALOG_ERASE_CONFIRMED;
                         break;
                     case 'hide':
-                        $this->hidePublication(true);
+                        $this->hidePublication(true, $configuration);
                         break;
                     case 'reveal':
-                        $this->hidePublication(false);
+                        $this->hidePublication(false, $configuration);
                         break;
                     default:
                 }
@@ -1061,7 +1030,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $this->initializeEditIcons();
 
             // Switch to an import view on demand
-            $allImport = (int) \Ipf\Bib\Utility\Importer\Importer::IMP_BIBTEX | \Ipf\Bib\Utility\Importer\Importer::IMP_XML;
+            $allImport = (int) \Ipf\Bib\Importer\Importer::IMP_BIBTEX | \Ipf\Bib\Importer\Importer::IMP_XML;
             if (isset($this->piVars['import']) && ((int) $this->piVars['import'] & $allImport)) {
                 $configuration['view_mode'] = View::VIEW_DIALOG;
                 $configuration['dialog_mode'] = \Ipf\Bib\Modes\Dialog::DIALOG_IMPORT;
@@ -1076,10 +1045,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      *
      * @param bool $hide
      */
-    protected function hidePublication($hide = true)
+    protected function hidePublication($hide = true, $configuration)
     {
         /** @var \Ipf\Bib\Utility\ReferenceWriter $referenceWriter */
-        $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class, $this->extConf);
+        $referenceWriter = GeneralUtility::makeInstance(\Ipf\Bib\Utility\ReferenceWriter::class, $configuration);
         $referenceWriter->hidePublication((int) $this->piVars['uid'], $hide);
     }
 
@@ -1263,7 +1232,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         if ($configuration['debug']) {
             $pluginContent .= \TYPO3\CMS\Core\Utility\DebugUtility::viewArray(
                 [
-                    'extConf' => $configuration,
+                    'configuration' => $configuration,
                     'conf' => $this->conf,
                     'piVars' => $this->piVars,
                     'stat' => $this->stat,
@@ -1287,25 +1256,25 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         switch ($configuration['view_mode']) {
             case View::VIEW_LIST:
-                $listView = GeneralUtility::makeInstance(\Ipf\Bib\View\ListView::class);
+                $listView = GeneralUtility::makeInstance(\Ipf\Bib\View\ListView::class, $configuration, $this->conf);
 
-                return $listView->initialize($configuration, $this->conf);
+                return $listView->initialize();
                 break;
             case View::VIEW_SINGLE:
-                $singleView = GeneralUtility::makeInstance(\Ipf\Bib\View\SingleView::class);
+                $singleView = GeneralUtility::makeInstance(\Ipf\Bib\View\SingleView::class, $configuration, $this->conf);
                 $uid = (int) GeneralUtility::_GET('tx_bib_pi1')['show_uid'];
 
-                return $singleView->get($uid, $configuration);
+                return $singleView->get($uid);
                 break;
             case View::VIEW_EDITOR:
-                $editorView = GeneralUtility::makeInstance(\Ipf\Bib\View\EditorView::class);
+                $editorView = GeneralUtility::makeInstance(\Ipf\Bib\View\EditorView::class, $configuration, $this->conf);
 
-                return $editorView->initialize($configuration);
+                return $editorView->initialize();
                break;
             case View::VIEW_DIALOG:
-                $dialogView = GeneralUtility::makeInstance(\Ipf\Bib\View\DialogView::class);
+                $dialogView = GeneralUtility::makeInstance(\Ipf\Bib\View\DialogView::class, $configuration, $this->conf);
 
-                return $dialogView->initialize($configuration);
+                return $dialogView->initialize();
                 break;
             default:
                 throw new \Exception('An illegal view mode occurred', 1379064350);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipf\Bib\Utility\Exporter;
+namespace Ipf\Bib\Exporter;
 
 /* * *************************************************************
  *  Copyright notice
@@ -357,9 +357,9 @@ class BibTexExporter extends Exporter
      *
      * @return string
      */
-    protected function fileIntro($infoArr = [])
+    protected function fileIntro(array $infoArr = [])
     {
-        $str = PHP_EOL.$this->getGeneralInformationText($infoArr);
+        $str = PHP_EOL.$this->getGeneralInformationText();
         $str = preg_replace('/^/m', '% ', $str).PHP_EOL;
 
         return $str;

@@ -34,22 +34,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-/**
- * Class AuthorNavigation.
- */
 class AuthorNavigation extends Navigation
 {
-    public function hook_init()
+    public function initialize()
     {
         $this->configuration['link_vars']['author_letter'] = '';
-        $pvar = GeneralUtility::_GP('tx_bib_pi1')['author_letter'];
+        $pvar = GeneralUtility::_GP('tx_bib_pi1')['author_letter'] ?? '';
         if (strlen($pvar) > 0) {
             $this->configuration['author_navi']['sel_letter'] = $pvar;
             $this->configuration['link_vars']['author_letter'] = $pvar;
         }
 
         $this->configuration['link_vars']['author'] = '';
-        $pvar = GeneralUtility::_GP('tx_bib_pi1')['author'];
+        $pvar = GeneralUtility::_GP('tx_bib_pi1')['author'] ?? '';
         $this->configuration['author_navi']['sel_author'] = '0';
         if (strlen($pvar) > 0) {
             $this->configuration['author_navi']['sel_author'] = $pvar;
@@ -59,9 +56,6 @@ class AuthorNavigation extends Navigation
         $this->stat = [];
     }
 
-    /**
-     * Hook in to pi1 at filter stage.
-     */
     public function hook_filter()
     {
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration);
@@ -249,43 +243,6 @@ class AuthorNavigation extends Navigation
     }
 
     /**
-     * Creates a text for a given index.
-     */
-    protected function sel_get_text(int $index): string
-    {
-        $txt = strval($this->stat['authors']['sel_surnames'][$index]);
-        $txt = htmlspecialchars($txt, ENT_QUOTES);
-
-        return $txt;
-    }
-
-    /**
-     * Creates a link for the selection.
-     *
-     * @param string $text
-     * @param int    $ii
-     *
-     * @return string
-     */
-    protected function sel_get_link($text, $ii)
-    {
-        $arg = strval($this->stat['authors']['sel_surnames'][$ii]);
-        $title = str_replace('%a', $text, $this->sel_link_title);
-        $lnk = $this->pi1->get_link(
-            $text,
-            [
-                'author' => $arg,
-            ],
-            true,
-            [
-                'title' => $title,
-            ]
-        );
-
-        return $lnk;
-    }
-
-    /**
      * Returns content.
      */
     public function get(): string
@@ -315,7 +272,6 @@ class AuthorNavigation extends Navigation
             ->assign('max', count($this->stat['authors']['sel_surnames'] ?? []) - 1)
             ->assign('current', $this->configuration['author_navi']['sel_name_idx'])
             ->assign('numberOfItemsToBeDisplayed', $numSel)
-
             ->assign('surnameSelection', $this->getHtmlSelectFormField())
         ;
 
@@ -342,11 +298,7 @@ class AuthorNavigation extends Navigation
     protected function getHtmlSelectFormField()
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $content = '<form name="tx_bib_pi1-author_select_form" ';
-        //$content .= 'action="'.$this->pi1->get_link_url(['author' => ''], false).'"';
-        $content .= ' method="post"';
-        $content .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
-        $content .= '>';
+        $content = '';
 
         // The raw data
         $names = $this->stat['authors']['sel_surnames'];
@@ -383,28 +335,10 @@ class AuthorNavigation extends Navigation
         $button = $contentObjectRenderer->stdWrap($button, $this->conf['select.']);
         $content .= $button;
 
-        // Go button
-        $attributes = [];
-        if (strlen($this->conf['go_btn_class']) > 0) {
-            $attributes['class'] = $this->conf['go_btn_class'];
-        }
-        $button = Utility::html_submit_input(
-            'tx_bib_pi1[action][select_author]',
-            LocalizationUtility::translate('button_go', 'bib'),
-            $attributes
-        );
-        $button = $contentObjectRenderer->stdWrap($button, $this->conf['go_btn.']);
-        $content .= $button;
-
-        // End of form
-        $content .= '</form>';
-
         // Finalize
         if (1 === count($pairs)) {
-            $content = '&nbsp;';
+            $content .= '&nbsp;';
         }
-
-        $content = $contentObjectRenderer->stdWrap($content, $this->conf['form.']);
 
         return $content;
     }
