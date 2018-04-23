@@ -1,27 +1,33 @@
 <h3>Import statistics</h3>
-<p>Import file: {fileName} ({fileSize} Bytes)</p>
+<p>Import file: {statistics.file_name} ({statistics.file_size} Bytes)</p>
 <p>Storage folder: {storageFolder}</p>
-<p>Successful imports: {succeeded} / Failed imports: {failed}</p>
-<f:if condition="{fullTextStatistics}">
-	<p>Updated full texts: {updatedFullTexts}</p>
-	<f:if condition="{fullTextNumberLimit}">
-		<p><f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit" /> <f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit_num" /></p>
-	</f:if>
-	<f:if condition="{fullTextTimeLimit}">
-		<p><f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit" /> <f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit_time" /></p>
-	</f:if>
+<p>Successful imports: {statistics.succeeded} / Failed imports: {statistics.failed}</p>
+<f:if condition="{statistics.full_text}">
+    <p>Updated full texts: {statistics.full_text.updated}</p>
+    <f:if condition="{fullTextNumberLimit}">
+        <p>
+            <f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit"/>
+            <f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit_num"/>
+        </p>
+    </f:if>
+    <f:if condition="{fullTextTimeLimit}">
+        <p>
+            <f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit"/>
+            <f:translate key="LLL:EXT:bib/pi1/locallang.xml:msg_warn_ftc_limit_time"/>
+        </p>
+    </f:if>
 </f:if>
 
 <f:if condition="{displayWarnings}">
-	<h4>Warnings</h4>
-	<ul>
-		{warnings -> f:format.raw()}
-	</ul>
+    <h4>Warnings</h4>
+    <ul>
+        {warnings -> f:format.raw()}
+    </ul>
 </f:if>
 
 <f:if condition="{displayErrors}">
-	<h4>Errors</h4>
-	<ul>
-		{errors -> f:format.raw()}
-	</ul>
+    <h4>Errors</h4>
+    <ul>
+        {errors -> f:format.raw()}
+    </ul>
 </f:if>

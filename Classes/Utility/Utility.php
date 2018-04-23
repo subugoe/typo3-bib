@@ -343,11 +343,11 @@ class Utility
      *
      * @return array An associative array contatining the input strings and their counts
      */
-    public static function string_counter($messages)
+    public static function string_counter(array $messages): array
     {
         $res = [];
         foreach ($messages as $msg) {
-            $msg = strval($msg);
+            $msg = (string) $msg;
             if (array_key_exists($msg, $res)) {
                 ++$res[$msg];
             } else {

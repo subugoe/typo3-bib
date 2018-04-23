@@ -32,31 +32,13 @@ use Ipf\Bib\Utility\DbUtility;
 use Ipf\Bib\Utility\Generator\CiteIdGenerator;
 use Ipf\Bib\Utility\ReferenceWriter;
 use Ipf\Bib\Utility\Utility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Charset\CharsetConverter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
-/**
- * Class Importer.
- */
 abstract class Importer
 {
-    /**
-     * @var \tx_bib_pi1
-     */
-    public $pi1;
-
-    /**
-     * @var \Ipf\Bib\Utility\ReferenceReader
-     */
-    public $referenceReader;
-
-    /**
-     * @var \Ipf\Bib\Utility\ReferenceWriter
-     */
-    public $referenceWriter;
-
     /**
      * @var \Ipf\Bib\Utility\DbUtility
      */
@@ -86,11 +68,6 @@ abstract class Importer
     public $code_trans_tbl;
 
     /**
-     * @var bool|\Ipf\Bib\Utility\Generator\CiteIdGenerator
-     */
-    public $idGenerator = false;
-
-    /**
      * @var \TYPO3\CMS\Fluid\View\StandaloneView
      */
     protected $view;
@@ -104,34 +81,27 @@ abstract class Importer
      */
     protected $configuration;
 
-    public function __construct(array $configuration)
+    /**
+     * @var array
+     */
+    protected $conf;
+
+    public function __construct(array $configuration, array $localConfiguration)
     {
         $this->configuration = $configuration;
+        $this->conf = $localConfiguration;
     }
 
     /**
      * Initializes the import. The argument must be the plugin class.
-     *
-     * @param \tx_bib_pi1
      */
     public function initialize()
     {
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setPartialRootPaths([10 => 'EXT:bib/Resources/Private/Partials/']);
 
-        $this->referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class, $this->configuration);
-
         $this->statistics['warnings'] = [];
         $this->statistics['errors'] = [];
-
-        // setup database utility
-        /** @var \Ipf\Bib\Utility\DBUtility $databaseUtility */
-        $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $this->configuration);
-        $databaseUtility->readFullTextGenerationConfiguration($pi1->conf['editor.']['full_text.']);
-
-        $this->databaseUtility = $databaseUtility;
-
-        $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $this->configuration);
     }
 
     /**
@@ -157,8 +127,8 @@ abstract class Importer
     protected function getDefaultPid(): int
     {
         $pid = 0;
-        if (is_numeric($this->pi1->conf['editor.']['default_pid'])) {
-            $pid = (int) $this->pi1->conf['editor.']['default_pid'];
+        if (is_numeric($this->conf['editor.']['default_pid'])) {
+            $pid = (int) $this->conf['editor.']['default_pid'];
         }
 
         if (!in_array($pid, $this->configuration['pid_list'])) {
@@ -210,13 +180,15 @@ abstract class Importer
         }
 
         if (0 == strlen($publication['citeid'])) {
-            $publication['citeid'] = $this->idGenerator->generateId($publication);
+            $idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $this->configuration);
+            $publication['citeid'] = $idGenerator->generateId($publication);
         }
 
         // Save publications
         if ($s_ok) {
             try {
-                $this->referenceWriter->savePublication($publication);
+                $referenceWriter = GeneralUtility::makeInstance(ReferenceWriter::class, $this->configuration);
+                $referenceWriter->savePublication($publication);
                 ++$this->statistics['succeeded'];
             } catch (DataException $e) {
                 ++$this->statistics['failed'];
@@ -291,8 +263,10 @@ abstract class Importer
     {
         if ($this->statistics['succeeded'] > 0) {
             // Update full texts
-            if ($this->pi1->conf['editor.']['full_text.']['update']) {
-                $arr = $this->databaseUtility->update_full_text_all();
+            if ($this->conf['editor.']['full_text.']['update']) {
+                $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $this->configuration);
+                $databaseUtility->readFullTextGenerationConfiguration($this->conf['editor.']['full_text.']);
+                $arr = $databaseUtility->update_full_text_all();
                 if (count($arr['errors']) > 0) {
                     foreach ($arr['errors'] as $err) {
                         $this->statistics['errors'][] = $err[1]['msg'];
@@ -310,22 +284,13 @@ abstract class Importer
      */
     protected function getImportStatistics()
     {
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
         $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(ExtensionManagementUtility::extPath('bib').'Resources/Private/Templates/Importer/Statistics.html');
-
-        $view->assign('fileName', $this->statistics['file_name']);
-        $view->assign('fileSize', $this->statistics['file_size']);
+        $view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/Statistics.html');
 
         $view->assign('storageFolder', $this->getPageTitle($this->statistics['storage']));
-
-        $view->assign('succeeded', $this->statistics['succeeded']);
-        $view->assign('failed', $this->statistics['failed']);
-
         $view->assign('fullTextStatistics', is_array($this->statistics['full_text']) ? true : false);
 
         if (is_array($this->statistics['full_text'])) {
-            $view->assign('updatedFullTexts', count($this->statistics['full_text']['updated']));
             $view->assign('fullTextNumberLimit', $this->statistics['full_text']['limit_num'] ? true : false);
             $view->assign('fullTextTimeLimit', $this->statistics['full_text']['limit_time'] ? true : false);
         }
@@ -386,21 +351,21 @@ abstract class Importer
      */
     protected function codeToUnicode($code)
     {
-        $translationTable = &$this->code_trans_tbl;
-        if (!is_array($translationTable)) {
-            $translationTable = get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES);
-            $translationTable = array_flip($translationTable);
+        if (!is_array($this->code_trans_tbl)) {
+            $this->code_trans_tbl = get_html_translation_table(HTML_ENTITIES, ENT_NOQUOTES);
+            $this->code_trans_tbl = array_flip($this->code_trans_tbl);
             // These should stay alive
-            unset($translationTable['&amp;']);
-            unset($translationTable['&lt;']);
-            unset($translationTable['&gt;']);
+            unset($this->code_trans_tbl['&amp;']);
+            unset($this->code_trans_tbl['&lt;']);
+            unset($this->code_trans_tbl['&gt;']);
 
-            foreach ($translationTable as $key => $val) {
-                $translationTable[$key] = $GLOBALS['TSFE']->csConvObj->conv($val, 'iso-8859-1', 'utf-8');
+            foreach ($this->code_trans_tbl as $key => $val) {
+                $charsetConverter = GeneralUtility::makeInstance(CharsetConverter::class);
+                $this->code_trans_tbl[$key] = $charsetConverter->conv($val, 'iso-8859-1', 'utf-8');
             }
         }
 
-        return strtr($code, $translationTable);
+        return strtr($code, $this->code_trans_tbl);
     }
 
     /**

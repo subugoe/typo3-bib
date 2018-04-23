@@ -113,7 +113,7 @@ class DbUtility
      *
      * @param array $configuration
      */
-    public function readFullTextGenerationConfiguration($configuration)
+    public function readFullTextGenerationConfiguration(array $configuration)
     {
         if (is_array($configuration)) {
             if (isset($configuration['max_num'])) {

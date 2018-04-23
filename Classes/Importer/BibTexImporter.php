@@ -27,6 +27,7 @@ namespace Ipf\Bib\Importer;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\ParserException;
 use Ipf\Bib\Exception\TranslatorException;
 use Ipf\Bib\Utility\PRegExpTranslator;
@@ -635,16 +636,16 @@ class BibTexImporter extends Importer
      *
      * @return array
      */
-    protected function convertRawReferenceToReference($raw)
+    protected function convertRawReferenceToReference(array $raw): array
     {
         $publication = [];
 
         // Bibtype
         $raw_val = strtolower($raw['type']);
-        if (in_array($raw_val, $this->referenceReader->allBibTypes)) {
-            $publication['bibtype'] = array_search($raw_val, $this->referenceReader->allBibTypes);
+        if (in_array($raw_val, ReferenceReader::$allBibTypes)) {
+            $publication['bibtype'] = array_search($raw_val, ReferenceReader::$allBibTypes);
         } else {
-            throw new TranslatorException('Unknown bibtype: "'.strval($raw_val).'"', 1378736700);
+            throw new TranslatorException(sprintf('Unknown bibtype: "%s"', $raw_val), 1378736700);
         }
 
         // Citeid
@@ -660,7 +661,7 @@ class BibTexImporter extends Importer
                     $publication['authors'] = $this->convertRawAuthorToAuthor($r_val);
                     break;
                 case 'state':
-                    foreach ($this->referenceReader->allStates as $ii => $state) {
+                    foreach (ReferenceReader::$allStates as $ii => $state) {
                         if (strtolower($r_val) == $state) {
                             $r_val = $ii;
                             break;
