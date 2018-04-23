@@ -29,59 +29,18 @@ namespace Ipf\Bib\Navigation;
 
 use Ipf\Bib\Modes\Display;
 use Ipf\Bib\Modes\Statistics;
+use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class StatisticsNavigation.
  */
 class StatisticsNavigation extends Navigation
 {
-    /**
-     * Initialize.
-     *
-     * @param \tx_bib_pi1 $pi1
-     */
-    public function initialize($pi1)
-    {
-        parent::initialize($pi1);
-
-        if (is_array($pi1->conf['statNav.'])) {
-            $this->conf = &$pi1->conf['statNav.'];
-        }
-
-        $this->prefix = 'STAT_NAVI';
-    }
-
-    protected function sel_get_text(int $index): string
-    {
-        return '';
-    }
-
-    /**
-     * @param $text
-     * @param $index
-     *
-     * @return mixed
-     */
-    protected function sel_get_link($text, $index)
-    {
-    }
-
-    /**
-     * Returns content.
-     *
-     * @return string
-     */
     public function get(): string
     {
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-
-        $label = '';
-        $stat_str = '';
-
         // Setup mode
-        $d_mode = $this->configuration['d_mode'];
+        $d_mode = (int) $this->configuration['d_mode'];
         $mode = (int) $this->configuration['stat_mode'];
         if (Display::D_Y_NAV !== $d_mode) {
             if (Statistics::STAT_YEAR_TOTAL == $mode) {
@@ -94,31 +53,13 @@ class StatisticsNavigation extends Navigation
         }
 
         // Setup values
-        $year = intval($this->configuration['year']);
+        $year = (int) $this->configuration['year'];
+        $histogram = GeneralUtility::makeInstance(ReferenceReader::class, $this->configuration)->getHistogram('year');
 
-        $total_str = strval(intval($this->pi1->stat['num_all']));
-        $total_str = $contentObjectRenderer->cObj->stdWrap($total_str, $this->conf['value_total.']);
-        $year_str = strval(intval($this->pi1->stat['year_hist'][$year]));
-        $year_str = $contentObjectRenderer->cObj->stdWrap($year_str, $this->conf['value_year.']);
-
-        // Setup strings
-        switch ($mode) {
-            case Statistics::STAT_TOTAL:
-                $label = $this->pi1->get_ll('stat_total_label', 'total', true);
-                $stat_str = $total_str;
-                break;
-            case Statistics::STAT_YEAR_TOTAL:
-                $label = $this->pi1->get_ll('stat_year_total_label', 'this year', true);
-                $stat_str = $year_str.' / '.$total_str;
-                break;
-        }
-        $label = $contentObjectRenderer->stdWrap($label, $this->conf['label.']);
-        $stat_str = $contentObjectRenderer->stdWrap($stat_str, $this->conf['values.']);
-
-        // Setup translator
         $this->view
-            ->assign('label', $label)
-            ->assign('statistics', $stat_str);
+            ->assign('mode', $mode)
+            ->assign('total', ReferenceReader::getNumberOfPublications())
+            ->assign('yearly', $histogram[$year]);
 
         return $this->view->render();
     }

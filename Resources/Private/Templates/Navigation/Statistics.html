@@ -1,5 +1,27 @@
+<!--
+    Modes:
+        1: Total
+        2: Year total
+-->
+
 <div class="tx_bib-navi_statistic">
-	<div class="tx_bib-navi_main_label">{label}</div>
-	{statistics -> f:format.raw()}
-	<div class="tx_bib-float_clear"></div>
+    <div class="tx_bib-navi_main_label">
+        <f:if condition="{mode} == 1">
+            <f:then>
+                <f:translate key="stat_total_label" extensionName="bib" />
+            </f:then>
+            <f:else>
+                <f:translate key="stat_year_total_label" extensionName="bib" />
+            </f:else>
+        </f:if>
+    </div>
+    <f:if condition="{mode} == 1">
+        <f:then>
+            {total}
+        </f:then>
+        <f:else>
+            {yearly} / {total}
+        </f:else>
+    </f:if>
+    <div class="tx_bib-float_clear"></div>
 </div>

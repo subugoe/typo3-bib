@@ -135,7 +135,7 @@ class ListView extends View
         $trans = '';
 
         if ($this->extConf['show_nav_stat']) {
-            return GeneralUtility::makeInstance(StatisticsNavigation::class)->get();
+            return GeneralUtility::makeInstance(StatisticsNavigation::class, $this->extConf, $this->conf)->get();
         }
 
         return $trans;

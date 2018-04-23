@@ -354,20 +354,7 @@ plugin.tx_bib_pi1 {
 
     # Statistic
     statNav {
-        template = EXT:bib/Resources/Private/Templates/Navigation/Statistics.html
-
         mode = 0
-        label.wrap = |:
-        values.wrap = |
-
-        value_year.wrap = |
-        value_total.wrap = |
-
-        top_disable = 1
-        bottom_disable = 0
-
-        top.wrap = <div class="tx_bib-navi_author_top">|</div>
-        bottom.wrap = <div class="tx_bib-navi_author_bottom">|</div>
     }
 
     # File icons

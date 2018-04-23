@@ -93,7 +93,7 @@ class ReferenceWriter
             }
 
             // Clear this page cache
-            $clear_cache[] = strval($GLOBALS['TSFE']->id);
+            $clear_cache[] = (string) $GLOBALS['TSFE']->id;
 
             foreach ($clear_cache as $cache) {
                 $dataHandler->clear_cacheCmd($cache);
@@ -149,9 +149,8 @@ class ReferenceWriter
 
         // Check if the pid is in the allowed list
         if (!in_array($publication['pid'], $this->configuration['pid_list'])) {
-            throw new DataException(
-                'The given storage folder (pid='.strval($publication['pid']).
-                ') is not in the list of allowed publication storage folders',
+            throw new DataException(sprintf(
+                'The given storage folder (pid=%d) is not in the list of allowed publication storage folders', $publication['pid']),
                 1378973653
             );
         }
@@ -170,7 +169,7 @@ class ReferenceWriter
         // Add TYPO3 fields
         $referenceRow['pid'] = (int) $publication['pid'];
         $referenceRow['tstamp'] = time();
-        $referenceRow['hidden'] = intval($publication['hidden']);
+        $referenceRow['hidden'] = (int) $publication['hidden'];
 
         if ($uid >= 0) {
             if ($publication['mod_key'] === $pub_db['mod_key']) {
@@ -196,7 +195,7 @@ class ReferenceWriter
             $cruser_id = 0;
             $be_user = $GLOBALS['BE_USER'];
             if (is_object($be_user) && is_array($be_user->user)) {
-                $cruser_id = intval($be_user->user['uid']);
+                $cruser_id = (int) $be_user->user['uid'];
             }
 
             $referenceRow['crdate'] = $referenceRow['tstamp'];
@@ -261,13 +260,13 @@ class ReferenceWriter
                     $author['uid'] = $uids[0]['uid'];
                 } else {
                     // Insert missing author
-                    $ia = $author;
-                    $ia['pid'] = intval($pid);
+                    $authorToBeInserted = $author;
+                    $authorToBeInserted['pid'] = (int) $pid;
 
-                    $author['uid'] = $this->insertAuthor($ia);
-                    if (!(intval($author['uid']) > 0)) {
-                        throw new DataException(
-                            'An author '.$ia['surename'].'  could not be inserted into the database',
+                    $author['uid'] = $this->insertAuthor($authorToBeInserted);
+                    if ($author['uid'] > 0) {
+                        throw new DataException(sprintf(
+                            'An author %s could not be inserted into the database', $authorToBeInserted['surename']),
                             1378976979
                         );
                     }
@@ -295,38 +294,47 @@ class ReferenceWriter
 
         // Inserts new and updates old authorships
         $authorsSize = count($authors);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::AUTHORSHIP_TABLE);
+
         for ($ii = 0; $ii < $authorsSize; ++$ii) {
             $author = &$authors[$ii];
             if (is_numeric($author['uid'])) {
                 $as = [];
-                $as['pid'] = intval($pid);
-                $as['pub_id'] = intval($pub_uid);
-                $as['author_id'] = intval($author['uid']);
+                $as['pid'] = $pid;
+                $as['pub_id'] = $pub_uid;
+                $as['author_id'] = (int) $author['uid'];
                 $as['sorting'] = $author['sorting'];
 
                 if ($ii < $as_present) {
                     // There are present authorships - Update authorship
                     $as_uid = $db_aships[$ii]['uid'];
 
-                    $ret = $this->db->exec_UPDATEquery(
-                        ReferenceReader::AUTHORSHIP_TABLE,
-                        'uid='.intval($as_uid),
-                        $as
-                    );
+                    $ret = $queryBuilder
+                        ->update(ReferenceReader::AUTHORSHIP_TABLE)
+                        ->set('pid', $pid)
+                        ->set('pub_id', $pub_uid)
+                        ->set('author_id', (int) $author['uid'])
+                        ->set('sorting', $author['sorting'])
+                        ->where($queryBuilder->expr()->eq('uid', $as_uid))
+                        ->execute();
 
-                    if (false == $ret) {
-                        throw new DataException(
-                            'An authorship could not be updated uid='.strval($as_uid),
+                    if (0 === $ret) {
+                        throw new DataException(sprintf(
+                            'An authorship could not be updated uid %d', $as_uid),
                             1378977083
                         );
                     }
                 } else {
                     // No more present authorships - Insert authorship
-                    $as_uid = $this->db->exec_INSERTquery(
-                        ReferenceReader::AUTHORSHIP_TABLE,
-                        $as
-                    );
-                    if (!(intval($as_uid) > 0)) {
+                    $ret = $queryBuilder
+                        ->Insert(ReferenceReader::AUTHORSHIP_TABLE)
+                        ->set('pid', $pid)
+                        ->set('pub_id', $pub_uid)
+                        ->set('author_id', (int) $author['uid'])
+                        ->set('sorting', $author['sorting'])
+                        ->execute();
+
+                    if (0 === $ret) {
                         throw new DataException(
                             'An authorship could not be inserted into the database',
                             1378977350
@@ -344,7 +352,7 @@ class ReferenceWriter
      *
      * @return int The uid of the inserted author
      */
-    protected function insertAuthor($author)
+    protected function insertAuthor($author): int
     {
         $author['pid'] = (int) $author['pid'];
 
