@@ -27,6 +27,7 @@ namespace Ipf\Bib\Importer;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\DbUtility;
 use Ipf\Bib\Utility\Generator\CiteIdGenerator;
@@ -154,34 +155,34 @@ abstract class Importer
     /**
      * Saves a publication.
      *
-     * @param array $publication
+     * @param Reference $publication
      *
      * @return bool
      */
-    protected function savePublication($publication)
+    protected function savePublication(Reference $publication): bool
     {
         $res = false;
 
         // Data checks
         $s_ok = true;
-        if (!array_key_exists('bibtype', $publication)) {
+        if (empty($publication->getBibtype())) {
             ++$this->statistics['failed'];
             $this->statistics['errors'][] = 'Missing bibtype';
             $s_ok = false;
         }
 
         // Data adjustments
-        $publication['pid'] = $this->storage_pid;
+        $publication->setPid($this->storage_pid);
 
         // Don't accept publication uids since that
         // could override existing publications
-        if (array_key_exists('uid', $publication)) {
-            unset($publication['uid']);
+        if ($publication->getUid() > 0) {
+            $publication->setUid(-1);
         }
 
-        if (0 == strlen($publication['citeid'])) {
+        if (0 == strlen($publication->getCiteid())) {
             $idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $this->configuration);
-            $publication['citeid'] = $idGenerator->generateId($publication);
+            $publication->setCiteid($idGenerator->generateId($publication));
         }
 
         // Save publications

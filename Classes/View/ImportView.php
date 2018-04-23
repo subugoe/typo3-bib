@@ -20,11 +20,11 @@ class ImportView extends View
             switch ($mode) {
                 case Importer::IMP_BIBTEX:
                     $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/BibTexImport.html');
-                    $importer = GeneralUtility::makeInstance(BibTexImporter::class, $this->configuration);
+                    $importer = GeneralUtility::makeInstance(BibTexImporter::class, $this->configuration, $this->conf);
                     break;
                 case Importer::IMP_XML:
                     $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Importer/XmlImport.html');
-                    $importer = GeneralUtility::makeInstance(XmlImporter::class, $this->configuration);
+                    $importer = GeneralUtility::makeInstance(XmlImporter::class, $this->configuration, $this->conf);
                     break;
             }
 

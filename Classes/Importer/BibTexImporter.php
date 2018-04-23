@@ -30,6 +30,7 @@ namespace Ipf\Bib\Importer;
 use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\ParserException;
 use Ipf\Bib\Exception\TranslatorException;
+use Ipf\Bib\Service\ItemTransformerService;
 use Ipf\Bib\Utility\PRegExpTranslator;
 use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -113,6 +114,10 @@ class BibTexImporter extends Importer
      * @var array
      */
     protected $pubKeys = [];
+
+    /**
+     * @var array
+     */
     protected $pubKeyMap;
 
     /**
@@ -342,7 +347,7 @@ class BibTexImporter extends Importer
                 }
             }
         } catch (ParserException $parserException) {
-            $this->statistics['errors'][] = 'Line '.strval($this->pline).': '.$parserException->getMessage();
+            $this->statistics['errors'][] = sprintf('Line %d: %s', $this->pline, $parserException->getMessage());
         }
 
         fclose($handle);
@@ -631,12 +636,8 @@ class BibTexImporter extends Importer
      * Translates a raw reference to a usable reference structure.
      *
      * @throws TranslatorException
-     *
-     * @param array $raw
-     *
-     * @return array
      */
-    protected function convertRawReferenceToReference(array $raw): array
+    protected function convertRawReferenceToReference(array $raw): Reference
     {
         $publication = [];
 
@@ -652,48 +653,48 @@ class BibTexImporter extends Importer
         $publication['citeid'] = $raw['citeid'];
 
         // Iterate through all raw values
-        foreach ($raw['values'] as $r_key => $r_val) {
-            $r_val = $this->convertLatexCommandsToBibStyle($r_val);
+        foreach ($raw['values'] as $referenceKey => $referenceValue) {
+            $referenceValue = $this->convertLatexCommandsToBibStyle($referenceValue);
 
-            $r_key = strtolower($r_key);
-            switch ($r_key) {
+            $referenceKey = strtolower($referenceKey);
+            switch ($referenceKey) {
                 case 'author':
-                    $publication['authors'] = $this->convertRawAuthorToAuthor($r_val);
+                    $publication['authors'] = $this->convertRawAuthorToAuthor($referenceValue);
                     break;
                 case 'state':
                     foreach (ReferenceReader::$allStates as $ii => $state) {
-                        if (strtolower($r_val) == $state) {
-                            $r_val = $ii;
+                        if (strtolower($referenceValue) == $state) {
+                            $referenceValue = $ii;
                             break;
                         }
                     }
-                    $publication['state'] = $r_val;
+                    $publication['state'] = $referenceValue;
                     break;
                 case 'url':
-                    $publication['web_url'] = $r_val;
+                    $publication['web_url'] = $referenceValue;
                     break;
                 case 'urldate':
-                    $publication['web_url_date'] = $r_val;
+                    $publication['web_url_date'] = $referenceValue;
                     break;
                 case 'annote':
-                    $publication['annotation'] = $r_val;
+                    $publication['annotation'] = $referenceValue;
                     break;
                 case 'file_url':
-                    $publication['file_url'] = $r_val;
+                    $publication['file_url'] = $referenceValue;
                     break;
                 default:
-                    if (in_array($r_key, $this->pubKeys)) {
-                        if (array_key_exists($r_key, $this->pubKeyMap)) {
-                            $r_key = $this->pubKeyMap[$r_key];
+                    if (in_array($referenceKey, $this->pubKeys)) {
+                        if (array_key_exists($referenceKey, $this->pubKeyMap)) {
+                            $referenceKey = $this->pubKeyMap[$referenceKey];
                         }
-                        $publication[$r_key] = $r_val;
+                        $publication[$referenceKey] = $referenceValue;
                     } else {
-                        $this->statistics['warnings'][] = 'Ignored field: '.$r_key;
+                        $this->statistics['warnings'][] = 'Ignored field: '.$referenceKey;
                     }
             }
         }
 
-        return $publication;
+        return GeneralUtility::makeInstance(ItemTransformerService::class)->transformPublication($publication);
     }
 
     /**

@@ -26,6 +26,7 @@ namespace Ipf\Bib\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\DataException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -107,77 +108,110 @@ class ReferenceWriter
      *
      * @throws DataException
      *
-     * @param array $publication
+     * @param Reference $publication
      *
      * @return bool TRUE on error FALSE otherwise
      */
-    public function savePublication($publication)
+    public function savePublication(Reference $publication)
     {
-        if (!is_array($publication)) {
-            throw new DataException(
-                'Publication is not a valid array',
-                1378977181
-            );
-        }
-
         $new = false;
         $uid = -1;
 
         // Fetch reference from DB
         $pub_db = null;
-        if (is_numeric($publication['uid'])) {
-            $pub_db = $this->referenceReader->getPublicationDetails((int) $publication['uid']);
+        if (is_numeric($publication->getUid())) {
+            $pub_db = $this->referenceReader->getPublicationDetails((int) $publication->getUid());
             if (is_array($pub_db)) {
                 $uid = $pub_db->getUid();
             } else {
                 throw new DataException(sprintf(
                     'The publication reference with uid %s could not be updated'.
-                    ' because it does not exist in the database (anymore?).', $publication['uid']),
+                    ' because it does not exist in the database (anymore?).', $publication->getUid()),
                     1378973300
                 );
             }
         }
 
         // Acquire the storage folder pid if it is not given
-        if (!is_numeric($publication['pid'])) {
+        if (!is_numeric($publication->getPid())) {
             if (is_array($pub_db)) {
-                $publication['pid'] = (int) $pub_db['pid'];
+                $publication->setPid((int) $pub_db['pid']);
             } else {
-                $publication['pid'] = $this->configuration['pid_list'][0];
+                $publication->setPid($this->configuration['pid_list'][0]);
             }
         }
 
         // Check if the pid is in the allowed list
-        if (!in_array($publication['pid'], $this->configuration['pid_list'])) {
+        if (!in_array($publication->getPid(), $this->configuration['pid_list'])) {
             throw new DataException(sprintf(
-                'The given storage folder (pid=%d) is not in the list of allowed publication storage folders', $publication['pid']),
+                'The given storage folder (pid=%d) is not in the list of allowed publication storage folders', $publication->getPid()),
                 1378973653
             );
         }
 
-        $referenceRow = [];
-        // Copy reference fields
-        foreach (ReferenceReader::$referenceFields as $field) {
-            switch ($field) {
-                default:
-                    if (array_key_exists($field, $publication)) {
-                        $referenceRow[$field] = $publication[$field];
-                    }
-            }
-        }
-
-        // Add TYPO3 fields
-        $referenceRow['pid'] = (int) $publication['pid'];
-        $referenceRow['tstamp'] = time();
-        $referenceRow['hidden'] = (int) $publication['hidden'];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
 
         if ($uid >= 0) {
             if ($publication['mod_key'] === $pub_db['mod_key']) {
-                $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(ReferenceReader::REFERENCE_TABLE);
+                $result = $queryBuilder
+                    ->update(ReferenceReader::REFERENCE_TABLE)
+                    ->where($queryBuilder->expr()->eq('uid', $uid))
+                    ->set('tstamp', time())
+                    ->set('pid', $publication->getPid())
+                    ->set('crdate', $publication->getCrdate())
+                    ->set('bibtype', $publication->getBibtype())
+                    ->set('citeid', $publication->getCiteid())
+                    ->set('title', $publication->getTitle())
+                    ->set('journal', $publication->getJournal())
+                    ->set('year', $publication->getYear())
+                    ->set('month', $publication->getMonth())
+                    ->set('day', $publication->getDay())
+                    ->set('volume', $publication->getVolume())
+                    ->set('number', $publication->getNumber())
+                    ->set('number2', $publication->getNumber2())
+                    ->set('pages', $publication->getPages())
+                    ->set('abstract', $publication->getAbstract())
+                    ->set('affiliation', $publication->getAffiliation())
+                    ->set('note', $publication->getNote())
+                    ->set('annotation', $publication->getAnnotation())
+                    ->set('keywords', $publication->getKeywords())
+                    ->set('tags', $publication->getTags())
+                    ->set('file_url', $publication->getFileUrl())
+                    ->set('web_url', $publication->getWebUrl())
+                    ->set('web_url_date', $publication->getWebUrlDate())
+                    ->set('web_url', $publication->getWebUrl2())
+                    ->set('web_url_date', $publication->getWebUrl2Date())
+                    ->set('misc', $publication->getMisc())
+                    ->set('misc2', $publication->getMisc2())
+                    ->set('editor', $publication->getEditor())
+                    ->set('publisher', $publication->getPublisher())
+                    ->set('address', $publication->getAddress())
+                    ->set('howpublished', $publication->getHowpublished())
+                    ->set('series', $publication->getSeries())
+                    ->set('edition', $publication->getEdition())
+                    ->set('chapter', $publication->getChapter())
+                    ->set('booktitle', $publication->getBooktitle())
+                    ->set('school', $publication->getSchool())
+                    ->set('institute', $publication->getInstitute())
+                    ->set('organization', $publication->getOrganization())
+                    ->set('institution', $publication->getInstitution())
+                    ->set('event_place', $publication->getEventPlace())
+                    ->set('event_name', $publication->getEventName())
+                    ->set('event_date', $publication->getEventDate())
+                    ->set('state', $publication->getState())
+                    ->set('type', $publication->getType())
+                    ->set('language', $publication->getLanguage())
+                    ->set('ISBN', $publication->getISBN())
+                    ->set('ISSN', $publication->getISSN())
+                    ->set('DOI', $publication->getDOI())
+                    ->set('extern', $publication->isExtern())
+                    ->set('reviewed', $publication->isReviewed())
+                    ->set('in_library', $publication->isInLibrary())
+                    ->set('hidden', $publication->isHidden())
+                    ->set('borrowed_by', $publication->getBorrowedBy())
+                    ->execute();
 
-                $ret = $connection->update(ReferenceReader::REFERENCE_TABLE, $referenceRow, ['uid' => $uid]);
-
-                if (0 === $ret) {
+                if (0 === $result) {
                     throw new DataException(sprintf('A publication reference could not be updated. uid: %d', $uid), 1378973748);
                 }
             } else {
@@ -198,16 +232,66 @@ class ReferenceWriter
                 $cruser_id = (int) $be_user->user['uid'];
             }
 
-            $referenceRow['crdate'] = $referenceRow['tstamp'];
-            $referenceRow['cruser_id'] = $cruser_id;
-
-            $this->db->exec_INSERTquery(
-                ReferenceReader::REFERENCE_TABLE,
-                $referenceRow
-            );
+            $insert = $queryBuilder
+                ->insert(ReferenceReader::REFERENCE_TABLE)
+                ->set('tstamp', time())
+                ->set('cruser_id', $cruser_id)
+                ->set('pid', $publication->getPid())
+                ->set('crdate', $publication->getCrdate())
+                ->set('bibtype', $publication->getBibtype())
+                ->set('citeid', $publication->getCiteid())
+                ->set('title', $publication->getTitle())
+                ->set('journal', $publication->getJournal())
+                ->set('year', $publication->getYear())
+                ->set('month', $publication->getMonth())
+                ->set('day', $publication->getDay())
+                ->set('volume', $publication->getVolume())
+                ->set('number', $publication->getNumber())
+                ->set('number2', $publication->getNumber2())
+                ->set('pages', $publication->getPages())
+                ->set('abstract', $publication->getAbstract())
+                ->set('affiliation', $publication->getAffiliation())
+                ->set('note', $publication->getNote())
+                ->set('annotation', $publication->getAnnotation())
+                ->set('keywords', $publication->getKeywords())
+                ->set('tags', $publication->getTags())
+                ->set('file_url', $publication->getFileUrl())
+                ->set('web_url', $publication->getWebUrl())
+                ->set('web_url_date', $publication->getWebUrlDate())
+                ->set('web_url', $publication->getWebUrl2())
+                ->set('web_url_date', $publication->getWebUrl2Date())
+                ->set('misc', $publication->getMisc())
+                ->set('misc2', $publication->getMisc2())
+                ->set('editor', $publication->getEditor())
+                ->set('publisher', $publication->getPublisher())
+                ->set('address', $publication->getAddress())
+                ->set('howpublished', $publication->getHowpublished())
+                ->set('series', $publication->getSeries())
+                ->set('edition', $publication->getEdition())
+                ->set('chapter', $publication->getChapter())
+                ->set('booktitle', $publication->getBooktitle())
+                ->set('school', $publication->getSchool())
+                ->set('institute', $publication->getInstitute())
+                ->set('organization', $publication->getOrganization())
+                ->set('institution', $publication->getInstitution())
+                ->set('event_place', $publication->getEventPlace())
+                ->set('event_name', $publication->getEventName())
+                ->set('event_date', $publication->getEventDate())
+                ->set('state', $publication->getState())
+                ->set('type', $publication->getType())
+                ->set('language', $publication->getLanguage())
+                ->set('ISBN', $publication->getISBN())
+                ->set('ISSN', $publication->getISSN())
+                ->set('DOI', $publication->getDOI())
+                ->set('extern', $publication->isExtern())
+                ->set('reviewed', $publication->isReviewed())
+                ->set('in_library', $publication->isInLibrary())
+                ->set('hidden', $publication->isHidden())
+                ->set('borrowed_by', $publication->getBorrowedBy())
+                ->execute();
 
             $uid = $this->db->sql_insert_id();
-            if (!($uid > 0)) {
+            if (0 === $insert) {
                 throw new DataException(
                     'A publication reference could not be inserted into the database',
                     1378973908
@@ -215,9 +299,9 @@ class ReferenceWriter
             }
         }
 
-        if (($uid > 0) && (count($publication['authors']) > 0)) {
+        if (($insert > 0) && (count($publication->getAuthors()) > 0)) {
             try {
-                $this->savePublicationAuthors($uid, $publication['pid'], $publication['authors']);
+                $this->savePublicationAuthors($uid, $publication->getPid(), $publication->getAuthors());
             } catch (DataException $e) {
                 throw new DataException($e->getMessage(), $e->getCode());
             }

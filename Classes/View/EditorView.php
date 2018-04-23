@@ -96,7 +96,7 @@ class EditorView extends View
         $this->referenceReader->setClearCache($this->configuration['editor']['clear_page_cache']);
 
         $databaseUtility = GeneralUtility::makeInstance(DbUtility::class, $this->configuration);
-        $databaseUtility->readFullTextGenerationConfiguration($this->conf['editor']['full_text.']);
+        $databaseUtility->readFullTextGenerationConfiguration($this->conf['editor']['full_text.'] ?? []);
 
         $this->databaseUtility = $databaseUtility;
 
@@ -104,7 +104,7 @@ class EditorView extends View
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Editor/Index.html');
 
-        return $this->editor_view();
+        return $this->get();
     }
 
     /**
@@ -115,7 +115,7 @@ class EditorView extends View
      *
      * @return string A publication editor
      */
-    public function editor_view(): string
+    public function get(): string
     {
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $getPostVariables = GeneralUtility::_GP('tx_bib_pi1');
@@ -227,7 +227,7 @@ class EditorView extends View
 
         $this->view->assign('content', $content);
 
-        return htmlspecialchars_decode($this->view->render());
+        return $this->view->render();
     }
 
     /**
