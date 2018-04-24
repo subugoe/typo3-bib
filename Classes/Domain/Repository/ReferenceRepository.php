@@ -42,12 +42,20 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     protected $db;
 
     /**
+     * @var array
+     */
+    private $storagePid;
+
+    /**
      * @param $storagePid
      *
      * @return array
      */
     public function findBibliographyByStoragePid(int $storagePid)
     {
+        $querySettings = $this->createQuery()->getQuerySettings();
+        $querySettings->setStoragePageIds([$storagePid]);
+
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(ReferenceReader::REFERENCE_TABLE);
         $result = $queryBuilder
             ->select('r.*', 'au.forename', 'au.surname')
@@ -62,5 +70,19 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->fetchAll();
 
         return $result;
+    }
+
+    public function setStoragePid(array $pid)
+    {
+        $this->storagePid = $pid;
+    }
+
+    public function findAll()
+    {
+        $querySettings = $this->createQuery()->getQuerySettings();
+        $querySettings->setStoragePageIds($this->storagePid);
+        $this->setDefaultQuerySettings($querySettings);
+
+        return $this->createQuery()->execute();
     }
 }

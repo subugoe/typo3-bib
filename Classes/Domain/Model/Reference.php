@@ -27,10 +27,12 @@ namespace Ipf\Bib\Domain\Model;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
 /**
  * Reference Model.
  */
-class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class Reference extends AbstractEntity
 {
     /**
      * @var string
@@ -55,12 +57,12 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * @var string
      */
-    protected $citeid;
+    protected $citeid = '';
 
     /**
      * @var string
      */
-    protected $title;
+    protected $title = '';
 
     /**
      * @var string
@@ -275,17 +277,17 @@ class Reference extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * @var string
      */
-    protected $ISBN;
+    protected $ISBN = '';
 
     /**
      * @var string
      */
-    protected $ISSN;
+    protected $ISSN = '';
 
     /**
      * @var string
      */
-    protected $DOI;
+    protected $DOI = '';
 
     /**
      * @var string

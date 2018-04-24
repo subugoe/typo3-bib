@@ -1,10 +1,17 @@
 <div class="tx_bib-editor_button_box">
 <span class="tx_bib-box_right">
-{deleteButton}
+    {deleteButton -> f:format.raw()}
 </span>
 <span class="tx_bib-box_left">
-    {saveButton}
-    {editButton}
+
+    <f:if condition="{mode} == 1">
+        <input type="submit" name="tx_bib_pi1[action][confirm_save]" value="{f:translate(key:'editor_btn_save', extensionName:'bib')}" class="tx_bib-save_button"/>
+    </f:if>
+    <f:if condition="{configuration.editor_mode} == 3">
+        <input type="submit" name="tx_bib_pi1[action][save]" value="{f:translate(key:'editor_btn_save', extensionName:'bib')}" class="tx_bib-save_button"/>
+    </f:if>
+
+    {editButton -> f:format.raw()}
     <f:form.button class="tx_bib-editor_button"><f:link.page><f:translate key="editor_btn_cancel" extensionName="bib" /></f:link.page></f:form.button>
 
       <f:if condition="{mode} == 1">

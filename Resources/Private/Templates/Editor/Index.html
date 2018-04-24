@@ -8,7 +8,7 @@
 
 <h2>{title}</h2>
 
-<form name="tx_bib_pi1-ref_data_form" method="post" action="{f:uri.page(addQueryString: true)}">
+<f:form extensionName="bib" pluginName="pi1" name="tx_bib_pi1-ref_data_form" object="{publication}" method="post" action="{f:uri.page(addQueryString: true)}">
     <script type="text/javascript">
     function click_update_button() {
       var btn = document.getElementsByName('tx_bib_pi1[action][update_form]')[0];
@@ -19,12 +19,278 @@
     </script>
 
     <div class="tx_bib-editor">
-        <f:render partial="Editor/Buttons" arguments="{_all}" />
         {preContent -> f:format.raw()}
-        {content -> f:format.raw()}
+
+        <f:render partial="Editor/Buttons" arguments="{_all}" />
+
+        <h3><f:translate key="editor_fields_required" extensionName="bib" /></h3>
+        <table class="tx_bib-editor_fields">
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_bibtype" extensionName="bib"/></td>
+                <td>
+                    <f:form.select options="{bibliographyTypes}" property="bibtype" />
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_citeid" extensionName="bib"/></td>
+                <td class="tx_bib-editor_required">
+                    <f:form.textfield property="citeId" name="tx_bib_pi1[DATA][pub][citeid]" value="{publication.citeId}" class="tx_bib-editor_input" />
+                    <f:form.submit name="tx_bib_pi1[action][generate_id]" value="{f:translate(key:'editor_btn_generate_id',extensionName:'bib')}" class="tx_bib-editor_button" />
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_title" extensionName="bib"/></td>
+                <td><f:form.textarea name="tx_bib_pi1[DATA][pub][title]" value="{publication.title}" cols="60" rows="4" property="title" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_journal" extensionName="bib"/></td>
+                <td><f:form.textfield property="journal" name="tx_bib_pi1[DATA][pub][journal]" value="{publication.journal}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_date" extensionName="bib"/></td>
+                <td class="tx_bib-editor_required">
+                    <f:form.textfield name="tx_bib_pi1[DATA][pub][year]" value="{publication.year}" property="year" class="tx_bib-editor_input" size="4" />
+                    -
+                    <f:form.select class="tx_bib-editor_input" name="tx_bib_pi1[DATA][pub][month]" options="{0:0, 1: 1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,11:11,12:12}" property="month" />
+                    -
+                    <f:form.select class="tx_bib-editor_input" name="tx_bib_pi1[DATA][pub][day]" options="{0:0, 1: 1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,11:11,12:12}" property="day" />
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_volume" extensionName="bib"/></td>
+                <td><f:form.textfield property="volume" name="tx_bib_pi1[DATA][pub][volume]" value="{publication.volume}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_number" extensionName="bib"/></td>
+                <td><f:form.textfield property="number" name="tx_bib_pi1[DATA][pub][number]" value="{publication.number}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_number2" extensionName="bib"/></td>
+                <td><f:form.textfield property="number2" name="tx_bib_pi1[DATA][pub][number2]" value="{publication.number2}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_pages" extensionName="bib"/></td>
+                <td><f:form.textfield property="pages" name="tx_bib_pi1[DATA][pub][pages]" value="{publication.pages}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_abstract" extensionName="bib"/></td>
+                <td><f:form.textarea name="tx_bib_pi1[DATA][pub][abstract]" value="{publication.abstract}" property="abstract" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_affiliation" extensionName="bib"/></td>
+                <td><f:form.textarea name="tx_bib_pi1[DATA][pub][affiliation]" value="{publication.affiliation}" property="affiliation" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_note" extensionName="bib"/></td>
+                <td><f:form.textarea name="tx_bib_pi1[DATA][pub][note]" value="{publication.note}" property="note" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_annotation" extensionName="bib"/></td>
+                 <td><f:form.textarea name="tx_bib_pi1[DATA][pub][annotation]" value="{publication.annotation}" property="annotation" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+             </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_keywords" extensionName="bib"/></td>
+                 <td><f:form.textarea name="tx_bib_pi1[DATA][pub][keywords]" value="{publication.keywords}" property="keywords" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+             </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_tags" extensionName="bib"/></td>
+                 <td><f:form.textarea name="tx_bib_pi1[DATA][pub][tags]" value="{publication.tags}" property="tags" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+             </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_misc" extensionName="bib"/></td>
+                <td><f:form.textfield property="misc" name="tx_bib_pi1[DATA][pub][misc]" value="{publication.misc}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_misc2" extensionName="bib"/></td>
+                <td><f:form.textfield property="misc2" name="tx_bib_pi1[DATA][pub][misc2]" value="{publication.misc2}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_editor" extensionName="bib"/></td>
+                <td><f:form.textfield property="editor" name="tx_bib_pi1[DATA][pub][editor]" value="{publication.editor}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_publisher" extensionName="bib"/></td>
+                <td><f:form.textfield property="publisher" name="tx_bib_pi1[DATA][pub][publisher]" value="{publication.publisher}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_howpublished" extensionName="bib"/></td>
+                <td><f:form.textfield property="howpublished" name="tx_bib_pi1[DATA][pub][howpublished]" value="{publication.howpublished}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_address" extensionName="bib"/></td>
+                <td><f:form.textfield property="address" name="tx_bib_pi1[DATA][pub][address]" value="{publication.address}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_series" extensionName="bib"/></td>
+                <td><f:form.textfield property="series" name="tx_bib_pi1[DATA][pub][series]" value="{publication.series}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_edition" extensionName="bib"/></td>
+                 <td><f:form.textfield property="edition" name="tx_bib_pi1[DATA][pub][edition]" value="{publication.edition}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_chapter" extensionName="bib"/></td>
+                 <td><f:form.textfield property="chapter" name="tx_bib_pi1[DATA][pub][chapter]" value="{publication.chapter}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_booktitle" extensionName="bib"/></td>
+                 <td><f:form.textarea name="tx_bib_pi1[DATA][pub][booktitle]" value="{publication.bookTitle}" property="bookTitle" cols="60" rows="4" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_school" extensionName="bib"/></td>
+                 <td><f:form.textfield property="school" name="tx_bib_pi1[DATA][pub][school]" value="{publication.school}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_institute" extensionName="bib"/></td>
+                 <td><f:form.textfield property="institute" name="tx_bib_pi1[DATA][pub][institute]" value="{publication.institute}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_organization" extensionName="bib"/></td>
+                 <td><f:form.textfield property="organization" name="tx_bib_pi1[DATA][pub][organization]" value="{publication.organization}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_institution" extensionName="bib"/></td>
+                 <td><f:form.textfield property="institution" name="tx_bib_pi1[DATA][pub][institution]" value="{publication.institution}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                 <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_state" extensionName="bib"/></td>
+                <td><f:form.select class="tx_bib-editor_input" name="tx_bib_pi1[DATA][pub][state]" options="{states}" property="state" /></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_type" extensionName="bib"/></td>
+                  <td><f:form.textfield property="type" name="tx_bib_pi1[DATA][pub][type]" value="{publication.type}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_language" extensionName="bib"/></td>
+                  <td><f:form.textfield property="language" name="tx_bib_pi1[DATA][pub][language]" value="{publication.language}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_ISBN" extensionName="bib"/></td>
+                  <td><f:form.textfield property="ISBN" name="tx_bib_pi1[DATA][pub][ISBN]" value="{publication.ISBN}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_ISSN" extensionName="bib"/></td>
+                  <td><f:form.textfield property="ISSN" name="tx_bib_pi1[DATA][pub][ISSN]" value="{publication.ISSN}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_DOI" extensionName="bib"/></td>
+                  <td><f:form.textfield property="DOI" name="tx_bib_pi1[DATA][pub][DOI]" value="{publication.DOI}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_extern" extensionName="bib"/></td>
+                  <td><f:form.checkbox property="extern" name="tx_bib_pi1[DATA][pub][extern]" value="{publication.extern}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                  <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_reviewed" extensionName="bib"/></td>
+                  <td><f:form.checkbox property="reviewed" name="tx_bib_pi1[DATA][pub][reviewed]" value="{publication.reviewed}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_authors" extensionName="bib"/></td>
+                <td class="tx_bib-editor_required">
+                    <table class="tx_bib-editor_author">
+                        <thead>
+                        <tr>
+                            <th>
+
+                            </th>
+                            <th>
+                                Vorname
+                            </th>
+                            <th>
+                                Nachname
+                            </th>
+                            <th>
+
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                        <f:for each="{publication.authors}" as="author" iteration="iterator">
+
+                            <td class="tx_bib-editor_author_num">
+                                    1
+                            </td>
+                            <td>
+                                <f:form.textfield name="tx_bib_pi1[DATA][pub][authors][{iterator.index}][forename]" value="{author.foreName}" class="tx_bib-editor_input" />
+                            </td>
+                            <td>
+                                <f:form.textfield name="tx_bib_pi1[DATA][pub][authors][{iterator.index}][surname]" value="{author.surName}" class="tx_bib-editor_input" />
+                            </td>
+                            <td>
+                                <input type="submit" value="0" name="tx_bib_pi1[action][lower_author]">
+                                ↑
+                            </td>
+                            <td><input type="submit" value="0" name="tx_bib_pi1[action][raise_author]">
+                                ↓
+                            </td>
+                        </f:for>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <input type="submit" value="+" name="tx_bib_pi1[action][more_authors]"><input type="submit" value="-" name="tx_bib_pi1[action][less_authors]">
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_hidden" extensionName="bib"/></td>
+                <td><f:form.checkbox property="hidden" name="tx_bib_pi1[DATA][pub][hidden]" value="{publication.hidden}" class="tx_bib-editor_input"/></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_uid" extensionName="bib"/></td>
+                <td><span class="tx_bib-editor_input">{publication.uid}</span></td>
+            </tr>
+
+            <tr>
+                <td class="tx_bib-editor_required"><f:translate key="tx_bib_domain_model_reference_pid" extensionName="bib"/></td>
+                <td><f:form.select class="tx_bib-editor_input" name="tx_bib_pi1[DATA][pub][pid]" options="{pid}" property="pid" /></td>
+             </tr>
+        </table>
+
         <f:render partial="Editor/Buttons" arguments="{_all}" />
 
     </div>
-</form>
+</f:form>
 
 

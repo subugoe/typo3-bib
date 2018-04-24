@@ -103,6 +103,8 @@ class EditorView extends View
         $this->idGenerator = GeneralUtility::makeInstance(CiteIdGenerator::class, $this->configuration);
 
         $this->view->setTemplatePathAndFilename('EXT:bib/Resources/Private/Templates/Editor/Index.html');
+        $this->view->assign('bibliographyTypes', ReferenceReader::$allBibTypes);
+        $this->view->assign('states', ReferenceReader::$allStates);
 
         return $this->get();
     }
@@ -213,12 +215,13 @@ class EditorView extends View
                 $preContent .= $box;
             }
         }
+        $this->view->assign('publication', $pub_db);
 
         $this->view->assign('mode', $this->widgetMode);
+        $this->view->assign('configuration', $this->configuration);
         $this->view->assign('preContent', $preContent);
         $this->view->assign('title', $title);
         $this->view->assign('deleteButton', $this->getDeleteButton());
-        $this->view->assign('saveButton', $this->getSaveButton());
         $this->view->assign('editButton', $this->getEditButton());
 
         $content = $this->getFieldGroups($pub_http, $content);
@@ -359,24 +362,6 @@ class EditorView extends View
         return $updateButton;
     }
 
-    private function getSaveButton(): string
-    {
-        $saveButton = '';
-        if (Widget::WIDGET_EDIT === $this->widgetMode) {
-            $saveButton = 'confirm_save';
-        }
-        if (Editor::EDIT_CONFIRM_SAVE === (int) $this->configuration['editor_mode']) {
-            $saveButton = 'save';
-        }
-        if (strlen($saveButton) > 0) {
-            $saveButton = '<input type="submit" name="tx_bib_pi1[action]['.$saveButton.']" '.
-                'value="'.LocalizationUtility::translate('editor_btn_save', 'bib').
-                '" class="tx_bib-save_button"/>';
-        }
-
-        return $saveButton;
-    }
-
     private function getDeleteButton(): string
     {
         $deleteButton = '';
@@ -391,7 +376,7 @@ class EditorView extends View
             }
             if (strlen($deleteButton)) {
                 $deleteButton = '<input type="submit" name="tx_bib_pi1[action]['.$deleteButton.']" '.
-                    'value="'.LocalizationUtility::translate('editor_btn_save', 'bib').
+                    'value="'.LocalizationUtility::translate('editor_btn_delete', 'bib').
                     '" class="tx_bib-delete_button"/>';
             }
         }
@@ -609,7 +594,7 @@ class EditorView extends View
                 if ($cfg['max']) {
                     $attributes['maxlength'] = $cfg['max'];
                 }
-                $size = intval($cfg['size']);
+                $size = (int) $cfg['size'];
                 if ($size > 40) {
                     $size = $isize;
                 }
@@ -892,10 +877,10 @@ class EditorView extends View
     {
         $pid = 0;
         if (is_numeric($this->conf['editor']['default_pid'])) {
-            $pid = intval($this->conf['editor']['default_pid']);
+            $pid = (int) $this->conf['editor']['default_pid'];
         }
         if (!in_array($pid, $this->referenceReader->pid_list)) {
-            $pid = intval($this->referenceReader->pid_list[0]);
+            $pid = (int) $this->referenceReader->pid_list[0];
         }
 
         return $pid;
@@ -913,7 +898,7 @@ class EditorView extends View
         if (is_array($this->conf['editor']['field_default.'])) {
             foreach (ReferenceReader::$referenceFields as $field) {
                 if (array_key_exists($field, $this->conf['editor']['field_default.'])) {
-                    $publication[$field] = strval($this->conf['editor']['field_default.'][$field]);
+                    $publication[$field] = (string) $this->conf['editor']['field_default.'][$field];
                 }
             }
         }
@@ -924,9 +909,9 @@ class EditorView extends View
 
         if (0 === (int) $publication['year']) {
             if (is_numeric($this->configuration['year'])) {
-                $publication['year'] = intval($this->configuration['year']);
+                $publication['year'] = (int) $this->configuration['year'];
             } else {
-                $publication['year'] = intval(date('Y'));
+                $publication['year'] = (int) date('Y');
             }
         }
 
@@ -1100,7 +1085,7 @@ class EditorView extends View
         $d_err = [];
         $bib_str = ReferenceReader::$allBibTypes[$pub['bibtype']];
 
-        $d_err = $this->findEmptyRequiredFields($pub, $this->getEditFields($bib_str), $this->getConditions($bib_str), $d_err);
+        $d_err = $this->findEmptyRequiredFields($pub, $this->getEditFields((int) $bib_str), $this->getConditions($bib_str), $d_err);
         $d_err = $this->localFileDoesNotExist($pub, $d_err);
         $d_err = $this->citeIdDoubles($pub, $d_err);
 
