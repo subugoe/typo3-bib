@@ -54,7 +54,7 @@ class ListView extends View
     private function setupSearchNavigation()
     {
         $searchNavigation = GeneralUtility::makeInstance(SearchNavigation::class, $this->configuration, $this->conf);
-        $searchNavigation->hook_filter();
+        $searchNavigation->initializeFilters();
         $searchNavigation->initialize();
 
         return $searchNavigation->get();

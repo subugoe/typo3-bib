@@ -79,7 +79,7 @@ class SearchNavigation extends Navigation
         // Show extra
         $this->configuration['search_navi']['extra'] = true;
 
-        if (!isset($getPostVariables['search']['extra'])) {
+        if (!isset($getPostVariables['search']['extra']) || 0 === (int) $getPostVariables['search']['extra']) {
             $this->configuration['search_navi']['extra'] = false;
             if (!isset($getPostVariables['search']['extra_b'])) {
                 $this->configuration['search_navi']['extra'] = $this->conf['searchNav.']['extra.']['def'] ? true : false;
@@ -142,7 +142,7 @@ class SearchNavigation extends Navigation
         $this->configuration['link_vars']['search']['sep'] = $sep_id;
     }
 
-    public function hook_filter()
+    public function initializeFilters()
     {
         $strings = [];
         if (strlen($this->configuration['search_navi']['string']) > 0) {
