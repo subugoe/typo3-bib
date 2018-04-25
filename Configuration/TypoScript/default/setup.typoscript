@@ -2,9 +2,6 @@ plugin.tx_bib_pi1 {
     pid_list = {$plugin.tx_bib_pi1.pid_list}
     debug = {$plugin.tx_bib_pi1.debug}
 
-    # Character set used by some functions
-    charset = UTF-8
-
     # Links link to the content element (e.g. http://bla.html#c1234)
     ce_links = 1
 
@@ -21,19 +18,9 @@ plugin.tx_bib_pi1 {
     # Maximal number references per page (0=all)
     items_per_page = 12
 
-    # HTML template files
-    templates {
-        main = EXT:bib/Resources/Private/Templates/main.html
-        list_blocks = EXT:bib/Resources/Private/Templates/List/Blocks.html
-        list_items = EXT:bib/Resources/Private/Partials/List/Items.html
-        navi_misc = EXT:bib/Resources/Private/Templates/Navigation/Miscellaneous.html
-    }
-
     # Number of authors to display (0=all)
     max_authors = 0
     authors {
-        template = ###FORENAME######SURNAME### ###URL_ICON###
-
         forename.wrap = |
 
         surname.noTrimWrap = | ||
@@ -55,25 +42,6 @@ plugin.tx_bib_pi1 {
         et_al.noTrimWrap = | ||
 
         highlight.wrap = <span class="tx_bib-author_high">|</span>
-    }
-
-    # List view
-    enum {
-        page = ###I_PAGE###
-        page.wrap = |.
-        all = ###I_ALL###
-        all.wrap = |.
-        bullet = &bull;
-        file_icon = ###FILE_URL_ICON###
-        file_icon.wrap = <div class="tx_bib-file_url_icon">|</div>
-
-        # These are wraps for special items
-        file_icon_class = tx_bib-file_icon
-        file_icon_image.typolink {
-            parameter.field = file_url
-            target = _blank
-            extTarget = _blank
-        }
     }
 
     # Label wraps
