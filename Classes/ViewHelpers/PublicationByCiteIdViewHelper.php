@@ -26,13 +26,14 @@ namespace Ipf\Bib\ViewHelpers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Exception\DataException;
 use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
- * Retrieve an array of the publication by providing a CiteId.
+ * Retrieve an object of the publication by providing a CiteId.
  *
  * Usage:
  * First: Declare the namespace for this extension:
@@ -53,16 +54,16 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('citeId', 'string', 'Citation id');
+        $this->registerArgument('citeId', 'string', 'Citation id', true);
         $this->registerArgument('storagePid', 'int', 'Storage PID where the bibliography records are stored');
     }
 
     /**
      * @throws \Exception
      *
-     * @return array
+     * @return Reference
      */
-    public function render()
+    public function render(): Reference
     {
         if ($this->hasArgument('citeId')) {
             $citationId = $this->arguments['citeId'];
@@ -70,16 +71,9 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
             $citationId = $this->renderChildren();
         }
 
-        $this->hasArgument('storagePid') ? $storagePid = intval($this->arguments['storagePid']) : $storagePid = null;
+        $this->hasArgument('storagePid') ? $storagePid = (int) $this->arguments['storagePid'] : $storagePid = null;
 
-        if (empty($citationId)) {
-            throw new \Exception('A citation Id has to be Provided for '.__CLASS__, 1378194424);
-        }
-        try {
-            return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
-        } catch (\Exception $e) {
-            return ['exception' => $e->getMessage()];
-        }
+        return $this->getBibliographicDataFromCitationId($citationId, $storagePid);
     }
 
     /**
@@ -88,9 +82,9 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
      * @param string $citationId
      * @param int    $storagePid
      *
-     * @return array
+     * @return Reference
      */
-    protected function getBibliographicDataFromCitationId($citationId, $storagePid)
+    private function getBibliographicDataFromCitationId(string $citationId, int $storagePid): Reference
     {
         /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
         $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
@@ -106,7 +100,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
                 ]
             );
         } else {
-            throw new DataException('Citation Id '.$citationId.' does not exist', 1378195258);
+            throw new DataException(sprintf('Citation Id %s does not exist', $citationId), 1378195258);
         }
 
         $citationUid = $referenceReader->getUidFromCitationId($citationId);
