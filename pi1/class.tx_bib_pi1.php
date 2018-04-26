@@ -159,16 +159,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
         // Retrieve general FlexForm values
         $fSheet = 'sDEF';
-        $configuration['d_mode'] = $this->pi_getFFvalue($flexFormData, 'display_mode', $fSheet);
+        $configuration['d_mode'] = (int) $this->pi_getFFvalue($flexFormData, 'display_mode', $fSheet);
         $configuration['show_nav_search'] = $this->pi_getFFvalue($flexFormData, 'show_search', $fSheet);
         $configuration['show_nav_author'] = $this->pi_getFFvalue($flexFormData, 'show_authors', $fSheet);
         $configuration['show_nav_pref'] = $this->pi_getFFvalue($flexFormData, 'show_pref', $fSheet);
-        $configuration['sub_page']['ipp'] = $this->pi_getFFvalue($flexFormData, 'items_per_page', $fSheet);
+        $configuration['sub_page']['ipp'] = (int) $this->pi_getFFvalue($flexFormData, 'items_per_page', $fSheet);
         $configuration['max_authors'] = $this->pi_getFFvalue($flexFormData, 'max_authors', $fSheet);
         $configuration['split_bibtypes'] = $this->pi_getFFvalue($flexFormData, 'split_bibtypes', $fSheet);
-        $configuration['stat_mode'] = $this->pi_getFFvalue($flexFormData, 'stat_mode', $fSheet);
+        $configuration['stat_mode'] = (int) $this->pi_getFFvalue($flexFormData, 'stat_mode', $fSheet);
         $configuration['show_nav_export'] = $this->pi_getFFvalue($flexFormData, 'export_mode', $fSheet);
-        $configuration['date_sorting'] = $this->pi_getFFvalue($flexFormData, 'date_sorting', $fSheet);
+        $configuration['date_sorting'] = (int) $this->pi_getFFvalue($flexFormData, 'date_sorting', $fSheet);
         $configuration['sorting'] = $this->pi_getFFvalue($flexFormData, 'sorting', $fSheet);
         $configuration['search_fields'] = $this->pi_getFFvalue($flexFormData, 'search_fields', $fSheet);
         $configuration['separator'] = $this->pi_getFFvalue($flexFormData, 'separator', $fSheet);
@@ -214,19 +214,19 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 
     protected function getTypoScriptConfiguration(array $configuration): array
     {
-        if ((int) $configuration['d_mode'] < 0) {
+        if ($configuration['d_mode'] < 0) {
             $configuration['d_mode'] = (int) $this->conf['display_mode'];
         }
 
-        if ((int) $configuration['date_sorting'] < 0) {
+        if ($configuration['date_sorting'] < 0) {
             $configuration['date_sorting'] = (int) $this->conf['date_sorting'];
         }
 
-        if ((int) $configuration['stat_mode'] < 0) {
+        if ($configuration['stat_mode'] < 0) {
             $configuration['stat_mode'] = (int) $this->conf['statNav.']['mode'];
         }
 
-        if ((int) $configuration['sub_page']['ipp'] < 0) {
+        if ($configuration['sub_page']['ipp'] < 0) {
             $configuration['sub_page']['ipp'] = (int) $this->conf['items_per_page'];
         }
 
@@ -309,7 +309,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $configuration['pid_list'] = array_reverse($pidList);
         } else {
             // Use current page as storage
-            $configuration['pid_list'] = [(int) $GLOBALS['TSFE']->id];
+            $configuration['pid_list'] = [$this->frontendController->id];
         }
 
         return $configuration;
@@ -345,7 +345,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             default:
                 $configuration['stat_mode'] = \Ipf\Bib\Modes\Statistics::STAT_TOTAL;
         }
-        $configuration['sub_page']['ipp'] = max((int) $configuration['sub_page']['ipp'], 0);
+        $configuration['sub_page']['ipp'] = max($configuration['sub_page']['ipp'], 0);
         $configuration['max_authors'] = max((int) $configuration['max_authors'], 0);
 
         return $configuration;
@@ -361,12 +361,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function setupNavigations(array $configuration): array
     {
         // Year Navigation
-        if (\Ipf\Bib\Modes\Display::D_Y_NAV === (int) $configuration['d_mode']) {
+        if (\Ipf\Bib\Modes\Display::D_Y_NAV === $configuration['d_mode']) {
             $configuration['show_nav_year'] = true;
         }
 
         // Statistic Navigation
-        if (\Ipf\Bib\Modes\Statistics::STAT_NONE !== (int) $configuration['stat_mode']) {
+        if (\Ipf\Bib\Modes\Statistics::STAT_NONE !== $configuration['stat_mode']) {
             $configuration['show_nav_stat'] = true;
         }
 
@@ -952,7 +952,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         if ($configuration['edit_mode']) {
             // Disable caching in edit mode
-            $GLOBALS['TSFE']->set_no_cache();
+            $this->frontendController->set_no_cache();
 
             // Do an action type evaluation
             if (is_array($this->piVars['action'])) {
@@ -1105,7 +1105,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         // Default sorting
         $defaultSorting = 'DESC';
 
-        if (\Ipf\Bib\Modes\Sort::SORT_ASC === (int) $configuration['date_sorting']) {
+        if (\Ipf\Bib\Modes\Sort::SORT_ASC === $configuration['date_sorting']) {
             $defaultSorting = 'ASC';
         }
 
@@ -1140,7 +1140,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         }
         // Adjust sorting for bibtype split
         if ($configuration['split_bibtypes']) {
-            if (\Ipf\Bib\Modes\Display::D_SIMPLE === (int) $configuration['d_mode']) {
+            if (\Ipf\Bib\Modes\Display::D_SIMPLE === $configuration['d_mode']) {
                 $configuration['filters']['sort']['sorting'] = [
                     ['field' => \Ipf\Bib\Utility\ReferenceReader::REFERENCE_TABLE.'.bibtype', 'dir' => 'ASC'],
                     ['field' => \Ipf\Bib\Utility\ReferenceReader::REFERENCE_TABLE.'.year', 'dir' => $defaultSorting],
