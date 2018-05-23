@@ -94,11 +94,11 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function crop_middle($str, $len, $charset = 'UTF-8')
+    public static function crop_middle($str,int $len, $charset = 'UTF-8')
     {
         $res = $str;
         if (strlen($str) > $len) {
-            $le = ceil($len / 2.0);
+            $le = (int) ceil($len / 2.0);
             $ls = $len - $le;
             $res = mb_substr($str, 0, $ls, $charset).'...';
             $res .= mb_substr($str, strlen($str) - $le, $le, $charset);
