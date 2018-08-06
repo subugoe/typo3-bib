@@ -993,7 +993,7 @@ class ReferenceReader
             if (is_array($filter['tags']['words']) && (count($filter['tags']['words']) > 0)) {
                 $wca = [];
 
-                if ($filter['tags']['rule'] == 0) { // OR
+                if (0 == $filter['tags']['rule']) { // OR
                     $wca[] = $this->getFilterSearchFieldsClause($filter['tags']['words'], ['tags']);
                 } else { // AND
                     foreach ($filter['tags']['words'] as $word) {
@@ -1014,7 +1014,7 @@ class ReferenceReader
             if (is_array($filter['keywords']['words']) && (count($filter['keywords']['words']) > 0)) {
                 $wca = [];
 
-                if ($filter['keywords']['rule'] == 0) { // OR
+                if (0 == $filter['keywords']['rule']) { // OR
                     $wca[] = $this->getFilterSearchFieldsClause($filter['keywords']['words'], ['keywords']);
                 } else { // AND
                     foreach ($filter['keywords']['words'] as $word) {
@@ -1041,7 +1041,7 @@ class ReferenceReader
                     $fields = array_diff($fields, $filter['all']['exclude']);
                 }
 
-                if ($filter['all']['rule'] == 0) { // OR
+                if (0 == $filter['all']['rule']) { // OR
                     $wca[] = $this->getFilterSearchFieldsClause($filter['all']['words'], $fields);
                 } else { // AND
                     foreach ($filter['all']['words'] as $word) {

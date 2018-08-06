@@ -1,10 +1,11 @@
 {
   "name": "ipf/bib",
   "type": "typo3-cms-extension",
+  "description": "A customizable bibliography and publication reference manager with a convenient frontend editor and import/export functionality.",
   "require-dev": {
     "fortawesome/font-awesome": "~4.4"
   },
-  "license": "GPL-2.0",
+  "license": "GPL-2.0-only",
   "authors": [
     {
       "name": "Ingo Pfennigstorf",
