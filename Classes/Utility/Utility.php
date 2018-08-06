@@ -152,7 +152,7 @@ class Utility
      *
      * @return bool TRUE if the user is in a given group FALSE otherwise
      */
-    public static function check_fe_user_groups($groups, $admin_ok = false)
+    public static function check_fe_user_groups(string $groups, bool $admin_ok = false)
     {
         if ($admin_ok && is_object($GLOBALS['BE_USER']) && $GLOBALS['BE_USER']->isAdmin()) {
             return true;
@@ -161,13 +161,12 @@ class Utility
             && is_array($GLOBALS['TSFE']->fe_user->user)
             && is_array($GLOBALS['TSFE']->fe_user->groupData)
         ) {
-            if (is_string($groups)) {
-                $groups = strtolower($groups);
-                if (!(false === strpos($groups, 'all'))) {
-                    return true;
-                }
-                $groups = GeneralUtility::intExplode(',', $groups);
+            $groups = strtolower($groups);
+            if (!(false === strpos($groups, 'all'))) {
+                return true;
             }
+            $groups = GeneralUtility::intExplode(',', $groups);
+
             if (self::intval_list_check($groups, $GLOBALS['TSFE']->fe_user->groupData['uid'])) {
                 return true;
             }
@@ -181,19 +180,15 @@ class Utility
      *
      * @static
      *
-     * @param array|string $allowed
-     * @param array|string $current
+     * @param array $allowed
+     * @param array $current
      *
      * @return bool TRUE if there is an overlap FALSE otherwise
      */
-    public static function intval_list_check($allowed, $current)
+    public static function intval_list_check(array $allowed, array $current)
     {
-        if (!is_array($allowed)) {
-            $allowed = GeneralUtility::intExplode(',', strval($allowed));
-        }
-        if (!is_array($current)) {
-            $current = GeneralUtility::intExplode(',', strval($current));
-        }
+        $allowed = GeneralUtility::intExplode(',', (string) $allowed);
+        $current = GeneralUtility::intExplode(',', (string) $current);
 
         foreach ($current as $cur) {
             if (in_array($cur, $allowed)) {
@@ -517,11 +512,11 @@ class Utility
      *
      * @return bool|array FALSE or the error message array
      */
-    public static function explodeAuthorString($authorString)
+    public static function explodeAuthorString(string $authorString)
     {
         $res = [];
-        $lst = explode(' and ', $authorString);
-        foreach ($lst as $a_str) {
+        $authorList = explode(' and ', $authorString);
+        foreach ($authorList as $a_str) {
             $name = [];
             $parts = GeneralUtility::trimExplode(',', $a_str, true);
             if (count($parts) > 1) {
@@ -543,24 +538,24 @@ class Utility
      * @static
      *
      * @param array  $arr
-     * @param string $sep
+     * @param string $separator
      * @param string $and
      *
      * @return string The imploded array as a string
      */
-    public static function implode_and_last($arr, $sep, $and)
+    public static function implode_and_last(array $arr, string $separator, string $and)
     {
         $res = [];
         $size = count($arr);
         $c_idx = $size - 2;
         $a_idx = $size - 1;
         for ($ii = 0; $ii < $size; ++$ii) {
-            $res[] = strval($arr[$ii]);
+            $res[] = (string) $arr[$ii];
             if ($ii < $c_idx) {
-                $res[] = strval($sep);
+                $res[] = (string) $separator;
             } else {
                 if ($ii < $a_idx) {
-                    $res[] = strval($and);
+                    $res[] = (string) $and;
                 }
             }
         }

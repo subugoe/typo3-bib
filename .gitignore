@@ -3,3 +3,4 @@
 /vendor/
 Classes/Contrib
 .php_cs.cache
+composer.lock

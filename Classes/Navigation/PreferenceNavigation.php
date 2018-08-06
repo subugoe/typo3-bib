@@ -61,7 +61,7 @@ class PreferenceNavigation extends Navigation
             $show = true;
         }
 
-        $configuration['hide_fields']['keywords'] = $show ? false : true;
+        $configuration['hide_fields']['keywords'] = !$show;
         $configuration['hide_fields']['tags'] = $configuration['hide_fields']['keywords'];
 
         return $configuration;
@@ -74,7 +74,7 @@ class PreferenceNavigation extends Navigation
         if (0 !== (int) $getPostVariables['show_abstracts']) {
             $show = true;
         }
-        $configuration['hide_fields']['abstract'] = $show ? false : true;
+        $configuration['hide_fields']['abstract'] = !$show;
 
         return $configuration;
     }

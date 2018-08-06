@@ -146,13 +146,13 @@ class ItemTransformerService
         if (strlen($publicationData['editor']) > 0) {
             $editors = Utility::explodeAuthorString($publicationData['editor']);
             $lst = [];
-            foreach ($editors as $ed) {
+            foreach ($editors as $editor) {
                 $app = '';
-                if (strlen($ed['forename']) > 0) {
-                    $app .= $ed['forename'].' ';
+                if (strlen($editor['forename']) > 0) {
+                    $app .= $editor['forename'].' ';
                 }
-                if (strlen($ed['surname']) > 0) {
-                    $app .= $ed['surname'];
+                if (strlen($editor['surname']) > 0) {
+                    $app .= $editor['surname'];
                 }
                 $app = $contentObjectRenderer->stdWrap($app, $this->conf['field.']['editor_each.']);
                 $lst[] = $app;

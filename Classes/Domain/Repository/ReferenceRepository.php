@@ -27,6 +27,7 @@ namespace Ipf\Bib\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use Ipf\Bib\Domain\Model\Reference;
 use Ipf\Bib\Utility\ReferenceReader;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

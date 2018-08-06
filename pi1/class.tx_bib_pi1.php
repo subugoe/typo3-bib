@@ -178,11 +178,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $show_fields = explode(',', $show_fields);
 
         $configuration['hide_fields'] = [
-            'abstract' => 1,
-            'annotation' => 1,
-            'note' => 1,
-            'keywords' => 1,
-            'tags' => 1,
+            'abstract' => true,
+            'annotation' => true,
+            'note' => true,
+            'keywords' => true,
+            'tags' => true,
         ];
 
         foreach ($show_fields as $f) {
@@ -205,7 +205,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     break;
             }
             if ($field) {
-                $configuration['hide_fields'][$field] = 0;
+                $configuration['hide_fields'][$field] = false;
             }
         }
 
@@ -1190,8 +1190,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     'conf' => $this->conf,
                     'piVars' => $this->piVars,
                     'stat' => $this->stat,
-                    'HTTP_POST_VARS' => $GLOBALS['HTTP_POST_VARS'],
-                    'HTTP_GET_VARS' => $GLOBALS['HTTP_GET_VARS'],
+                    'HTTP_POST_VARS' => GeneralUtility::_POST(),
+                    'HTTP_GET_VARS' => GeneralUtility::_GET(),
                 ]
             );
         }

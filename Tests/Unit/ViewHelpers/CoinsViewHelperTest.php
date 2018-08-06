@@ -29,7 +29,7 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
 use Ipf\Bib\ViewHelpers\CoinsViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TagBuilder;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
-use TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase;
+use TYPO3Fluid\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase;
 
 /**
  * Test for coins ViewHelper.
