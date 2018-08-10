@@ -84,7 +84,7 @@ class CoinsViewHelperTest extends UnitTestCase
     public function tagFromTypeSpanIsGenerated($data)
     {
         $this->fixture->setArguments(['data' => $data]);
-        $mockTagBuilder = $this->getMock(TagBuilder::class, ['setTagName', 'addAttribute', 'setContent']);
+        $mockTagBuilder = $this->getMockBuilder(TagBuilder::class)->setMethods(['setTagName', 'addAttribute', 'setContent'])->getMock();
         $mockTagBuilder->expects($this->once())->method('setTagName')->with('span');
         $this->fixture->_set('tag', $mockTagBuilder);
         $this->fixture->initialize();
