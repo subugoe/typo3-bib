@@ -43,28 +43,16 @@ class PublicationByCiteIdViewHelperTest extends UnitTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->templateVariableContainer = new \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer();
-        $this->renderingContext->injectTemplateVariableContainer($this->templateVariableContainer);
         $this->viewHelper = $this->getAccessibleMock(PublicationByCiteIdViewHelper::class, ['dummy']);
-        $this->injectDependenciesIntoViewHelper($this->viewHelper);
     }
 
     /**
      * @test
-     * @expectedException \Exception
+     * @expectedException \Ipf\Bib\Exception\DataException
      */
     public function providingAnEmptyCiteIdThrowsAnException()
     {
-        $this->viewHelper->setArguments(['citeId' => '']);
-        $this->assertEquals($this->viewHelper->__call('render'), $this->getExpectedException());
-    }
-
-    /**
-     * @test
-     */
-    public function providingANonExistentCiteIdReturnsAnArrayWithExceptionKey()
-    {
-        $this->viewHelper->setArguments(['citeId' => 'mueller98']);
-        $this->assertArrayHasKey('exception', $this->viewHelper->_call('render'));
+        $this->viewHelper->setArguments(['citeId' => '', 'storagePid' => 442]);
+        $this->assertEquals($this->viewHelper->render(), $this->getExpectedException());
     }
 }

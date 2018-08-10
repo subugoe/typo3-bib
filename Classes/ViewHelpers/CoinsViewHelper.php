@@ -43,7 +43,7 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
 
     public function initializeArguments()
     {
-        $this->registerArgument('data', Reference::class, 'The email address to resolve the gravatar for', true);
+        $this->registerArgument('data', Reference::class, 'The Reference to be transformed', true);
     }
 
     /**
@@ -80,7 +80,7 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
         }
 
         if ($reference->getBibtype()) {
-            $coinsData[] = sprintf('rft.genre=%s', $this->formatEntity(LocalizationUtility::translate(sprintf('tx_bib_domain_model_reference_bibtype_I_%d', $reference->getBibtype()), 'bib')));
+            $coinsData[] = sprintf('rft.genre=%s', $this->formatEntity($this->localize(sprintf('tx_bib_domain_model_reference_bibtype_I_%d', $reference->getBibtype()), $reference->getBibtype())));
         }
 
         if (!empty($reference->getSeries())) {
@@ -98,6 +98,11 @@ class CoinsViewHelper extends AbstractTagBasedViewHelper
         $this->tag->addAttribute('title', implode('&', $coinsData));
 
         return $this->tag->render();
+    }
+
+    protected function localize(string $text, int $bibType)
+    {
+        return LocalizationUtility::translate(sprintf('tx_bib_domain_model_reference_bibtype_I_%d', $bibType), 'bib');
     }
 
     /**

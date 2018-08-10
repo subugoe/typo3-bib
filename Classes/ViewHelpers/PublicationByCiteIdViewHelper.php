@@ -59,7 +59,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @throws \Exception
+     * @throws DataException
      *
      * @return Reference
      */
@@ -77,7 +77,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @throws \Exception
+     * @throws DataException
      *
      * @param string $citationId
      * @param int    $storagePid
@@ -87,7 +87,7 @@ class PublicationByCiteIdViewHelper extends AbstractViewHelper
     private function getBibliographicDataFromCitationId(string $citationId, int $storagePid): Reference
     {
         /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
+        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class, []);
 
         $referenceReader->setPidList([$storagePid]);
 
