@@ -9,7 +9,8 @@ $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['bib_pi1'] = 
         'LLL:EXT:bib/Resources/Private/Language/locallang_db.xml:tt_content.list_type_pi1',
         'bib_pi1',
     ],
-    'list_type'
+    'list_type',
+    'bib'
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(

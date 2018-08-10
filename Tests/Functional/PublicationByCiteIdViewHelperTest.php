@@ -12,13 +12,26 @@ class PublicationByCiteIdViewHelperTest extends FunctionalTestCase
      */
     private $viewHelper;
 
+    private $tables = [
+        'tx_bib_domain_model_reference',
+        'tx_bib_domain_model_author',
+        'tx_bib_domain_model_authorships',
+    ];
+
+    protected $testExtensionsToLoad = [
+        'typo3conf/ext/bib',
+    ];
+
     public function setUp()
     {
         parent::setUp();
-        parent::setUp();
         $this->viewHelper = $this->getAccessibleMock(PublicationByCiteIdViewHelper::class, ['dummy']);
 
-        $this->importDataSet(__DIR__.'/../Fixtures/tx_bib_domain_model_author.xml');
+        $fixtureRootPath = __DIR__.'/../../.Build/Fixtures/';
+
+        foreach ($this->tables as $table) {
+            $this->importDataSet($fixtureRootPath.$table.'.xml');
+        }
     }
 
     /**
@@ -27,7 +40,7 @@ class PublicationByCiteIdViewHelperTest extends FunctionalTestCase
      */
     public function providingANonExistentCiteIdThrowsAnException()
     {
-        $this->viewHelper->setArguments(['citeId' => 'mueller98', 'storagePid' => 442]);
+        $this->viewHelper->setArguments(['citeId' => 'mueller98', 'storagePid' => 584]);
         $this->assertSame($this->getExpectedException(), $this->viewHelper->render());
     }
 }
