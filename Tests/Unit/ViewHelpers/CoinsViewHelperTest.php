@@ -29,12 +29,12 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
 use Ipf\Bib\ViewHelpers\CoinsViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TagBuilder;
 use TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer;
-use TYPO3Fluid\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test for coins ViewHelper.
  */
-class CoinsViewHelperTest extends ViewHelperBaseTestcase
+class CoinsViewHelperTest extends UnitTestCase
 {
     /**
      * @var \Ipf\Bib\ViewHelpers\CoinsViewHelper
@@ -55,9 +55,7 @@ class CoinsViewHelperTest extends ViewHelperBaseTestcase
                     'crdate' => '1418897565',
                     'cruser_id' => '14',
                     'bibtype' => 'Buch',
-                    'title' => '<a href="/test/bib/?no_cache=1&amp;tx_bib_pi1%5Bshow_uid%5D=3456
-								      #c3456">Die Mönchsklöster der Benediktiner in Mecklenburg-Vorpomme
-								      rn, Sachsen-Anhalt, Thüringen und Sachsen</a>',
+                    'title' => '<a href="/test/bib/?no_cache=1&amp;tx_bib_pi1%5Bshow_uid%5D=3456#c3456">Die Mönchsklöster der Benediktiner in Mecklenburg-Vorpommern, Sachsen-Anhalt, Thüringen und Sachsen</a>',
                     'year' => '2012',
                     'volume' => '10',
                     'publisher' => 'EOS-Verlag',

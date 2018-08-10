@@ -27,10 +27,13 @@ namespace Ipf\Bib\Tests\Unit\ViewHelpers;
      *  This copyright notice MUST APPEAR in all copies of the script!
      * ************************************************************* */
 
+use Ipf\Bib\ViewHelpers\PublicationByCiteIdViewHelper;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
+
 /**
  * Description.
  */
-class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers\ViewHelperBaseTestcase
+class PublicationByCiteIdViewHelperTest extends UnitTestCase
 {
     /**
      * @var \Ipf\Bib\ViewHelpers\PublicationByCiteIdViewHelper
@@ -42,7 +45,7 @@ class PublicationByCiteIdViewHelperTest extends \TYPO3\CMS\Fluid\Tests\Unit\View
         parent::setUp();
         $this->templateVariableContainer = new \TYPO3\CMS\Fluid\Core\ViewHelper\TemplateVariableContainer();
         $this->renderingContext->injectTemplateVariableContainer($this->templateVariableContainer);
-        $this->viewHelper = $this->getAccessibleMock('Ipf\\Bib\\ViewHelpers\\PublicationByCiteIdViewHelper', ['dummy']);
+        $this->viewHelper = $this->getAccessibleMock(PublicationByCiteIdViewHelper::class, ['dummy']);
         $this->injectDependenciesIntoViewHelper($this->viewHelper);
     }
 

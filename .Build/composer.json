@@ -10,8 +10,7 @@
     }
   ],
   "require": {
-    "typo3/cms": "^8.7.0",
-    "typo3fluid/fluid": "^2.5.4"
+    "typo3/cms": "^8.7.0"
   },
   "require-dev": {
     "php": "~7.0 || ~7.1",
