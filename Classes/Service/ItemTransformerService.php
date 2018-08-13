@@ -285,7 +285,7 @@ class ItemTransformerService
         $highlightAuthors = $this->configuration['highlight_authors'] ? true : false;
 
         $link_fields = $this->configuration['author_sep'];
-        $a_sep = $this->configuration['author_sep'];
+        $a_sep = $this->configuration['author_sep'] ?? ', ';
         $authorTemplate = $this->configuration['author_tmpl'];
 
         $filter_authors = [];
