@@ -62,20 +62,19 @@ class Utility
     /**
      * Crops a string to a maximal length by cutting in the middle.
      *
-     * @param string $str
-     * @param int    $len
-     * @param string $charset
+     * @param string $string
+     * @param int    $length
      *
      * @return string The string filtered for html output
      */
-    public static function crop_middle(string $str, int $len)
+    public static function crop_middle(string $string, int $length)
     {
-        $res = $str;
-        if (strlen($str) > $len) {
-            $le = (int) ceil($len / 2.0);
-            $ls = $len - $le;
-            $res = mb_substr($str, 0, $ls).'...';
-            $res .= mb_substr($str, strlen($str) - $le, $le);
+        $res = $string;
+        if (mb_strlen($string) > $length) {
+            $le = (int) ceil($length / 2.0);
+            $ls = $length - $le;
+            $res = mb_substr($string, 0, $ls).'…';
+            $res .= mb_substr($string, mb_strlen($string) - $le, $le);
         }
 
         return $res;
@@ -89,16 +88,13 @@ class Utility
      */
     public static function filter_pub_html_display(string $content): string
     {
-        $rand = strval(rand()).strval(rand());
+        $rand = sha1(microtime());
         $content = str_replace(['<prt>', '</prt>'], '', $content);
 
         $LE = '#LE'.$rand.'LE#';
         $GE = '#GE'.$rand.'GE#';
 
-        /** @var \Ipf\Bib\Utility\ReferenceReader $referenceReader */
-        $referenceReader = GeneralUtility::makeInstance(ReferenceReader::class);
-
-        foreach ($referenceReader->getAllowedTags() as $tag) {
+        foreach (ReferenceReader::$allowedTags as $tag) {
             $content = str_replace('<'.$tag.'>', $LE.$tag.$GE, $content);
             $content = str_replace('</'.$tag.'>', $LE.'/'.$tag.$GE, $content);
         }
@@ -125,23 +121,23 @@ class Utility
      * Fixes illegal occurrences of ampersands (&) in html strings
      * Well TYPO3 seems to handle this as well.
      *
-     * @param string $str
+     * @param string $string
      *
      * @return string The string filtered for html output
      */
-    public static function fix_html_ampersand(string $str): string
+    public static function fix_html_ampersand(string $string): string
     {
         $pattern = '/&(([^;]|$){8})/';
-        while (preg_match($pattern, $str)) {
-            $str = preg_replace($pattern, '&amp;\1', $str);
+        while (preg_match($pattern, $string)) {
+            $string = preg_replace($pattern, '&amp;\1', $string);
         }
         $pattern = '/&([^;]*?[^a-zA-z;][^;$]*(;|$))/';
-        while (preg_match($pattern, $str)) {
-            $str = preg_replace($pattern, '&amp;\1', $str);
+        while (preg_match($pattern, $string)) {
+            $string = preg_replace($pattern, '&amp;\1', $string);
         }
-        $str = str_replace('&;', '&amp;;', $str);
+        $string = str_replace('&;', '&amp;;', $string);
 
-        return $str;
+        return $string;
     }
 
     /**
@@ -364,8 +360,8 @@ class Utility
      */
     public static function crop_to_range($value, $min, $max)
     {
-        $value = min(intval($value), intval($max));
-        $value = max($value, intval($min));
+        $value = min((int) $value, (int) $max);
+        $value = max($value, (int) $min);
 
         return $value;
     }

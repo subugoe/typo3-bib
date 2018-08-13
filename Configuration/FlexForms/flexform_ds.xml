@@ -119,8 +119,7 @@
                             <label>Search Fields</label>
                             <config>
                                 <type>select</type>
-                                <itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSearchFieldsToFlexForm
-                                </itemsProcFunc>
+                                <itemsProcFunc>Ipf\Bib\Utility\FlexFormUtility->addSearchFieldsToFlexForm</itemsProcFunc>
                                 <maxitems>5</maxitems>
                                 <size>3</size>
                             </config>
