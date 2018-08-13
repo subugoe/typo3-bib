@@ -4,3 +4,4 @@
 /vendor/
 /web/
 /.env
+*.sh
