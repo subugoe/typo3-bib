@@ -56,16 +56,10 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->where($queryBuilder->expr()->eq('r.pid', (int) $storagePid))
             ->andWhere($queryBuilder->expr()->eq('r.deleted', 0))
             ->andWhere($queryBuilder->expr()->eq('r.hidden', 0))
-            ->groupBy(['r.uid'])
+            ->groupBy('r.uid')
             ->execute()
             ->fetchAll();
-
-        $references = [];
-
-        while ($row = $result) {
-            array_push($references, $row);
-        }
-
-        return $references;
+        
+        return $result;
     }
 }
