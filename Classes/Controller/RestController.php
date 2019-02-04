@@ -28,16 +28,18 @@ namespace Ipf\Bib\Controller;
  * ************************************************************* */
 use Ipf\Bib\Domain\Repository\ReferenceRepository;
 use Ipf\Bib\Exception\DataException;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\View\JsonView;
 
 /**
  * REST controller for the extension 'bib'.
  */
-class RestController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class RestController extends ActionController
 {
     /**
      * @var string
      */
-    protected $defaultViewObjectName = \TYPO3\CMS\Extbase\Mvc\View\JsonView::class;
+    protected $defaultViewObjectName = JsonView::class;
 
     /**
      * @var \Ipf\Bib\Domain\Repository\ReferenceRepository

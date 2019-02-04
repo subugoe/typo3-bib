@@ -39,7 +39,6 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -899,7 +898,6 @@ class EditorView extends View
 
                 $au_con[] = $row_con;
             }
-
         } else {
             if (self::WIDGET_SILENT === $mode) {
                 $authorsSize = count($authors);
@@ -929,6 +927,7 @@ class EditorView extends View
         }
 
         $view->assign('content', $content);
+
         return $view->render();
     }
 
@@ -1440,18 +1439,18 @@ class EditorView extends View
                 $widget = '';
                 switch ($ff) {
                 case 'citeid':
-                    if ($this->pi1->extConf['editor']['citeid_gen_new'] === \tx_bib_pi1::AUTOID_FULL) {
+                    if (\tx_bib_pi1::AUTOID_FULL === $this->pi1->extConf['editor']['citeid_gen_new']) {
                         $widget .= $this->getWidget($ff, $publicationData[$ff], $wm);
                     } else {
                         $widget .= $this->getWidget($ff, $publicationData[$ff], $wm);
                     }
                     // Add the id generation button
                     if ($this->isNew) {
-                        if ($this->pi1->extConf['editor']['citeid_gen_new'] === \tx_bib_pi1::AUTOID_HALF) {
+                        if (\tx_bib_pi1::AUTOID_HALF === $this->pi1->extConf['editor']['citeid_gen_new']) {
                             $widget .= $this->getCiteIdGeneratorButton();
                         }
                     } else {
-                        if ($this->pi1->extConf['editor']['citeid_gen_old'] === \tx_bib_pi1::AUTOID_HALF) {
+                        if (\tx_bib_pi1::AUTOID_HALF === $this->pi1->extConf['editor']['citeid_gen_old']) {
                             $widget .= $this->getCiteIdGeneratorButton();
                         }
                     }

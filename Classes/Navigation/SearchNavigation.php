@@ -207,7 +207,7 @@ class SearchNavigation extends Navigation
 
             $all = [];
             $all['words'] = $words;
-            $all['rule'] = $this->pi1->extConf['search_navi']['rule'] == 'AND' ? 1 : 0;
+            $all['rule'] = 'AND' == $this->pi1->extConf['search_navi']['rule'] ? 1 : 0;
             $all['exclude'] = $exclude;
             $filter['all'] = $all;
         } else {

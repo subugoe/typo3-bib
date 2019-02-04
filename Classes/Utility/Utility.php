@@ -94,7 +94,7 @@ class Utility
      *
      * @return string The string filtered for html output
      */
-    public static function crop_middle($str,int $len, $charset = 'UTF-8')
+    public static function crop_middle($str, int $len, $charset = 'UTF-8')
     {
         $res = $str;
         if (strlen($str) > $len) {

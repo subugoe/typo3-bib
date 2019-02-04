@@ -30,16 +30,8 @@ namespace Ipf\Bib\Domain\Repository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Reference repository.
- */
-class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class ReferenceRepository
 {
-    /**
-     * @var \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected $db;
-
     /**
      * @param $storagePid
      *
@@ -59,7 +51,7 @@ class ReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->groupBy('r.uid')
             ->execute()
             ->fetchAll();
-        
+
         return $result;
     }
 }
