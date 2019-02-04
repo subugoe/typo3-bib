@@ -236,7 +236,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         try {
             $this->initializeHtmlTemplate();
         } catch (\Exception $e) {
-            return $this->finalize($e->getTraceAsString());
+            return $this->finalize($e->getMessage());
         }
 
         // Switch to requested view mode
@@ -1565,6 +1565,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function initializeHtmlTemplate()
     {
         $error = [];
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         // Already initialized?
         if (isset($this->template['LIST_VIEW'])) {
@@ -1626,7 +1627,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             if (0 == strlen($val['file'])) {
                 throw new \Exception('HTML template file for \''.$key.'\' is not set', 1378817806);
             }
-            $tmpl = $this->cObj->fileResource($val['file']);
+            $tmpl = file_get_contents($val['file']);
             if (0 == strlen($tmpl)) {
                 throw new \Exception(
                     'The HTML template file \''.$val['file'].'\' for \''.$key.'\' is not readable or empty',
@@ -1635,7 +1636,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
             foreach ($val['parts'] as $part) {
                 $ptag = '###'.$part.'###';
-                $pstr = $this->cObj->getSubpart($tmpl, $ptag);
+                $pstr = $templateService->getSubpart($tmpl, $ptag);
                 // Error message
                 if ((0 == strlen($pstr)) && !$val['no_warn']) {
                     throw new \Exception(
@@ -1740,6 +1741,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $trans = [];
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['show_nav_search']) {
             $trans = $this->extConf['search_navi']['obj']->translator();
@@ -1750,12 +1752,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_SEARCH_NAVI###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
     }
 
     /**
@@ -1767,6 +1769,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $trans = [];
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['show_nav_year']) {
             $obj = $this->getAndInitializeNavigationInstance('YearNavigation');
@@ -1779,12 +1782,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_YEAR_NAVI###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
     }
 
     /**
@@ -1794,6 +1797,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $trans = [];
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['show_nav_author']) {
             $trans = $this->extConf['author_navi']['obj']->translator();
@@ -1804,12 +1808,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_AUTHOR_NAVI###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
     }
 
     /**
@@ -1820,6 +1824,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $trans = [];
         $hasStr = '';
 
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
+
         if ($this->extConf['show_nav_pref']) {
             $trans = $this->extConf['pref_navi']['obj']->translator();
             $hasStr = ['', ''];
@@ -1829,12 +1835,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_PREF_NAVI###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
     }
 
     /**
@@ -1844,6 +1850,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $trans = [];
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['show_nav_page']) {
             $obj = $this->getAndInitializeNavigationInstance('PageNavigation');
@@ -1856,12 +1863,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_PAGE_NAVI###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
     }
 
     /**
@@ -1871,21 +1878,22 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $linkStr = '';
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['edit_mode']) {
             $template = $this->setupEnumerationConditionBlock($this->template['NEW_ENTRY_NAVI_BLOCK']);
             $linkStr = $this->getNewManipulator();
-            $linkStr = $this->cObj->substituteMarker($template, '###NEW_ENTRY###', $linkStr);
+            $linkStr = $templateService->substituteMarker($template, '###NEW_ENTRY###', $linkStr);
             $hasStr = ['', ''];
             $this->extConf['has_top_navi'] = true;
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_NEW_ENTRY###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarker(
+        $this->template['LIST_VIEW'] = $templateService->substituteMarker(
             $this->template['LIST_VIEW'],
             '###NEW_ENTRY###',
             $linkStr
@@ -1902,8 +1910,10 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     public function setupEnumerationConditionBlock($template)
     {
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
+
         $sub = $this->extConf['has_enum'] ? [] : '';
-        $template = $this->cObj->substituteSubpart(
+        $template = $templateService->substituteSubpart(
             $template,
             '###HAS_ENUM###',
             $sub
@@ -2014,6 +2024,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function setupExportNavigation()
     {
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['show_nav_export']) {
             $cfg = [];
@@ -2059,16 +2070,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $trans['###EXPORTS###'] = $exports;
 
             $block = $this->setupEnumerationConditionBlock($this->template['EXPORT_NAVI_BLOCK']);
-            $block = $this->cObj->substituteMarkerArrayCached($block, $trans, []);
+            $block = $templateService->substituteMarkerArrayCached($block, $trans, []);
             $hasStr = ['', ''];
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_EXPORT###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarker(
+        $this->template['LIST_VIEW'] = $templateService->substituteMarker(
             $this->template['LIST_VIEW'],
             '###EXPORT###',
             $block
@@ -2083,6 +2094,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $str = '';
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['edit_mode']) {
             $cfg = [];
@@ -2126,16 +2138,16 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             );
             $translator['###IMPORTS###'] = implode($sep, $imports);
 
-            $str = $this->cObj->substituteMarkerArrayCached($str, $translator, []);
+            $str = $templateService->substituteMarkerArrayCached($str, $translator, []);
             $hasStr = ['', ''];
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_IMPORT###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarker(
+        $this->template['LIST_VIEW'] = $templateService->substituteMarker(
             $this->template['LIST_VIEW'],
             '###IMPORT###',
             $str
@@ -2149,6 +2161,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     {
         $trans = [];
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         if ($this->extConf['show_nav_stat']) {
             $obj = $this->getAndInitializeNavigationInstance('StatisticsNavigation');
@@ -2161,12 +2174,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             }
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_STAT_NAVI###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached($this->template['LIST_VIEW'], $trans);
     }
 
     /**
@@ -2174,9 +2187,11 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     protected function setupSpacer()
     {
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
+
         $spacerBlock = $this->setupEnumerationConditionBlock($this->template['SPACER_BLOCK']);
         $listViewTemplate = &$this->template['LIST_VIEW'];
-        $listViewTemplate = $this->cObj->substituteMarker($listViewTemplate, '###SPACER###', $spacerBlock);
+        $listViewTemplate = $templateService->substituteMarker($listViewTemplate, '###SPACER###', $spacerBlock);
     }
 
     /**
@@ -2185,10 +2200,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function setupTopNavigation()
     {
         $hasStr = '';
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
+
         if ($this->extConf['has_top_navi']) {
             $hasStr = ['', ''];
         }
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_TOP_NAVI###',
             $hasStr
@@ -2201,6 +2218,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function setupItems()
     {
         $items = [];
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         // Store cObj data
         $contentObjectBackup = $this->cObj->data;
@@ -2331,7 +2349,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     $data_block = $this->template['DEFAULT_DATA'];
                 }
 
-                $listViewTemplate = $this->cObj->substituteMarker(
+                $listViewTemplate = $templateService->substituteMarker(
                     $itemBlockTemplate,
                     '###ITEM_DATA###',
                     $listViewTemplate
@@ -2376,12 +2394,12 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 }
             }
 
-            $listViewTemplate = $this->cObj->substituteSubpart($listViewTemplate, '###HAS_MANIPULATORS###', $subst_sub);
+            $listViewTemplate = $templateService->substituteSubpart($listViewTemplate, '###HAS_MANIPULATORS###', $subst_sub);
 
             // Year separator label
             if ($this->extConf['split_years'] && ($pub['year'] != $prevYear)) {
                 $yearStr = $this->cObj->stdWrap(strval($pub['year']), $this->conf['label.']['year.']);
-                $items[] = $this->cObj->substituteMarker($yearBlockTemplate, '###YEAR###', $yearStr);
+                $items[] = $templateService->substituteMarker($yearBlockTemplate, '###YEAR###', $yearStr);
                 $prevBibType = -1;
             }
 
@@ -2391,7 +2409,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                     $this->pi_getLL('bibtype_plural_'.$pub['bibtype'], $pub['bibtype'], true),
                     $this->conf['label.']['bibtype.']
                 );
-                $items[] = $this->cObj->substituteMarker($bibliographyTypeBlockTemplate, '###BIBTYPE###', $bibStr);
+                $items[] = $templateService->substituteMarker($bibliographyTypeBlockTemplate, '###BIBTYPE###', $bibStr);
             }
 
             // Append string for item data
@@ -2407,7 +2425,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $translator['###ITEM_APPEND###'] = $append;
 
             // Apply translator
-            $listViewTemplate = $this->cObj->substituteMarkerArrayCached($listViewTemplate, $translator);
+            $listViewTemplate = $templateService->substituteMarkerArrayCached($listViewTemplate, $translator);
 
             // Pass to item processor
             $items[] = $this->getItemHtml($pdata, $listViewTemplate);
@@ -2441,21 +2459,21 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $no_items = $this->cObj->stdWrap($no_items, $this->conf['label.']['no_items.']);
         }
 
-        $this->template['LIST_VIEW'] = $this->cObj->substituteSubpart(
+        $this->template['LIST_VIEW'] = $templateService->substituteSubpart(
             $this->template['LIST_VIEW'],
             '###HAS_ITEMS###',
             $hasStr
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarkerArrayCached(
+        $this->template['LIST_VIEW'] = $templateService->substituteMarkerArrayCached(
             $this->template['LIST_VIEW'],
             $this->labelTranslator
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarker(
+        $this->template['LIST_VIEW'] = $templateService->substituteMarker(
             $this->template['LIST_VIEW'],
             '###NO_ITEMS###',
             $no_items
         );
-        $this->template['LIST_VIEW'] = $this->cObj->substituteMarker(
+        $this->template['LIST_VIEW'] = $templateService->substituteMarker(
             $this->template['LIST_VIEW'],
             '###ITEMS###',
             $items
@@ -3221,6 +3239,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
     protected function getItemHtml($publicationData, $template)
     {
         $translator = [];
+        $templateService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\MarkerBasedTemplateService::class);
 
         $bib_str = $publicationData['bibtype_short'];
         $all_base = 'rnd'.strval(rand()).'rnd';
@@ -3262,7 +3281,7 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
                 }
             }
 
-            $template = $this->cObj->substituteSubpart($template, '###HAS_'.$upStr.'###', $hasStr);
+            $template = $templateService->substituteSubpart($template, '###HAS_'.$upStr.'###', $hasStr);
         }
 
         // Reference wrap
@@ -3273,18 +3292,18 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             $all_wrap = $this->cObj->stdWrap($all_wrap, $this->conf['editor.']['list.']['hidden.']);
         }
 
-        $template = $this->cObj->substituteMarkerArrayCached($template, $translator);
-        $template = $this->cObj->substituteMarkerArrayCached($template, $this->labelTranslator);
+        $template = $templateService->substituteMarkerArrayCached($template, $translator);
+        $template = $templateService->substituteMarkerArrayCached($template, $this->labelTranslator);
 
         // Wrap elements with an anchor
         $url_wrap = ['', ''];
         if (strlen($publicationData['file_url']) > 0) {
             $url_wrap = $this->cObj->typolinkWrap(['parameter' => $publicationData['auto_url']]);
         }
-        $template = $this->cObj->substituteSubpart($template, '###URL_WRAP###', $url_wrap);
+        $template = $templateService->substituteSubpart($template, '###URL_WRAP###', $url_wrap);
 
         $all_wrap = explode($all_base, $all_wrap);
-        $template = $this->cObj->substituteSubpart($template, '###REFERENCE_WRAP###', $all_wrap);
+        $template = $templateService->substituteSubpart($template, '###REFERENCE_WRAP###', $all_wrap);
 
         // remove empty divs
         $template = preg_replace("/<div[^>]*>[\s\r\n]*<\/div>/", PHP_EOL, $template);
