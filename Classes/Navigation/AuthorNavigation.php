@@ -28,6 +28,7 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 use Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class AuthorNavigation.
@@ -57,7 +58,7 @@ class AuthorNavigation extends Navigation
         }
 
         $this->prefix = 'AUTHOR_NAVI';
-        $this->sel_link_title = $this->languageService->getLL('authorNav_authorLinkTitle');
+        $this->sel_link_title = LocalizationUtility::translate('authorNav_authorLinkTitle', 'bib');
     }
 
     /**

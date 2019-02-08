@@ -28,6 +28,7 @@ namespace Ipf\Bib\Navigation;
  * ************************************************************* */
 
 use Ipf\Bib\Utility\Utility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class YearNavigation.
@@ -47,7 +48,7 @@ class YearNavigation extends Navigation
         }
 
         $this->prefix = 'YEAR_NAVI';
-        $this->sel_link_title = $this->languageService->getLL('yearNav_yearLinkTitle', '%y');
+        $this->sel_link_title = LocalizationUtility::translate('yearNav_yearLinkTitle', 'bib');
     }
 
     /**
@@ -96,7 +97,7 @@ class YearNavigation extends Navigation
     protected function get()
     {
         // The label
-        $label = $this->languageService->getLL('yearNav_label');
+        $label = LocalizationUtility::translate('yearNav_label', 'bib');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
 
         $this->view
@@ -122,7 +123,7 @@ class YearNavigation extends Navigation
             }
             $delimiter = $this->pi1->cObj->stdWrap($delimiter, $selectionConfiguration['all_sep.']);
 
-            $txt = $this->languageService->getLL('yearNav_all_years', 'All');
+            $txt = LocalizationUtility::translate('yearNav_all_years', 'bib');
             if (is_numeric($this->pi1->extConf['year'])) {
                 $txt = $this->pi1->get_link($txt, ['year' => 'all']);
             } else {
@@ -163,7 +164,7 @@ class YearNavigation extends Navigation
             $selectForm .= strlen($this->conf['form_class']) ? ' class="'.$this->conf['form_class'].'"' : '';
             $selectForm .= '>';
 
-            $pairs = ['all' => $this->languageService->getLL('yearNav_all_years', 'All')];
+            $pairs = ['all' => LocalizationUtility::translate('yearNav_all_years', 'bib')];
             if (count($this->pi1->stat['years']) > 0) {
                 foreach (array_reverse($this->pi1->stat['years']) as $y) {
                     $pairs[$y] = $y;
@@ -194,7 +195,7 @@ class YearNavigation extends Navigation
             }
             $button = Utility::html_submit_input(
                 $this->pi1->prefix_pi1.'[action][select_year]',
-                $this->languageService->getLL('button_go'),
+                LocalizationUtility::translate('button_go', 'bib'),
                 $attributes
             );
             $button = $this->pi1->cObj->stdWrap($button, $this->conf['go_btn.']);

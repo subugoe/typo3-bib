@@ -29,6 +29,7 @@ namespace Ipf\Bib\Navigation;
 
 use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class PreferenceNavigation.
@@ -141,7 +142,7 @@ class PreferenceNavigation extends Navigation
      */
     protected function getItemsPerPageSelection()
     {
-        $label = $this->languageService->getLL('prefNav_ipp_sel');
+        $label = LocalizationUtility::translate('prefNav_ipp_sel', 'bib');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['ipp.']['label.']);
         $pairs = [];
         foreach ($this->extConf['pref_ipps'] as $ii) {
@@ -172,7 +173,7 @@ class PreferenceNavigation extends Navigation
             $attributes['class'] = $this->conf['abstract.']['btn_class'];
         }
 
-        $label = $this->languageService->getLL('prefNav_show_abstracts');
+        $label = LocalizationUtility::translate('prefNav_show_abstracts', 'bib');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['abstract.']['label.']);
         $check = $this->pi1->extConf['hide_fields']['abstract'] ? false : true;
         $button = Utility::html_check_input(
@@ -198,7 +199,7 @@ class PreferenceNavigation extends Navigation
             $attributes['class'] = $this->conf['keywords.']['btn_class'];
         }
 
-        $label = $this->languageService->getLL('prefNav_show_keywords');
+        $label = LocalizationUtility::translate('prefNav_show_keywords', 'bib');
         $label = $this->pi1->cObj->stdWrap($label, $this->conf['keywords.']['label.']);
         $check = $this->pi1->extConf['hide_fields']['keywords'] ? false : true;
         $button = Utility::html_check_input(
@@ -225,7 +226,7 @@ class PreferenceNavigation extends Navigation
         }
         $widget = Utility::html_submit_input(
             $this->pi1->prefix_pi1.'[action][eval_pref]',
-            $this->languageService->getLL('button_go'),
+            LocalizationUtility::translate('button_go', 'bib'),
             $attributes
         );
 
@@ -239,7 +240,7 @@ class PreferenceNavigation extends Navigation
      */
     protected function getPreferenceNavigationLabel()
     {
-        $label = $this->languageService->getLL('prefNav_label');
+        $label = LocalizationUtility::translate('prefNav_label', 'bib');
 
         return $this->pi1->cObj->stdWrap($label, $this->conf['label.']);
     }

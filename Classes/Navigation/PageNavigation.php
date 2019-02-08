@@ -27,6 +27,8 @@ namespace Ipf\Bib\Navigation;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+
 /**
  * Class PageNavigation.
  */
@@ -46,7 +48,7 @@ class PageNavigation extends Navigation
 
         $this->prefix = 'PAGE_NAVI';
 
-        $this->sel_link_title = $this->languageService->getLL('pageNav_pageLinkTitle', '%p');
+        $this->sel_link_title = LocalizationUtility::translate('pageNav_pageLinkTitle', 'bib');
     }
 
     /**
@@ -101,15 +103,15 @@ class PageNavigation extends Navigation
 
         // The label
         $label = $this->pi1->cObj->stdWrap(
-            $this->languageService->getLL('pageNav_label'),
+            LocalizationUtility::translate('pageNav_label', 'bib'),
             $this->conf['label.']
         );
 
         // The previous/next buttons
-        $nav_prev = $this->languageService->getLL('pageNav_previous', 'previous');
+        $nav_prev = LocalizationUtility::translate('pageNav_previous', 'bib');
         if ($subPage['current'] > 0) {
             $page = max($subPage['current'] - 1, 0);
-            $title = $this->languageService->getLL('pageNav_previousLinkTitle', 'previous');
+            $title = LocalizationUtility::translate('pageNav_previousLinkTitle', 'bib');
             $nav_prev = $this->pi1->get_link(
                 $nav_prev,
                 [
@@ -122,10 +124,10 @@ class PageNavigation extends Navigation
             );
         }
 
-        $nav_next = $this->languageService->getLL('pageNav_next', 'next');
+        $nav_next = LocalizationUtility::translate('pageNav_next', 'bib');
         if ($subPage['current'] < $subPage['max']) {
             $page = min($subPage['current'] + 1, $subPage['max']);
-            $title = $this->languageService->getLL('pageNav_nextLinkTitle', 'next');
+            $title = LocalizationUtility::translate('pageNav_nextLinkTitle', 'bib');
             $nav_next = $this->pi1->get_link(
                 $nav_next,
                 [
