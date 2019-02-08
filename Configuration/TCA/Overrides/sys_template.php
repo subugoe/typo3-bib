@@ -37,4 +37,10 @@ call_user_func(function () {
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptConstants(
         '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:bib/Configuration/TypoScript/default/constants.typoscript">'
     );
+
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+        'bib',
+        'Configuration/TypoScript/default',
+        'Publication list defaults'
+    );
 });
