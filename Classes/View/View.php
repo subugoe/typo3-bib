@@ -29,7 +29,6 @@ namespace Ipf\Bib\View;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Class View.
@@ -42,18 +41,12 @@ abstract class View
     const VIEW_DIALOG = 3;
 
     /**
-     * @var LanguageService
-     */
-    protected $languageService;
-
-    /**
      * @var StandaloneView
      */
     protected $view;
 
     public function __construct()
     {
-        $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
     }
 }

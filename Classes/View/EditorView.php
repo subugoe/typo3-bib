@@ -39,6 +39,7 @@ use Ipf\Bib\Utility\Utility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -267,11 +268,11 @@ class EditorView extends View
         // Data validation
         if (self::EDIT_CONFIRM_SAVE === (int) $this->pi1->extConf['editor_mode']) {
             $d_err = $this->validatePublicationData($publicationData);
-            $title = $this->languageService->getLL($this->LLPrefix.'title_confirm_save');
+            $title = LocalizationUtility::translate($this->LLPrefix.'title_confirm_save', 'bib');
 
             if (count($d_err) > 0) {
                 $cfg = $this->conf['warn_box.'];
-                $txt = $this->languageService->getLL($this->LLPrefix.'error_title');
+                $txt = LocalizationUtility::translate($this->LLPrefix.'error_title', 'bib');
                 $box = $this->pi1->cObj->stdWrap($txt, $cfg['title.']);
                 $box .= $this->validationErrorMessage($d_err);
                 $box .= $this->getEditButton();
@@ -335,7 +336,7 @@ class EditorView extends View
                     $message = GeneralUtility::makeInstance(
                         FlashMessage::class,
                         $this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
-                        $this->languageService->getLL('msg_save_success'),
+                        LocalizationUtility::translate('msg_save_success', 'bib'),
                         FlashMessage::OK
                     );
 
@@ -345,7 +346,7 @@ class EditorView extends View
                     $message = GeneralUtility::makeInstance(
                         FlashMessage::class,
                         $e->getMessage(),
-                        $this->languageService->getLL('msg_save_fail'),
+                        LocalizationUtility::translate('msg_save_fail', 'bib'),
                         FlashMessage::ERROR
                     );
                     $flashMessageQueue->addMessage($message);
@@ -359,7 +360,7 @@ class EditorView extends View
                     $message = GeneralUtility::makeInstance(
                         FlashMessage::class,
                         $this->createHtmlTextFromPostDatabaseWrite($this->postDatabaseWriteActions()),
-                        $this->languageService->getLL('msg_delete_success'),
+                        LocalizationUtility::translate('msg_delete_success', 'bib'),
                         FlashMessage::OK
                     );
                     $flashMessageQueue->addMessage($message);
@@ -367,7 +368,7 @@ class EditorView extends View
                     $message = GeneralUtility::makeInstance(
                         FlashMessage::class,
                         $e->getMessage(),
-                        $this->languageService->getLL('msg_delete_fail'),
+                        LocalizationUtility::translate('msg_delete_fail', 'bib'),
                         FlashMessage::ERROR
                     );
                     $flashMessageQueue->addMessage($message);
@@ -377,7 +378,7 @@ class EditorView extends View
                 $message = GeneralUtility::makeInstance(
                     FlashMessage::class,
                     'Unknown dialog mode: '.$this->pi1->extConf['dialog_mode'],
-                    $this->languageService->getLL('msg_delete_fail'),
+                    LocalizationUtility::translate('msg_delete_fail', 'bib'),
                     FlashMessage::ERROR
                 );
                 $flashMessageQueue->addMessage($message);
@@ -398,7 +399,7 @@ class EditorView extends View
             } else {
                 $editButton .= 'name="'.$this->pi1->prefix_pi1.'[action][edit]" ';
             }
-            $editButton .= 'value="'.$this->languageService->getLL($this->LLPrefix.'btn_edit').'" class="'.$this->buttonClass.'"/>';
+            $editButton .= 'value="'.LocalizationUtility::translate($this->LLPrefix.'btn_edit', 'bib').'" class="'.$this->buttonClass.'"/>';
         }
 
         return $editButton;
@@ -410,7 +411,7 @@ class EditorView extends View
         if (self::WIDGET_EDIT === $this->widgetMode) {
             $citeIdeGeneratorButton = '<input type="submit" '.
                 'name="'.$this->pi1->prefix_pi1.'[action][generate_id]" '.
-                'value="'.$this->languageService->getLL($this->LLPrefix.'btn_generate_id').
+                'value="'.LocalizationUtility::translate($this->LLPrefix.'btn_generate_id', 'bib').
                 '" class="'.$this->buttonClass.'"/>';
         }
 
@@ -421,7 +422,7 @@ class EditorView extends View
     {
         $updateButton = '';
         $updateButtonName = $this->pi1->prefix_pi1.'[action][update_form]';
-        $updateButtonValue = $this->languageService->getLL($this->LLPrefix.'btn_update_form');
+        $updateButtonValue = LocalizationUtility::translate($this->LLPrefix.'btn_update_form', 'bib');
         if (self::WIDGET_EDIT === $this->widgetMode) {
             $updateButton = '<input type="submit"'.
                 ' name="'.$updateButtonName.'"'.
@@ -443,7 +444,7 @@ class EditorView extends View
         }
         if (strlen($saveButton) > 0) {
             $saveButton = '<input type="submit" name="'.$this->pi1->prefix_pi1.$saveButton.'" '.
-                'value="'.$this->languageService->getLL($this->LLPrefix.'btn_save').
+                'value="'.LocalizationUtility::translate($this->LLPrefix.'btn_save', 'bib').
                 '" class="'.$this->buttonClass.'"/>';
         }
 
@@ -465,7 +466,7 @@ class EditorView extends View
             }
             if (strlen($deleteButton)) {
                 $deleteButton = '<input type="submit" name="'.$this->pi1->prefix_pi1.$deleteButton.'" '.
-                    'value="'.$this->languageService->getLL($this->LLPrefix.'btn_delete').
+                    'value="'.LocalizationUtility::translate($this->LLPrefix.'btn_delete', 'bib').
                     '" class="'.$this->buttonClass.' '.$buttonDeleteClass.'"/>';
             }
         }
@@ -511,7 +512,7 @@ class EditorView extends View
 
         $label = trim($label);
         if (strlen($label) > 0) {
-            $label = $this->languageService->getLL($label, true);
+            $label = LocalizationUtility::translate($label, 'bib');
         }
 
         return $label;
@@ -525,7 +526,7 @@ class EditorView extends View
      *
      * @return array An array with subarrays with field lists for
      */
-    private function getEditFields(string $bibType): array
+    private function getEditFields($bibType): array
     {
         $fields = [];
         $bib_str = $bibType;
@@ -657,7 +658,7 @@ class EditorView extends View
      *
      * @return string
      */
-    private function getDefaultEditWidget(string $field, string $value, int $mode): string
+    private function getDefaultEditWidget(string $field, $value, int $mode): string
     {
         $cfg = $GLOBALS['TCA'][$this->referenceReader->getReferenceTable()]['columns'][$field]['config'];
         $pi1 = $this->pi1;
@@ -723,7 +724,7 @@ class EditorView extends View
                 $pairs = [];
                 $itemConfigurationSize = count($cfg['items']);
                 for ($ii = 0; $ii < $itemConfigurationSize; ++$ii) {
-                    $p_desc = $this->languageService->getLL($cfg['items'][$ii][0]);
+                    $p_desc = LocalizationUtility::translate($cfg['items'][$ii][0], 'bib');
                     $p_val = $cfg['items'][$ii][1];
                     $pairs[$p_val] = $p_desc;
                 }
@@ -780,7 +781,7 @@ class EditorView extends View
                     $name = '';
                     foreach ($configuration['items'] as $it) {
                         if (strtolower($it[1]) === strtolower($value)) {
-                            $name = $this->languageService->getLL($it[0]);
+                            $name = LocalizationUtility::translate($it[0], 'bib');
                             break;
                         }
                     }
@@ -788,8 +789,8 @@ class EditorView extends View
                     break;
 
                 case 'check':
-                    $content .= $this->languageService->getLL(
-                        ('0' === $value) ? 'editor_no' : 'editor_yes'
+                    $content .= LocalizationUtility::translate(
+                        ('0' === $value) ? 'editor_no' : 'editor_yes', 'bib'
                     );
                     break;
 
@@ -814,7 +815,7 @@ class EditorView extends View
         if ($this->conf['warnings.'][$type]) {
             $file = $pub['file_url'];
             if (Utility::check_file_nexist($file)) {
-                $message = $this->languageService->getLL('editor_error_file_nexist');
+                $message = LocalizationUtility::translate('editor_error_file_nexist', 'bib');
                 $message = str_replace('%f', $file, $message);
                 $d_err[] = ['type' => $type, 'msg' => $message];
             }
@@ -831,7 +832,7 @@ class EditorView extends View
      *
      * @return string The authors widget
      */
-    private function getAuthorsWidget(array $value, int $mode): string
+    private function getAuthorsWidget(?array $value, int $mode): string
     {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename('typo3conf/ext/'.$this->pi1->extKey.'/Resources/Private/Templates/Editor/AuthorsWidget.html');
@@ -939,7 +940,7 @@ class EditorView extends View
      *
      * @return string The pid widget
      */
-    private function getPidWidget(string $value, int $mode): string
+    private function getPidWidget($value, int $mode): string
     {
         $content = '';
 
@@ -959,7 +960,7 @@ class EditorView extends View
                 $fieldAttr,
                 (string) $value
             );
-            $content .= strval($pages[$value]);
+            $content .= (string) ($pages[$value]);
         } else {
             if (self::WIDGET_EDIT === $mode) {
                 $attributes['name'] = $fieldAttr;
@@ -1102,7 +1103,7 @@ class EditorView extends View
         if ($this->conf['delete_no_ref_authors']) {
             $count = $this->databaseUtility->deleteAuthorsWithoutPublications();
             if ($count > 0) {
-                $message = $this->languageService->getLL('msg_deleted_authors');
+                $message = LocalizationUtility::translate('msg_deleted_authors', 'bib');
                 $message = str_replace('%d', strval($count), $message);
                 $events[] = $message;
             }
@@ -1112,7 +1113,7 @@ class EditorView extends View
 
             $count = count($stat['updated']);
             if ($count > 0) {
-                $message = $this->languageService->getLL('msg_updated_full_text');
+                $message = LocalizationUtility::translate('msg_updated_full_text', 'bib');
                 $message = str_replace('%d', strval($count), $message);
                 $events[] = $message;
             }
@@ -1125,14 +1126,14 @@ class EditorView extends View
             }
 
             if ($stat['limit_num']) {
-                $message = $this->languageService->getLL('msg_warn_ftc_limit').' - ';
-                $message .= $this->languageService->getLL('msg_warn_ftc_limit_num');
+                $message = LocalizationUtility::translate('msg_warn_ftc_limit', 'bib').' - ';
+                $message .= LocalizationUtility::translate('msg_warn_ftc_limit_num', 'bib');
                 $errors[] = $message;
             }
 
             if ($stat['limit_time']) {
-                $message = $this->languageService->getLL('msg_warn_ftc_limit').' - ';
-                $message .= $this->languageService->getLL('msg_warn_ftc_limit_time');
+                $message = LocalizationUtility::translate('msg_warn_ftc_limit', 'bib').' - ';
+                $message .= LocalizationUtility::translate('msg_warn_ftc_limit_time', 'bib');
                 $errors[] = $message;
             }
         }
@@ -1151,11 +1152,11 @@ class EditorView extends View
     {
         $content = '';
         if (count($messages[0]) > 0) {
-            $content .= '<h4>'.$this->languageService->getLL('msg_title_events').'</h4>';
+            $content .= '<h4>'.LocalizationUtility::translate('msg_title_events', 'bib').'</h4>';
             $content .= $this->createHtmlTextFromPostDatabaseWriteEvent($messages[0]);
         }
         if (count($messages[1]) > 0) {
-            $content .= '<h4>'.$this->languageService->getLL('msg_title_errors').'</h4>';
+            $content .= '<h4>'.LocalizationUtility::translate('msg_title_errors', 'bib').'</h4>';
             $content .= $this->createHtmlTextFromPostDatabaseWriteEvent($messages[1]);
         }
 
@@ -1178,7 +1179,7 @@ class EditorView extends View
             $content .= '<li>';
             $content .= $msg;
             if ($count > 1) {
-                $app = str_replace('%d', strval($count), $this->languageService->getLL('msg_times'));
+                $app = str_replace('%d', strval($count), LocalizationUtility::translate('msg_times', 'bib'));
                 $content .= '('.$app.')';
             }
             $content .= '</li>';
@@ -1365,7 +1366,7 @@ class EditorView extends View
     {
         if (strlen($rows_vis) > 0) {
             $content .= '<h3>';
-            $content .= $this->languageService->getLL($this->LLPrefix.'fields_'.$fg);
+            $content .= LocalizationUtility::translate($this->LLPrefix.'fields_'.$fg, 'bib');
             $content .= '</h3>';
 
             $content .= '<table class="'.$this->pi1->prefixShort.'-editor_fields">';
@@ -1530,7 +1531,7 @@ class EditorView extends View
                 $title .= 'title_edit';
                 break;
         }
-        $title = $this->languageService->getLL($title);
+        $title = LocalizationUtility::translate($title, 'bib');
 
         return $title;
     }
@@ -1547,7 +1548,7 @@ class EditorView extends View
         if ($this->conf['warnings.'][$type] && !$this->conf['no_edit.']['citeid'] && !$this->conf['no_show.']['citeid']) {
             if ($this->referenceReader->citeIdExists($pub['citeid'], $pub['uid'])) {
                 $err = ['type' => $type];
-                $err['msg'] = $this->languageService->getLL($this->LLPrefix.'error_id_exists');
+                $err['msg'] = LocalizationUtility::translate($this->LLPrefix.'error_id_exists', 'bib');
                 $d_err[] = $err;
             }
         }
@@ -1623,7 +1624,7 @@ class EditorView extends View
 
             if (count($empty)) {
                 $err = ['type' => $type];
-                $err['msg'] = $this->languageService->getLL($this->LLPrefix.'error_empty_fields');
+                $err['msg'] = LocalizationUtility::translate($this->LLPrefix.'error_empty_fields', 'bib');
                 $err['list'] = [];
                 $bib_str = $this->referenceReader->allBibTypes[$pub['bibtype']];
                 foreach ($empty as $field) {

@@ -1627,8 +1627,8 @@ class tx_bib_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
             if (0 == strlen($val['file'])) {
                 throw new \Exception('HTML template file for \''.$key.'\' is not set', 1378817806);
             }
-            $tmpl = file_get_contents($val['file']);
-            if (0 == strlen($tmpl)) {
+            $tmpl = file_get_contents(GeneralUtility::getFileAbsFileName($val['file']));
+            if (0 === strlen($tmpl)) {
                 throw new \Exception(
                     'The HTML template file \''.$val['file'].'\' for \''.$key.'\' is not readable or empty',
                     1378817895
