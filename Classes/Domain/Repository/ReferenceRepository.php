@@ -40,6 +40,8 @@ class ReferenceRepository
     public function findBibliographyByStoragePid($storagePid)
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_bib_domain_model_reference');
+        $queryBuilder->getRestrictions()->removeAll();
+
         $result = $queryBuilder
             ->select('r.*', 'au.forename', 'au.surname')
             ->from('tx_bib_domain_model_reference', 'r')
